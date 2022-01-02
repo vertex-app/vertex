@@ -1,0 +1,6 @@
+node_modules
+app/static
+logs
+package-lock.json
+app/data/*/*.json
+app/data/*/*/*.json

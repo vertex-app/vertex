@@ -1,0 +1,50 @@
+appenders:
+  console:
+    type: console
+    layout:
+      type: pattern
+      pattern: '%[[%d{ISO8601}][%p %c] %z (%f{3} %l:%o)%] %m'
+  trace:
+    type: dateFile
+    filename: logs/app-access.log
+    pattern: .yyyy-MM-dd
+    layout:
+      type: pattern
+      pattern: '[%d{ISO8601}][%p %c] %z (%f{3} %l:%o) %m'
+  http:
+    type: logLevelFilter
+    appender: trace
+    level: trace
+    maxLevel: trace
+  info:
+    type: dateFile
+    filename: logs/app-info.log
+    pattern: .yyyy-MM-dd
+    layout:
+      type: pattern
+      pattern: '[%d{ISO8601}][%p %c] %z (%f{3} %l:%o) %m'
+  maxInfo:
+    type: logLevelFilter
+    appender: info
+    level: debug
+    maxLevel: info
+  error:
+    type: dateFile
+    filename: logs/app-error.log
+    pattern: .yyyy-MM-dd
+    layout:
+      type: pattern
+      pattern: '[%d{ISO8601}][%p %c] %z (%f{3} %l:%o) %m'
+  minError:
+    type: logLevelFilter
+    appender: error
+    level: error
+categories:
+  default:
+    enableCallStack: true
+    appenders:
+      - console
+      - http
+      - maxInfo
+      - minError
+    level: all

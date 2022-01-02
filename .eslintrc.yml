@@ -1,0 +1,28 @@
+env:
+  browser: true
+  commonjs: true
+  es2020: true
+  node: true
+extends:
+  - standard
+parserOptions:
+  ecmaVersion: 12
+globals:
+  SITE: readonly
+  CONFIG: readonly
+  LOGGER: readonly
+rules:
+  indent:
+    - error
+    - 2
+  linebreak-style:
+    - error
+    - unix
+  quotes:
+    - error
+    - single
+  semi:
+    - error
+    - always
+  no-throw-literal: 0
+  no-case-declarations: 0

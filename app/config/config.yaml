@@ -1,0 +1,7 @@
+auth:
+  username: user
+  password: 5f4dcc3b5aa765d61d8327deb882cf99
+
+redis:
+  host: 172.20.99.3
+  port: 6379
