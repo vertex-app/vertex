@@ -24,8 +24,10 @@ class Client {
     this.maxSpeed = client.maxSpeed;
     this.sameServerClients = client.sameServerClients;
     this.maindata = null;
-    this.telegramProxy = this.createTelegramProxy(client, client.notifyChannel);
-    this.channelProxy = this.createTelegramProxy(client, client.torrentsChannel);
+    this.telegramProxy = this.createTelegramProxy(util.listBot().filter(item => item.id === client.telegram)[0],
+      util.listChannel().filter(item => item.id === client.notifyChannel)[0].channelId);
+    this.channelProxy = this.createTelegramProxy(util.listBot().filter(item => item.id === client.telegram)[0],
+      util.listChannel().filter(item => item.id === client.torrentsChannel)[0].channelId);
     this.maindataJob = new CronJob(client.cron, () => this.getMaindata());
     this.maindataJob.start();
     if (client.autoReannounce) {
@@ -33,7 +35,7 @@ class Client {
       this.reannounceJob = new CronJob('*/10 * * * * *', () => this.autoReannounce());
       this.reannounceJob.start();
     }
-    this.deleteRules = client.deleteRules;
+    this.deleteRules = util.listDeleteRule().filter(item => client.deleteRules.indexOf(item.id) !== -1);
     if (client.autoDelete) {
       this.autoDeleteJob = new CronJob(client.autoDeleteCron, () => this.autoDelete());
       this.autoDeleteJob.start();
@@ -51,32 +53,32 @@ class Client {
   };
 
   _fitDeleteRule (rule, torrent) {
-    let fit = true;
+    let fit = '1';
     const statusLeeching = ['downloading', 'stalledDL', 'Downloading'];
     const statusSeeding = ['uploading', 'stalledUP', 'Seeding'];
-    if (rule.minUploadSpeed && statusSeeding.some(torrent.state)) {
+    if (rule.minUploadSpeed && statusSeeding.some(item => item === torrent.state)) {
       fit = fit && (torrent.uploadSpeed < +rule.minUploadSpeed);
     }
     if (rule.maxDownloadSpeed && rule.minUploadSpeed) {
       fit = fit && (torrent.downloadSpeed > +rule.maxDownloadSpeed);
     }
-    if (rule.maxSeedTime && statusSeeding.some(torrent.state)) {
+    if (rule.maxSeedTime && statusSeeding.some(item => item === torrent.state)) {
       fit = fit && (moment().unix() - torrent.completedTime > +rule.maxSeedTime);
     }
-    if (rule.maxLeachTime && statusLeeching.some(torrent.state)) {
-      fit = fit && (moment().unix() - torrent.addedTime > +rule.maxLeachTime);
+    if (rule.maxLeechTime && statusLeeching.some(item => item === torrent.state)) {
+      fit = fit && (moment().unix() - torrent.addedTime > +rule.maxLeechTime);
     }
-    if (rule.maxFreeSpace && statusSeeding.some(torrent.state)) {
+    if (rule.maxFreeSpace && statusSeeding.some(item => item === torrent.state)) {
       fit = fit && (this.maindata.freeSpaceOnDisk < +rule.maxFreeSpace);
     }
     if (rule.maxAvailability) {
       fit = fit && (torrent.availability > +rule.maxAvailability && torrent.progress < 0.95);
     }
     if (rule.excludeCategory) {
-      const categories = rule.excludeCategory.split('\n');
+      const categories = rule.excludeCategory.split(/\r\n|\n/);
       fit = fit && !categories.some(torrent.category);
     }
-    return !fit;
+    return fit !== '1' && fit;
   };
 
   destroy () {
@@ -86,13 +88,13 @@ class Client {
     if (this.autoDeleteJob) this.autoDeleteJob.stop();
   };
 
-  createTelegramProxy (client, channel) {
-    const telegram = new Telegram(client.telegram.botToken, channel, 'HTML', client.telegram.domain);
+  createTelegramProxy (telegram, channel) {
+    const _telegram = new Telegram(telegram.token, channel, 'HTML', telegram.domain);
     const _this = this;
-    const telegramProxy = new Proxy(telegram, {
+    const telegramProxy = new Proxy(_telegram, {
       get: function (target, property) {
         if (!_this.pushMessage) {
-          logger.info('pushMessage is false, don\'t send message');
+          logger.info(_this.clientAlias, 'pushMessage is false, don\'t send message');
           return () => 1;
         };
         return target[property];
@@ -155,11 +157,11 @@ class Client {
     }
   };
 
-  async addTorrent (taskName, torrentName, size, torrentUrl, torrentReseedName, isSkipChecking = false, uploadLimit = 0, downloadLimit = 0, savePath, category) {
+  async addTorrent (taskName, torrentName, size, torrentUrl, torrentReseedName, isSkipChecking = false, uploadLimit = 0, downloadLimit = 0, savePath, category, rule) {
     try {
       await this.client.addTorrent(this.clientUrl, this.cookie, torrentUrl, isSkipChecking, uploadLimit, downloadLimit, savePath, category);
       logger.info('Client', this.clientAlias, 'add torrent success');
-      await this.telegramProxy.sendMessage(msgTemplate.addTorrentString(isSkipChecking, taskName, this.clientAlias, torrentName, size, torrentReseedName));
+      await this.telegramProxy.sendMessage(msgTemplate.addTorrentString(isSkipChecking, taskName, this.clientAlias, torrentName, size, torrentReseedName, rule));
     } catch (error) {
       logger.error('Client', this.clientAlias, 'add torrent failed', error.message);
       await this.telegramProxy.sendMessage(msgTemplate.addTorrentErrorString(taskName, torrentName, size, error.message));

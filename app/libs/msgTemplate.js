@@ -93,7 +93,7 @@ exports.addTorrentErrorString = function (taskName, torrentName, size, reason) {
   return str;
 };
 
-exports.addTorrentString = function (isSkipChecking, taskName, clientAlias, torrentName, size, torrentReseedName) {
+exports.addTorrentString = function (isSkipChecking, taskName, clientAlias, torrentName, size, torrentReseedName, rule) {
   let str = '';
   str += `#${isSkipChecking ? 'Reseed' : 'Add'}\n`;
   str += '<pre>Add Torrent:</pre>\n';
@@ -104,6 +104,9 @@ exports.addTorrentString = function (isSkipChecking, taskName, clientAlias, torr
   if (isSkipChecking) {
     str += '<pre> Remark: SkipChecking</pre>\n';
     str += `<pre> TorrentReseed: ${torrentReseedName}</pre>\n`;
+  }
+  if (rule) {
+    str += `<pre> Fit rule: ${rule.alias}</pre>\n`;
   }
   return str;
 };

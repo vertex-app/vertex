@@ -19,7 +19,7 @@
           width="200">
           <template slot-scope="scope">
             <el-button @click="modifyRule(scope.row)" type="warning" size="small">编辑</el-button>
-            <el-button type="danger" size="small">删除</el-button>
+            <el-button @click="deleteRule(scope.row)" :disabled="scope.row.used" type="danger" size="small">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -34,7 +34,7 @@
             </div>
             <el-form ref="rule" class="rule-form" :model="rule" label-width="160px" size="mini">
               <el-form-item required label="别名" prop="alias">
-                <el-input v-model="rule.alias" type="number"></el-input>
+                <el-input v-model="rule.alias" type="input"></el-input>
               </el-form-item>
               <el-form-item label="大小大于">
                 <el-input v-model="rule.minSize" type="number"></el-input>
@@ -49,7 +49,7 @@
                 <div><el-tag type="info">种子标题需包含的关键词, 一行为一个关键词, 各个关键词间为 且 的关系, 即标题包含 所有 关键词时 才会 添加本种子</el-tag></div>
               </el-form-item>
               <el-form-item label="排除关键词">
-                <el-input v-model="rule.includeKeys" type="textarea"></el-input>
+                <el-input v-model="rule.excludeKeys" type="textarea"></el-input>
                 <div><el-tag type="info">种子标题需排除的关键词, 一行为一个关键词, 各个关键词间为 且 的关系, 即标题包含 所有 关键词时 拒绝 添加本种子</el-tag></div>
               </el-form-item>
               <el-form-item label="正则表达式">
@@ -95,6 +95,18 @@ export default {
           return false;
         }
       });
+    },
+    async deleteRule (row) {
+      const url = '/api/rssRule/delete';
+      const res = await this.$axiosPost(url, {
+        id: row.id
+      });
+      if (!res) {
+        return;
+      }
+      await this.$messageBox(res);
+      this.listRule();
+      this.clearRule();
     },
     async modifyRule (row) {
       this.ruleCollapse = ['1'];

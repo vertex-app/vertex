@@ -19,7 +19,7 @@
           width="200">
           <template slot-scope="scope">
             <el-button @click="modifyRule(scope.row)" type="warning" size="small">编辑</el-button>
-            <el-button type="danger" size="small">删除</el-button>
+            <el-button @click="deleteRule(scope.row)" :disabled="scope.row.used" type="danger" size="small">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -34,7 +34,7 @@
             </div>
             <el-form ref="rule" class="rule-form" :model="rule" label-width="160px" size="mini">
               <el-form-item required label="别名" prop="alias">
-                <el-input v-model="rule.alias" type="number"></el-input>
+                <el-input v-model="rule.alias" type="input"></el-input>
               </el-form-item>
               <el-form-item label="上传速度小于">
                 <el-input v-model="rule.minUploadSpeed" type="number"></el-input>
@@ -49,8 +49,8 @@
                 <div><el-tag type="info">种子做种时间, 单位为 秒</el-tag></div>
               </el-form-item>
               <el-form-item label="下载时间大于">
-                <el-input v-model="rule.maxLeachTime" type="number"></el-input>
-                <div><el-tag type="info">种子下载时间, 单位为 字节 (Byte)</el-tag></div>
+                <el-input v-model="rule.maxLeechTime" type="number"></el-input>
+                <div><el-tag type="info">种子下载时间, 单位为 秒</el-tag></div>
               </el-form-item>
               <el-form-item label="硬盘空间小于">
                 <el-input v-model="rule.maxFreeSpace" type="number"></el-input>
@@ -106,6 +106,18 @@ export default {
           return false;
         }
       });
+    },
+    async deleteRule (row) {
+      const url = '/api/deleteRule/delete';
+      const res = await this.$axiosPost(url, {
+        id: row.id
+      });
+      if (!res) {
+        return;
+      }
+      await this.$messageBox(res);
+      this.listRule();
+      this.clearRule();
     },
     async modifyRule (row) {
       this.ruleCollapse = ['1'];

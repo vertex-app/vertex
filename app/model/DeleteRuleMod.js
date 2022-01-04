@@ -18,6 +18,8 @@ class DeleteRuleMod {
   };
 
   delete (options) {
+    fs.unlinkSync(path.join(__dirname, '../data/rule/delete/', options.id + '.json'));
+    return '删除规则成功';
   };
 
   modify (options) {
@@ -33,6 +35,10 @@ class DeleteRuleMod {
 
   list () {
     const deleteRuleList = util.listDeleteRule();
+    const clientList = util.listClient();
+    for (const deleteRule of deleteRuleList) {
+      deleteRule.used = clientList.some(item => item.deleteRules.indexOf(deleteRule.id) !== -1);
+    }
     return deleteRuleList;
   };
 }

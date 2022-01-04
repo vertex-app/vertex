@@ -39,11 +39,12 @@ class Telegram {
   };
 
   async deleteBot (req, res) {
-    const options = req.query;
+    const options = req.body;
     try {
-      telegramMod.deleteBot(options);
+      const r = telegramMod.deleteBot(options);
       res.send({
-        success: true
+        success: true,
+        message: r
       });
     } catch (e) {
       logger.error(e);
@@ -55,11 +56,12 @@ class Telegram {
   };
 
   async deleteChannel (req, res) {
-    const options = req.query;
+    const options = req.body;
     try {
-      telegramMod.deleteChannel(options);
+      const r = telegramMod.deleteChannel(options);
       res.send({
-        success: true
+        success: true,
+        message: r
       });
     } catch (e) {
       logger.error(e);

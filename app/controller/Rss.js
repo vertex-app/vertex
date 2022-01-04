@@ -22,11 +22,12 @@ class Rss {
   };
 
   async delete (req, res) {
-    const options = req.query;
+    const options = req.body;
     try {
-      rssMod.delete(options);
+      const r = rssMod.delete(options);
       res.send({
-        success: true
+        success: true,
+        message: r
       });
     } catch (e) {
       logger.error(e);

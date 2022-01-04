@@ -22,7 +22,7 @@ const _getTorrents = async function (rssUrl) {
     };
     torrent.size = items[i].enclosure[0].$.length;
     torrent.name = items[i].title[0];
-    torrent.hash = items[i].guid[0]._;
+    torrent.hash = items[i].guid[0]._ || items[i].guid[0];
     const link = items[i].link[0];
     torrent.link = link;
     torrent.id = link.substring(link.indexOf('?id=') + 4);

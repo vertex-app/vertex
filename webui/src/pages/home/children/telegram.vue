@@ -24,7 +24,7 @@
           width="200">
           <template slot-scope="scope">
             <el-button @click="modifyBot(scope.row)" type="warning" size="small">编辑</el-button>
-            <el-button type="danger" size="small">删除</el-button>
+            <el-button @click="deleteBot(scope.row)" :disabled="scope.row.used" type="danger" size="small">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -82,7 +82,7 @@
           width="200">
           <template slot-scope="scope">
             <el-button @click="modifyChannel(scope.row)" type="warning" size="small">编辑</el-button>
-            <el-button type="danger" size="small">删除</el-button>
+            <el-button @click="deleteChannel(scope.row)" :disabled="scope.row.used" type="danger" size="small">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -90,7 +90,7 @@
         <el-collapse class="collapse" v-model="channelCollapse">
           <el-collapse-item title="新增 | 编辑 频道" name="1">
             <div style="width: fit-content; margin: 6px 0;">
-              <el-tag>频道 ID: {{cId}}</el-tag>
+              <el-tag>频道 ID: {{channelId}}</el-tag>
             </div>
             <div style="width: fit-content; margin: 6px 0;">
               <el-input
@@ -104,7 +104,7 @@
               <el-input
                 size="small"
                 style="width: 500px"
-                placeholder="Token"
+                placeholder="频道 ID"
                 v-model="cId">
               </el-input>
             </div>
@@ -151,6 +151,19 @@ export default {
       this.listBot();
       this.clearBot();
     },
+    async deleteBot (row) {
+      const url = '/api/telegram/deleteBot';
+      const set = {
+        id: row.id
+      };
+      const res = await this.$axiosPost(url, set);
+      if (!res) {
+        return;
+      }
+      await this.$messageBox(res);
+      this.listBot();
+      this.clearBot();
+    },
     async modifyBot (row) {
       this.botCollapse = ['1'];
       this.botId = row.id;
@@ -168,6 +181,19 @@ export default {
         id: this.channelId,
         alias: this.cAlias,
         channelId: this.cId
+      };
+      const res = await this.$axiosPost(url, set);
+      if (!res) {
+        return;
+      }
+      await this.$messageBox(res);
+      this.listChannel();
+      this.clearChannel();
+    },
+    async deleteChannel (row) {
+      const url = '/api/telegram/deleteChannel';
+      const set = {
+        id: row.id
       };
       const res = await this.$axiosPost(url, set);
       if (!res) {

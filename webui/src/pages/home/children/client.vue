@@ -55,7 +55,7 @@
           width="200">
           <template slot-scope="scope">
             <el-button @click="modifyClient(scope.row)" type="warning" size="small">编辑</el-button>
-            <el-button type="danger" size="small">删除</el-button>
+            <el-button @click="deleteClient(scope.row)" :disabled="scope.row.used" type="danger" size="small">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -190,6 +190,18 @@ export default {
           return false;
         }
       });
+    },
+    async deleteClient (row) {
+      const url = '/api/client/delete';
+      const res = await this.$axiosPost(url, {
+        id: row.id
+      });
+      if (!res) {
+        return;
+      }
+      await this.$messageBox(res);
+      this.listClient();
+      this.clearClient();
     },
     async modifyClient (row) {
       this.clientCollapse = ['1'];

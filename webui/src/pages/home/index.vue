@@ -99,7 +99,6 @@ export default {
 
 .el-main {
   background-color: #E9EEF3;
-  color: #FFFFFF;
   text-align: center;
   overflow-x: hidden;
   overflow-y: auto;

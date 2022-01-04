@@ -168,7 +168,8 @@ export default {
       this.vnstatPeriod = period;
     },
     formatTime (row) {
-      return `${row.date.year}-${row.date.month}` + (row.date.day ? `-${row.date.day}` : '') +
+      return `${row.date.year}-${row.date.month < 10 ? '0' + row.date.month : row.date.month}` +
+        (row.date.day ? `-${row.date.day < 10 ? '0' + row.date.day : row.date.day}` : '') +
         (row.time
           ? ` ${row.time.hour < 10
             ? '0' +
@@ -230,11 +231,14 @@ export default {
     this.getCpuUse();
     this.getDiskUse();
     this.getVnstat();
-    setInterval(() => {
+    this.freshData = setInterval(() => {
       this.getNetSpeed();
       this.getCpuUse();
       this.getMemoryUse();
     }, 5000);
+  },
+  beforeDestroy () {
+    clearInterval(this.freshData);
   }
 };
 </script>

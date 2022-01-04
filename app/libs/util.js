@@ -4,15 +4,57 @@ const path = require('path');
 const uuid = require('uuid');
 const md5 = require('md5-node');
 const request = require('request');
+const Database = require('better-sqlite3');
+
+const logger = require('./logger');
+const scrape = require('./scrape');
+
+const db = new Database(path.join(__dirname, '../db/sql.db'));
 
 for (const k of Object.keys(util)) {
   exports[k] = util[k];
 }
 
+exports.getRecords = async function (sql, options) {
+  let _sql = sql;
+  if (options) {
+    options.forEach((item) => {
+      _sql = _sql.replace(/\?/, item);
+    });
+  }
+  logger.info('Get Records:', _sql);
+  return db.prepare(sql).all();
+};
+
+exports.insertRecord = async function (sql, options) {
+  let _sql = sql;
+  if (options) {
+    options.forEach((item) => {
+      _sql = _sql.replace(/\?/, item);
+    });
+  }
+  logger.info('Insert Record:', _sql);
+  return db.prepare(sql).run(...options);
+};
+
+exports.getRecord = async function (sql, options) {
+  let _sql = sql;
+  if (options) {
+    options.forEach((item) => {
+      _sql = _sql.replace(/\?/, item);
+    });
+  }
+  logger.info('Get Record:', _sql);
+  return db.prepare(sql).get(...options);
+};
+
 const _importJson = function (path) {
   const jsonString = fs.readFileSync(path, { encoding: 'utf-8' });
   return JSON.parse(jsonString);
 };
+
+exports.scrapeFree = scrape.free;
+exports.scrapeHr = scrape.hr;
 
 exports.requestPromise = util.promisify(request);
 exports.exec = util.promisify(require('child_process').exec);

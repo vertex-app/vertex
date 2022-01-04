@@ -18,6 +18,8 @@ class RssRuleMod {
   };
 
   delete (options) {
+    fs.unlinkSync(path.join(__dirname, '../data/rule/rss/', options.id + '.json'));
+    return '删除规则成功';
   };
 
   modify (options) {
@@ -33,6 +35,10 @@ class RssRuleMod {
 
   list () {
     const rssRuleList = util.listRssRule();
+    const rssList = util.listRss();
+    for (const rssRule of rssRuleList) {
+      rssRule.used = rssList.some(item => item.rssRules.indexOf(rssRule.id) !== -1);
+    }
     return rssRuleList;
   };
 }

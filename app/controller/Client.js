@@ -22,11 +22,12 @@ class Client {
   };
 
   async delete (req, res) {
-    const options = req.query;
+    const options = req.body;
     try {
-      clientMod.delete(options);
+      const r = clientMod.delete(options);
       res.send({
-        success: true
+        success: true,
+        message: r
       });
     } catch (e) {
       logger.error(e);

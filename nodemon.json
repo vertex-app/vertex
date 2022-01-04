@@ -2,6 +2,7 @@
   "ignore": [
     ".git",
     "app/static",
-    "app/data"
+    "app/data",
+    "app/db"
   ]
 }

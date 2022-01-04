@@ -78,28 +78,34 @@ module.exports = function (app, express, router) {
   router.get('/server/memoryUse', ctrl.Server.memoryUse);
   router.get('/server/vnstat', ctrl.Server.vnstat);
 
-  router.get('/telegram/listBot', ctrl.Telegram.listBot);
-  router.get('/telegram/listChannel', ctrl.Telegram.listChannel);
   router.post('/telegram/addBot', ctrl.Telegram.addBot);
   router.post('/telegram/addChannel', ctrl.Telegram.addChannel);
+  router.get('/telegram/listBot', ctrl.Telegram.listBot);
+  router.get('/telegram/listChannel', ctrl.Telegram.listChannel);
   router.post('/telegram/modifyBot', ctrl.Telegram.modifyBot);
   router.post('/telegram/modifyChannel', ctrl.Telegram.modifyChannel);
+  router.post('/telegram/deleteBot', ctrl.Telegram.deleteBot);
+  router.post('/telegram/deleteChannel', ctrl.Telegram.deleteChannel);
 
   router.get('/client/list', ctrl.Client.list);
   router.post('/client/add', ctrl.Client.add);
   router.post('/client/modify', ctrl.Client.modify);
+  router.post('/client/delete', ctrl.Client.delete);
 
   router.get('/rss/list', ctrl.Rss.list);
   router.post('/rss/add', ctrl.Rss.add);
   router.post('/rss/modify', ctrl.Rss.modify);
+  router.post('/rss/delete', ctrl.Rss.delete);
 
   router.get('/deleteRule/list', ctrl.DeleteRule.list);
   router.post('/deleteRule/add', ctrl.DeleteRule.add);
   router.post('/deleteRule/modify', ctrl.DeleteRule.modify);
+  router.post('/deleteRule/delete', ctrl.DeleteRule.delete);
 
   router.get('/rssRule/list', ctrl.RssRule.list);
   router.post('/rssRule/add', ctrl.RssRule.add);
   router.post('/rssRule/modify', ctrl.RssRule.modify);
+  router.post('/rssRule/delete', ctrl.RssRule.delete);
 
   router.get('/torrent/list', ctrl.Torrent.list);
 

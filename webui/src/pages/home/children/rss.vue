@@ -11,7 +11,7 @@
           width="100">
         </el-table-column>
         <el-table-column
-          prop="rssAlias"
+          prop="alias"
           label="别名"
           width="144">
         </el-table-column>
@@ -24,12 +24,13 @@
           </template>
         </el-table-column>
         <el-table-column
-          prop="type"
-          label="客户端类型"
+          label="客户端"
           width="150">
+          <template slot-scope="scope">
+            <el-tag>{{(clientList.filter(item => scope.row.client === item.id)[0] || {}).clientAlias}}</el-tag>
+          </template>
         </el-table-column>
         <el-table-column
-          prop="pushMessage"
           label="推送消息"
           width="100">
           <template slot-scope="scope">
@@ -38,7 +39,7 @@
         </el-table-column>
         <el-table-column
           prop="rssUrl"
-          label="WebUI - Url">
+          label="Rss - Url">
         </el-table-column>
         <el-table-column
           fixed="right"
@@ -46,15 +47,15 @@
           width="200">
           <template slot-scope="scope">
             <el-button @click="modifyRss(scope.row)" type="warning" size="small">编辑</el-button>
-            <el-button type="danger" size="small">删除</el-button>
+            <el-button @click="deleteRss(scope.row)" type="danger" size="small">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
       <div class="collapse-div">
         <el-collapse  class="collapse" v-model="rssCollapse">
-          <el-collapse-item title="新增 | 编辑 客户端" name="1">
+          <el-collapse-item title="新增 | 编辑 Rss" name="1">
             <div style="width: fit-content; margin: 6px 0 12px 20px">
-              <el-tag>客户端 ID: {{rss.id || '新增'}}</el-tag>
+              <el-tag>Rss ID: {{rss.id || '新增'}}</el-tag>
             </div>
             <el-form ref="rss" class="rss-form" :model="rss" label-width="160px" size="mini">
               <el-form-item required label="别名" prop="alias">
@@ -63,7 +64,7 @@
               <el-form-item required label="启用" prop="enable">
                 <el-checkbox v-model="rss.enable">启用</el-checkbox>
               </el-form-item>
-              <el-form-item required label="客户端" prop="type">
+              <el-form-item required label="客户端" prop="client">
                 <el-select v-model="rss.client" placeholder="客户端">
                   <el-option v-for="client of clientList" :disabled="!client.enable" :key="client.id" :label="client.alias" :value="client.id"></el-option>
                 </el-select>
@@ -71,6 +72,9 @@
               </el-form-item>
               <el-form-item required label="Rss - Url" prop="rssUrl">
                 <el-input v-model="rss.rssUrl" style="width: 500px;"></el-input>
+              </el-form-item>
+              <el-form-item v-if="rss.scrapeHr || rss.scrapeFree" label="Rss - Url" prop="cookie">
+                <el-input v-model="rss.cookie" style="width: 500px;"></el-input>
               </el-form-item>
               <el-form-item required label="推送消息" prop="pushMessage">
                 <el-checkbox v-model="rss.pushMessage">推送消息</el-checkbox>
@@ -91,13 +95,45 @@
                 <el-input v-model="rss.cron" style="width: 500px;"></el-input>
                 <div><el-tag type="info">Rss Cron 表达式, 默认为 1 分钟更新一次</el-tag></div>
               </el-form-item>
-              <el-form-item required label="限制上传速度" prop="maxSpeed">
-                <el-input v-model="rss.maxSpeed"></el-input>
-                <div><el-tag type="info">若客户端的上传或下载速度在此速度之上时, 不再添加种子</el-tag></div>
+              <el-form-item required label="限制上传速度" prop="uploadLimit">
+                <el-input v-model="rss.uploadLimit"></el-input>
+                <div><el-tag type="info">限制种子的上传速度, 单位为 字节 (Byte)</el-tag></div>
               </el-form-item>
-              <el-form-item required label="限制下载速度" prop="maxSpeed">
-                <el-input v-model="rss.maxSpeed"></el-input>
-                <div><el-tag type="info">若客户端的上传或下载速度在此速度之上时, 不再添加种子</el-tag></div>
+              <el-form-item required label="限制下载速度" prop="downloadLimit">
+                <el-input v-model="rss.downloadLimit"></el-input>
+                <div><el-tag type="info">限制种子的下载速度, 单位为 字节 (Byte)</el-tag></div>
+              </el-form-item>
+              <el-form-item required label="抓取免费" prop="scrapeFree">
+                <el-checkbox v-model="rss.scrapeFree"></el-checkbox>
+                <div><el-tag type="info">仅添加免费种子, 仅会在 rss 时判断 1 次, 因此魔力促销类可能不会添加</el-tag></div>
+              </el-form-item>
+              <el-form-item required label="排除 HR" prop="scrapeHr">
+                <el-checkbox v-model="rss.scrapeHr"></el-checkbox>
+                <div><el-tag type="info">仅添加非 HR 种子, 仅会在 rss 时判断 1 次</el-tag></div>
+              </el-form-item>
+              <el-form-item required label="自动辅种 Beta" prop="autoReseed">
+                <el-checkbox v-model="rss.autoReseed"></el-checkbox>
+                <div><el-tag type="info">自动辅种已经下载完成的种子, 自动跳检, 属实验性功能, 慎用</el-tag></div>
+              </el-form-item>
+              <el-form-item required label="仅自动辅种" prop="onlyReseed">
+                <el-checkbox v-model="rss.onlyReseed"></el-checkbox>
+                <div><el-tag type="info">若种子没有匹配自动辅种, 则跳过种子, 不会添加到客户端</el-tag></div>
+              </el-form-item>
+              <el-form-item label="保存路径" prop="savePath">
+                <el-input v-model="rss.savePath"></el-input>
+                <div><el-tag type="info">保存路径</el-tag></div>
+              </el-form-item>
+              <el-form-item label="分类" prop="category">
+                <el-input v-model="rss.category"></el-input>
+                <div><el-tag type="info">分类</el-tag></div>
+              </el-form-item>
+              <el-form-item label="RFT" prop="rft">
+                <el-checkbox v-model="rss.rft">RFT</el-checkbox>
+                <div><el-tag type="info">在第一次执行 rss 时拒绝所有种子</el-tag></div>
+              </el-form-item>
+              <el-form-item label="跳过大小相同种子" prop="skipSameTorrent">
+                <el-checkbox v-model="rss.skipSameTorrent">跳过大小相同种子</el-checkbox>
+                <div><el-tag type="info">跳过所有客户端内存在大小相同种子的种子</el-tag></div>
               </el-form-item>
               <el-form-item label="Rss规则">
                 <el-checkbox-group v-model="rss.rssRules">
@@ -124,6 +160,13 @@ export default {
     return {
       rss: {},
       defaultRss: {
+        enable: false,
+        scrapeFree: false,
+        scrapeHr: false,
+        autoReseed: false,
+        onlyReseed: false,
+        rft: true,
+        skipSameTorrent: true,
         cron: '* * * * *',
         pushMessage: true,
         rssRules: []
@@ -152,6 +195,18 @@ export default {
           return false;
         }
       });
+    },
+    async deleteRss (row) {
+      const url = '/api/rss/delete';
+      const res = await this.$axiosPost(url, {
+        id: row.id
+      });
+      if (!res) {
+        return;
+      }
+      await this.$messageBox(res);
+      this.listRss();
+      this.clearRss();
     },
     async modifyRss (row) {
       this.rssCollapse = ['1'];
@@ -184,11 +239,11 @@ export default {
   },
   async mounted () {
     this.rss = { ...this.defaultRss };
+    await this.listClient();
     this.listRss();
     this.listBot();
     this.listChannel();
     this.listRssRule();
-    this.listClient();
   }
 };
 </script>

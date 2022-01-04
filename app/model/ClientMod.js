@@ -18,6 +18,9 @@ class ClientMod {
   };
 
   delete (options) {
+    fs.unlinkSync(path.join(__dirname, '../data/client/', options.id + '.json'));
+    if (global.runningClient[options.id]) global.runningClient[options.id].destroy();
+    return '删除客户端成功';
   };
 
   modify (options) {
@@ -31,7 +34,11 @@ class ClientMod {
   };
 
   list () {
+    const rssList = util.listRss();
     const clientList = util.listClient();
+    for (const client of clientList) {
+      client.used = rssList.some(item => item.client === client.id);
+    }
     return clientList;
   };
 }
