@@ -1,6 +1,21 @@
 <template>
   <div class="torrent-mix">
     <div class="torrent-mix-div">
+      <el-form class="client-mix-form" label-width="100px" size="mini">
+        <el-form-item label="选择客户端">
+          <el-checkbox-group @change="listTorrent" v-model="clients">
+            <el-checkbox v-for="client of clientList" :key="client.id" :label="client.id">{{client.clientAlias}}</el-checkbox>
+          </el-checkbox-group>
+        </el-form-item>
+        <el-form-item label="排序规则">
+          <el-select @change="listTorrent"  v-model="sort.key" placeholder="排序字段">
+            <el-option v-for="sortKey of sortKeys" :key="sortKey.key" :label="sortKey.value" :value="sortKey.key"></el-option>
+          </el-select>
+          <el-select @change="listTorrent"  v-model="sort.type" placeholder="升降序">
+            <el-option v-for="sortType of sortTypes" :key="sortType.key" :label="sortType.value" :value="sortType.key"></el-option>
+          </el-select>
+        </el-form-item>
+      </el-form>
       <el-table
         :data="torrentList"
         stripe
@@ -64,6 +79,20 @@
           </template>
         </el-table-column>
       </el-table>
+      <div style="margin: 0 auto; width: fit-content">
+        <el-pagination
+          style="padding: 24px 0 12px 0"
+          v-if="paginationShow"
+          @current-change="changePage"
+          :small="true"
+          background
+          :page-size="length"
+          :pager-count="11"
+          layout="prev, pager, next"
+          :current-page="page"
+          :total="total">
+        </el-pagination>
+      </div>
     </div>
   </div>
 </template>
@@ -72,23 +101,96 @@
 export default {
   data () {
     return {
-      torrentList: []
+      clients: [],
+      torrentList: [],
+      clientList: [],
+      total: 0,
+      totalPage: 0,
+      page: 1,
+      length: 20,
+      sort: {
+      },
+      sortKeys: [
+        {
+          key: 'name',
+          value: '名称'
+        }, {
+          key: 'uploadSpeed',
+          value: '上传速度'
+        }, {
+          key: 'downloadSpeed',
+          value: '下载速度'
+        }, {
+          key: 'uploaded',
+          value: '已上传'
+        }, {
+          key: 'downloaded',
+          value: '已下载'
+        }, {
+          key: 'tracker',
+          value: 'Tracker'
+        }
+      ],
+      sortTypes: [
+        {
+          key: 'asc',
+          value: '升序'
+        }, {
+          key: 'desc',
+          value: '降序'
+        }
+      ],
+      paginationShow: false
     };
   },
   methods: {
     async listTorrent () {
-      const res = await this.$axiosGet('/api/torrent/list');
-      this.torrentList = res ? res.data : [];
+      this.paginationShow = false;
+      this.page = +this.$route.query.page || this.page;
+      this.length = +this.$route.query.length || this.length;
+      // this.clients = JSON.parse(+this.$route.query.clients || '[]');
+      let url = `/api/torrent/list?clientList=${encodeURIComponent(JSON.stringify(this.clients))}&page=${this.page}&length=${this.length}`;
+      if (this.sort.key) {
+        url += `&sortKey=${this.sort.key}`;
+      }
+      if (this.sort.type) {
+        url += `&sortType=${this.sort.type}`;
+      }
+      const res = await this.$axiosGet(url);
+      this.total = res ? res.data.total : 0;
+      this.torrentList = res ? res.data.torrents : [];
+      this.$nextTick(() => {
+        this.paginationShow = true;
+      });
+    },
+    async changePage (page) {
+      this.torrents = [];
+      const url = `/torrent-mix?clientList=${encodeURIComponent(JSON.stringify(this.clients))}&page=${page}&length=${this.length}`;
+      this.$router.push(url);
+      await this.listTorrent();
+    },
+
+    async listClient () {
+      const res = await this.$axiosGet('/api/client/list');
+      this.clientList = res ? res.data.filter(item => item.enable) : [];
     }
   },
   async mounted () {
     this.listTorrent();
+    this.listClient();
   }
 };
 </script>
 
 <style scoped>
 .torrent-mix-div {
-  margin: 20px 0;
+  padding: 8px;
+  border-radius: 8px;
+  background: #FFF;
+}
+
+.client-mix-form {
+  width: fit-content;
+  text-align: left;
 }
 </style>

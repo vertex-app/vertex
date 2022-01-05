@@ -5,8 +5,9 @@ const torrentMod = new TorrentMod();
 
 class Torrent {
   async list (req, res) {
+    const options = req.query;
     try {
-      const r = torrentMod.list();
+      const r = torrentMod.list(options);
       res.send({
         success: true,
         data: r

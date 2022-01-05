@@ -86,6 +86,7 @@ class Client {
     this.maindataJob.stop();
     if (this.reannounceJob) this.reannounceJob.stop();
     if (this.autoDeleteJob) this.autoDeleteJob.stop();
+    delete global.runningClient[this.id];
   };
 
   createTelegramProxy (telegram, channel) {

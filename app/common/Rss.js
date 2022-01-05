@@ -8,7 +8,7 @@ const msgTemplate = require('../libs/msgTemplate');
 class Rss {
   constructor (rss) {
     this.id = rss.id;
-    this.rft = global.rft;
+    this.rft = rss.rft;
     this.alias = rss.alias;
     this.url = rss.rssUrl;
     this.clients = global.runningClient;
@@ -48,12 +48,14 @@ class Rss {
   }
 
   _fitRule (rule, torrent) {
+    console.log(rule);
+    console.log(torrent);
     let fit = true;
     if (rule.minSize) {
-      fit = fit && torrent.size > rule.minSize;
+      fit = fit && torrent.size > +rule.minSize;
     }
     if (rule.maxSize) {
-      fit = fit && torrent.size < rule.maxSize;
+      fit = fit && torrent.size < +rule.maxSize;
     }
     if (rule.includeKeys) {
       fit = fit && this._all(torrent.name, rule.includeKeys);
@@ -68,6 +70,7 @@ class Rss {
   destroy () {
     logger.info('Destroying Rss', this.id);
     this.rssJob.stop();
+    delete global.runningRss[this.id];
   }
 
   createTelegramProxy (telegram, channel) {

@@ -5,7 +5,7 @@
         <div style="height: 200px">
           <el-image
             style="width: 160px; height: 160px; top: 20px; left: 20px"
-            src="/weilai.jpg"
+            src="/assets/images/weilai.jpg"
             fit="fill"></el-image>
         </div>
         <el-menu-item v-for="(item, idx) of menus" :key="idx" :index="item.path">
