@@ -60,7 +60,10 @@ class Client {
       fit = fit && (torrent.uploadSpeed < +rule.minUploadSpeed);
     }
     if (rule.maxDownloadSpeed && rule.minUploadSpeed) {
-      fit = fit && (torrent.downloadSpeed > +rule.maxDownloadSpeed);
+      fit = fit && (torrent.downloadSpeed > +rule.maxDownloadSpeed && torrent.uploadSpeed < +rule.minUploadSpeed);
+    }
+    if (rule.minDownloadSpeed && rule.minUploadSpeed && torrent.state !== 'stalledDL') {
+      fit = fit && (torrent.downloadSpeed < +rule.minDownloadSpeed && torrent.uploadSpeed < +rule.minUploadSpeed);
     }
     if (rule.maxSeedTime && statusSeeding.some(item => item === torrent.state)) {
       fit = fit && (moment().unix() - torrent.completedTime > +rule.maxSeedTime);
