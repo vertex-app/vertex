@@ -2,7 +2,11 @@
   <el-container style="height: 100vh;">
     <el-aside style="width: fit-content;">
       <el-menu :default-active="menuIndex" @select="selectMenu" class="admin-menu" :collapse="isCollapse">
-        <div style="height: 60px">
+        <div style="height: 200px">
+          <el-image
+            style="width: 160px; height: 160px; top: 20px; left: 20px"
+            src="/weilai.jpg"
+            fit="fill"></el-image>
         </div>
         <el-menu-item v-for="(item, idx) of menus" :key="idx" :index="item.path">
           <fa :icon="item.icon"></fa>

@@ -24,10 +24,10 @@ class Client {
     this.maxSpeed = client.maxSpeed;
     this.sameServerClients = client.sameServerClients;
     this.maindata = null;
-    this.telegramProxy = this.createTelegramProxy(util.listBot().filter(item => item.id === client.telegram)[0],
-      util.listChannel().filter(item => item.id === client.notifyChannel)[0].channelId);
-    this.channelProxy = this.createTelegramProxy(util.listBot().filter(item => item.id === client.telegram)[0],
-      util.listChannel().filter(item => item.id === client.torrentsChannel)[0].channelId);
+    this.telegramProxy = this.createTelegramProxy(util.listBot().filter(item => item.id === client.telegram)[0] || {},
+      (util.listChannel().filter(item => item.id === client.notifyChannel)[0] || {}).channelId);
+    this.channelProxy = this.createTelegramProxy(util.listBot().filter(item => item.id === client.telegram)[0] || {},
+      (util.listChannel().filter(item => item.id === client.torrentsChannel)[0] || {}).channelId);
     this.maindataJob = new CronJob(client.cron, () => this.getMaindata());
     this.maindataJob.start();
     if (client.autoReannounce) {
