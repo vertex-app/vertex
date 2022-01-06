@@ -208,7 +208,6 @@ class Client {
     for (const torrent of this.maindata.torrents) {
       const now = moment().unix();
       if (now - torrent.addedTime < 300 && now - torrent.addedTime > 60 && (now - torrent.addedTime) % 60 < 10) {
-        if (this.reannouncedHash.includes(torrent.hash)) return;
         await this.reannounceTorrent(torrent.hash, torrent.name, torrent.tracker);
       }
     }
