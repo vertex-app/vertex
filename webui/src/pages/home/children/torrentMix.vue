@@ -178,6 +178,12 @@ export default {
   async mounted () {
     this.listTorrent();
     this.listClient();
+    this.freshTorrent = setInterval(() => {
+      this.listTorrent();
+    }, 5000);
+  },
+  beforeDestroy () {
+    clearInterval(this.freshTorrent);
   }
 };
 </script>
