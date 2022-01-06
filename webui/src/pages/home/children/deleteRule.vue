@@ -68,9 +68,13 @@
                 <el-input v-model="rule.maxAvailability" type="number"></el-input>
                 <div><el-tag type="info">可用性 - 近似于做种数, 仅对 下载 状态的种子生效, 可以使用小数</el-tag></div>
               </el-form-item>
+              <el-form-item label="分类">
+                <el-input v-model="rule.category" type="textarea"></el-input>
+                <div><el-tag type="info">一行一个分类, 只会删除在分类列表内的种子</el-tag></div>
+              </el-form-item>
               <el-form-item label="排除分类">
                 <el-input v-model="rule.excludeCategory" type="textarea"></el-input>
-                <div><el-tag type="info">一行一个分类, 在分类内的种子不会被删除</el-tag></div>
+                <div><el-tag type="info">一行一个分类, 在分类列表内的种子不会被删除</el-tag></div>
               </el-form-item>
               <el-form-item size="small">
                 <el-button type="primary" @click="handleRuleClick">新增 | 编辑</el-button>

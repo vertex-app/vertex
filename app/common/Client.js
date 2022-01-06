@@ -81,6 +81,10 @@ class Client {
       const categories = rule.excludeCategory.split(/\r\n|\n/);
       fit = fit && !categories.some(torrent.category);
     }
+    if (rule.category) {
+      const categories = rule.category.split(/\r\n|\n/);
+      fit = fit && categories.some(torrent.category);
+    }
     return fit !== '1' && fit;
   };
 
