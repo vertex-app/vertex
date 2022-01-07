@@ -22,7 +22,7 @@ exports.deleteTorrentErrorString = function (clientAlias, torrentName, reason) {
   return str;
 };
 
-exports.deleteTorrentString = function (clientAlias, torrentName, size, ud, ratio, tracker, isDeleteFiles, note) {
+exports.deleteTorrentString = function (clientAlias, torrentName, size, ud, udSpeed, ratio, tracker, isDeleteFiles, note) {
   let str = '';
   str += '#Delete\n';
   str += '<pre>Delete Torrent:</pre>\n';
@@ -30,6 +30,7 @@ exports.deleteTorrentString = function (clientAlias, torrentName, size, ud, rati
   str += `<pre> Torrent: ${torrentName}</pre>\n`;
   str += `<pre> Size: ${util.formatSize(size)}</pre>\n`;
   str += `<pre> ↑/↓: ${ud}</pre>\n`;
+  str += `<pre> ↑/↓: ${udSpeed}</pre>\n`;
   str += `<pre> Ratio: ${(+ratio).toFixed(3)}</pre>\n`;
   str += `<pre> Tracker: ${tracker}</pre>\n`;
   str += `<pre> IsDeleteFile: ${isDeleteFiles}</pre>\n`;

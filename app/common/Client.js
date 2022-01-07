@@ -187,7 +187,7 @@ class Client {
     }
   };
 
-  async deleteTorrent (hash, torrentName, size, upload, download, ratio, tracker, note) {
+  async deleteTorrent (hash, torrentName, size, upload, download, uploadSpeed, downloadSpeed, ratio, tracker, note) {
     try {
       let isDeleteFiles = true;
       for (const torrent of this.maindata.torrents) {
@@ -199,7 +199,8 @@ class Client {
       logger.info('Client', this.clientAlias, 'delete torrent success');
       await this.telegramProxy.sendMessage(
         msgTemplate.deleteTorrentString(this.clientAlias, torrentName, size,
-          `${util.formatSize(upload)}/${util.formatSize(download)}`, ratio, tracker, isDeleteFiles, note
+          `${util.formatSize(upload)}/${util.formatSize(download)}`,
+          `${util.formatSize(uploadSpeed)}/s /${util.formatSize(downloadSpeed)}/s`, ratio, tracker, isDeleteFiles, note
         ));
     } catch (error) {
       logger.error('Client', this.clientAlias, 'delete torrent failed', error.message);
@@ -225,7 +226,7 @@ class Client {
         if (this._fitDeleteRule(rule, torrent)) {
           await this.reannounceTorrent(torrent.hash, torrent.name, torrent.tracker);
           await this.deleteTorrent(torrent.hash, torrent.name, torrent.size, torrent.uploaded, torrent.downloaded,
-            torrent.ratio, torrent.tracker, 'fit rule ' + rule.alias);
+            torrent.uploadSpeed, torrent.downloadSpeed, torrent.ratio, torrent.tracker, 'fit rule ' + rule.alias);
           return;
         }
       }
