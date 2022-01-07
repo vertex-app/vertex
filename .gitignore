@@ -5,3 +5,4 @@ package-lock.json
 app/data/*/*.json
 app/data/*/*/*.json
 app/db/sql.db
+config.yaml

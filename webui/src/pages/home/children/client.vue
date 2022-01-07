@@ -45,9 +45,16 @@
           </template>
         </el-table-column>
         <el-table-column
-          prop="clientUrl"
-          label="WebUI - Url"
           min-width="300">
+          <template slot="header" slot-scope="scope">
+            <el-switch
+              v-model="urlDisplay">
+            </el-switch>
+            WebUI - Url
+          </template>
+          <template slot-scope="scope">
+            {{ urlDisplay ? scope.row.clientUrl : '**********' }}
+          </template>
         </el-table-column>
         <el-table-column
           fixed="right"
@@ -167,6 +174,7 @@ export default {
         deleteRules: [],
         sameServerClients: []
       },
+      urlDisplay: true,
       botList: [],
       channelList: [],
       clientList: [],

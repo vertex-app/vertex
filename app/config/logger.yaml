@@ -23,11 +23,23 @@ appenders:
     layout:
       type: pattern
       pattern: '[%d{ISO8601}][%p %c] %z (%f{3} %l:%o) %m'
-  maxInfo:
+  debug:
+    type: dateFile
+    filename: logs/app-debug.log
+    pattern: .yyyy-MM-dd
+    layout:
+      type: pattern
+      pattern: '[%d{ISO8601}][%p %c] %z (%f{3} %l:%o) %m'
+  infoFilter:
     type: logLevelFilter
     appender: info
-    level: debug
+    level: info
     maxLevel: info
+  debugFilter:
+    type: logLevelFilter
+    appender: debug
+    level: debug
+    maxLevel: debug
   error:
     type: dateFile
     filename: logs/app-error.log
@@ -45,6 +57,7 @@ categories:
     appenders:
       - console
       - http
-      - maxInfo
+      - infoFilter
+      - debugFilter
       - minError
     level: all

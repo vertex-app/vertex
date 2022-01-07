@@ -4,7 +4,7 @@ const redis = require('redis');
 const path = require('path');
 const fs = require('fs');
 
-const config = require('../config');
+const config = require('../libs/config');
 const logger = require('../libs/logger');
 const ctrl = require('../controller');
 const util = require('../libs/util');

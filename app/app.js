@@ -4,7 +4,7 @@ const router = express.Router();
 
 const logger = require('./libs/logger');
 const util = require('./libs/util');
-const config = require('./config');
+const config = require('./libs/config');
 logger.use(app);
 
 require('./routes/router.js')(app, express, router);

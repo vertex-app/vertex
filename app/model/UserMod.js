@@ -1,6 +1,6 @@
 const util = require('../libs/util');
 
-const auth = require('../config').getAuthConfig();
+const auth = require('../libs/config').getAuthConfig();
 
 class UserMod {
   login (options) {

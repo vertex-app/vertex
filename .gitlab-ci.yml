@@ -1,0 +1,58 @@
+stages:
+  - generate_static
+  - build_docker_image_and_push
+
+generate_static:
+  image: alpine:latest
+  before_script:
+    - apk update
+    - apk add curl openssh bash
+  stage: generate_static
+  tags:
+    - compile
+  script:
+    - apk add nodejs npm
+    - cd webui
+    - npm i
+    - npm run build
+    - cd ../app
+    - tar -czvf ../static.tar.gz static
+  artifacts:
+    expire_in: 100 mins
+    paths: 
+      - static.tar.gz
+
+
+build_docker_image_and_push:
+  image: docker:20.10
+  variables:
+    DOCKER_TLS_CERTDIR: "/certs"
+    DOCKER_DRIVER: overlay2
+    IMAGE_TAG_SHA: lswl/vertex:$CI_COMMIT_SHA
+    IMAGE_TAG_LATEST: lswl/vertex:latest
+  services:
+    - docker:20.10-dind
+  before_script:
+    - docker info
+    - echo $IMAGE_TAG_SHA
+    - echo $IMAGE_TAG_LATEST
+    - docker run --privileged --rm tonistiigi/binfmt --install all
+    - mkdir -p ~/.docker/cli-plugins
+    - wget "https://github.com/docker/buildx/releases/download/v0.7.1/buildx-v0.7.1.linux-arm64" -qO ~/.docker/cli-plugins/docker-buildx
+    - chmod +x ~/.docker/cli-plugins/docker-buildx
+    - docker context create context_name
+    - docker buildx create --name buildx_name --use context_name
+    - docker buildx inspect --bootstrap
+  stage: build_docker_image_and_push
+  tags: 
+    - compile
+  script:
+    - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+    - mkdir docker/src
+    - tar -xzvf static.tar.gz -C docker/src/
+    - cd docker
+    - ls src/static
+    - |
+      docker buildx build --platform linux/amd64,linux/arm64 --cache-from $IMAGE_TAG_LATEST --tag $IMAGE_TAG_LATEST . --push
+    - |
+      docker buildx build --platform linux/amd64,linux/arm64 --cache-from $IMAGE_TAG_LATEST --tag $IMAGE_TAG_SHA . --push

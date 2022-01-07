@@ -38,8 +38,16 @@
           </template>
         </el-table-column>
         <el-table-column
-          prop="rssUrl"
-          label="Rss - Url">
+          min-width="300">
+          <template slot="header" slot-scope="scope">
+            <el-switch
+              v-model="urlDisplay">
+            </el-switch>
+            Rss - Url
+          </template>
+          <template slot-scope="scope">
+            {{ urlDisplay ? scope.row.rssUrl : '**********' }}
+          </template>
         </el-table-column>
         <el-table-column
           fixed="right"
@@ -66,7 +74,7 @@
               </el-form-item>
               <el-form-item required label="客户端" prop="client">
                 <el-select v-model="rss.client" placeholder="客户端">
-                  <el-option v-for="client of clientList" :disabled="!client.enable" :key="client.id" :label="client.alias" :value="client.id"></el-option>
+                  <el-option v-for="client of clientList" :disabled="!client.enable" :key="client.id" :label="client.clientAlias" :value="client.id"></el-option>
                 </el-select>
                 <div><el-tag type="info">选择客户端, 仅可选择已经启用的客户端</el-tag></div>
               </el-form-item>
@@ -172,6 +180,7 @@ export default {
         rssRules: []
       },
       botList: [],
+      urlDisplay: true,
       channelList: [],
       rssList: [],
       rssRuleList: [],

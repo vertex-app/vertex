@@ -48,8 +48,6 @@ class Rss {
   }
 
   _fitRule (rule, torrent) {
-    console.log(rule);
-    console.log(torrent);
     let fit = true;
     if (rule.minSize) {
       fit = fit && torrent.size > +rule.minSize;
@@ -58,7 +56,10 @@ class Rss {
       fit = fit && torrent.size < +rule.maxSize;
     }
     if (rule.includeKeys) {
-      fit = fit && this._all(torrent.name, rule.includeKeys);
+      fit = fit && this._all(torrent.name, rule.includeKeys.split(/\r\n|\n/));
+    }
+    if (rule.excludeKeys) {
+      fit = fit && !this._all(torrent.name, rule.excludeKeys.split(/\r\n|\n/));
     }
     if (rule.regExp) {
       const regExp = new RegExp(rule.regExp);

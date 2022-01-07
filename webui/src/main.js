@@ -5,7 +5,7 @@ import {
   Icon, Table, TableColumn, Backtop, Tabs, TabPane, Container, Header, Main, Aside,
   Menu, MenuItem, MenuItemGroup, Descriptions, DescriptionsItem, Progress, Dropdown,
   DropdownMenu, DropdownItem, Collapse, CollapseItem, Form, FormItem, Radio, RadioGroup,
-  CheckboxGroup
+  CheckboxGroup, Switch
 } from 'element-ui';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
@@ -26,7 +26,7 @@ const components = [
   DatePicker, TimePicker, Upload, Checkbox, Option, Icon, Table, TableColumn,
   Backtop, Tabs, TabPane, Container, Header, Main, Aside, Menu, MenuItem, MenuItemGroup,
   Progress, Dropdown, DropdownMenu, DropdownItem, Collapse, CollapseItem, Form, FormItem, Radio,
-  RadioGroup, CheckboxGroup,
+  RadioGroup, CheckboxGroup, Switch,
   Descriptions, DescriptionsItem
 ];
 
