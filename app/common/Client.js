@@ -56,26 +56,26 @@ class Client {
     let fit = '1';
     const statusLeeching = ['downloading', 'stalledDL', 'Downloading'];
     const statusSeeding = ['uploading', 'stalledUP', 'Seeding'];
-    if (rule.minUploadSpeed) {
-      fit = fit && (torrent.uploadSpeed < +rule.minUploadSpeed) && statusSeeding.some(item => item === torrent.state);
+    if (rule.minUploadSpeed && statusSeeding.some(item => item === torrent.state)) {
+      fit = fit && (torrent.uploadSpeed < +rule.minUploadSpeed);
     }
     if (rule.maxDownloadSpeed && rule.minUploadSpeed) {
       fit = fit && (torrent.downloadSpeed > +rule.maxDownloadSpeed && torrent.uploadSpeed < +rule.minUploadSpeed);
     }
-    if (rule.minDownloadSpeed && rule.minUploadSpeed) {
-      fit = fit && (torrent.downloadSpeed < +rule.minDownloadSpeed && torrent.uploadSpeed < +rule.minUploadSpeed) && torrent.state !== 'stalledDL' && statusLeeching.some(item => item === torrent.state);
+    if (rule.minDownloadSpeed && rule.minUploadSpeed && torrent.state !== 'stalledDL' && statusLeeching.some(item => item === torrent.state)) {
+      fit = fit && (torrent.downloadSpeed < +rule.minDownloadSpeed && torrent.uploadSpeed < +rule.minUploadSpeed);
     }
-    if (rule.maxSeedTime) {
-      fit = fit && (moment().unix() - torrent.completedTime > +rule.maxSeedTime) && statusSeeding.some(item => item === torrent.state);
+    if (rule.maxSeedTime && statusSeeding.some(item => item === torrent.state)) {
+      fit = fit && (moment().unix() - torrent.completedTime > +rule.maxSeedTime);
     }
-    if (rule.maxLeechTime) {
-      fit = fit && (moment().unix() - torrent.addedTime > +rule.maxLeechTime) && statusLeeching.some(item => item === torrent.state);
+    if (rule.maxLeechTime && statusLeeching.some(item => item === torrent.state)) {
+      fit = fit && (moment().unix() - torrent.addedTime > +rule.maxLeechTime);
     }
-    if (rule.maxFreeSpace) {
-      fit = fit && (this.maindata.freeSpaceOnDisk < +rule.maxFreeSpace) && statusSeeding.some(item => item === torrent.state);
+    if (rule.maxFreeSpace && statusSeeding.some(item => item === torrent.state)) {
+      fit = fit && (this.maindata.freeSpaceOnDisk < +rule.maxFreeSpace);
     }
-    if (rule.maxAvailability) {
-      fit = fit && (torrent.availability > +rule.maxAvailability && torrent.progress < 0.95);
+    if (rule.maxAvailability && torrent.progress < 0.95) {
+      fit = fit && (torrent.availability > +rule.maxAvailability);
     }
     if (rule.excludeCategory) {
       const categories = rule.excludeCategory.split(/\r\n|\n/);
