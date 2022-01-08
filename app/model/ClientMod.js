@@ -38,6 +38,7 @@ class ClientMod {
     const clientList = util.listClient();
     for (const client of clientList) {
       client.used = rssList.some(item => item.client === client.id);
+      client.status = client.enable && global.runningClient[client.id].status;
     }
     return clientList;
   };

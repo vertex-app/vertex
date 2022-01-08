@@ -77,6 +77,10 @@ module.exports = function (app, express, router) {
   router.get('/server/diskUse', ctrl.Server.diskUse);
   router.get('/server/memoryUse', ctrl.Server.memoryUse);
   router.get('/server/vnstat', ctrl.Server.vnstat);
+  router.get('/server/list', ctrl.Server.list);
+  router.post('/server/add', ctrl.Server.add);
+  router.post('/server/modify', ctrl.Server.modify);
+  router.post('/server/delete', ctrl.Server.delete);
 
   router.post('/telegram/addBot', ctrl.Telegram.addBot);
   router.post('/telegram/addChannel', ctrl.Telegram.addChannel);

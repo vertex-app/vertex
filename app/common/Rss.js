@@ -58,9 +58,6 @@ class Rss {
     if (rule.includeKeys) {
       fit = fit && this._all(torrent.name, rule.includeKeys.split(/\r\n|\n/));
     }
-    if (rule.excludeKeys) {
-      fit = fit && !this._all(torrent.name, rule.excludeKeys.split(/\r\n|\n/));
-    }
     if (rule.regExp) {
       const regExp = new RegExp(rule.regExp);
       fit = fit && torrent.name.match(regExp);

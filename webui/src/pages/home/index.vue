@@ -2,9 +2,9 @@
   <el-container style="height: 100vh;">
     <el-aside style="width: fit-content;">
       <el-menu :default-active="menuIndex" @select="selectMenu" class="admin-menu" :collapse="isCollapse">
-        <div style="height: 200px">
+        <div :style="`line-height: 0; height: ${isCollapse ? 64 : 200}px`">
           <el-image
-            style="width: 160px; height: 160px; top: 20px; left: 20px"
+            :style="`width: ${isCollapse ? 24 : 160}px; height: ${isCollapse ? 24 : 160}px; top: 20px; left: 20px`"
             src="/assets/images/weilai.jpg"
             fit="fill"></el-image>
         </div>
@@ -54,6 +54,10 @@ export default {
         icon: ['fas', 'sliders-h'],
         title: ' 全局设置',
         path: '/setting'
+      }, {
+        icon: ['fas', 'server'],
+        title: ' 服务器',
+        path: '/server'
       }, {
         icon: ['fas', 'server'],
         title: ' 客户端',

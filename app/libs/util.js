@@ -94,6 +94,17 @@ exports.listClient = function () {
   return clientList;
 };
 
+exports.listServer = function () {
+  const files = fs.readdirSync(path.join(__dirname, '../data/server'));
+  const serverList = [];
+  for (const file of files) {
+    if (path.extname(file) === '.json') {
+      serverList.push(_importJson(path.join(__dirname, '../data/server', file)));
+    }
+  }
+  return serverList;
+};
+
 exports.listRss = function () {
   const files = fs.readdirSync(path.join(__dirname, '../data/rss'));
   const rssList = [];

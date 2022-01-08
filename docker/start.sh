@@ -3,6 +3,7 @@
 if [ ! -d '/vertex/data' ]; then
   mkdir /vertex/data/rss -p
   mkdir /vertex/data/client
+  mkdir /vertex/data/server
   mkdir /vertex/data/rule/delete -p
   mkdir /vertex/data/rule/rss
   mkdir /vertex/data/telegram/channel -p

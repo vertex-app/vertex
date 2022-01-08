@@ -57,6 +57,13 @@
           </template>
         </el-table-column>
         <el-table-column
+          label="状态"
+          width="100">
+          <template slot-scope="scope">
+            <el-tag :type="scope.row.status ? '' : 'danger'">{{scope.row.enable ? scope.row.status ? '正常' : '连接失败' : '未启用'}}</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column
           fixed="right"
           label="操作"
           width="200">
@@ -132,7 +139,7 @@
                 <el-checkbox-group v-model="client.sameServerClients">
                   <el-checkbox v-for="c of clientList" :key="c.id" :label="c.id">{{c.clientAlias}}</el-checkbox>
                 </el-checkbox-group>
-                <div><el-tag type="info">在统计上限速度是, 计算所有同服客户端的速度和</el-tag></div>
+                <div><el-tag type="info">在统计上限速度时, 计算所有同服客户端的速度和</el-tag></div>
               </el-form-item>
               <el-form-item label="自动删种">
                 <el-checkbox v-model="client.autoDelete">自动删种</el-checkbox>

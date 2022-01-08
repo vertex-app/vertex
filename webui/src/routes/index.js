@@ -5,6 +5,7 @@ import Login from '@/pages/login/index';
 import Index from '@/pages/home/index';
 import Home from '@/pages/home/children/home';
 import Setting from '@/pages/home/children/setting';
+import Server from '@/pages/home/children/server';
 import Client from '@/pages/home/children/client';
 import TorrentMix from '@/pages/home/children/torrentMix';
 import DeleteRule from '@/pages/home/children/deleteRule';
@@ -46,6 +47,12 @@ export default new Router({
           component: Setting,
           meta: {
             title: '全局设置'
+          }
+        }, {
+          path: 'server',
+          component: Server,
+          meta: {
+            title: '服务器'
           }
         }, {
           path: 'client',

@@ -15,6 +15,7 @@ const clients = {
 class Client {
   constructor (client) {
     this.id = client.id;
+    this.status = false;
     this.client = clients[client.type];
     this.clientAlias = client.clientAlias;
     this.password = client.password;
@@ -120,6 +121,7 @@ class Client {
       if (!this.messageId) {
         await this.telegramProxy.sendMessage(msgTemplate.connectClientString(this.clientAlias, moment().format('YYYY-MM-DD HH:mm:ss')));
         const res = await this.channelProxy.sendMessage(msgTemplate.connectClientString(this.clientAlias, moment().format('YYYY-MM-DD HH:mm:ss')));
+        this.status = true;
         if (!this.pushMessage) return;
         this.messageId = res.body.result.message_id;
         await this.channelProxy.deleteMessage(this.messageId - 1);
@@ -127,6 +129,7 @@ class Client {
     } catch (error) {
       logger.error('Client', this.clientAlias, 'login failed', error.message);
       await this.telegramProxy.sendMessage(msgTemplate.getCookieErrorString(this.clientAlias, error.message));
+      this.status = false;
     }
   };
 

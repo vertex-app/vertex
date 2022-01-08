@@ -119,11 +119,11 @@
                 <el-checkbox v-model="rss.scrapeHr"></el-checkbox>
                 <div><el-tag type="info">仅添加非 HR 种子, 仅会在 rss 时判断 1 次</el-tag></div>
               </el-form-item>
-              <el-form-item required label="自动辅种 Beta" prop="autoReseed">
+              <el-form-item v-if="!hideReseed" required label="自动辅种 Beta" prop="autoReseed">
                 <el-checkbox v-model="rss.autoReseed"></el-checkbox>
                 <div><el-tag type="info">自动辅种已经下载完成的种子, 自动跳检, 属实验性功能, 慎用</el-tag></div>
               </el-form-item>
-              <el-form-item required label="仅自动辅种" prop="onlyReseed">
+              <el-form-item v-if="!hideReseed" required label="仅自动辅种" prop="onlyReseed">
                 <el-checkbox v-model="rss.onlyReseed"></el-checkbox>
                 <div><el-tag type="info">若种子没有匹配自动辅种, 则跳过种子, 不会添加到客户端</el-tag></div>
               </el-form-item>
@@ -166,6 +166,7 @@
 export default {
   data () {
     return {
+      hideReseed: true,
       rss: {},
       defaultRss: {
         enable: false,
@@ -247,6 +248,7 @@ export default {
     }
   },
   async mounted () {
+    window.vue = this;
     this.rss = { ...this.defaultRss };
     await this.listClient();
     this.listRss();

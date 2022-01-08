@@ -24,6 +24,13 @@ const init = function () {
       global.runningRss[rss.id] = new Rss(rss);
     }
   }
+  global.runningServer = {};
+  for (const server of util.listServer()) {
+    if (server.enable) {
+      const Server = require('./common/Server');
+      global.runningServer[server.id] = new Server(server);
+    }
+  }
 };
 
 (async () => {
