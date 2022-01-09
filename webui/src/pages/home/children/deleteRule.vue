@@ -30,7 +30,7 @@
               <el-tag size="small">规则 ID: {{rule.id || '新增'}}</el-tag>
             </div>
             <div style="width: fit-content; margin: 6px 0 12px 20px">
-              <el-tag size="small" type="warning">以下条件必须全部符合, 才触发删除种子操作, 留空为不启用选项</el-tag>
+              <el-tag size="small" type="warning">以下条件必须全部符合, 才触发删除种子操作, 留空为不启用选项, 优先删除已经完成时间早的种子, 若种子未完成, 则优先删除添加早的种子</el-tag>
             </div>
             <el-form ref="rule" class="rule-form" :model="rule" label-width="160px" size="mini">
               <el-form-item required label="别名" prop="alias">
@@ -60,13 +60,17 @@
                 <el-input v-model="rule.maxFreeSpace" type="number"></el-input>
                 <div><el-tag type="info">硬盘空间 (读取自客户端), 仅对 做种 状态的种子生效, 单位为 字节 (Byte)</el-tag></div>
               </el-form-item>
+              <el-form-item label="空间占用大于">
+                <el-input v-model="rule.maxUsedSpace" type="number"></el-input>
+                <div><el-tag type="info">占用空间 (读取客户端内种子完成量的和)</el-tag></div>
+              </el-form-item>
               <el-form-item label="分享率大于">
                 <el-input v-model="rule.maxRatio" type="number"></el-input>
                 <div><el-tag type="info">分享率, 仅对 做种 状态的种子生效, 可以使用小数</el-tag></div>
               </el-form-item>
               <el-form-item label="可用性大于">
                 <el-input v-model="rule.maxAvailability" type="number"></el-input>
-                <div><el-tag type="info">可用性 - 近似于做种数, 仅对 下载 状态的种子生效, 可以使用小数</el-tag></div>
+                <div><el-tag type="info">可用性 - 近似于做种数 ( qb 4.1.9 为做种数 ), 仅对 下载 状态的种子生效, 可以使用小数</el-tag></div>
               </el-form-item>
               <el-form-item label="分类">
                 <el-input v-model="rule.category" type="textarea"></el-input>

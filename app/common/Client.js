@@ -57,7 +57,6 @@ class Client {
     let fit = '1';
     const statusLeeching = ['downloading', 'stalledDL', 'Downloading'];
     const statusSeeding = ['uploading', 'stalledUP', 'Seeding'];
-    logger.debug(rule, torrent);
     if (rule.minUploadSpeed && !rule.maxDownloadSpeed && !rule.minDownloadSpeed) {
       fit = fit && (torrent.uploadSpeed < +rule.minUploadSpeed) && statusSeeding.some(item => item === torrent.state);
     }
@@ -74,11 +73,14 @@ class Client {
     if (rule.maxLeechTime) {
       fit = fit && (moment().unix() - torrent.addedTime > +rule.maxLeechTime) && statusLeeching.some(item => item === torrent.state);
     }
+    if (rule.maxUsedSpace) {
+      fit = fit && (this.maindata.usedSpace > +rule.maxUsedSpace);
+    }
     if (rule.maxFreeSpace) {
       fit = fit && (this.maindata.freeSpaceOnDisk < +rule.maxFreeSpace) && statusSeeding.some(item => item === torrent.state);
     }
     if (rule.maxAvailability && torrent.progress < 0.95) {
-      fit = fit && (torrent.availability > +rule.maxAvailability);
+      fit = fit && ((torrent.availability || torrent.seeder) > +rule.maxAvailability);
     }
     if (rule.excludeCategory) {
       const categories = rule.excludeCategory.split(/\r\n|\n/);
@@ -141,7 +143,9 @@ class Client {
       this.maindata = await this.client.getMaindata(this.clientUrl, this.cookie);
       this.maindata.leechingCount = 0;
       this.maindata.seedingCount = 0;
+      this.maindata.usedSpace = 0;
       this.maindata.torrents.forEach((item) => {
+        this.maindata.usedSpace += item.completed;
         if (statusLeeching.indexOf(item.state) !== -1) {
           this.maindata.leechingCount += 1;
         } else if (statusSeeding.indexOf(item.state) !== -1) {
@@ -225,7 +229,7 @@ class Client {
 
   async autoDelete () {
     if (!this.maindata || !this.maindata.torrents || this.maindata.torrents.length === 0) return;
-    const torrents = this.maindata.torrents.sort((a, b) => a.completedTime - b.completedTime);
+    const torrents = this.maindata.torrents.sort((a, b) => a.completedTime - b.completedTime || a.addedTime - b.addedTime);
     for (const torrent of torrents) {
       for (const rule of this.deleteRules) {
         if (this._fitDeleteRule(rule, torrent)) {

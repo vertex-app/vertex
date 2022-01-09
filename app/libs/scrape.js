@@ -43,6 +43,12 @@ const _freeHDChina = async function (url, cookie) {
   return promotion.body.message[tid].sp_state.indexOf('pro_free') !== -1 || promotion.body.message[tid].sp_state.indexOf('pro_twoupfree') !== -1;
 };
 
+const _freeToTheGlory = async function (url, cookie) {
+  const d = await getDocument(url, cookie);
+  const state = d.querySelector('img[src="/pic/ico_free.gif"][class="topic"]');
+  return state;
+};
+
 const freeWrapper = {
   'pterclub.com': _free,
   'pt.btschool.club': _free,
@@ -56,7 +62,8 @@ const freeWrapper = {
   'www.hddolby.com': _free,
   'pthome.net': _free,
   'hdchina.org': _freeHDChina,
-  'open.cd': _freeOpencd
+  'open.cd': _freeOpencd,
+  'totheglory.im': _freeToTheGlory
 };
 
 const _hr = async function (url, cookie) {
@@ -65,8 +72,15 @@ const _hr = async function (url, cookie) {
   return hr;
 };
 
+const _hrToTheGlory = async function (url, cookie) {
+  const d = await getDocument(url, cookie);
+  const hr = d.querySelector('img[src="/pic/hit_run.gif"][alt="Hit & Run"]');
+  return hr;
+};
+
 const hrWrapper = {
-  'www.hddolby.com': _hr
+  'www.hddolby.com': _hr,
+  'totheglory.im': _hrToTheGlory
 };
 
 exports.free = async (url, cookie) => {
