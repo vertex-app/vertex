@@ -119,6 +119,10 @@ class ServerMod {
         global.runningServer[id].getVnstatDay(),
         global.runningServer[id].getVnstatMonth()
       ]);
+      fiveminute.interfaces[0].traffic.fiveminute = fiveminute.interfaces[0].traffic.fiveminute.reverse();
+      hour.interfaces[0].traffic.hour = hour.interfaces[0].traffic.hour.reverse();
+      day.interfaces[0].traffic.day = day.interfaces[0].traffic.day.reverse();
+      month.interfaces[0].traffic.month = month.interfaces[0].traffic.month.reverse();
       return { fiveminute, hour, day, month };
     } catch (e) {
       logger.error(e);
