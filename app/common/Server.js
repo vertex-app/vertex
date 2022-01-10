@@ -1,4 +1,4 @@
-const { NodeSSH } = require('node-ssh');
+const { Client } = require('ssh2');
 
 const logger = require('../libs/logger');
 
@@ -7,14 +7,27 @@ class Server {
     this.ssh = null;
     this.id = server.id;
     this.server = server;
+    this.connected = false;
     this.connect(this.server);
     this.connectFailCount = 0;
   };
 
   async connect () {
-    this.ssh = new NodeSSH();
+    this.ssh = new Client();
     try {
-      await this.ssh.connect(this.server);
+      await new Promise((resolve, reject) => {
+        this.ssh
+          .on('ready', () => {
+            logger.info('connect ready', this.id);
+            this.connected = true;
+            resolve(1);
+          })
+          .on('error', (err) => {
+            reject(err);
+          })
+          .connect(this.server);
+      });
+      // await this.ssh.connect(this.server);
     } catch (e) {
       logger.error(e);
       this.connectFailCount += 1;
@@ -24,24 +37,51 @@ class Server {
   async destroy () {
     logger.info('Destroying SSH Connect', this.id);
     delete global.runningServer[this.id];
-    await this.dispose();
+    await this.ssh.end();
+    this.ssh = null;
   };
 
   async run (command) {
     if (this.connectFailCount > 10) {
       throw new Error('多次 SSH 连接失败, 请重新配置此连接');
     }
-    if (!this.ssh.isConnected()) {
+    if (!this.connected) {
       await this.connect(this.server);
       return await this.run(command);
     }
     this.connectFailCount = 0;
-    const { stderr, stdout } = await this.ssh.execCommand(command);
-    if (stderr) {
-      logger.error(stderr);
+    try {
+      const conn = this.ssh;
+      const { stderr, stdout } = await new Promise((resolve, reject) => {
+        conn.exec(command, (err, stream) => {
+          let stderr;
+          let stdout;
+          if (err) return reject(err);
+          stream.on('close', () => {
+            resolve({
+              stderr,
+              stdout
+            });
+          }).on('data', (data) => {
+            stdout = stdout || '';
+            stdout += data.toString();
+          }).stderr.on('data', (data) => {
+            stderr = stderr || '';
+            stderr += data.toString();
+          });
+        }).on('error', (err) => {
+          reject(err);
+        });
+      });
+      if (stderr) {
+        throw stderr;
+      }
+      return stdout;
+    } catch (e) {
+      logger.error(e);
+      this.connected = false;
       throw new Error('执行操作遇到错误, 请重试或查看日志');
     }
-    return stdout;
   };
 
   async getMemoryUse () {
@@ -132,11 +172,6 @@ class Server {
   async getVnstatMonth () {
     const stdout = await this.run('vnstat --json m 12');
     return JSON.parse(stdout.trim());
-  };
-
-  async dispose () {
-    await this.ssh.dispose();
-    this.ssh = null;
   };
 }
 

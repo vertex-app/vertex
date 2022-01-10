@@ -33,7 +33,7 @@ class ServerMod {
   list () {
     const serverList = util.listServer();
     for (const server of serverList) {
-      server.status = global.runningServer[server.id].ssh && global.runningServer[server.id].ssh.isConnected();
+      server.status = global.runningServer[server.id].ssh && global.runningServer[server.id].connected;
     }
     return serverList;
   };
@@ -43,7 +43,7 @@ class ServerMod {
       const list = util.listServer()
         .filter(item => item.enable)
         .map(item => global.runningServer[item.id])
-        .filter(item => global.runningServer[item.id].ssh.isConnected());
+        .filter(item => global.runningServer[item.id].connected);
       const result = await Promise.all(list.map(item => item.getNetSpeed()));
       const netSpeed = {};
       for (let i = 0; i < result.length; i++) {
@@ -61,7 +61,7 @@ class ServerMod {
       const list = util.listServer()
         .filter(item => item.enable)
         .map(item => global.runningServer[item.id])
-        .filter(item => global.runningServer[item.id].ssh.isConnected());
+        .filter(item => global.runningServer[item.id].connected);
       const result = await Promise.all(list.map(item => item.getCpuUse()));
       const cpuUse = {};
       for (let i = 0; i < result.length; i++) {
@@ -79,7 +79,7 @@ class ServerMod {
       const list = util.listServer()
         .filter(item => item.enable)
         .map(item => global.runningServer[item.id])
-        .filter(item => global.runningServer[item.id].ssh.isConnected());
+        .filter(item => global.runningServer[item.id].connected);
       const result = await Promise.all(list.map(item => item.getDiskUse()));
       const diskUse = {};
       for (let i = 0; i < result.length; i++) {
@@ -97,7 +97,7 @@ class ServerMod {
       const list = util.listServer()
         .filter(item => item.enable)
         .map(item => global.runningServer[item.id])
-        .filter(item => global.runningServer[item.id].ssh.isConnected());
+        .filter(item => global.runningServer[item.id].connected);
       const result = await Promise.all(list.map(item => item.getMemoryUse()));
       const memoryUse = {};
       for (let i = 0; i < result.length; i++) {

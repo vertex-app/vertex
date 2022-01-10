@@ -14,15 +14,18 @@
     "@fortawesome/vue-fontawesome": "^2.0.6",
     "axios": "^0.21.1",
     "core-js": "^3.6.5",
+    "echarts": "^5.2.2",
     "element-ui": "^2.15.3",
     "highlight.js": "^10.7.3",
     "moment": "^2.29.1",
     "vue": "^2.6.11",
+    "vue-echarts": "^6.0.0",
     "vue-router": "^3.5.2"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.0",
     "@vue/cli-service": "~4.5.0",
+    "@vue/composition-api": "^1.4.3",
     "babel-plugin-component": "^1.1.1",
     "eslint": "^7.30.0",
     "eslint-plugin-vue": "^7.13.0",

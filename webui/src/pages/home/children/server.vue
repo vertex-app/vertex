@@ -67,6 +67,16 @@
             <div style="width: fit-content; margin: 6px 0 12px 20px">
               <el-tag>服务器 ID: {{server.id || '新增'}}</el-tag>
             </div>
+            <div style="width: fit-content; margin: 6px 0 12px 20px">
+              <el-tag size="small" type="warning">
+                服务器的 SSH 连接方式信息, Vertex 将通过 SSH 连接执行的方式为首页提供数据
+              </el-tag>
+            </div>
+            <div style="width: fit-content; margin: 6px 0 12px 20px">
+              <el-tag size="small" type="danger">
+                服务器需安装 sysstat 以及版本为 2.6+ 的 vnstat
+              </el-tag>
+            </div>
             <el-form ref="server" class="server-form" :model="server" label-width="160px" size="mini">
               <el-form-item required label="别名" prop="alias">
                 <el-input v-model="server.alias"></el-input>
@@ -76,9 +86,11 @@
               </el-form-item>
               <el-form-item required label="IP / 域名" prop="host">
                 <el-input v-model="server.host" style="width: 500px;"></el-input>
+                <div><el-tag type="info">IP: 192.168.1.1 或域名: my.seed.box</el-tag></div>
               </el-form-item>
               <el-form-item required label="用户名" prop="username">
                 <el-input v-model="server.username"></el-input>
+                <div><el-tag type="info">若不使用脚本功能, 建议填写非 root 账户</el-tag></div>
               </el-form-item>
               <el-form-item required label="密码" prop="password">
                 <el-input v-model="server.password"></el-input>

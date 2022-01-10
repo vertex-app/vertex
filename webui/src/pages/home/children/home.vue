@@ -87,6 +87,7 @@
       <el-collapse  class="collapse" v-model="clientCollapse">
         <el-collapse-item :title="`${server.alias || ''} 详情`" name="1">
           <div class="server-status home-div">
+            <v-chart class="chart" :option="chart" autoresize />
             <el-row
               class="row"
               type="flex"
@@ -224,16 +225,92 @@ export default {
         { color: '#00BFFF', percentage: 60 },
         { color: '#DC143C', percentage: 80 },
         { color: '#FF00FF', percentage: 100 }
-      ]
+      ],
+      chartSeries: [],
+      xAxis: {},
+      chart: {
+        title: {
+          text: 'Network Traffic',
+          left: 'center'
+        },
+        darkMode: true,
+        tooltip: {
+          trigger: 'axis'
+        },
+        visualMap: {
+          type: 'piecewise',
+          showLabel: false,
+          top: 10,
+          right: 10,
+          splitNumber: 7,
+          inRange: {
+            color: ['#01DF01', '#01DF74', '#01DFD7', '#0174DF', '#0101DF', '#7401DF', '#DF01A5']
+          },
+          outRange: {
+            color: ['#313695']
+          }
+        },
+        xAxis: {
+          type: 'category',
+          data: []
+        },
+        yAxis: {
+          type: 'value',
+          axisLabel: {
+            formatter: this.$formatSize
+          }
+        },
+        series: [
+          {
+            name: 'Tx',
+            type: 'line',
+            data: [],
+            itemStyle: {
+              borderRadius: [4, 4, 0, 0]
+            },
+            smooth: true
+          }, {
+            name: 'Rx',
+            type: 'line',
+            data: [],
+            itemStyle: {
+              borderRadius: [4, 4, 0, 0]
+            },
+            smooth: true
+          }, {
+            name: 'Rx',
+            type: 'bar',
+            data: [],
+            itemStyle: {
+              borderRadius: [4, 4, 0, 0]
+            },
+            smooth: true
+          }, {
+            name: 'Rx',
+            type: 'bar',
+            data: [],
+            itemStyle: {
+              borderRadius: [4, 4, 0, 0]
+            },
+            smooth: true
+          }
+        ]
+      }
     };
   },
   methods: {
     handlePeriod (period) {
       this.vnstatPeriod = period;
+      this.chart.xAxis.data = this.vnstat[this.vnstatPeriod].interfaces[0].traffic[this.vnstatPeriod].map(item => this.formatTime(item).slice(-5)).reverse();
+      this.chart.series[0].data = this.vnstat[this.vnstatPeriod].interfaces[0].traffic[this.vnstatPeriod].map(item => item.tx).reverse();
+      this.chart.series[1].data = this.vnstat[this.vnstatPeriod].interfaces[0].traffic[this.vnstatPeriod].map(item => item.rx).reverse();
+      this.chart.visualMap.min = 0;
+      this.chart.visualMap.max = Math.max(...this.chart.series[0].data.concat(this.chart.series[1].data));
     },
     async displayDetails (row) {
       this.server = row;
       await this.getVnstat();
+      this.handlePeriod('day');
       this.clientCollapse = ['1'];
     },
     formatTime (row) {
@@ -250,7 +327,7 @@ export default {
           : '');
     },
     async getNetSpeed () {
-      const res = await this.$axiosGet('/api/server/netSpeed');
+      const res = await this.$axiosGet('/api/server/netSpeed?_=' + Math.random());
       if (!res) {
         return;
       }
@@ -261,21 +338,21 @@ export default {
       this.netSpeed = netSpeed;
     },
     async getServerList () {
-      const res = await this.$axiosGet('/api/server/list');
+      const res = await this.$axiosGet('/api/server/list?_=' + Math.random());
       if (!res) {
         return;
       }
       this.serverList = res.data;
     },
     async getCpuUse () {
-      const res = await this.$axiosGet('/api/server/cpuUse');
+      const res = await this.$axiosGet('/api/server/cpuUse?_=' + Math.random());
       if (!res) {
         return;
       }
       this.cpuUse = res.data;
     },
     async getDiskUse () {
-      const res = await this.$axiosGet('/api/server/diskUse');
+      const res = await this.$axiosGet('/api/server/diskUse?_=' + Math.random());
       if (!res) {
         return;
       }
@@ -286,14 +363,14 @@ export default {
       this.diskUse = diskUse;
     },
     async getVnstat () {
-      const res = await this.$axiosGet('/api/server/vnstat?id=' + this.server.id);
+      const res = await this.$axiosGet('/api/server/vnstat?_=' + Math.random() + '&id=' + this.server.id);
       if (!res) {
         return;
       }
       this.vnstat = res.data;
     },
     async getMemoryUse () {
-      const res = await this.$axiosGet('/api/server/memoryUse');
+      const res = await this.$axiosGet('/api/server/memoryUse?_=' + Math.random());
       if (!res) {
         return;
       }
@@ -341,5 +418,9 @@ export default {
 
 .collapse {
   margin: 20px;
+}
+
+.chart {
+  height: 400px;
 }
 </style>

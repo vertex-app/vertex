@@ -15,6 +15,13 @@ import App from '@/App.vue';
 import router from '@/routes/index';
 import axios from 'axios';
 import moment from 'moment';
+import ECharts from 'vue-echarts';
+import { use } from 'echarts/core';
+import { CanvasRenderer } from 'echarts/renderers';
+import { BarChart, LineChart } from 'echarts/charts';
+import { GridComponent, TooltipComponent, TitleComponent, LegendComponent, VisualMapComponent } from 'echarts/components';
+
+use([CanvasRenderer, BarChart, LineChart, GridComponent, TooltipComponent, TitleComponent, LegendComponent, VisualMapComponent]);
 
 Vue.prototype.$message = Message;
 Vue.prototype.$moment = moment;
@@ -30,6 +37,7 @@ const components = [
   Descriptions, DescriptionsItem
 ];
 
+Vue.component('v-chart', ECharts);
 components.forEach((component) => Vue.use(component));
 
 library.add(solid);
