@@ -110,7 +110,7 @@ class Client {
     const telegramProxy = new Proxy(_telegram, {
       get: function (target, property) {
         if (!_this.pushMessage) {
-          logger.info(_this.clientAlias, 'pushMessage is false, don\'t send message');
+          logger.debug(_this.clientAlias, 'pushMessage is false, don\'t send message');
           return () => 1;
         };
         return target[property];
@@ -170,7 +170,7 @@ class Client {
       await this.channelProxy.editMessage(this.messageId, msgTemplate.clientInfoString(this.maindata, serverSpeed));
       logger.info('Client', this.clientAlias, 'get maindata success');
     } catch (error) {
-      logger.info(error);
+      logger.error(error);
       logger.error('Client', this.clientAlias, 'get maindata failed', error.message);
       await this.telegramProxy.sendMessage(msgTemplate.getMaindataErrorString(this.clientAlias, error.message));
       await this.login();

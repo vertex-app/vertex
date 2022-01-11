@@ -8,6 +8,7 @@ appenders:
     type: dateFile
     filename: logs/app-access.log
     pattern: .yyyy-MM-dd
+    compress: true
     layout:
       type: pattern
       pattern: '[%d{ISO8601}][%p %c] %z (%f{3} %l:%o) %m'
@@ -20,6 +21,7 @@ appenders:
     type: dateFile
     filename: logs/app-info.log
     pattern: .yyyy-MM-dd
+    compress: true
     layout:
       type: pattern
       pattern: '[%d{ISO8601}][%p %c] %z (%f{3} %l:%o) %m'
@@ -27,6 +29,7 @@ appenders:
     type: dateFile
     filename: logs/app-debug.log
     pattern: .yyyy-MM-dd
+    compress: true
     layout:
       type: pattern
       pattern: '[%d{ISO8601}][%p %c] %z (%f{3} %l:%o) %m'
@@ -44,6 +47,7 @@ appenders:
     type: dateFile
     filename: logs/app-error.log
     pattern: .yyyy-MM-dd
+    compress: true
     layout:
       type: pattern
       pattern: '[%d{ISO8601}][%p %c] %z (%f{3} %l:%o) %m'
@@ -60,4 +64,4 @@ categories:
       - infoFilter
       - debugFilter
       - minError
-    level: all
+    level: info

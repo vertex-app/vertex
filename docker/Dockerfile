@@ -4,7 +4,6 @@ RUN \
   git clone https://gitlab.lswl.in/lswl/vertex.git ~/vertex && \
   cd /root/vertex && \
   rm .git webui -rf && \
-  npm i -g nodemon && \
   npm i --save && \
   mkdir /vertex && \
   ln -s /vertex/data /root/vertex/app/data && \

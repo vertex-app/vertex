@@ -34,4 +34,5 @@ else
 fi
 
 cd ~/vertex
-npm run app
+export PORT=3000
+node app/app.js
