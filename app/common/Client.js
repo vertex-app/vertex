@@ -137,6 +137,10 @@ class Client {
         this.messageId = res.body.result.message_id;
         await this.channelProxy.deleteMessage(this.messageId - 1);
       }
+      Object.keys(global.runningRss)
+        .map(item => global.runningRss[item])
+        .filter(item => item.clientId === this.id)
+        .forEach((item) => item.reloadClient());
     } catch (error) {
       logger.error('Client', this.clientAlias, 'login failed', error.message);
       await this.telegramProxy.sendMessage(msgTemplate.getCookieErrorString(this.clientAlias, error.message));
@@ -184,14 +188,13 @@ class Client {
   };
 
   async addTorrent (taskName, torrentName, size, torrentUrl, torrentReseedName, isSkipChecking = false, uploadLimit = 0, downloadLimit = 0, savePath, category, rule) {
-    try {
-      await this.client.addTorrent(this.clientUrl, this.cookie, torrentUrl, isSkipChecking, uploadLimit, downloadLimit, savePath, category);
-      logger.info('Client', this.clientAlias, 'add torrent success');
-      await this.telegramProxy.sendMessage(msgTemplate.addTorrentString(isSkipChecking, taskName, this.clientAlias, torrentName, size, torrentReseedName, rule));
-    } catch (error) {
-      logger.error('Client', this.clientAlias, 'add torrent failed', error.message);
-      await this.telegramProxy.sendMessage(msgTemplate.addTorrentErrorString(taskName, torrentName, size, error.message));
+    const { statusCode } = await this.client.addTorrent(this.clientUrl, this.cookie, torrentUrl, isSkipChecking, uploadLimit, downloadLimit, savePath, category);
+    if (statusCode !== 200) {
+      this.login();
+      throw new Error('statusCode is ' + statusCode);
     }
+    logger.info('Client', this.clientAlias, 'add torrent success');
+    await this.telegramProxy.sendMessage(msgTemplate.addTorrentString(isSkipChecking, taskName, this.clientAlias, torrentName, size, torrentReseedName, rule));
   };
 
   async reannounceTorrent (hash, torrentName, tracker) {

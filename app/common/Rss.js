@@ -13,6 +13,7 @@ class Rss {
     this.url = rss.rssUrl;
     this.clients = global.runningClient;
     this.client = global.runningClient[rss.client];
+    this.clientId = rss.client;
     this.autoReseed = rss.autoReseed;
     this.onlyReseed = rss.onlyReseed;
     this.pushMessage = rss.pushMessage;
@@ -71,6 +72,12 @@ class Rss {
     delete global.runningRss[this.id];
   }
 
+  reloadClient () {
+    logger.info('Reload Client', this.clientId);
+    this.clients = global.runningClient;
+    this.client = global.runningClient[this.clientId];
+  }
+
   createTelegramProxy (telegram, channel) {
     const _telegram = new Telegram(telegram.token, channel, 'HTML', telegram.domain);
     const _this = this;
@@ -94,9 +101,14 @@ class Rss {
           if (+_torrent.size === +torrent.size && +_torrent.completed === +_torrent.size) {
             const bencodeInfo = await rss.getTorrentNameByBencode(torrent.url);
             if (_torrent.name === bencodeInfo.name && _torrent.hash !== bencodeInfo.hash) {
-              await client.addTorrent(this.alias, torrent.name, util.formatSize(+torrent.size), torrent.url, _torrent.name, true, this.uploadLimit, this.downloadLimit, _torrent.savePath, this.category, rule);
-              await util.insertRecord('INSERT INTO torrents (hash, name, task_name) VALUES (?, ?, ?)', [torrent.hash, torrent.name, this.alias]);
-              return;
+              try {
+                await client.addTorrent(this.alias, torrent.name, util.formatSize(+torrent.size), torrent.url, _torrent.name, true, this.uploadLimit, this.downloadLimit, _torrent.savePath, this.category, rule);
+                await util.insertRecord('INSERT INTO torrents (hash, name, task_name) VALUES (?, ?, ?)', [torrent.hash, torrent.name, this.alias]);
+                return;
+              } catch (error) {
+                logger.error('Client', this.clientAlias, 'add torrent failed', error.message);
+                await this.telegramProxy.sendMessage(msgTemplate.addTorrentErrorString(this.alias, torrent.name, util.formatSize(+torrent.size), error.message));
+              }
             }
           }
         }
@@ -158,8 +170,13 @@ class Rss {
       }
       const fitRules = this.rssRules.filter(item => this._fitRule(item, torrent));
       if (fitRules.length !== 0 || this.rssRules.length === 0) {
-        await this.client.addTorrent(this.alias, torrent.name, util.formatSize(+torrent.size), torrent.url, torrent.name, false, this.uploadLimit, this.downloadLimit, this.savePath, this.category, fitRules[0]);
-        await util.insertRecord('INSERT INTO torrents (hash, name, task_name) VALUES (?, ?, ?)', [torrent.hash, torrent.name, this.alias]);
+        try {
+          await this.client.addTorrent(this.alias, torrent.name, util.formatSize(+torrent.size), torrent.url, torrent.name, false, this.uploadLimit, this.downloadLimit, this.savePath, this.category, fitRules[0]);
+          await util.insertRecord('INSERT INTO torrents (hash, name, task_name) VALUES (?, ?, ?)', [torrent.hash, torrent.name, this.alias]);
+        } catch (error) {
+          logger.error('Client', this.clientAlias, 'add torrent failed', error.message);
+          await this.telegramProxy.sendMessage(msgTemplate.addTorrentErrorString(this.alias, torrent.name, util.formatSize(+torrent.size), error.message));
+        }
       } else {
         await util.insertRecord('INSERT INTO torrents (hash, name, task_name) VALUES (?, ?, ?)', [torrent.hash, torrent.name, this.alias]);
         await this.telegramProxy.sendMessage(msgTemplate.rejectString(this.alias, torrent.name, util.formatSize(torrent.size), 'No Rules fit'));

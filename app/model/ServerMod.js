@@ -33,7 +33,7 @@ class ServerMod {
   list () {
     const serverList = util.listServer();
     for (const server of serverList) {
-      server.status = global.runningServer[server.id].ssh && global.runningServer[server.id].connected;
+      server.status = global.runningServer[server.id] && global.runningServer[server.id].ssh && global.runningServer[server.id].connected;
     }
     return serverList;
   };

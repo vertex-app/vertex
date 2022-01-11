@@ -1,4 +1,5 @@
 const ServerMod = require('../model/ServerMod');
+const logger = require('../libs/logger');
 
 const serverMod = new ServerMod();
 
@@ -12,9 +13,10 @@ class Server {
         message: r
       });
     } catch (e) {
+      logger.error(e);
       res.send({
         success: false,
-        message: e
+        message: e.message
       });
     }
   };
@@ -28,6 +30,7 @@ class Server {
         message: r
       });
     } catch (e) {
+      logger.error(e);
       res.send({
         success: false,
         message: e
@@ -44,6 +47,7 @@ class Server {
         message: r
       });
     } catch (e) {
+      logger.error(e);
       res.send({
         success: false,
         message: e
@@ -59,6 +63,7 @@ class Server {
         data: r
       });
     } catch (e) {
+      logger.error(e);
       res.send({
         success: false,
         message: e
@@ -74,6 +79,7 @@ class Server {
         data: r
       });
     } catch (e) {
+      logger.error(e);
       res.send({
         success: false,
         message: e
@@ -89,6 +95,7 @@ class Server {
         data: r
       });
     } catch (e) {
+      logger.error(e);
       res.send({
         success: false,
         message: e
@@ -104,6 +111,7 @@ class Server {
         data: r
       });
     } catch (e) {
+      logger.error(e);
       res.send({
         success: false,
         message: e
@@ -119,6 +127,7 @@ class Server {
         data: r
       });
     } catch (e) {
+      logger.error(e);
       res.send({
         success: false,
         message: e
@@ -135,6 +144,7 @@ class Server {
         data: r
       });
     } catch (e) {
+      logger.error(e);
       res.send({
         success: false,
         message: e

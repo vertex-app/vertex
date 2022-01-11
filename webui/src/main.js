@@ -15,6 +15,7 @@ import App from '@/App.vue';
 import router from '@/routes/index';
 import axios from 'axios';
 import moment from 'moment';
+import md5 from 'md5-node';
 import ECharts from 'vue-echarts';
 import { use } from 'echarts/core';
 import { CanvasRenderer } from 'echarts/renderers';
@@ -25,6 +26,7 @@ use([CanvasRenderer, BarChart, LineChart, GridComponent, TooltipComponent, Title
 
 Vue.prototype.$message = Message;
 Vue.prototype.$moment = moment;
+Vue.prototype.$md5 = md5;
 Vue.prototype.$messageBox = MessageBox;
 
 Vue.config.productionTip = false;

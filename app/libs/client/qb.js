@@ -39,7 +39,7 @@ exports.addTorrent = async function (clientUrl, cookie, torrentUrl, isSkipChecki
     message.formData.category = category;
   }
   const res = await util.requestPromise(message);
-  logger.debug(clientUrl, '添加种子', torrentUrl, '返回信息\n', { body: res.body, statusCode: res.statusCode });
+  logger.debug(clientUrl, '添加种子', torrentUrl, '\n返回信息', { body: res.body, statusCode: res.statusCode });
   return res;
 };
 
@@ -51,7 +51,7 @@ exports.deleteTorrent = async function (clientUrl, cookie, hash, isDeleteFiles) 
     }
   };
   const res = await util.requestPromise(message);
-  logger.debug(clientUrl, '删除种子', hash, '删除种子文件: ', isDeleteFiles, '返回信息\n', { body: res.body, statusCode: res.statusCode });
+  logger.debug(clientUrl, '删除种子', hash, '删除种子文件: ', isDeleteFiles, '\n返回信息', { body: res.body, statusCode: res.statusCode });
   return res;
 };
 

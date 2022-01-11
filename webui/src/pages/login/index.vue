@@ -20,7 +20,7 @@ export default {
   },
   methods: {
     async login () {
-      const res = await this.$axiosGet(`/api/user/login?username=${this.username}&password=${this.password}`);
+      const res = await this.$axiosGet(`/api/user/login?username=${this.username}&password=${this.$md5(this.password)}`);
       if (!res) {
         return;
       }
