@@ -18,7 +18,7 @@ class Server {
       await new Promise((resolve, reject) => {
         this.ssh
           .on('ready', () => {
-            logger.info('connect ready', this.id);
+            logger.debug('connect ready', this.server.alias);
             this.connected = true;
             resolve(1);
           })
@@ -27,9 +27,8 @@ class Server {
           })
           .connect(this.server);
       });
-      // await this.ssh.connect(this.server);
     } catch (e) {
-      logger.error(e);
+      logger.error(this.server.alias, ' 尝试 SSH 连接失败, 等待重连\n错误信息:', e);
       this.connectFailCount += 1;
     }
   };
@@ -42,8 +41,8 @@ class Server {
   };
 
   async run (command) {
-    if (this.connectFailCount > 10) {
-      throw new Error('多次 SSH 连接失败, 请重新配置此连接');
+    if (this.connectFailCount > this.reconnectTime) {
+      throw new Error(this.server.alias + ' 多次 SSH 连接失败, 请重新配置此连接');
     }
     if (!this.connected) {
       await this.connect(this.server);
@@ -58,6 +57,7 @@ class Server {
           let stdout;
           if (err) return reject(err);
           stream.on('close', () => {
+            logger.debug({ command, stderr, stdout });
             resolve({
               stderr,
               stdout
@@ -80,7 +80,7 @@ class Server {
     } catch (e) {
       logger.error(e);
       this.connected = false;
-      throw new Error('执行操作遇到错误, 请重试或查看日志');
+      throw new Error(this.server.alias + ' 执行操作遇到错误, 请重试或查看日志');
     }
   };
 

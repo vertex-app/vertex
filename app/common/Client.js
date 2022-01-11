@@ -79,6 +79,9 @@ class Client {
     if (rule.maxFreeSpace) {
       fit = fit && (this.maindata.freeSpaceOnDisk < +rule.maxFreeSpace) && statusSeeding.some(item => item === torrent.state);
     }
+    if (rule.maxRatio) {
+      fit = fit && (torrent.ratio > rule.maxRatio) && statusSeeding.some(item => item === torrent.state);
+    }
     if (rule.maxAvailability && torrent.progress < 0.95) {
       fit = fit && ((torrent.availability || torrent.seeder) > +rule.maxAvailability);
     }
@@ -119,11 +122,11 @@ class Client {
   async login () {
     try {
       this.cookie = await this.client.login(this.username, this.clientUrl, this.password);
+      this.status = true;
       logger.info('Client', this.clientAlias, 'login success');
       if (!this.messageId) {
         await this.telegramProxy.sendMessage(msgTemplate.connectClientString(this.clientAlias, moment().format('YYYY-MM-DD HH:mm:ss')));
         const res = await this.channelProxy.sendMessage(msgTemplate.connectClientString(this.clientAlias, moment().format('YYYY-MM-DD HH:mm:ss')));
-        this.status = true;
         if (!this.pushMessage) return;
         this.messageId = res.body.result.message_id;
         await this.channelProxy.deleteMessage(this.messageId - 1);
