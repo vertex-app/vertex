@@ -69,8 +69,6 @@ class Server {
             stderr = stderr || '';
             stderr += data.toString();
           });
-        }).on('error', (err) => {
-          reject(err);
         });
       });
       if (stderr) {
