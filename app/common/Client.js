@@ -87,11 +87,11 @@ class Client {
     }
     if (rule.excludeCategory) {
       const categories = rule.excludeCategory.split(/\r\n|\n/);
-      fit = fit && !categories.some(torrent.category);
+      fit = fit && !categories.some(category => torrent.category === category);
     }
     if (rule.category) {
       const categories = rule.category.split(/\r\n|\n/);
-      fit = fit && categories.some(torrent.category);
+      fit = fit && categories.some(category => torrent.category === category);
     }
     return fit !== '1' && fit;
   };
