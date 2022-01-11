@@ -37,15 +37,33 @@
                 <el-input v-model="rule.alias" type="input"></el-input>
               </el-form-item>
               <el-form-item label="上传速度小于">
-                <el-input v-model="rule.minUploadSpeed" type="number"></el-input>
+                <el-input v-model="rule.minUploadSpeed" type="number">
+                  <el-select v-model="rule.minUploadSpeedUnit" slot="append" style="width: 80px" placeholder="单位">
+                    <el-option label="KiB/s" value="KiB"></el-option>
+                    <el-option label="MiB/s" value="MiB"></el-option>
+                    <el-option label="GiB/s" value="GiB"></el-option>
+                  </el-select>
+                </el-input>
                 <div><el-tag type="info">种子上传速度, 仅在种子为 做种 状态或与 下载速度小于 选项一起使用时生效, 单位为 字节 (Byte)</el-tag></div>
               </el-form-item>
               <el-form-item label="下载速度大于">
-                <el-input v-model="rule.maxDownloadSpeed" type="number"></el-input>
+                <el-input v-model="rule.maxDownloadSpeed" type="number">
+                  <el-select v-model="rule.maxDownloadSpeedUnit" slot="append" style="width: 80px" placeholder="单位">
+                    <el-option label="KiB/s" value="KiB"></el-option>
+                    <el-option label="MiB/s" value="MiB"></el-option>
+                    <el-option label="GiB/s" value="GiB"></el-option>
+                  </el-select>
+                </el-input>
                 <div><el-tag type="info">种子下载速度, 仅在与上传速度小于一起使用时生效, 单位为 字节 (Byte)</el-tag></div>
               </el-form-item>
               <el-form-item label="下载速度小于">
-                <el-input v-model="rule.minDownloadSpeed" type="number"></el-input>
+                <el-input v-model="rule.minDownloadSpeed" type="number">
+                  <el-select v-model="rule.minDownloadSpeedUnit" slot="append" style="width: 80px" placeholder="单位">
+                    <el-option label="KiB/s" value="KiB"></el-option>
+                    <el-option label="MiB/s" value="MiB"></el-option>
+                    <el-option label="GiB/s" value="GiB"></el-option>
+                  </el-select>
+                </el-input>
                 <div><el-tag type="info">种子下载速度, 仅在与上传速度小于一起使用时生效, 单位为 字节 (Byte)</el-tag></div>
               </el-form-item>
               <el-form-item label="做种时间大于">
@@ -57,11 +75,23 @@
                 <div><el-tag type="info">种子下载时间, 单位为 秒</el-tag></div>
               </el-form-item>
               <el-form-item label="硬盘空间小于">
-                <el-input v-model="rule.maxFreeSpace" type="number"></el-input>
+                <el-input v-model="rule.maxFreeSpace" type="number">
+                  <el-select v-model="rule.maxFreeSpaceUnit" slot="append" style="width: 80px" placeholder="单位">
+                    <el-option label="KiB" value="KiB"></el-option>
+                    <el-option label="MiB" value="MiB"></el-option>
+                    <el-option label="GiB" value="GiB"></el-option>
+                  </el-select>
+                </el-input>
                 <div><el-tag type="info">硬盘空间 (读取自客户端), 仅对 做种 状态的种子生效, 单位为 字节 (Byte)</el-tag></div>
               </el-form-item>
               <el-form-item label="空间占用大于">
-                <el-input v-model="rule.maxUsedSpace" type="number"></el-input>
+                <el-input v-model="rule.maxUsedSpace" type="number">
+                  <el-select v-model="rule.maxUsedSpaceUnit" slot="append" style="width: 80px" placeholder="单位">
+                    <el-option label="KiB" value="KiB"></el-option>
+                    <el-option label="MiB" value="MiB"></el-option>
+                    <el-option label="GiB" value="GiB"></el-option>
+                  </el-select>
+                </el-input>
                 <div><el-tag type="info">占用空间 (读取客户端内种子完成量的和)</el-tag></div>
               </el-form-item>
               <el-form-item label="分享率大于">

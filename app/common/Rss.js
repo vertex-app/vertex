@@ -23,8 +23,8 @@ class Rss {
     this.savePath = rss.savePath;
     this.category = rss.category;
     this.rssRules = util.listRssRule().filter(item => (rss.rssRules.indexOf(item.id) !== -1));
-    this.downloadLimit = rss.downloadLimit;
-    this.uploadLimit = rss.uploadLimit;
+    this.downloadLimit = util.calSize(rss.downloadLimit, rss.downloadLimitUnit);
+    this.uploadLimit = util.calSize(rss.uploadLimit, rss.uploadLimitUnit);
     this.telegramProxy = this.createTelegramProxy(util.listBot().filter(item => item.id === rss.telegram)[0] || {},
       (util.listChannel().filter(item => item.id === rss.notifyChannel)[0] || {}).channelId);
     this.rssJob = new CronJob(rss.cron, () => this.rss());
@@ -50,10 +50,10 @@ class Rss {
   _fitRule (rule, torrent) {
     let fit = true;
     if (rule.minSize) {
-      fit = fit && torrent.size > +rule.minSize;
+      fit = fit && torrent.size > util.calSize(rule.minSize, rule.minSizeUnit);
     }
     if (rule.maxSize) {
-      fit = fit && torrent.size < +rule.maxSize;
+      fit = fit && torrent.size < util.calSize(rule.maxSize, rule.maxSizeUnit);
     }
     if (rule.includeKeys) {
       fit = fit && this._all(torrent.name, rule.includeKeys.split(/\r\n|\n/));

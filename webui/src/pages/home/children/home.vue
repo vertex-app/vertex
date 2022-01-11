@@ -58,7 +58,7 @@
         <el-table-column
           label="↑/↓">
           <template slot-scope="scope">
-            {{netSpeed[scope.row.id] ? $formatSize(netSpeed[scope.row.id][0].txBytes) + '/' + $formatSize(netSpeed[scope.row.id][0].rxBytes) : null}}
+            {{netSpeed[scope.row.id] ? $formatSize(netSpeed[scope.row.id][0].txBytes) + '/s / ' + $formatSize(netSpeed[scope.row.id][0].rxBytes) + '/s' : null}}
           </template>
         </el-table-column>
         <el-table-column

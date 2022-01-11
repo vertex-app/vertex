@@ -104,11 +104,23 @@
                 <div><el-tag type="info">Rss Cron 表达式, 默认为 1 分钟更新一次</el-tag></div>
               </el-form-item>
               <el-form-item required label="限制上传速度" prop="uploadLimit">
-                <el-input v-model="rss.uploadLimit"></el-input>
+                <el-input v-model="rss.uploadLimit">
+                  <el-select v-model="rss.uploadLimitUnit" slot="append" style="width: 80px" placeholder="单位">
+                    <el-option label="KiB/s" value="KiB"></el-option>
+                    <el-option label="MiB/s" value="MiB"></el-option>
+                    <el-option label="GiB/s" value="GiB"></el-option>
+                  </el-select>
+                </el-input>
                 <div><el-tag type="info">限制种子的上传速度, 单位为 字节 (Byte)</el-tag></div>
               </el-form-item>
               <el-form-item required label="限制下载速度" prop="downloadLimit">
-                <el-input v-model="rss.downloadLimit"></el-input>
+                <el-input v-model="rss.downloadLimit">
+                  <el-select v-model="rss.downloadLimitUnit" slot="append" style="width: 80px" placeholder="单位">
+                    <el-option label="KiB/s" value="KiB"></el-option>
+                    <el-option label="MiB/s" value="MiB"></el-option>
+                    <el-option label="GiB/s" value="GiB"></el-option>
+                  </el-select>
+                </el-input>
                 <div><el-tag type="info">限制种子的下载速度, 单位为 字节 (Byte)</el-tag></div>
               </el-form-item>
               <el-form-item required label="抓取免费" prop="scrapeFree">

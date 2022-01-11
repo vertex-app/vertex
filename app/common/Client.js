@@ -53,7 +53,13 @@ class Client {
     return sum;
   };
 
-  _fitDeleteRule (rule, torrent) {
+  _fitDeleteRule (_rule, torrent) {
+    const rule = { ..._rule };
+    rule.minDownloadSpeed = util.calSize(rule.minDownloadSpeed, rule.minDownloadSpeedUnit);
+    rule.maxDownloadSpeed = util.calSize(rule.maxDownloadSpeed, rule.maxDownloadSpeedUnit);
+    rule.minUploadSpeed = util.calSize(rule.minUploadSpeed, rule.minUploadSpeedUnit);
+    rule.maxUsedSpace = util.calSize(rule.maxUsedSpace, rule.maxUsedSpaceUnit);
+    rule.maxFreeSpace = util.calSize(rule.maxFreeSpaceSpeed, rule.maxFreeSpaceUnit);
     let fit = '1';
     const statusLeeching = ['downloading', 'stalledDL', 'Downloading'];
     const statusSeeding = ['uploading', 'stalledUP', 'Seeding'];

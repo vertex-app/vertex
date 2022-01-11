@@ -132,7 +132,13 @@
                 <div><el-tag type="info">自动在种子添加后的 5 分钟内每分钟汇报一次, 获取更多 Peers</el-tag></div>
               </el-form-item>
               <el-form-item required label="上限速度" prop="maxSpeed">
-                <el-input v-model="client.maxSpeed"></el-input>
+                <el-input v-model="client.maxSpeed">
+                  <el-select v-model="client.maxSpeedUnit" slot="append" style="width: 80px" placeholder="单位">
+                    <el-option label="KiB/s" value="KiB"></el-option>
+                    <el-option label="MiB/s" value="MiB"></el-option>
+                    <el-option label="GiB/s" value="GiB"></el-option>
+                  </el-select>
+                </el-input>
                 <div><el-tag type="info">若客户端的上传或下载速度在此速度之上时, 不再添加种子</el-tag></div>
               </el-form-item>
               <el-form-item v-if="clientList.length !== 0" label="同服客户端">
@@ -220,7 +226,7 @@ export default {
     },
     async modifyClient (row) {
       this.clientCollapse = ['1'];
-      this.client = row;
+      this.client = { ...row };
     },
     async clearClient () {
       this.client = { ...this.defaultClient };

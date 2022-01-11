@@ -155,3 +155,12 @@ exports.formatSize = function (size) {
     return `${(size / 1024 / 1024 / 1024 / 1024).toFixed(3)} TiB`;
   }
 };
+
+exports.calSize = function (size, unit) {
+  const unitMap = {
+    KiB: 1024,
+    MiB: 1024 * 1024,
+    GiB: 1024 * 1024 * 1024
+  };
+  return +size * (unitMap[unit] || 1);
+};
