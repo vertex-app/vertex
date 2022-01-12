@@ -18,63 +18,47 @@
       </el-form>
       <el-table
         :data="torrentList"
-        stripe
-        style="width: 100%">
+        :span-method="arraySpanMethod"
+        :row-style="rowStyle"
+        style="width: 100%;">
         <el-table-column
-          prop="clientAlias"
-          label="客户端别名"
-          width="144">
+          align="center"
+          label="客户端别名">
+          <el-table-column
+            prop="c0"
+            align="center"
+            label="状态">
+          </el-table-column>
         </el-table-column>
         <el-table-column
-          prop="name"
+          align="center"
           label="名称">
+          <el-table-column
+            align="center"
+            prop="c1"
+            label="上传/下载速度">
+          </el-table-column>
+          <el-table-column
+            align="center"
+            prop="c2"
+            label="上传/下载数据">
+          </el-table-column>
+          <el-table-column
+            align="center"
+            prop="c3"
+            label="大小">
+          </el-table-column>
+          <el-table-column
+            align="center"
+            prop="c4"
+            label="Tracker">
+          </el-table-column>
         </el-table-column>
         <el-table-column
-          label="↑/↓">
+          align="center"
+          label="操作">
           <template slot-scope="scope">
-            ↑ {{`${$formatSize(scope.row.uploadSpeed)}/s`}}
-            <br>
-            ↓ {{`${$formatSize(scope.row.downloadSpeed)}/s`}}
-          </template>
-        </el-table-column>
-        <el-table-column
-          label="↑/↓">
-          <template slot-scope="scope">
-            ↑ {{`${$formatSize(scope.row.uploaded)}`}}
-            <br>
-            ↓ {{`${$formatSize(scope.row.downloaded)}`}}
-          </template>
-        </el-table-column>
-        <el-table-column
-          prop="state"
-          label="状态">
-        </el-table-column>
-        <el-table-column
-          label="大小">
-          <template slot-scope="scope">
-            {{$formatSize(scope.row.size)}}
-          </template>
-        </el-table-column>
-        <el-table-column
-          label="添加时间">
-          <template slot-scope="scope">
-            {{$moment(scope.row.addedTime * 1000).format('YYYY-MM-DD HH:mm:ss')}}
-          </template>
-        </el-table-column>
-        <el-table-column
-          label="完成时间">
-          <template slot-scope="scope">
-            {{$moment(scope.row.completedTime * 1000).format('YYYY-MM-DD HH:mm:ss')}}
-          </template>
-        </el-table-column>
-        <el-table-column
-          prop="tracker"
-          label="Tracker">
-        </el-table-column>
-        <el-table-column
-          label="操作"
-          width="200">
-          <template slot-scope="scope">
+            <el-button @click="queryDetail(scope.row)" type="primary" size="small">详情</el-button>
             <el-button type="danger" size="small">删除</el-button>
           </template>
         </el-table-column>
@@ -93,6 +77,19 @@
           :total="total">
         </el-pagination>
       </div>
+      <el-dialog :title="torrentInfo.name" :visible.sync="torrentInfoVisible" width="80%">
+        <el-descriptions title="">
+          <el-descriptions-item label="开始时间">{{$moment(torrentInfo.addedTime * 1000).format('YYYY-MM-DD HH:mm:ss')}}</el-descriptions-item>
+          <el-descriptions-item label="完成时间">{{torrentInfo.completedTime === -1 ? '∞' : $moment(torrentInfo.completedTime * 1000).format('YYYY-MM-DD HH:mm:ss')}}</el-descriptions-item>
+          <el-descriptions-item label="当前进度">{{torrentInfo.progress * 100 + '%'}}</el-descriptions-item>
+          <el-descriptions-item label="已上传">{{$formatSize(torrentInfo.uploaded)}}</el-descriptions-item>
+          <el-descriptions-item label="已下载">{{$formatSize(torrentInfo.downloaded)}}</el-descriptions-item>
+          <el-descriptions-item label="总大小">{{$formatSize(torrentInfo.size)}}</el-descriptions-item>
+          <el-descriptions-item label="上传速度">{{$formatSize(torrentInfo.uploadSpeed)}}/s</el-descriptions-item>
+          <el-descriptions-item label="下载速度">{{$formatSize(torrentInfo.downloadSpeed)}}/s</el-descriptions-item>
+          <el-descriptions-item label="分享率">{{torrentInfo.ratio.toFixed(2)}}</el-descriptions-item>
+      </el-descriptions>
+      </el-dialog>
     </div>
   </div>
 </template>
@@ -103,6 +100,9 @@ export default {
     return {
       clients: [],
       torrentList: [],
+      torrentInfo: {
+        ratio: 0
+      },
       clientList: [],
       total: 0,
       totalPage: 0,
@@ -140,15 +140,20 @@ export default {
           value: '降序'
         }
       ],
-      paginationShow: false
+      stateMap: {
+        downloading: '下载',
+        stalledDL: '等待',
+        Downloading: '下载',
+        uploading: '上传',
+        stalledUP: '做种',
+        Seeding: '做种'
+      },
+      torrentInfoVisible: false,
+      paginationShow: true
     };
   },
   methods: {
     async listTorrent () {
-      this.paginationShow = false;
-      this.page = +this.$route.query.page || this.page;
-      this.length = +this.$route.query.length || this.length;
-      // this.clients = JSON.parse(+this.$route.query.clients || '[]');
       let url = `/api/torrent/list?clientList=${encodeURIComponent(JSON.stringify(this.clients))}&page=${this.page}&length=${this.length}`;
       if (this.sort.key) {
         url += `&sortKey=${this.sort.key}`;
@@ -158,11 +163,18 @@ export default {
       }
       const res = await this.$axiosGet(url);
       this.total = res ? res.data.total : 0;
-      this.torrentList = res ? res.data.torrents : [];
-      this.$nextTick(() => {
-        this.paginationShow = true;
-      });
+      const torrentList = res ? res.data.torrents : [];
+      this.torrentList = [];
+      for (const torrent of torrentList) {
+        this.torrentList.push(torrent);
+        this.torrentList.push(torrent);
+      }
     },
+    async queryDetail (row) {
+      this.torrentInfo = row;
+      this.torrentInfoVisible = true;
+    },
+
     async changePage (page) {
       this.torrents = [];
       const url = `/torrent-mix?clientList=${encodeURIComponent(JSON.stringify(this.clients))}&page=${page}&length=${this.length}`;
@@ -173,11 +185,64 @@ export default {
     async listClient () {
       const res = await this.$axiosGet('/api/client/list');
       this.clientList = res ? res.data.filter(item => item.enable) : [];
+    },
+
+    arraySpanMethod ({ row, column, rowIndex, columnIndex }) {
+      if (rowIndex % 2 === 0) {
+        switch (columnIndex) {
+        case 0:
+          row.c0 = row.clientAlias;
+          return [1, 1];
+        case 1:
+          row.c1 = row.name;
+          return [1, 4];
+        case 2:
+          return [0, 0];
+        case 3:
+          return [0, 0];
+        case 4:
+          return [0, 0];
+        case 5:
+          return [2, 1];
+        }
+      } else {
+        switch (columnIndex) {
+        case 0:
+          row.c0 = this.stateMap[row.state];
+          return [1, 1];
+        case 1:
+          row.c1 = `${this.$formatSize(row.uploadSpeed)}/s / ${this.$formatSize(row.downloadSpeed)}/s`;
+          return [1, 1];
+        case 2:
+          row.c2 = `${this.$formatSize(row.uploaded)} / ${this.$formatSize(row.downloaded)}`;
+          return [1, 1];
+        case 3:
+          row.c3 = this.$formatSize(row.size);
+          return [1, 1];
+        case 4:
+          row.c4 = row.tracker;
+          return [1, 1];
+        case 5:
+          return [0, 0];
+        }
+      }
+    },
+    rowStyle ({ row, rowIndex }) {
+      if (rowIndex % 4 < 2) {
+        return {
+          background: '#B0E0E6'
+        };
+      } else if (rowIndex % 4 >= 2) {
+        return {
+          background: '#B4EEB4'
+        };
+      }
+      return '';
     }
   },
   async mounted () {
-    this.listTorrent();
     this.listClient();
+    this.listTorrent();
     this.freshTorrent = setInterval(() => {
       this.listTorrent();
     }, 5000);
@@ -199,4 +264,13 @@ export default {
   width: fit-content;
   text-align: left;
 }
+
+.row1 {
+  background: hsl(240, 66%, 83%);
+}
+
+.row2 {
+  background: #C1FFC1;
+}
+
 </style>

@@ -12,11 +12,17 @@ class TorrentMod {
       }
     }
     if (options.sortKey) {
+      const sortType = options.sortType;
+      const sortKey = options.sortKey;
+      const numberSet = {
+        desc: [-1, 1],
+        asc: [1, -1]
+      };
       torrentList = torrentList.sort((a, b) => {
-        if (typeof a[options.sortKey] === 'string') {
-          return (a[options.sortKey] < b[options.sortKey] ? (options.sortType === 'desc' ? 1 : -1) : (options.sortType === 'desc' ? -1 : 1));
+        if (typeof a[sortKey] === 'string') {
+          return (a[sortKey] < b[sortKey] ? numberSet[sortType][1] : numberSet[sortType][0]);
         }
-        return options.sortType === 'desc' ? a[options.sortKey] - b[options.sortKey] : b[options.sortKey] - a[options.sortKey];
+        return sortType === 'asc' ? a[sortKey] - b[sortKey] : b[sortKey] - a[sortKey];
       });
     }
     return {
@@ -24,6 +30,20 @@ class TorrentMod {
       total: torrentList.length
     };
   };
+
+  info (options) {
+    const torrentHash = options.hash;
+    const clients = global.runningClient;
+    for (const clientId of Object.keys(clients)) {
+      for (const torrent of clients[clientId].maindata.torrents) {
+        if (torrent.hash !== torrentHash) continue;
+        const _torrent = { ...torrent };
+        _torrent.clientAlias = clients[clientId].clientAlias;
+        return _torrent;
+      }
+    }
+    throw new Error('not found');
+  }
 }
 
 module.exports = TorrentMod;

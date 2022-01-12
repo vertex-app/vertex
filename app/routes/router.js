@@ -113,6 +113,7 @@ module.exports = function (app, express, router) {
   router.post('/rssRule/delete', ctrl.RssRule.delete);
 
   router.get('/torrent/list', ctrl.Torrent.list);
+  router.get('/torrent/info', ctrl.Torrent.info);
 
   app.use('/api', router);
   app.use('*', (req, res, next) => {
