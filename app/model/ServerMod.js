@@ -38,6 +38,12 @@ class ServerMod {
     return serverList;
   };
 
+  reload (serverId) {
+    if (global.runningServer[serverId]) global.runningServer[serverId].destroy();
+    global.runningServer[serverId] = new Server(util.listServer().filter(item => item.id === serverId)[0]);
+    return '重连 Server 成功';
+  };
+
   async netSpeed () {
     try {
       const list = util.listServer()

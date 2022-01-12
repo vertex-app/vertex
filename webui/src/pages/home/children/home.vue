@@ -58,7 +58,9 @@
         <el-table-column
           label="↑/↓">
           <template slot-scope="scope">
-            {{netSpeed[scope.row.id] ? $formatSize(netSpeed[scope.row.id][0].txBytes) + '/s / ' + $formatSize(netSpeed[scope.row.id][0].rxBytes) + '/s' : null}}
+            {{netSpeed[scope.row.id] ? $formatSize(netSpeed[scope.row.id][0].txBytes) + '/s' : null}}
+            <br>
+            {{netSpeed[scope.row.id] ? $formatSize(netSpeed[scope.row.id][0].rxBytes) + '/s' : null}}
           </template>
         </el-table-column>
         <el-table-column
@@ -216,7 +218,7 @@ export default {
           ]
         }
       },
-      vnstatPeriod: 'day',
+      vnstatPeriod: 'hour',
       usernameDisplay: true,
       hostDisplay: true,
       customColors: [
@@ -230,24 +232,25 @@ export default {
       xAxis: {},
       chart: {
         title: {
-          text: 'Network Traffic',
+          text: '流量曲线',
           left: 'center'
+        },
+        legend: {
+          top: '7%'
+        },
+        textStyle: {
+          fontFamily: 'consolas'
         },
         darkMode: true,
         tooltip: {
-          trigger: 'axis'
-        },
-        visualMap: {
-          type: 'piecewise',
-          showLabel: false,
-          top: 10,
-          right: 10,
-          splitNumber: 7,
-          inRange: {
-            color: ['#01DF01', '#01DF74', '#01DFD7', '#0174DF', '#0101DF', '#7401DF', '#DF01A5']
-          },
-          outRange: {
-            color: ['#313695']
+          trigger: 'axis',
+          formatter: (params) => {
+            let str = '';
+            for (const param of params) {
+              const size = this.$formatSize(param.value);
+              str += `${param.seriesName}: ${'&nbsp;'.repeat(10 - size.length)}${size}</br>`;
+            }
+            return str;
           }
         },
         xAxis: {
@@ -262,35 +265,25 @@ export default {
         },
         series: [
           {
-            name: 'Tx',
+            name: 'Tx - 上传',
             type: 'line',
             data: [],
+            areaStyle: {
+              opacity: 0.1
+            },
             itemStyle: {
-              borderRadius: [4, 4, 0, 0]
+              color: '#EE6363'
             },
             smooth: true
           }, {
-            name: 'Rx',
+            name: 'Rx - 下载',
             type: 'line',
             data: [],
-            itemStyle: {
-              borderRadius: [4, 4, 0, 0]
+            areaStyle: {
+              opacity: 0.1
             },
-            smooth: true
-          }, {
-            name: 'Rx',
-            type: 'bar',
-            data: [],
             itemStyle: {
-              borderRadius: [4, 4, 0, 0]
-            },
-            smooth: true
-          }, {
-            name: 'Rx',
-            type: 'bar',
-            data: [],
-            itemStyle: {
-              borderRadius: [4, 4, 0, 0]
+              color: '#3CB371'
             },
             smooth: true
           }
@@ -304,13 +297,11 @@ export default {
       this.chart.xAxis.data = this.vnstat[this.vnstatPeriod].interfaces[0].traffic[this.vnstatPeriod].map(item => this.formatTime(item).slice(-5)).reverse();
       this.chart.series[0].data = this.vnstat[this.vnstatPeriod].interfaces[0].traffic[this.vnstatPeriod].map(item => item.tx).reverse();
       this.chart.series[1].data = this.vnstat[this.vnstatPeriod].interfaces[0].traffic[this.vnstatPeriod].map(item => item.rx).reverse();
-      this.chart.visualMap.min = 0;
-      this.chart.visualMap.max = Math.max(...this.chart.series[0].data.concat(this.chart.series[1].data));
     },
     async displayDetails (row) {
       this.server = row;
       await this.getVnstat();
-      this.handlePeriod('day');
+      this.handlePeriod('hour');
       this.clientCollapse = ['1'];
     },
     formatTime (row) {

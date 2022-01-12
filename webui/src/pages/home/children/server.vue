@@ -54,8 +54,9 @@
         <el-table-column
           fixed="right"
           label="操作"
-          width="200">
+          width="272">
           <template slot-scope="scope">
+            <el-button @click="reloadServer(scope.row)" type="warning" size="small">重置连接</el-button>
             <el-button @click="modifyServer(scope.row)" type="warning" size="small">编辑</el-button>
             <el-button @click="deleteServer(scope.row)" :disabled="scope.row.used" type="danger" size="small">删除</el-button>
           </template>
@@ -160,6 +161,11 @@ export default {
     async clearServer () {
       this.server = { ...this.defaultServer };
       this.$refs.server.resetFields();
+    },
+    async reloadServer (row) {
+      const res = await this.$axiosGet('/api/server/reload?id=' + row.id);
+      await this.$messageBox(res);
+      this.listServer();
     },
     async listServer () {
       const res = await this.$axiosGet('/api/server/list');

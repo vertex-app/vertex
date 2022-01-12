@@ -81,6 +81,7 @@ module.exports = function (app, express, router) {
   router.post('/server/add', ctrl.Server.add);
   router.post('/server/modify', ctrl.Server.modify);
   router.post('/server/delete', ctrl.Server.delete);
+  router.get('/server/reload', ctrl.Server.reload);
 
   router.post('/telegram/addBot', ctrl.Telegram.addBot);
   router.post('/telegram/addChannel', ctrl.Telegram.addChannel);

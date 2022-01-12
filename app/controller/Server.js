@@ -71,6 +71,23 @@ class Server {
     }
   };
 
+  async reload (req, res) {
+    try {
+      const serverId = req.query.id;
+      const r = serverMod.reload(serverId);
+      res.send({
+        success: true,
+        data: r
+      });
+    } catch (e) {
+      logger.error(e);
+      res.send({
+        success: false,
+        message: e
+      });
+    }
+  };
+
   async netSpeed (req, res) {
     try {
       const r = await serverMod.netSpeed();
