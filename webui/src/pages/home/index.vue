@@ -45,6 +45,7 @@ export default {
     }
   },
   async mounted () {
+    this.isCollapse = document.body.clientWidth < 1440;
     this.menus = [
       {
         icon: ['fas', 'home'],
@@ -85,6 +86,9 @@ export default {
       }
     ];
     this.menuIndex = this.$route.path;
+    window.onresize = () => {
+      this.isCollapse = document.body.clientWidth < 1440;
+    };
   }
 };
 </script>

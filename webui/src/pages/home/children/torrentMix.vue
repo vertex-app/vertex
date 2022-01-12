@@ -59,6 +59,7 @@
           label="操作">
           <template slot-scope="scope">
             <el-button @click="queryDetail(scope.row)" type="primary" size="small">详情</el-button>
+            <br>
             <el-button type="danger" size="small">删除</el-button>
           </template>
         </el-table-column>

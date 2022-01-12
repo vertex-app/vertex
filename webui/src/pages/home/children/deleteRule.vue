@@ -66,6 +66,10 @@
                 </el-input>
                 <div><el-tag type="info">种子下载速度, 仅在与上传速度小于一起使用时生效</el-tag></div>
               </el-form-item>
+              <el-form-item label="种子进度小于">
+                <el-input v-model="rule.minProgress" type="number"></el-input>
+                <div><el-tag type="info">种子下载进度, 范围为 0 - 1</el-tag></div>
+              </el-form-item>
               <el-form-item label="做种时间大于">
                 <el-input v-model="rule.maxSeedTime" type="number"></el-input>
                 <div><el-tag type="info">种子做种时间, 单位为 秒</el-tag></div>

@@ -88,8 +88,11 @@ class Client {
     if (rule.maxRatio) {
       fit = fit && (torrent.ratio > rule.maxRatio) && statusSeeding.some(item => item === torrent.state);
     }
-    if (rule.maxAvailability && torrent.progress < 0.95) {
+    if (rule.maxAvailability) {
       fit = fit && ((torrent.availability || torrent.seeder) > +rule.maxAvailability);
+    }
+    if (rule.minProgress) {
+      fit = fit && torrent.progress < +rule.minProgress;
     }
     if (rule.excludeCategory) {
       const categories = rule.excludeCategory.split(/\r\n|\n/);
