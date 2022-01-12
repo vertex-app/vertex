@@ -59,7 +59,7 @@ class Client {
     rule.maxDownloadSpeed = util.calSize(rule.maxDownloadSpeed, rule.maxDownloadSpeedUnit);
     rule.minUploadSpeed = util.calSize(rule.minUploadSpeed, rule.minUploadSpeedUnit);
     rule.maxUsedSpace = util.calSize(rule.maxUsedSpace, rule.maxUsedSpaceUnit);
-    rule.maxFreeSpace = util.calSize(rule.maxFreeSpaceSpeed, rule.maxFreeSpaceUnit);
+    rule.maxFreeSpace = util.calSize(rule.maxFreeSpace, rule.maxFreeSpaceUnit);
     let fit = '1';
     const statusLeeching = ['downloading', 'stalledDL', 'Downloading'];
     const statusSeeding = ['uploading', 'stalledUP', 'Seeding'];

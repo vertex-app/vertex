@@ -44,7 +44,7 @@
                     <el-option label="GiB/s" value="GiB"></el-option>
                   </el-select>
                 </el-input>
-                <div><el-tag type="info">种子上传速度, 仅在种子为 做种 状态或与 下载速度小于 选项一起使用时生效, 单位为 字节 (Byte)</el-tag></div>
+                <div><el-tag type="info">种子上传速度, 仅在种子为 做种 状态或与 下载速度小于 选项一起使用时生效</el-tag></div>
               </el-form-item>
               <el-form-item label="下载速度大于">
                 <el-input v-model="rule.maxDownloadSpeed" type="number">
@@ -54,7 +54,7 @@
                     <el-option label="GiB/s" value="GiB"></el-option>
                   </el-select>
                 </el-input>
-                <div><el-tag type="info">种子下载速度, 仅在与上传速度小于一起使用时生效, 单位为 字节 (Byte)</el-tag></div>
+                <div><el-tag type="info">种子下载速度, 仅在与上传速度小于一起使用时生效</el-tag></div>
               </el-form-item>
               <el-form-item label="下载速度小于">
                 <el-input v-model="rule.minDownloadSpeed" type="number">
@@ -64,7 +64,7 @@
                     <el-option label="GiB/s" value="GiB"></el-option>
                   </el-select>
                 </el-input>
-                <div><el-tag type="info">种子下载速度, 仅在与上传速度小于一起使用时生效, 单位为 字节 (Byte)</el-tag></div>
+                <div><el-tag type="info">种子下载速度, 仅在与上传速度小于一起使用时生效</el-tag></div>
               </el-form-item>
               <el-form-item label="做种时间大于">
                 <el-input v-model="rule.maxSeedTime" type="number"></el-input>
@@ -82,7 +82,7 @@
                     <el-option label="GiB" value="GiB"></el-option>
                   </el-select>
                 </el-input>
-                <div><el-tag type="info">硬盘空间 (读取自客户端), 仅对 做种 状态的种子生效, 单位为 字节 (Byte)</el-tag></div>
+                <div><el-tag type="info">硬盘空间 (读取自客户端), 仅对 做种 状态的种子生效</el-tag></div>
               </el-form-item>
               <el-form-item label="空间占用大于">
                 <el-input v-model="rule.maxUsedSpace" type="number">
