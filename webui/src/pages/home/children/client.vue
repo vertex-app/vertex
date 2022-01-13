@@ -131,7 +131,7 @@
                 <el-checkbox v-model="client.autoReannounce">自动汇报</el-checkbox>
                 <div><el-tag type="info">自动在种子添加后的 5 分钟内每分钟汇报一次, 获取更多 Peers</el-tag></div>
               </el-form-item>
-              <el-form-item required label="上限速度" prop="maxSpeed">
+              <el-form-item label="上限速度" prop="maxSpeed">
                 <el-input v-model="client.maxSpeed">
                   <el-select v-model="client.maxSpeedUnit" slot="append" style="width: 80px" placeholder="单位">
                     <el-option label="KiB/s" value="KiB"></el-option>

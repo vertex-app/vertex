@@ -22,7 +22,8 @@ class Client {
     this.username = client.username;
     this.clientUrl = client.clientUrl;
     this.pushMessage = client.pushMessage;
-    this.maxSpeed = client.maxSpeed;
+    this.maxSpeed = util.calSize(client.maxSpeed, client.maxSpeedUnit);
+    this.maxLeechNum = client.maxLeechNum;
     this.sameServerClients = client.sameServerClients;
     this.maindata = null;
     this.telegramProxy = this.createTelegramProxy(util.listBot().filter(item => item.id === client.telegram)[0] || {},

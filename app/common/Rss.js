@@ -133,8 +133,8 @@ class Rss {
         await this.telegramProxy.sendMessage(msgTemplate.rejectString(this.alias, torrent.name, util.formatSize(torrent.size), `MaxSpeed ${util.formatSize(serverSpeed)}/s`));
         return;
       }
-      const leechNum = this.client.maindata.torrents.filter(item => ['downloading', 'stalledDL', 'Downloading'].indexOf(item.state) !== -1);
-      if (this.client.MaxLeechNum && leechNum > this.client.MaxLeechNum) {
+      const leechNum = this.client.maindata.torrents.filter(item => ['downloading', 'stalledDL', 'Downloading'].indexOf(item.state) !== -1).length;
+      if (this.client.maxLeechNum && leechNum >= this.client.maxLeechNum) {
         await util.runRecord('INSERT INTO torrents (hash, name, rss_name, link, add_time, insert_type) values (?, ?, ?, ?, ?, ?)',
           [torrent.hash, torrent.name, torrent.rss_name, torrent.link, moment().unix(), 'reject max leech num']);
         await this.telegramProxy.sendMessage(msgTemplate.rejectString(this.alias, torrent.name, util.formatSize(torrent.size), `MaxLeechNum ${leechNum}`));
