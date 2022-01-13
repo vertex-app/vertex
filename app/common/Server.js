@@ -7,6 +7,7 @@ class Server {
     this.ssh = null;
     this.id = server.id;
     this.server = server;
+    this.reconnectTime = server.reconnectTime || 10;
     this.connected = false;
     this.connect(this.server);
     this.connectFailCount = 0;
@@ -19,11 +20,16 @@ class Server {
         this.ssh
           .on('ready', () => {
             logger.debug('connect ready', this.server.alias);
+            this.connectFailCount = 0;
             this.connected = true;
             resolve(1);
           })
           .on('error', (err) => {
             reject(err);
+          })
+          .on('close', () => {
+            logger.debug(this.server.alias, 'disconnected!');
+            this.connected = false;
           })
           .connect(this.server);
       });

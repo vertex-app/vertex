@@ -14,9 +14,14 @@ fi
 
 if [ ! -d '/vertex/db' ]; then
   mkdir /vertex/db
-  wget "https://minio.lswl.in/share/sql.db" -O /vertex/db/sql.db
 else
   echo '/vertex/db exists, continue'
+fi
+
+if [ ! -f '/vertex/db/sql.db' ]; then
+  wget "https://minio.lswl.in/share/sql.db" -O /vertex/db/sql.db
+else
+  echo '/vertex/db/sql.db exists, continue'
 fi
 
 if [ ! -d '/vertex/logs' ]; then

@@ -77,7 +77,7 @@ class Server {
       const r = serverMod.reload(serverId);
       res.send({
         success: true,
-        data: r
+        message: r
       });
     } catch (e) {
       logger.error(e);

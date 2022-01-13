@@ -89,9 +89,9 @@
               <el-form-item required label="客户端类型" prop="type">
                 <el-select v-model="client.type" placeholder="客户端类型">
                   <el-option label="qBittorrent" value="qBittorrent"></el-option>
-                  <el-option label="Deluge" value="deluge"></el-option>
+                  <el-option disabled label="Deluge" value="deluge"></el-option>
                 </el-select>
-                <div><el-tag type="info">客户端类型, 目前仅支持 qBittorrent 与 Deluge</el-tag></div>
+                <div><el-tag type="info">客户端类型, 目前仅支持 qBittorrent</el-tag></div>
               </el-form-item>
               <el-form-item v-if="client.type !== 'deluge'" required label="用户名" prop="username">
                 <el-input v-model="client.username"></el-input>
@@ -140,6 +140,10 @@
                   </el-select>
                 </el-input>
                 <div><el-tag type="info">若客户端的上传或下载速度在此速度之上时, 不再添加种子</el-tag></div>
+              </el-form-item>
+              <el-form-item required label="最大下载数量" prop="maxLeechNum">
+                <el-input v-model="client.maxLeechNum" style="width: 500px;"></el-input>
+                <div><el-tag type="info">最大的下载活动种子数量, 在超过此数量时, 将不会添加种子</el-tag></div>
               </el-form-item>
               <el-form-item v-if="clientList.length !== 0" label="同服客户端">
                 <el-checkbox-group v-model="client.sameServerClients">

@@ -99,6 +99,10 @@
               <el-form-item required label="端口" prop="port">
                 <el-input v-model="server.port">端口</el-input>
               </el-form-item>
+              <el-form-item label="重连次数" prop="reconnectTime">
+                <el-input v-model="server.reconnectTime">重连次数</el-input>
+                <div><el-tag type="info">最大的 SSH 自动重连次数, 执行操作遇到错误时会自动重连, 默认为 10</el-tag></div>
+              </el-form-item>
               <el-form-item size="small">
                 <el-button type="primary" @click="handleServerClick">新增 | 编辑</el-button>
                 <el-button @click="clearServer">清空</el-button>

@@ -1,5 +1,7 @@
+const util = require('../libs/util');
+
 class TorrentMod {
-  list (options) {
+  async list (options) {
     const clientsList = JSON.parse(options.clientList);
     let torrentList = [];
     const clients = global.runningClient;
@@ -8,11 +10,13 @@ class TorrentMod {
       for (const torrent of clients[clientId].maindata.torrents) {
         const _torrent = { ...torrent };
         _torrent.clientAlias = clients[clientId].clientAlias;
+        const res = await util.getRecord('select link from torrents where hash = ?', [_torrent.hash]);
+        _torrent.link = res ? res.link : false;
         torrentList.push(_torrent);
       }
     }
     if (options.sortKey) {
-      const sortType = options.sortType;
+      const sortType = options.sortType || 'desc';
       const sortKey = options.sortKey;
       const numberSet = {
         desc: [-1, 1],

@@ -46,11 +46,16 @@
           <el-table-column
             align="center"
             prop="c3"
-            label="大小">
+            label="做种/下载">
           </el-table-column>
           <el-table-column
             align="center"
             prop="c4"
+            label="大小">
+          </el-table-column>
+          <el-table-column
+            align="center"
+            prop="c5"
             label="Tracker">
           </el-table-column>
         </el-table-column>
@@ -58,9 +63,9 @@
           align="center"
           label="操作">
           <template slot-scope="scope">
-            <el-button @click="queryDetail(scope.row)" type="primary" size="small">详情</el-button>
-            <br>
-            <el-button type="danger" size="small">删除</el-button>
+            <el-button style="margin-left: 0" @click="queryDetail(scope.row)" type="primary" size="small">详情</el-button>
+            <el-button style="margin-left: 0" @click="gotoDetail(scope.row)" type="primary" size="small">种子页</el-button>
+            <el-button style="margin-left: 0" type="danger" size="small">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -171,9 +176,15 @@ export default {
         this.torrentList.push(torrent);
       }
     },
+
     async queryDetail (row) {
       this.torrentInfo = row;
       this.torrentInfoVisible = true;
+    },
+
+    async gotoDetail (row) {
+      if (!row.link) return await this.$message.error('链接不存在');
+      window.open(row.link);
     },
 
     async changePage (page) {
@@ -196,7 +207,7 @@ export default {
           return [1, 1];
         case 1:
           row.c1 = row.name;
-          return [1, 4];
+          return [1, 5];
         case 2:
           return [0, 0];
         case 3:
@@ -204,6 +215,8 @@ export default {
         case 4:
           return [0, 0];
         case 5:
+          return [0, 0];
+        case 6:
           return [2, 1];
         }
       } else {
@@ -218,12 +231,15 @@ export default {
           row.c2 = `${this.$formatSize(row.uploaded)} / ${this.$formatSize(row.downloaded)}`;
           return [1, 1];
         case 3:
-          row.c3 = this.$formatSize(row.size);
+          row.c3 = `${row.seeder} / ${row.leecher}`;
           return [1, 1];
         case 4:
-          row.c4 = row.tracker;
+          row.c4 = this.$formatSize(row.size);
           return [1, 1];
         case 5:
+          row.c5 = row.tracker;
+          return [1, 1];
+        case 6:
           return [0, 0];
         }
       }

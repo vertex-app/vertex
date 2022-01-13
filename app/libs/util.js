@@ -26,14 +26,14 @@ exports.getRecords = async function (sql, options) {
   return db.prepare(sql).all();
 };
 
-exports.insertRecord = async function (sql, options) {
+exports.runRecord = async function (sql, options) {
   let _sql = sql;
   if (options) {
     options.forEach((item) => {
       _sql = _sql.replace(/\?/, item);
     });
   }
-  logger.info('Insert Record:', _sql);
+  logger.info('Run Record:', _sql);
   return db.prepare(sql).run(...options);
 };
 

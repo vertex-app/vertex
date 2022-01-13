@@ -41,6 +41,8 @@ class Client {
       this.autoDeleteJob = new CronJob(client.autoDeleteCron, () => this.autoDelete());
       this.autoDeleteJob.start();
     }
+    this.recordJob = new CronJob('*/5 * * * *', () => this.record());
+    this.recordJob.start();
     this.messageId = 0;
     this.login();
   };
@@ -110,6 +112,7 @@ class Client {
     this.maindataJob.stop();
     if (this.reannounceJob) this.reannounceJob.stop();
     if (this.autoDeleteJob) this.autoDeleteJob.stop();
+    this.recordJob.stop();
     delete global.runningClient[this.id];
   };
 
@@ -249,6 +252,8 @@ class Client {
       for (const rule of this.deleteRules) {
         if (this._fitDeleteRule(rule, torrent)) {
           await this.reannounceTorrent(torrent.hash, torrent.name, torrent.tracker);
+          await util.runRecord('update torrents set size = ?, tracker = ?, uploaded = ?, downloaded = ?, delete_time = ? where hash = ?',
+            [torrent.size, torrent.tracker, torrent.uploaded, torrent.downloaded, moment().unix(), torrent.hash]);
           await this.deleteTorrent(torrent.hash, torrent.name, torrent.size, torrent.uploaded, torrent.downloaded,
             torrent.uploadSpeed, torrent.downloadSpeed, torrent.ratio, torrent.tracker, 'fit rule ' + rule.alias);
           return;
@@ -256,5 +261,12 @@ class Client {
       }
     }
   };
+
+  async record () {
+    for (const torrent of this.maindata.torrents) {
+      await util.runRecord('update torrents set size = ?, tracker = ?, uploaded = ?, downloaded = ? where hash = ?',
+        [torrent.size, torrent.tracker, torrent.uploaded, torrent.downloaded, torrent.hash]);
+    }
+  }
 }
 module.exports = Client;

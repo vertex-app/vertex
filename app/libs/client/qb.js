@@ -97,7 +97,8 @@ exports.getMaindata = async function (clientUrl, cookie) {
     addedTime: 'added_on',
     completedTime: 'completion_on',
     savePath: 'save_path',
-    seeder: 'num_seeds'
+    seeder: 'num_seeds',
+    leecher: 'num_leechs'
   };
   const maindata = {
     torrents: []
