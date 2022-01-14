@@ -1,11 +1,17 @@
 <template>
   <div class="login">
     <div class="login-main">
-      <div class="inputs">
-        <el-input v-model="username" size="small" placeholder="用户名"></el-input>
-        <el-input v-model="password" size="small" placeholder="密码" show-password></el-input>
-      </div>
-      <el-button type="primary" @click="login">登录</el-button>
+      <el-form ref="user" class="user-form" :model="user" size="mini" @keyup.enter.native="login">
+        <el-form-item required label="用户名" prop="username">
+          <el-input v-model="user.username"></el-input>
+        </el-form-item>
+        <el-form-item required label="密码" prop="password">
+          <el-input v-model="user.password"></el-input>
+        </el-form-item>
+        <el-form-item size="small">
+          <el-button @click="login" type="primary">登录</el-button>
+        </el-form-item>
+      </el-form>
     </div>
   </div>
 </template>
@@ -14,17 +20,23 @@
 export default {
   data () {
     return {
-      username: '',
-      password: ''
+      user: {}
     };
   },
   methods: {
     async login () {
-      const res = await this.$axiosGet(`/api/user/login?username=${this.username}&password=${this.$md5(this.password)}`);
-      if (!res) {
-        return;
-      }
-      window.location.href = '/home';
+      this.$refs.user.validate(async (valid) => {
+        if (valid) {
+          const url = `/api/user/login?username=${this.user.username}&password=${this.$md5(this.user.password)}`;
+          const res = await this.$axiosGet(url);
+          if (!res) {
+            return;
+          }
+          window.location.href = '/home';
+        } else {
+          return false;
+        }
+      });
     }
   }
 };

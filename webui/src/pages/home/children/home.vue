@@ -72,7 +72,7 @@
               type="flex"
               justify="space-between"
               align="top">
-              <el-col :span="11" class="progress-div">
+              <el-col :span="12" class="progress-div">
                 <v-chart style="height: 300px" :option="networkChart" autoresize />
                 <el-row
                   class="row"
@@ -87,7 +87,7 @@
                   </el-col>
                 </el-row>
               </el-col>
-              <el-col :span="11" class="progress-div">
+              <el-col :span="12" class="progress-div">
                 <div class="vnstat home-div">
                   <el-table
                     :data="vnstat[vnstatPeriod].interfaces[0].traffic[vnstatPeriod]"
@@ -539,7 +539,7 @@ export default {
       const res = await this.$axiosGet('/api/server/reload?id=' + row.id);
       await this.$messageBox(res);
       this.getServerList();
-    },
+    }
   },
   async mounted () {
     await this.getNetSpeed();
