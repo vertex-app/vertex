@@ -86,14 +86,15 @@
       <el-dialog :title="torrentInfo.name" :visible.sync="torrentInfoVisible" width="80%">
         <el-descriptions title="">
           <el-descriptions-item label="开始时间">{{$moment(torrentInfo.addedTime * 1000).format('YYYY-MM-DD HH:mm:ss')}}</el-descriptions-item>
-          <el-descriptions-item label="完成时间">{{torrentInfo.completedTime === -1 ? '∞' : $moment(torrentInfo.completedTime * 1000).format('YYYY-MM-DD HH:mm:ss')}}</el-descriptions-item>
-          <el-descriptions-item label="当前进度">{{torrentInfo.progress * 100 + '%'}}</el-descriptions-item>
+          <el-descriptions-item label="完成时间">{{torrentInfo.completedTime > $moment().unix() ? '∞' : $moment(torrentInfo.completedTime * 1000).format('YYYY-MM-DD HH:mm:ss')}}</el-descriptions-item>
+          <el-descriptions-item label="当前进度">{{(torrentInfo.progress * 100).toFixed(2) + '%'}}</el-descriptions-item>
           <el-descriptions-item label="已上传">{{$formatSize(torrentInfo.uploaded)}}</el-descriptions-item>
           <el-descriptions-item label="已下载">{{$formatSize(torrentInfo.downloaded)}}</el-descriptions-item>
           <el-descriptions-item label="总大小">{{$formatSize(torrentInfo.size)}}</el-descriptions-item>
           <el-descriptions-item label="上传速度">{{$formatSize(torrentInfo.uploadSpeed)}}/s</el-descriptions-item>
           <el-descriptions-item label="下载速度">{{$formatSize(torrentInfo.downloadSpeed)}}/s</el-descriptions-item>
           <el-descriptions-item label="分享率">{{torrentInfo.ratio.toFixed(2)}}</el-descriptions-item>
+          <el-descriptions-item label="做种 / 下载">{{`${torrentInfo.seeder}/${torrentInfo.leecher}`}}</el-descriptions-item>
       </el-descriptions>
       </el-dialog>
     </div>

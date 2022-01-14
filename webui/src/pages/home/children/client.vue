@@ -20,7 +20,7 @@
           label="启用"
           width="100">
           <template slot-scope="scope">
-            <el-tag>{{scope.row.enable}}</el-tag>
+            <el-tag :type="scope.row.enable ? '' : 'danger'">{{scope.row.enable}}</el-tag>
           </template>
         </el-table-column>
         <el-table-column

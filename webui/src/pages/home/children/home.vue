@@ -8,12 +8,12 @@
         <el-table-column
           prop="id"
           label="ID"
-          width="180">
+          width="200">
         </el-table-column>
         <el-table-column
           prop="alias"
           label="别名"
-          width="180">
+          width="200">
         </el-table-column>
         <el-table-column>
           <template slot="header" slot-scope="scope">
@@ -26,48 +26,24 @@
             {{ hostDisplay ? scope.row.host : '**********' }}
           </template>
         </el-table-column>
-        <el-table-column>
-          <template slot="header" slot-scope="scope">
-            <el-switch
-              v-model="usernameDisplay">
-            </el-switch>
-            用户名
-          </template>
-          <template slot-scope="scope">
-            {{ usernameDisplay ? scope.row.username : '**********' }}
-          </template>
-        </el-table-column>
         <el-table-column
-          label="CPU">
+          label="CPU"
+          width="144">
           <template slot-scope="scope">
             {{cpuUse[scope.row.id] ? (100 - cpuUse[scope.row.id].all.idle).toFixed(2) + '%' : null}}
           </template>
         </el-table-column>
         <el-table-column
-          label="Memory">
-          <template slot-scope="scope">
-            {{memoryUse[scope.row.id] ? $formatSize(memoryUse[scope.row.id].used) + '/' + $formatSize(memoryUse[scope.row.id].total) : null}}
-          </template>
-        </el-table-column>
-        <el-table-column
-          label="Disk">
-          <template slot-scope="scope">
-            {{diskUse[scope.row.id] ? $formatSize(diskUse[scope.row.id][0].used) + '/' + $formatSize(diskUse[scope.row.id][0].size) : null}}
-          </template>
-        </el-table-column>
-        <el-table-column
           label="↑/↓">
           <template slot-scope="scope">
-            {{netSpeed[scope.row.id] ? $formatSize(netSpeed[scope.row.id][0].txBytes) + '/s' : null}}
-            <br>
-            {{netSpeed[scope.row.id] ? $formatSize(netSpeed[scope.row.id][0].rxBytes) + '/s' : null}}
+            {{netSpeed[scope.row.id] ? `${$formatSize(netSpeed[scope.row.id][0].txBytes)}/s / ${$formatSize(netSpeed[scope.row.id][0].rxBytes)}/s` : null}}
           </template>
         </el-table-column>
         <el-table-column
           label="启用"
           width="100">
           <template slot-scope="scope">
-            <el-tag>{{scope.row.enable}}</el-tag>
+            <el-tag :type="scope.row.enable ? '' : 'danger'">{{scope.row.enable}}</el-tag>
           </template>
         </el-table-column>
         <el-table-column
@@ -80,7 +56,8 @@
         <el-table-column
           label="操作">
           <template slot-scope="scope">
-            <el-button :disabled="!scope.row.status" @click="displayDetails(scope.row)" type="primary" size="small">查看详情</el-button>
+            <el-button style="margin-left: 0" @click="reloadServer(scope.row)" type="warning" size="small">重置连接</el-button>
+            <el-button style="margin-left: 0" :disabled="!scope.row.status" @click="displayDetails(scope.row)" type="primary" size="small">查看详情</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -89,16 +66,32 @@
       <el-collapse  class="collapse" v-model="clientCollapse">
         <el-collapse-item :title="`${server.alias || ''} 详情`" name="1">
           <div class="server-status home-div">
-            <v-chart class="chart" :option="chart" autoresize />
+            <v-chart v-if="server.id" class="chart" :option="chart" autoresize />
             <el-row
               class="row"
               type="flex"
               justify="space-between"
               align="top">
               <el-col :span="11" class="progress-div">
+                <v-chart style="height: 300px" :option="networkChart" autoresize />
+                <el-row
+                  class="row"
+                  type="flex"
+                  justify="space-between"
+                  align="top">
+                  <el-col :span="11" class="progress-div">
+                    <v-chart style="width: 300px; height: 300px" :option="memoryChart" autoresize />
+                  </el-col>
+                  <el-col :span="11" class="progress-div">
+                    <v-chart style="width: 300px; height: 300px" :option="diskChart" autoresize />
+                  </el-col>
+                </el-row>
+              </el-col>
+              <el-col :span="11" class="progress-div">
                 <div class="vnstat home-div">
                   <el-table
                     :data="vnstat[vnstatPeriod].interfaces[0].traffic[vnstatPeriod]"
+                    size="mini"
                     stripe>
                     <el-table-column
                       width="200">
@@ -129,36 +122,6 @@
                       label="↓">
                     </el-table-column>
                   </el-table>
-                </div>
-              </el-col>
-              <el-col :span="11" class="progress-div">
-                <p>cpu</p>
-                <div class="progress" v-for="key of Object.keys(cpuUse[server.id] || {})" :key="key">
-                  <el-progress
-                    :percentage="parseInt(100 - (cpuUse[server.id][key] || { idle: 100 }).idle)"
-                    :color="customColors"
-                    :format="i => 'CPU ' + key + ' ' + i + '%'">
-                  </el-progress>
-                </div>
-                <el-divider></el-divider>
-                <p>Memory</p>
-                <div v-if="server.id" class="progress">
-                  <el-progress
-                    :percentage="parseInt((memoryUse[server.id] || { used: 0 }).used / (memoryUse[server.id] || { total: 1 }).total * 100)"
-                    :color="customColors"
-                    :format="i => `${$formatSize((memoryUse[server.id] || {}).used)}/${$formatSize((memoryUse[server.id] || {}).total)}, ${i}%`">
-                  </el-progress>
-                </div>
-                <el-divider></el-divider>
-                <p>Disk</p>
-                <div class="progress">
-                  <el-progress
-                    v-for="disk of diskUse[server.id]"
-                    :key="disk.mountPoint"
-                    :percentage="parseInt(disk.used / disk.size * 100)"
-                    :color="customColors"
-                    :format="i => `${disk.mountPoint}, ${$formatSize(disk.used)}/${$formatSize(disk.size)}, ${i}%`">
-                  </el-progress>
                 </div>
               </el-col>
             </el-row>
@@ -230,6 +193,132 @@ export default {
       ],
       chartSeries: [],
       xAxis: {},
+      memoryChart: {
+        textStyle: {
+          fontFamily: 'consolas'
+        },
+        series: [
+          {
+            type: 'gauge',
+            startAngle: 200,
+            endAngle: -20,
+            axisLine: {
+              lineStyle: {
+                width: 8,
+                color: [
+                  [0.3, '#67e0e3'],
+                  [0.7, '#37a2da'],
+                  [1, '#fd666d']
+                ]
+              }
+            },
+            pointer: {
+              itemStyle: {
+                color: 'auto'
+              }
+            },
+            axisTick: {
+              distance: -30,
+              length: 8,
+              lineStyle: {
+                color: '#fff',
+                width: 2
+              }
+            },
+            splitLine: {
+              distance: -30,
+              length: 30,
+              lineStyle: {
+                color: '#fff',
+                width: 4
+              }
+            },
+            axisLabel: {
+              color: 'auto',
+              distance: 20,
+              fontSize: 12
+            },
+            detail: {
+              valueAnimation: true,
+              formatter: '内存: {value}%',
+              fontSize: 16,
+              color: 'auto'
+            },
+            data: [
+              {
+                value: 0,
+                title: {
+                  show: true,
+                  fontSize: 12
+                }
+              }
+            ]
+          }
+        ]
+      },
+      diskChart: {
+        textStyle: {
+          fontFamily: 'consolas'
+        },
+        series: [
+          {
+            type: 'gauge',
+            startAngle: 200,
+            endAngle: -20,
+            axisLine: {
+              lineStyle: {
+                width: 8,
+                color: [
+                  [0.3, '#67e0e3'],
+                  [0.7, '#37a2da'],
+                  [1, '#fd666d']
+                ]
+              }
+            },
+            pointer: {
+              itemStyle: {
+                color: 'auto'
+              }
+            },
+            axisTick: {
+              distance: -30,
+              length: 8,
+              lineStyle: {
+                color: '#fff',
+                width: 2
+              }
+            },
+            splitLine: {
+              distance: -30,
+              length: 30,
+              lineStyle: {
+                color: '#fff',
+                width: 4
+              }
+            },
+            axisLabel: {
+              color: 'auto',
+              distance: 20,
+              fontSize: 12
+            },
+            detail: {
+              valueAnimation: true,
+              formatter: '磁盘: {value}%',
+              fontSize: 16,
+              color: 'auto'
+            },
+            data: [
+              {
+                value: 0,
+                title: {
+                  show: true,
+                  fontSize: 12
+                }
+              }
+            ]
+          }
+        ]
+      },
       chart: {
         title: {
           text: '流量曲线',
@@ -248,7 +337,7 @@ export default {
             let str = '';
             for (const param of params) {
               const size = this.$formatSize(param.value);
-              str += `${param.seriesName}: ${'&nbsp;'.repeat(10 - size.length)}${size}</br>`;
+              str += `${param.seriesName}: ${'&nbsp;'.repeat(16 - size.length || 1)}${size}</br>`;
             }
             return str;
           }
@@ -268,6 +357,7 @@ export default {
             name: 'Tx - 上传',
             type: 'line',
             data: [],
+            symbol: 'none',
             areaStyle: {
               opacity: 0.1
             },
@@ -279,6 +369,68 @@ export default {
             name: 'Rx - 下载',
             type: 'line',
             data: [],
+            symbol: 'none',
+            areaStyle: {
+              opacity: 0.1
+            },
+            itemStyle: {
+              color: '#3CB371'
+            },
+            smooth: true
+          }
+        ]
+      },
+      networkChart: {
+        title: {
+          text: '网络速率',
+          left: 'center'
+        },
+        legend: {
+          top: '8%'
+        },
+        textStyle: {
+          fontFamily: 'consolas'
+        },
+        darkMode: true,
+        tooltip: {
+          trigger: 'axis',
+          formatter: (params) => {
+            let str = '';
+            for (const param of params) {
+              const speed = this.$formatSize(param.value) + '/s';
+              str += `${param.seriesName}: ${'&nbsp;'.repeat(16 - speed.length)}${speed}</br>`;
+            }
+            return str;
+          }
+        },
+        xAxis: {
+          type: 'category',
+          data: []
+        },
+        yAxis: {
+          type: 'value',
+          axisLabel: {
+            formatter: this.$formatSize
+          }
+        },
+        series: [
+          {
+            name: 'Tx - 上传',
+            type: 'line',
+            data: [],
+            symbol: 'none',
+            areaStyle: {
+              opacity: 0.1
+            },
+            itemStyle: {
+              color: '#EE6363'
+            },
+            smooth: true
+          }, {
+            name: 'Rx - 下载',
+            type: 'line',
+            data: [],
+            symbol: 'none',
             areaStyle: {
               opacity: 0.1
             },
@@ -301,6 +453,17 @@ export default {
     async displayDetails (row) {
       this.server = row;
       await this.getVnstat();
+      await this.getDiskUse();
+      await this.getMemoryUse();
+      this.networkChart.xAxis.data = [];
+      this.networkChart.series[0].data = [];
+      this.networkChart.series[1].data = [];
+      const maxSizePoint = this.diskUse[this.server.id].sort((a, b) => b.size - a.size)[0];
+      const memoryPoint = this.memoryUse[this.server.id];
+      this.diskChart.series[0].data[0].value = (maxSizePoint.used / maxSizePoint.size * 100).toFixed(2);
+      this.memoryChart.series[0].data[0].value = (memoryPoint.used / memoryPoint.total * 100).toFixed(2);
+      this.diskChart.series[0].data[0].name = `${this.$formatSize(maxSizePoint.used)} / ${this.$formatSize(maxSizePoint.size)}`;
+      this.memoryChart.series[0].data[0].name = `${this.$formatSize(memoryPoint.used)} / ${this.$formatSize(memoryPoint.total)}`;
       this.handlePeriod('hour');
       this.clientCollapse = ['1'];
     },
@@ -327,6 +490,11 @@ export default {
         netSpeed[key] = res.data[key].sort((a, b) => b.txBytes - a.txBytes);
       }
       this.netSpeed = netSpeed;
+      if (this.server.id) {
+        this.networkChart.xAxis.data.push(this.$moment().format('mm:ss'));
+        this.networkChart.series[0].data.push(netSpeed[this.server.id][0].txBytes);
+        this.networkChart.series[1].data.push(netSpeed[this.server.id][0].rxBytes);
+      }
     },
     async getServerList () {
       const res = await this.$axiosGet('/api/server/list?_=' + Math.random());
@@ -366,19 +534,20 @@ export default {
         return;
       }
       this.memoryUse = res.data;
-    }
+    },
+    async reloadServer (row) {
+      const res = await this.$axiosGet('/api/server/reload?id=' + row.id);
+      await this.$messageBox(res);
+      this.getServerList();
+    },
   },
   async mounted () {
     await this.getNetSpeed();
     await this.getCpuUse();
-    await this.getDiskUse();
-    await this.getMemoryUse();
     await this.getServerList();
     this.freshData = setInterval(() => {
       this.getNetSpeed();
       this.getCpuUse();
-      this.getMemoryUse();
-      this.getDiskUse();
     }, 5000);
   },
   beforeDestroy () {

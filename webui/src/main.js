@@ -19,10 +19,11 @@ import md5 from 'md5-node';
 import ECharts from 'vue-echarts';
 import { use } from 'echarts/core';
 import { CanvasRenderer } from 'echarts/renderers';
-import { BarChart, LineChart } from 'echarts/charts';
+import { BarChart, GaugeChart, LineChart } from 'echarts/charts';
 import { GridComponent, TooltipComponent, TitleComponent, LegendComponent, VisualMapComponent } from 'echarts/components';
 
-use([CanvasRenderer, BarChart, LineChart, GridComponent, TooltipComponent, TitleComponent, LegendComponent, VisualMapComponent]);
+use([CanvasRenderer, BarChart, LineChart, GridComponent, GaugeChart,
+  TooltipComponent, TitleComponent, LegendComponent, VisualMapComponent]);
 
 Vue.prototype.$message = Message;
 Vue.prototype.$moment = moment;
