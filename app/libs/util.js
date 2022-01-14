@@ -23,7 +23,7 @@ exports.getRecords = async function (sql, options) {
     });
   }
   logger.info('Get Records:', _sql);
-  return db.prepare(sql).all();
+  return db.prepare(sql).all(...options);
 };
 
 exports.runRecord = async function (sql, options) {

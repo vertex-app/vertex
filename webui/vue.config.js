@@ -24,11 +24,18 @@ module.exports = {
       }
     }
   },
-  chainWebpack: config =>{
+  chainWebpack: config => {
     config.plugin('html')
       .tap(args => {
         args[0].title = 'Vertex';
         return args;
       });
+    if (process.env.NODE_ENV === 'production') {
+      const { execSync } = require('child_process');
+      config.plugin('define').tap((args) => {
+        args[0]['process.env'].version = execSync('git rev-parse HEAD').toString().trim();
+        return args;
+      });
+    }
   }
 };

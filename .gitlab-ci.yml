@@ -11,7 +11,7 @@ generate_static:
   tags:
     - compile
   script:
-    - apk add nodejs npm
+    - apk add nodejs npm git
     - cd webui
     - npm i
     - npm run build

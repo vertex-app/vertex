@@ -4,10 +4,12 @@ import Router from 'vue-router';
 import Login from '@/pages/login/index';
 import Index from '@/pages/home/index';
 import Home from '@/pages/home/children/home';
+import Monitor from '@/pages/home/children/monitor';
 import Setting from '@/pages/home/children/setting';
 import Server from '@/pages/home/children/server';
 import Client from '@/pages/home/children/client';
 import TorrentMix from '@/pages/home/children/torrentMix';
+import TorrentHistory from '@/pages/home/children/torrentHistory';
 import DeleteRule from '@/pages/home/children/deleteRule';
 import RssRule from '@/pages/home/children/rssRule';
 import Telegram from '@/pages/home/children/telegram';
@@ -41,6 +43,12 @@ export default new Router({
           component: Home,
           meta: {
             title: '主页'
+          }
+        }, {
+          path: 'monitor',
+          component: Monitor,
+          meta: {
+            title: '监控信息'
           }
         }, {
           path: 'setting',
@@ -83,6 +91,12 @@ export default new Router({
           component: TorrentMix,
           meta: {
             title: '种子聚合'
+          }
+        }, {
+          path: 'torrent-history',
+          component: TorrentHistory,
+          meta: {
+            title: '种子历史'
           }
         }, {
           path: 'rss',

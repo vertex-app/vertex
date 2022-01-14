@@ -37,5 +37,22 @@ class Torrent {
       });
     }
   };
+
+  async listHistory (req, res) {
+    const options = req.query;
+    try {
+      const r = await torrentMod.listHistory(options);
+      res.send({
+        success: true,
+        data: r
+      });
+    } catch (e) {
+      logger.error(e);
+      res.send({
+        success: false,
+        message: e
+      });
+    }
+  };
 }
 module.exports = Torrent;

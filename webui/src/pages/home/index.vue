@@ -52,6 +52,10 @@ export default {
         title: ' 主页',
         path: '/home'
       }, {
+        icon: ['fas', 'chart-line'],
+        title: ' 监控信息',
+        path: '/monitor'
+      }, {
         icon: ['fas', 'sliders-h'],
         title: ' 全局设置',
         path: '/setting'
@@ -79,6 +83,10 @@ export default {
         icon: ['fas', 'magnet'],
         title: ' 种子聚合',
         path: '/torrent-mix'
+      }, {
+        icon: ['fas', 'magnet'],
+        title: ' 种子历史',
+        path: '/torrent-history'
       }, {
         icon: ['fab', 'telegram-plane'],
         title: ' Telegram',
