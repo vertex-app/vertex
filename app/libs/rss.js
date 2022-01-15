@@ -102,9 +102,44 @@ const _getTorrentsBluTopia = async function (rssUrl) {
   return torrents;
 };
 
+const _getTorrentsTorrentDB = async function (rssUrl) {
+  let res;
+  res = await util.requestPromise(rssUrl + '?____=' + Math.random());
+  res = await parseXml(res.body);
+  const torrents = [];
+  const items = res.rss.channel[0].item;
+  for (let i = 0; i < items.length; ++i) {
+    const torrent = {
+      size: 0,
+      name: '',
+      hash: '',
+      id: 0,
+      url: '',
+      link: ''
+    };
+    const size = items[i].description[0].match(/(\d*\.\d*|\d*) (GB|MB|TB|KB)/)[0];
+    const map = {
+      KB: 1000,
+      MB: 1000 * 1000,
+      GB: 1000 * 1000 * 1000,
+      TB: 1000 * 1000 * 1000 * 1000
+    };
+    const regRes = size.match(/(\d*\.\d*|\d*) (GB|MB|TB|KB)/);
+    torrent.size = parseFloat(regRes[1]) * map[regRes[2]];
+    torrent.name = items[i].title[0];
+    const link = items[i].comments[0];
+    torrent.link = link;
+    torrent.hash = items[i].guid[0];
+    torrent.url = items[i].persistent[0];
+    torrents.push(torrent);
+  }
+  return torrents;
+};
+
 const _getTorrentsWrapper = {
   'filelist.io': _getTorrentsFileList,
-  'blutopia.xyz': _getTorrentsBluTopia
+  'blutopia.xyz': _getTorrentsBluTopia,
+  'torrentdb.net': _getTorrentsTorrentDB
 };
 
 exports.getTorrents = async function (rssUrl) {

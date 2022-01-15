@@ -37,6 +37,7 @@ class Client {
       this.reannounceJob = new CronJob('*/10 * * * * *', () => this.autoReannounce());
       this.reannounceJob.start();
     }
+    this._deleteRules = client.deleteRules;
     this.deleteRules = util.listDeleteRule().filter(item => client.deleteRules.indexOf(item.id) !== -1);
     if (client.autoDelete) {
       this.autoDeleteJob = new CronJob(client.autoDeleteCron, () => this.autoDelete());
@@ -91,8 +92,14 @@ class Client {
     if (rule.maxRatio) {
       fit = fit && (torrent.ratio > rule.maxRatio) && statusSeeding.some(item => item === torrent.state);
     }
+    if (rule.minRatio) {
+      fit = fit && (torrent.ratio < rule.minRatio && ['downloading', 'Downloading'].some(item => item === torrent.state));
+    }
     if (rule.maxAvailability) {
       fit = fit && ((torrent.availability || torrent.seeder) > +rule.maxAvailability);
+    }
+    if (rule.minPeerNum) {
+      fit = fit && (torrent.seeder + torrent.leecher) < +rule.minPeerNum;
     }
     if (rule.minProgress) {
       fit = fit && torrent.progress < +rule.minProgress;
@@ -116,6 +123,11 @@ class Client {
     this.recordJob.stop();
     delete global.runningClient[this.id];
   };
+
+  reloadDeleteRule () {
+    logger.info('Reload Delete rule', this.clientId);
+    this.deleteRules = util.listDeleteRule().filter(item => this._deleteRules.indexOf(item.id) !== -1);
+  }
 
   createTelegramProxy (telegram, channel) {
     const _telegram = new Telegram(telegram.token, channel, 'HTML', telegram.domain);

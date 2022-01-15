@@ -49,6 +49,14 @@ const _freeToTheGlory = async function (url, cookie) {
   return state;
 };
 
+const _freeDmhy = async function (url, cookie) {
+  const d = await getDocument(url, cookie);
+  const state = d.querySelector('td[valign=top] img[class=pro_free2up]') ||
+    d.querySelector('td[valign=top] img[class=pro_free]') ||
+    (d.querySelector('td[valign=top] img[class=arrowdown]') && d.querySelector('td[valign=top] img[class=arrowdown]').nextSibling.innerHTML === '0.00X');
+  return state;
+};
+
 const freeWrapper = {
   'pterclub.com': _free,
   'pt.btschool.club': _free,
@@ -61,9 +69,11 @@ const freeWrapper = {
   'audiences.me': _free,
   'www.hddolby.com': _free,
   'pthome.net': _free,
+  'pt.soulvoice.club': _free,
   'hdchina.org': _freeHDChina,
   'open.cd': _freeOpencd,
-  'totheglory.im': _freeToTheGlory
+  'totheglory.im': _freeToTheGlory,
+  'u2.dmhy.org': _freeDmhy
 };
 
 const _hr = async function (url, cookie) {
@@ -88,7 +98,7 @@ exports.free = async (url, cookie) => {
   if (freeWrapper[host]) {
     return await freeWrapper[host](url, cookie);
   }
-  throw new Error(`暂不支持 ${host}, 请检查后重试.`);
+  throw new Error(`暂不支持 ${host} 抓取免费, 请检查后重试.`);
 };
 
 exports.hr = async (url, cookie) => {
@@ -96,5 +106,5 @@ exports.hr = async (url, cookie) => {
   if (hrWrapper[host]) {
     return await hrWrapper[host](url, cookie);
   }
-  throw new Error(`暂不支持 ${host}, 请检查后重试.`);
+  throw new Error(`暂不支持 ${host} 抓取 HR, 请检查后重试.`);
 };

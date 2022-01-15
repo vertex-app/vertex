@@ -27,11 +27,16 @@
           <el-table-column
             align="center"
             prop="c3"
-            label="Tracker">
+            label="记录时间">
           </el-table-column>
           <el-table-column
             align="center"
             prop="c4"
+            label="Tracker">
+          </el-table-column>
+          <el-table-column
+            align="center"
+            prop="c5"
             label="备注">
           </el-table-column>
         </el-table-column>
@@ -90,7 +95,7 @@ export default {
         switch (columnIndex) {
         case 0:
           row.c0 = row.name;
-          return [1, 5];
+          return [1, 6];
         case 1:
           return [0, 0];
         case 2:
@@ -112,10 +117,13 @@ export default {
           row.c2 = `${this.$formatSize(row.uploaded || 0)} / ${this.$formatSize(parseInt(row.downloaded) || 0)}`;
           return [1, 1];
         case 3:
-          row.c3 = row.tracker;
+          row.c3 = this.$moment(row.addTime * 1000).format('YYYY-MM-DD HH:mm:ss');
           return [1, 1];
         case 4:
-          row.c4 = row.type;
+          row.c4 = row.tracker;
+          return [1, 1];
+        case 5:
+          row.c5 = row.type;
           return [1, 1];
         }
       }

@@ -33,7 +33,7 @@ module.exports = {
     if (process.env.NODE_ENV === 'production') {
       const { execSync } = require('child_process');
       config.plugin('define').tap((args) => {
-        args[0]['process.env'].version = execSync('git rev-parse HEAD').toString().trim();
+        args[0]['process.env'].version = JSON.stringify(execSync('git rev-parse HEAD').toString().trim());
         return args;
       });
     }

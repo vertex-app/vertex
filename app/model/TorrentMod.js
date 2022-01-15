@@ -1,4 +1,3 @@
-const logger = require('../libs/logger');
 const util = require('../libs/util');
 
 class TorrentMod {
@@ -52,7 +51,7 @@ class TorrentMod {
 
   async listHistory (options) {
     const index = options.length * (options.page - 1);
-    const torrents = await util.getRecords('select rss_name as rssName, name, size, insert_type as type, uploaded, downloaded from torrents order by id desc limit ? offset ?',
+    const torrents = await util.getRecords('select rss_name as rssName, name, size, insert_type as type, uploaded, downloaded, tracker, add_time as addTime from torrents order by id desc limit ? offset ?',
       [options.length, index]);
     return { torrents };
   }

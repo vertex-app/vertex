@@ -102,9 +102,17 @@
                 <el-input v-model="rule.maxRatio" type="number"></el-input>
                 <div><el-tag type="info">分享率, 仅对 做种 状态的种子生效, 可以使用小数</el-tag></div>
               </el-form-item>
+              <el-form-item label="分享率小于">
+                <el-input v-model="rule.minRatio" type="number"></el-input>
+                <div><el-tag type="info">分享率, 仅对 下载不含等待 状态的种子生效, 建议配合进度使用, 避免删除新种, 可以使用小数</el-tag></div>
+              </el-form-item>
               <el-form-item label="可用性大于">
                 <el-input v-model="rule.maxAvailability" type="number"></el-input>
                 <div><el-tag type="info">可用性 - 近似于做种数 ( qb 4.1.9 为做种数 ), 仅对 下载 状态的种子生效, 可以使用小数</el-tag></div>
+              </el-form-item>
+              <el-form-item label="连接数大于">
+                <el-input v-model="rule.minPeerNum" type="number"></el-input>
+                <div><el-tag type="info">已连接上的 Peer 数量, 包括做种与下载</el-tag></div>
               </el-form-item>
               <el-form-item label="分类">
                 <el-input v-model="rule.category" type="textarea"></el-input>

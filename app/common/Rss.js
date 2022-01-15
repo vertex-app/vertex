@@ -24,6 +24,7 @@ class Rss {
     this.cookie = rss.cookie;
     this.savePath = rss.savePath;
     this.category = rss.category;
+    this._rssRules = rss.rssRules;
     this.rssRules = util.listRssRule().filter(item => (rss.rssRules.indexOf(item.id) !== -1));
     this.downloadLimit = util.calSize(rss.downloadLimit, rss.downloadLimitUnit);
     this.uploadLimit = util.calSize(rss.uploadLimit, rss.uploadLimitUnit);
@@ -77,6 +78,11 @@ class Rss {
     logger.info('Reload Client', this.clientId);
     this.clients = global.runningClient;
     this.client = global.runningClient[this.clientId];
+  }
+
+  reloadRssRule () {
+    logger.info('Reload Rss rule', this.clientId);
+    this.rssRules = util.listRssRule().filter(item => (this._rssRules.indexOf(item.id) !== -1));
   }
 
   createTelegramProxy (telegram, channel) {
