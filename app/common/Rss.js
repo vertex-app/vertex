@@ -105,7 +105,7 @@ class Rss {
               try {
                 await client.addTorrent(this.alias, torrent.name, util.formatSize(+torrent.size), torrent.url, _torrent.name, true, this.uploadLimit, this.downloadLimit, _torrent.savePath, this.category, rule);
                 await util.runRecord('INSERT INTO torrents (hash, name, rss_name, link, add_time, insert_type) values (?, ?, ?, ?, ?, ?)',
-                  [torrent.hash, torrent.name, torrent.rss_name, torrent.link, moment().unix(), 'reseed']);
+                  [torrent.hash, torrent.name, this.alias, torrent.link, moment().unix(), 'reseed']);
                 return;
               } catch (error) {
                 logger.error('Client', this.clientAlias, 'add torrent failed', error.message);
@@ -129,14 +129,14 @@ class Rss {
       }
       if (this.client.maxSpeed && serverSpeed > this.client.maxSpeed) {
         await util.runRecord('INSERT INTO torrents (hash, name, rss_name, link, add_time, insert_type) values (?, ?, ?, ?, ?, ?)',
-          [torrent.hash, torrent.name, torrent.rss_name, torrent.link, moment().unix(), 'reject max speed']);
+          [torrent.hash, torrent.name, this.alias, torrent.link, moment().unix(), 'reject max speed']);
         await this.telegramProxy.sendMessage(msgTemplate.rejectString(this.alias, torrent.name, util.formatSize(torrent.size), `MaxSpeed ${util.formatSize(serverSpeed)}/s`));
         return;
       }
       const leechNum = this.client.maindata.torrents.filter(item => ['downloading', 'stalledDL', 'Downloading'].indexOf(item.state) !== -1).length;
       if (this.client.maxLeechNum && leechNum >= this.client.maxLeechNum) {
         await util.runRecord('INSERT INTO torrents (hash, name, rss_name, link, add_time, insert_type) values (?, ?, ?, ?, ?, ?)',
-          [torrent.hash, torrent.name, torrent.rss_name, torrent.link, moment().unix(), 'reject max leech num']);
+          [torrent.hash, torrent.name, this.alias, torrent.link, moment().unix(), 'reject max leech num']);
         await this.telegramProxy.sendMessage(msgTemplate.rejectString(this.alias, torrent.name, util.formatSize(torrent.size), `MaxLeechNum ${leechNum}`));
         return;
       }
@@ -144,7 +144,7 @@ class Rss {
         try {
           if (!await util.scrapeFree(torrent.link, this.cookie)) {
             await util.runRecord('INSERT INTO torrents (hash, name, rss_name, link, add_time, insert_type) values (?, ?, ?, ?, ?, ?)',
-              [torrent.hash, torrent.name, torrent.rss_name, torrent.link, moment().unix(), 'not free']);
+              [torrent.hash, torrent.name, this.alias, torrent.link, moment().unix(), 'not free']);
             await this.telegramProxy.sendMessage(msgTemplate.rejectString(this.alias, torrent.name, util.formatSize(torrent.size), 'Not Free'));
             return;
           }

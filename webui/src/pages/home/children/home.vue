@@ -1,12 +1,18 @@
 <template>
   <div class="site-settings">
-    Hey!
+    Hey!  version: {{version}}
   </div>
 </template>
 
 <script>
 export default {
-  components: {
+  data () {
+    return {
+      version: 'dev'
+    };
+  },
+  mounted () {
+    this.version = process.env.version || this.version;
   }
 };
 </script>
