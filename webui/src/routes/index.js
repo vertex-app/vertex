@@ -14,6 +14,7 @@ import DeleteRule from '@/pages/home/children/deleteRule';
 import RssRule from '@/pages/home/children/rssRule';
 import Telegram from '@/pages/home/children/telegram';
 import Rss from '@/pages/home/children/rss';
+import Log from '@/pages/home/children/log';
 
 Vue.use(Router);
 
@@ -103,6 +104,12 @@ export default new Router({
           component: Rss,
           meta: {
             title: 'Rss'
+          }
+        }, {
+          path: 'log',
+          component: Log,
+          meta: {
+            title: 'log'
           }
         }
       ]

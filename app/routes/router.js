@@ -116,6 +116,8 @@ module.exports = function (app, express, router) {
   router.get('/torrent/listHistory', ctrl.Torrent.listHistory);
   router.get('/torrent/info', ctrl.Torrent.info);
 
+  router.get('/log/get', ctrl.Log.get);
+
   app.use('/api', router);
   app.use('*', (req, res, next) => {
     const pathname = req._parsedOriginalUrl.pathname;

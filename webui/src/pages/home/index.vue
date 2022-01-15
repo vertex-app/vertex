@@ -91,6 +91,10 @@ export default {
         icon: ['fab', 'telegram-plane'],
         title: ' Telegram',
         path: '/telegram'
+      }, {
+        icon: ['fas', 'sticky-note'],
+        title: ' 日志',
+        path: '/log'
       }
     ];
     this.menuIndex = this.$route.path;

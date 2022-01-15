@@ -37,4 +37,8 @@ body {
   -webkit-text-size-adjust: 100%;
   background: #e3f9fd;
 }
+
+.el-textarea__inner {
+  font-family: 'consolas';
+}
 </style>

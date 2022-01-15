@@ -104,6 +104,8 @@ export default {
           return [0, 0];
         case 4:
           return [0, 0];
+        case 5:
+          return [0, 0];
         }
       } else {
         switch (columnIndex) {
