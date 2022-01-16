@@ -110,7 +110,7 @@
                 <el-input v-model="rule.maxAvailability" type="number"></el-input>
                 <div><el-tag type="info">可用性 - 近似于做种数 ( qb 4.1.9 为做种数 ), 仅对 下载 状态的种子生效, 可以使用小数</el-tag></div>
               </el-form-item>
-              <el-form-item label="连接数大于">
+              <el-form-item label="连接数小于">
                 <el-input v-model="rule.minPeerNum" type="number"></el-input>
                 <div><el-tag type="info">已连接上的 Peer 数量, 包括做种与下载</el-tag></div>
               </el-form-item>

@@ -1,7 +1,7 @@
 const util = require('./util');
 const config = require('./config');
 
-const telegramConfig = config.getTelegramConfig();
+const telegramConfig = config.getTelegramConfig() || {};
 
 class Telegram {
   constructor (token, id, parseMode, host = 'https://api.telegram.org') {
