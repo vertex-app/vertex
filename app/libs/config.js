@@ -15,5 +15,9 @@ module.exports = {
 
   getAuthConfig () {
     return config.auth;
+  },
+
+  getTelegramConfig () {
+    return config.telegram;
   }
 };

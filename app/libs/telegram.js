@@ -1,8 +1,11 @@
 const util = require('./util');
+const config = require('./config');
+
+const telegramConfig = config.getTelegramConfig();
 
 class Telegram {
-  constructor (token, id, parseMode, domain = 'api.telegram.org') {
-    this.domain = domain;
+  constructor (token, id, parseMode, host = 'https://api.telegram.org') {
+    this.host = telegramConfig.host || host;
     this.token = token;
     this.id = id;
     this.parseMode = parseMode || 'HTML';
@@ -10,7 +13,7 @@ class Telegram {
 
   async sendMessage (message) {
     const option = {
-      url: 'https://' + this.domain + '/bot' + this.token + '/sendMessage',
+      url: this.host + '/bot' + this.token + '/sendMessage',
       method: 'POST',
       json: true,
       body: {
@@ -25,7 +28,7 @@ class Telegram {
 
   async editMessage (messageId, message) {
     const option = {
-      url: 'https://' + this.domain + '/bot' + this.token + '/editMessageText',
+      url: this.host + '/bot' + this.token + '/editMessageText',
       method: 'POST',
       json: true,
       body: {
@@ -41,7 +44,7 @@ class Telegram {
 
   async deleteMessage (messageId) {
     const option = {
-      url: 'https://' + this.domain + '/bot' + this.token + '/deleteMessage',
+      url: this.host + '/bot' + this.token + '/deleteMessage',
       method: 'POST',
       json: true,
       body: {
