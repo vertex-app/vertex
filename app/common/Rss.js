@@ -155,7 +155,9 @@ class Rss {
             return;
           }
         } catch (e) {
-          logger.error('Scrape torrent error: ', e.message);
+          logger.error('Scrape free torrent error: ', e.message);
+          await util.runRecord('INSERT INTO torrents (hash, name, rss_name, link, add_time, insert_type) values (?, ?, ?, ?, ?, ?)',
+            [torrent.hash, torrent.name, this.alias, torrent.link, moment().unix(), 'not free']);
           await this.telegramProxy.sendMessage(msgTemplate.scrapeErrorString(this.alias, torrent.name, e.message));
           return;
         }
@@ -169,7 +171,9 @@ class Rss {
             return;
           }
         } catch (e) {
-          logger.error('Scrape torrent error: ', e.message);
+          logger.error('Scrape hr torrent error: ', e.message);
+          await util.runRecord('INSERT INTO torrents (hash, name, rss_name, link, add_time, insert_type) values (?, ?, ?, ?, ?, ?)',
+            [torrent.hash, torrent.name, this.alias, torrent.link, moment().unix(), 'not free']);
           await this.telegramProxy.sendMessage(msgTemplate.scrapeErrorString(this.alias, torrent.name, e.message));
           return;
         }
