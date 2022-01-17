@@ -72,6 +72,7 @@ class Client {
     rule.minUploadSpeed = util.calSize(rule.minUploadSpeed, rule.minUploadSpeedUnit);
     rule.maxUsedSpace = util.calSize(rule.maxUsedSpace, rule.maxUsedSpaceUnit);
     rule.maxFreeSpace = util.calSize(rule.maxFreeSpace, rule.maxFreeSpaceUnit);
+    rule.maxAvgDownloadSpeed = util.calSize(rule.maxAvgDownloadSpeed, rule.maxAvgDownloadSpeedUnit);
     let fit = '1';
     const statusLeeching = ['downloading', 'stalledDL', 'Downloading'];
     const statusSeeding = ['uploading', 'stalledUP', 'Seeding'];
@@ -84,6 +85,9 @@ class Client {
     if (rule.minDownloadSpeed && rule.minUploadSpeed) {
       fit = fit && (torrent.downloadSpeed < +rule.minDownloadSpeed && torrent.uploadSpeed < +rule.minUploadSpeed &&
         torrent.state !== 'stalledDL' && statusLeeching.some(item => item === torrent.state));
+    }
+    if (rule.maxAvgDownloadSpeed) {
+      fit = fit && torrent.completed / (moment().unix() - torrent.addedTime) > +rule.maxAvgDownloadSpeed;
     }
     if (rule.maxSeedTime) {
       fit = fit && (moment().unix() - torrent.completedTime > +rule.maxSeedTime) && statusSeeding.some(item => item === torrent.state);

@@ -70,6 +70,16 @@
                 </el-input>
                 <div><el-tag type="info">种子下载速度, 仅在与上传速度小于一起使用时生效</el-tag></div>
               </el-form-item>
+              <el-form-item label="平均下载速度大于">
+                <el-input v-model="rule.maxAvgDownloadSpeed" type="number">
+                  <el-select v-model="rule.maxAvgDownloadSpeedUnit" slot="append" style="width: 80px" placeholder="单位">
+                    <el-option label="KiB/s" value="KiB"></el-option>
+                    <el-option label="MiB/s" value="MiB"></el-option>
+                    <el-option label="GiB/s" value="GiB"></el-option>
+                  </el-select>
+                </el-input>
+                <div><el-tag type="info">种子平均下载速度</el-tag></div>
+              </el-form-item>
               <el-form-item label="种子进度小于">
                 <el-input v-model="rule.minProgress" type="number"></el-input>
                 <div><el-tag type="info">种子下载进度, 范围为 0 - 100</el-tag></div>
