@@ -120,7 +120,8 @@ class Client {
       const categories = rule.category.split(/\r\n|\n/);
       fit = fit && categories.some(category => torrent.category === category);
     }
-    if (!fitTimeJob & rule.fitTime) {
+    if (!fitTimeJob && rule.fitTime) {
+      logger.debug('now:', moment().unix(), 'startTime:', this.fitTime[torrent.hash], 'setTime:', rule.fitTime);
       fit = fit && (moment().unix() - this.fitTime[torrent.hash] > rule.fitTime);
     }
     return fit !== '1' && fit;
@@ -176,6 +177,10 @@ class Client {
       this.cookie = await this.client.login(this.username, this.clientUrl, this.password);
       this.status = true;
       logger.info('Client', this.clientAlias, 'login success');
+      Object.keys(global.runningRss)
+        .map(item => global.runningRss[item])
+        .filter(item => item.clientId === this.id)
+        .forEach((item) => item.reloadClient());
       if (!this.messageId) {
         await this.telegramProxy.sendMessage(msgTemplate.connectClientString(this.clientAlias, moment().format('YYYY-MM-DD HH:mm:ss')));
         const res = await this.channelProxy.sendMessage(msgTemplate.connectClientString(this.clientAlias, moment().format('YYYY-MM-DD HH:mm:ss')));
@@ -183,10 +188,6 @@ class Client {
         this.messageId = res.body.result.message_id;
         await this.channelProxy.deleteMessage(this.messageId - 1);
       }
-      Object.keys(global.runningRss)
-        .map(item => global.runningRss[item])
-        .filter(item => item.clientId === this.id)
-        .forEach((item) => item.reloadClient());
     } catch (error) {
       logger.error('Client', this.clientAlias, 'login failed', error.message);
       await this.telegramProxy.sendMessage(msgTemplate.getCookieErrorString(this.clientAlias, error.message));
@@ -310,6 +311,7 @@ class Client {
   };
 
   flashFitTime (rule) {
+    if (!this.maindata || !this.maindata.torrents || this.maindata.torrents.length === 0) return;
     const torrents = this.maindata.torrents.sort((a, b) => a.completedTime - b.completedTime || a.addedTime - b.addedTime);
     for (const torrent of torrents) {
       if (this._fitDeleteRule(rule, torrent, true)) {
