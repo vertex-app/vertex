@@ -26,7 +26,7 @@ class RssMod {
     rssSet.sameServerClients = rssSet.sameServerClients || [];
     fs.writeFileSync(path.join(__dirname, '../data/rss/', options.id + '.json'), JSON.stringify(rssSet, null, 2));
     if (global.runningRss[options.id]) global.runningRss[options.id].destroy();
-    global.runningRss[options.id] = new Rss(rssSet);
+    if (rssSet.enable) global.runningRss[options.id] = new Rss(rssSet);
     return '修改 Rss 成功';
   };
 
