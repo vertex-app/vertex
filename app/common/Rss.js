@@ -17,6 +17,7 @@ class Rss {
     this.clientId = rss.client;
     this.autoReseed = rss.autoReseed;
     this.onlyReseed = rss.onlyReseed;
+    this.reseedClients = rss.reseedClients;
     this.pushMessage = rss.pushMessage;
     this.skipSameTorrent = rss.skipSameTorrent;
     this.scrapeFree = rss.scrapeFree;
@@ -102,7 +103,7 @@ class Rss {
 
   async _pushTorrent (torrent, rule) {
     if (this.autoReseed && torrent.hash.indexOf('fakehash') === -1) {
-      for (const key of Object.keys(this.clients)) {
+      for (const key of this.reseedClients) {
         const client = this.clients[key];
         for (const _torrent of client.maindata.torrents) {
           if (+_torrent.size === +torrent.size && +_torrent.completed === +_torrent.size) {

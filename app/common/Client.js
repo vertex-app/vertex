@@ -197,7 +197,7 @@ class Client {
         };
       }
       await this.channelProxy.editMessage(this.messageId, msgTemplate.clientInfoString(this.maindata, serverSpeed));
-      logger.info('Client', this.clientAlias, 'get maindata success');
+      logger.debug('Client', this.clientAlias, 'get maindata success');
     } catch (error) {
       logger.error(error);
       logger.error('Client', this.clientAlias, 'get maindata failed', error.message);
@@ -212,7 +212,7 @@ class Client {
       this.login();
       throw new Error('statusCode is ' + statusCode);
     }
-    logger.info('Client', this.clientAlias, 'add torrent success');
+    logger.info('Client', this.clientAlias, 'add torrent success, note:', rule.alias);
     await this.telegramProxy.sendMessage(msgTemplate.addTorrentString(isSkipChecking, taskName, this.clientAlias, torrentName, size, torrentReseedName, rule));
   };
 
@@ -236,7 +236,7 @@ class Client {
         }
       }
       await this.client.deleteTorrent(this.clientUrl, this.cookie, hash, isDeleteFiles);
-      logger.info('Client', this.clientAlias, 'delete torrent success');
+      logger.info('Client', this.clientAlias, 'delete torrent success, note:', note);
       await this.telegramProxy.sendMessage(
         msgTemplate.deleteTorrentString(this.clientAlias, torrentName, size,
           `${util.formatSize(upload)}/${util.formatSize(download)}`,

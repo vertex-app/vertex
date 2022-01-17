@@ -139,6 +139,12 @@
                 <el-checkbox v-model="rss.onlyReseed"></el-checkbox>
                 <div><el-tag type="info">若种子没有匹配自动辅种, 则跳过种子, 不会添加到客户端</el-tag></div>
               </el-form-item>
+              <el-form-item v-if="!hideReseed" required label="仅辅种以下客户端" prop="reseedClients">
+                <el-checkbox-group v-model="rss.reseedClients">
+                  <el-checkbox v-for="c of clientList" :disabled="!c.enable" :key="c.id" :label="c.id">{{c.clientAlias}}</el-checkbox>
+                </el-checkbox-group>
+                <div><el-tag type="info">辅种时仅辅种以上客户端</el-tag></div>
+              </el-form-item>
               <el-form-item label="保存路径" prop="savePath">
                 <el-input v-model="rss.savePath"></el-input>
                 <div><el-tag type="info">保存路径</el-tag></div>
@@ -190,7 +196,8 @@ export default {
         skipSameTorrent: true,
         cron: '* * * * *',
         pushMessage: true,
-        rssRules: []
+        rssRules: [],
+        reseedClients: []
       },
       botList: [],
       urlDisplay: true,

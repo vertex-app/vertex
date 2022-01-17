@@ -39,9 +39,9 @@
               <el-form-item label="大小大于">
                 <el-input v-model="rule.minSize" type="number">
                   <el-select v-model="rule.minSizeUnit" slot="append" style="width: 80px" placeholder="单位">
-                    <el-option label="KiB/s" value="KiB"></el-option>
-                    <el-option label="MiB/s" value="MiB"></el-option>
-                    <el-option label="GiB/s" value="GiB"></el-option>
+                    <el-option label="KiB" value="KiB"></el-option>
+                    <el-option label="MiB" value="MiB"></el-option>
+                    <el-option label="GiB" value="GiB"></el-option>
                   </el-select>
                 </el-input>
                 <div><el-tag type="info">种子大小需大于此值</el-tag></div>
@@ -49,9 +49,9 @@
               <el-form-item label="大小小于">
                 <el-input v-model="rule.maxSize" type="number">
                   <el-select v-model="rule.maxSizeUnit" slot="append" style="width: 80px" placeholder="单位">
-                    <el-option label="KiB/s" value="KiB"></el-option>
-                    <el-option label="MiB/s" value="MiB"></el-option>
-                    <el-option label="GiB/s" value="GiB"></el-option>
+                    <el-option label="KiB" value="KiB"></el-option>
+                    <el-option label="MiB" value="MiB"></el-option>
+                    <el-option label="GiB" value="GiB"></el-option>
                   </el-select>
                 </el-input>
                 <div><el-tag type="info">种子大小需小于此值</el-tag></div>
