@@ -22,7 +22,7 @@ exports.getRecords = async function (sql, options) {
       _sql = _sql.replace(/\?/, item);
     });
   }
-  logger.info('Get Records:', _sql);
+  logger.debug('Get Records:', _sql);
   return db.prepare(sql).all(...options);
 };
 
@@ -33,7 +33,7 @@ exports.runRecord = async function (sql, options) {
       _sql = _sql.replace(/\?/, item);
     });
   }
-  logger.info('Run Record:', _sql);
+  logger.debug('Run Record:', _sql);
   return db.prepare(sql).run(...options);
 };
 
@@ -44,7 +44,7 @@ exports.getRecord = async function (sql, options) {
       _sql = _sql.replace(/\?/, item);
     });
   }
-  logger.info('Get Record:', _sql);
+  logger.debug('Get Record:', _sql);
   return db.prepare(sql).get(...options);
 };
 

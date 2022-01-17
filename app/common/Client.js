@@ -42,6 +42,14 @@ class Client {
     if (client.autoDelete) {
       this.autoDeleteJob = new CronJob(client.autoDeleteCron, () => this.autoDelete());
       this.autoDeleteJob.start();
+      this.fitTime = {};
+      for (const rule of this.deleteRules) {
+        if (rule.fitTime) {
+          this.fitTime[rule.id] = {};
+          rule.fitTimeJob = new CronJob('*/5 * * * * *', () => this.flashFitTime(rule));
+          rule.fitTimeJob.start();
+        }
+      }
     }
     this.recordJob = new CronJob('*/5 * * * *', () => this.record());
     this.recordJob.start();
@@ -57,7 +65,7 @@ class Client {
     return sum;
   };
 
-  _fitDeleteRule (_rule, torrent) {
+  _fitDeleteRule (_rule, torrent, fitTimeJob) {
     const rule = { ..._rule };
     rule.minDownloadSpeed = util.calSize(rule.minDownloadSpeed, rule.minDownloadSpeedUnit);
     rule.maxDownloadSpeed = util.calSize(rule.maxDownloadSpeed, rule.maxDownloadSpeedUnit);
@@ -112,6 +120,9 @@ class Client {
       const categories = rule.category.split(/\r\n|\n/);
       fit = fit && categories.some(category => torrent.category === category);
     }
+    if (!fitTimeJob & rule.fitTime) {
+      fit = fit && (moment().unix() - this.fitTime[torrent.hash] > rule.fitTime);
+    }
     return fit !== '1' && fit;
   };
 
@@ -120,13 +131,29 @@ class Client {
     this.maindataJob.stop();
     if (this.reannounceJob) this.reannounceJob.stop();
     if (this.autoDeleteJob) this.autoDeleteJob.stop();
+    for (const rule of this.deleteRules) {
+      if (rule.fitTimeJob) {
+        rule.fitTimeJob.stop();
+      }
+    }
     this.recordJob.stop();
     delete global.runningClient[this.id];
   };
 
   reloadDeleteRule () {
     logger.info('Reload Delete rule', this.clientId);
+    for (const rule of this.deleteRules) {
+      if (rule.fitTimeJob) {
+        rule.fitTimeJob.stop();
+      }
+    }
     this.deleteRules = util.listDeleteRule().filter(item => this._deleteRules.indexOf(item.id) !== -1);
+    for (const rule of this.deleteRules) {
+      if (rule.fitTime) {
+        rule.fitTimeJob = new CronJob('*/5 * * * * *', () => this.flashFitTime());
+        rule.fitTimeJob.start();
+      }
+    }
   }
 
   createTelegramProxy (telegram, channel) {
@@ -279,6 +306,17 @@ class Client {
     for (const torrent of this.maindata.torrents) {
       await util.runRecord('update torrents set size = ?, tracker = ?, uploaded = ?, downloaded = ? where hash = ?',
         [torrent.size, torrent.tracker, torrent.uploaded, torrent.downloaded, torrent.hash]);
+    }
+  };
+
+  flashFitTime (rule) {
+    const torrents = this.maindata.torrents.sort((a, b) => a.completedTime - b.completedTime || a.addedTime - b.addedTime);
+    for (const torrent of torrents) {
+      if (this._fitDeleteRule(rule, torrent, true)) {
+        this.fitTime[torrent.hash] = this.fitTime[torrent.hash] || moment().unix();
+      } else {
+        delete this.fitTime[torrent.hash];
+      }
     }
   }
 }

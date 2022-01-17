@@ -36,6 +36,10 @@
               <el-form-item required label="别名" prop="alias">
                 <el-input v-model="rule.alias" type="input"></el-input>
               </el-form-item>
+              <el-form-item label="持续时间" prop="fitTime">
+                <el-input v-model="rule.fitTime" type="input"></el-input>
+                <div><el-tag type="info">符合删种规则的持续时间, 只有到达持续时间之后才会删种, 单位为 秒, 不启用留空, 建议考虑客户端的删种周期一起设置</el-tag></div>
+              </el-form-item>
               <el-form-item label="上传速度小于">
                 <el-input v-model="rule.minUploadSpeed" type="number">
                   <el-select v-model="rule.minUploadSpeedUnit" slot="append" style="width: 80px" placeholder="单位">
