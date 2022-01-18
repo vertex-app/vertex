@@ -125,8 +125,8 @@ class Client {
       fit = fit && categories.some(category => torrent.category === category);
     }
     if (!fitTimeJob && rule.fitTime) {
-      logger.debug('now:', moment().unix(), 'startTime:', this.fitTime[torrent.hash], 'setTime:', rule.fitTime);
-      fit = fit && (moment().unix() - this.fitTime[torrent.hash] > rule.fitTime);
+      logger.debug('now:', moment().unix(), 'startTime:', this.fitTime[rule.id][torrent.hash], 'setTime:', rule.fitTime);
+      fit = fit && (moment().unix() - this.fitTime[rule.id][torrent.hash] > rule.fitTime);
     }
     return fit !== '1' && fit;
   };
@@ -319,9 +319,9 @@ class Client {
     const torrents = this.maindata.torrents.sort((a, b) => a.completedTime - b.completedTime || a.addedTime - b.addedTime);
     for (const torrent of torrents) {
       if (this._fitDeleteRule(rule, torrent, true)) {
-        this.fitTime[torrent.hash] = this.fitTime[torrent.hash] || moment().unix();
+        this.fitTime[rule.id][torrent.hash] = this.fitTime[rule.id][torrent.hash] || moment().unix();
       } else {
-        delete this.fitTime[torrent.hash];
+        delete this.fitTime[rule.id][torrent.hash];
       }
     }
   }
