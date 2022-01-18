@@ -15,6 +15,7 @@ class Rss {
     this.clients = global.runningClient;
     this.client = global.runningClient[rss.client];
     this.clientId = rss.client;
+    this.clientAlias = this.client.clientAlias;
     this.autoReseed = rss.autoReseed;
     this.onlyReseed = rss.onlyReseed;
     this.reseedClients = rss.reseedClients;
@@ -195,7 +196,7 @@ class Rss {
       const fitRules = this.rssRules.filter(item => this._fitRule(item, torrent));
       if (fitRules.length !== 0 || this.rssRules.length === 0) {
         try {
-          await this.client.addTorrent(this.alias, torrent.name, util.formatSize(+torrent.size), torrent.url, torrent.name, false, this.uploadLimit, this.downloadLimit, this.savePath, this.category, fitRules[0]);
+          await this.client.addTorrent(this.alias, torrent.name, util.formatSize(+torrent.size), torrent.url, torrent.name, false, this.uploadLimit, this.downloadLimit, this.savePath, this.category, fitRules[0] || {});
           await util.runRecord('INSERT INTO torrents (hash, name, rss_name, link, add_time, insert_type) values (?, ?, ?, ?, ?, ?)',
             [torrent.hash, torrent.name, this.alias, torrent.link, moment().unix(), 'add']);
         } catch (error) {
