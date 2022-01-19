@@ -2,11 +2,11 @@
   <div class="home">
     <el-row
     type="flex"
-    gutter="32"
+    :gutter="32"
     justify="center"
     align="top"
     >
-      <el-col :span="4">
+      <el-col :span="6">
         <el-card class="card">
           <div class="card-tag">当前版本</div>
           <div class="card-content">
@@ -18,15 +18,7 @@
           </div>
         </el-card>
       </el-col>
-      <el-col :span="4">
-        <el-card class="card">
-          <div class="card-tag">交流群</div>
-          <div class="card-content">
-            QQ Group: 852643057
-          </div>
-        </el-card>
-      </el-col>
-      <el-col :span="4">
+      <el-col :span="6">
         <el-card class="card">
           <div class="card-tag">文档中心</div>
           <div class="card-content">
@@ -35,6 +27,14 @@
             <el-link href="https://lswl.in/2022/01/14/vertex-newbie/" type="primary">新手教程</el-link>
             <br>
             <el-link href="https://lswl.in/2022/01/19/vertex-supported-sites/" type="primary">支持站点</el-link>
+          </div>
+        </el-card>
+      </el-col>
+      <el-col :span="6">
+        <el-card class="card">
+          <div class="card-tag">交流群</div>
+          <div class="card-content">
+            QQ Group: 852643057
           </div>
         </el-card>
       </el-col>
@@ -56,11 +56,17 @@ export default {
 </script>
 
 <style scoped>
+
+.home {
+  min-width: 1440px;
+}
+
 .card {
+  max-width: 320px;
 }
 
 .card-tag {
-  width: 200px;
+  max-width: 320px;
   margin-left: 16px;
   text-align: left;
   font-size: 18px;
@@ -70,6 +76,6 @@ export default {
   margin-top: 12px;
   text-align: left;
   margin-left: 16px;
-  width: 200px;
+  max-width: 300px;
 }
 </style>
