@@ -70,8 +70,10 @@ const freeWrapper = {
   'www.hddolby.com': _free,
   'pthome.net': _free,
   'pt.soulvoice.club': _free,
+  'et8.org': _free,
   'hdchina.org': _freeHDChina,
   'open.cd': _freeOpencd,
+  'www.open.cd': _freeOpencd,
   'totheglory.im': _freeToTheGlory,
   'u2.dmhy.org': _freeDmhy
 };

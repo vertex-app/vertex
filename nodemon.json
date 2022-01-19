@@ -1,8 +1,10 @@
 {
   "ignore": [
     ".git",
+    "node_modules",
     "app/static",
     "app/data",
-    "app/db"
+    "app/db",
+    "webui"
   ]
 }

@@ -114,7 +114,7 @@ export default {
   }
 
 .el-aside {
-  background-color: #D3DCE6;
+  background-color: rgba(225,255,255, 0.2);
   color: #FFFFFF;
   text-align: center;
   line-height: 200px;
@@ -122,7 +122,7 @@ export default {
 }
 
 .el-main {
-  background-color: #E9EEF3;
+  background-color: rgba(225,255,255, 0.2);
   text-align: center;
   overflow-x: hidden;
   overflow-y: auto;

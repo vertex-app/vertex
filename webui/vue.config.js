@@ -30,12 +30,11 @@ module.exports = {
         args[0].title = 'Vertex';
         return args;
       });
-    if (process.env.NODE_ENV === 'production') {
-      const { execSync } = require('child_process');
-      config.plugin('define').tap((args) => {
-        args[0]['process.env'].version = JSON.stringify(execSync('git rev-parse HEAD').toString().trim());
-        return args;
-      });
-    }
+    const { execSync } = require('child_process');
+    const moment = require('moment');
+    config.plugin('define').tap((args) => {
+      args[0]['process.env'].version = JSON.stringify(moment().utcOffset(8).format('YYYY-MM-DD HH:mm:ss') + '\nHEAD:' + execSync('git rev-parse HEAD').toString().trim().substring(0, 12) + '\nCOMMIT:' + execSync('git log --pretty=format:%s -1').toString().trim());
+      return args;
+    });
   }
 };
