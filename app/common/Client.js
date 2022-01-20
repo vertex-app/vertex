@@ -116,6 +116,9 @@ class Client {
     if (rule.minProgress) {
       fit = fit && torrent.progress < +rule.minProgress;
     }
+    if (rule.maxProgress) {
+      fit = fit && torrent.progress > +rule.maxProgress;
+    }
     if (rule.excludeCategory) {
       const categories = rule.excludeCategory.split(/\r\n|\n/);
       fit = fit && !categories.some(category => torrent.category === category);

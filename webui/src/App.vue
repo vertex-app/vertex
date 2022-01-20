@@ -27,15 +27,14 @@ export default {
 }
 
 body {
-  background: #e3f9fd;
+  background: url('https://pic.lswl.in/images/2021/12/07/c776ce8578a92ee3d340f55651c6433a.jpg');
 }
 
 #app {
-  font-family: consolas,"Microsoft YaHei","微软雅黑","Hiragino Sans GB","Helvetica Neue",Helvetica,"PingFang SC",Arial,sans-serif;
+  font-family: consolas, "Microsoft YaHei","微软雅黑","Hiragino Sans GB","Helvetica Neue",Helvetica,"PingFang SC",Arial,sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
-  background: #e3f9fd;
 }
 
 .el-textarea__inner {

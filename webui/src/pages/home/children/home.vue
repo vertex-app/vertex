@@ -3,7 +3,7 @@
     <el-row
     type="flex"
     :gutter="32"
-    justify="center"
+    justify="space-around"
     align="top"
     >
       <el-col :span="6">
@@ -56,13 +56,8 @@ export default {
 </script>
 
 <style scoped>
-
-.home {
-  min-width: 1440px;
-}
-
 .card {
-  max-width: 320px;
+  width: 320px;
 }
 
 .card-tag {

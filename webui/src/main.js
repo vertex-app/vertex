@@ -17,6 +17,7 @@ import axios from 'axios';
 import moment from 'moment';
 import md5 from 'md5-node';
 import ECharts from 'vue-echarts';
+import vuescroll from 'vuescroll';
 import { use } from 'echarts/core';
 import { CanvasRenderer } from 'echarts/renderers';
 import { BarChart, GaugeChart, LineChart } from 'echarts/charts';
@@ -46,6 +47,22 @@ components.forEach((component) => Vue.use(component));
 library.add(solid);
 library.add(brands);
 Vue.component('fa', FontAwesomeIcon);
+
+Vue.use(vuescroll, {
+  ops: {
+    vuescroll: {},
+    scrollPanel: {},
+    rail: {
+      keepShow: true
+    },
+    bar: {
+      hoverStyle: true,
+      onlyShowBarOnScroll: false,
+      background: 'lightCyan'
+    }
+  },
+  name: 'vue-scroll'
+});
 
 Vue.prototype.$axiosGet = async (url) => {
   try {
