@@ -27,7 +27,7 @@ export default {
 }
 
 body {
-  background: url('https://pic.lswl.in/images/2021/12/07/c776ce8578a92ee3d340f55651c6433a.jpg');
+  background: url('https://pic.lswl.in/images/2022/01/20/0477a2b150b8d7d13335d30b12c840f2.jpg');
 }
 
 #app {

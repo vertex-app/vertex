@@ -110,20 +110,21 @@ export default {
 
 <style scoped>
 .el-header, .el-footer {
-    background-color: rgba(225,255,255, 0.4);
+    background-color: rgba(225,255,255, 0.3);
     text-align: center;
     line-height: 60px;
   }
 
 .el-aside {
-  background-color: rgba(225,255,255, 0.4);
+  background-color: rgba(225,255,255, 0.3);
   text-align: center;
   line-height: 200px;
   height: 100vh;
 }
 
 .el-main {
-  background-color: rgba(225,255,255, 0.4);
+  height: 100vh;
+  background-color: rgba(225,255,255, 0.3);
   text-align: center;
   overflow-x: hidden;
   overflow-y: auto;
