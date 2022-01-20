@@ -319,13 +319,17 @@ class Client {
 
   flashFitTime (rule) {
     if (!this.maindata || !this.maindata.torrents || this.maindata.torrents.length === 0) return;
-    const torrents = this.maindata.torrents.sort((a, b) => a.completedTime - b.completedTime || a.addedTime - b.addedTime);
-    for (const torrent of torrents) {
-      if (this._fitDeleteRule(rule, torrent, true)) {
-        this.fitTime[rule.id][torrent.hash] = this.fitTime[rule.id][torrent.hash] || moment().unix();
-      } else {
-        delete this.fitTime[rule.id][torrent.hash];
+    try {
+      const torrents = this.maindata.torrents.sort((a, b) => a.completedTime - b.completedTime || a.addedTime - b.addedTime);
+      for (const torrent of torrents) {
+        if (this._fitDeleteRule(rule, torrent, true)) {
+          this.fitTime[rule.id][torrent.hash] = this.fitTime[rule.id][torrent.hash] || moment().unix();
+        } else {
+          delete this.fitTime[rule.id][torrent.hash];
+        }
       }
+    } catch (e) {
+      logger.error(e);
     }
   }
 }
