@@ -23,6 +23,7 @@ class Rss {
     this.skipSameTorrent = rss.skipSameTorrent;
     this.scrapeFree = rss.scrapeFree;
     this.scrapeHr = rss.scrapeHr;
+    this.sleepTime = rss.sleepTime;
     this.cookie = rss.cookie;
     this.savePath = rss.savePath;
     this.category = rss.category;
@@ -71,19 +72,19 @@ class Rss {
   }
 
   destroy () {
-    logger.info('Destroying Rss', this.id);
+    logger.info('销毁 Rss 实例:', this.alias);
     this.rssJob.stop();
     delete global.runningRss[this.id];
   }
 
   reloadClient () {
-    logger.info('Reload Client', this.clientId);
+    logger.info('重新载入客户端', this.clientAlias);
     this.clients = global.runningClient;
     this.client = global.runningClient[this.clientId];
   }
 
   reloadRssRule () {
-    logger.info('Reload Rss rule', this.clientId);
+    logger.info('重新载入 Rss 规则', this.alias);
     this.rssRules = util.listRssRule().filter(item => (this._rssRules.indexOf(item.id) !== -1));
   }
 
@@ -93,7 +94,7 @@ class Rss {
     const telegramProxy = new Proxy(_telegram, {
       get: function (target, property) {
         if (!_this.pushMessage) {
-          logger.info('pushMessage is false, don\'t send message');
+          logger.info(this.alias, '未设置推送消息, 跳过推送');
           return () => 1;
         };
         return target[property];
@@ -116,7 +117,7 @@ class Rss {
                   [torrent.hash, torrent.name, this.alias, torrent.link, moment().unix(), 'reseed']);
                 return;
               } catch (error) {
-                logger.error('Client', this.clientAlias, 'add torrent failed', error.message);
+                logger.error(this.alias, '客户端', this.clientAlias, '添加种子失败: ', error.message);
                 await this.telegramProxy.sendMessage(msgTemplate.addTorrentErrorString(this.alias, torrent.name, util.formatSize(+torrent.size), error.message));
               }
             }
@@ -157,7 +158,7 @@ class Rss {
             return;
           }
         } catch (e) {
-          logger.error('Scrape free torrent error: ', e.message);
+          logger.error(this.alias, '抓取免费种子失败: ', e.message);
           await util.runRecord('INSERT INTO torrents (hash, name, rss_name, link, add_time, insert_type) values (?, ?, ?, ?, ?, ?)',
             [torrent.hash, torrent.name, this.alias, torrent.link, moment().unix(), 'not free']);
           await this.telegramProxy.sendMessage(msgTemplate.scrapeErrorString(this.alias, torrent.name, e.message));
@@ -173,7 +174,7 @@ class Rss {
             return;
           }
         } catch (e) {
-          logger.error('Scrape hr torrent error: ', e.message);
+          logger.error(this.alias, '抓取 HR 种子失败: ', e.message);
           await util.runRecord('INSERT INTO torrents (hash, name, rss_name, link, add_time, insert_type) values (?, ?, ?, ?, ?, ?)',
             [torrent.hash, torrent.name, this.alias, torrent.link, moment().unix(), 'not free']);
           await this.telegramProxy.sendMessage(msgTemplate.scrapeErrorString(this.alias, torrent.name, e.message));
@@ -200,7 +201,7 @@ class Rss {
           await util.runRecord('INSERT INTO torrents (hash, name, rss_name, link, add_time, insert_type) values (?, ?, ?, ?, ?, ?)',
             [torrent.hash, torrent.name, this.alias, torrent.link, moment().unix(), 'add']);
         } catch (error) {
-          logger.error('Client', this.clientAlias, 'add torrent failed', error.message);
+          logger.error(this.alias, '客户端', this.clientAlias, '添加种子失败:', error.message);
           await this.telegramProxy.sendMessage(msgTemplate.addTorrentErrorString(this.alias, torrent.name, util.formatSize(+torrent.size), error.message));
         }
       } else {
@@ -216,7 +217,7 @@ class Rss {
     try {
       torrents = await rss.getTorrents(this.url);
     } catch (error) {
-      logger.error('Get rss error: ', error.message);
+      logger.error(this.alias, '获取 Rss 列表失败: ', error.message);
       await this.telegramProxy.sendMessage(msgTemplate.rssErrorString(this.alias, error.message));
       return;
     }
@@ -226,8 +227,11 @@ class Rss {
       if (this.rft) {
         await util.runRecord('INSERT INTO torrents (hash, name, rss_name, link, add_time, insert_type) values (?, ?, ?, ?, ?, ?)',
           [torrent.hash, torrent.name, this.alias, torrent.link, moment().unix(), 'rft']);
-        await this.telegramProxy.sendMessage(msgTemplate.rejectString(this.alias, torrent.name, util.formatSize(torrent.size), 'Reject for the first time'));
+        await this.telegramProxy.sendMessage(msgTemplate.rejectString(this.alias, torrent.name, util.formatSize(torrent.size), '跳过第一次添加种子'));
         continue;
+      }
+      if (this.sleepTime && (moment().unix() - +this.sleepTime) < torrent.pubTime) {
+        logger.info(this.alias, '已设置延迟时间', this.sleepTime, ', ', torrent.name, '发布时间为', moment(torrent.pubTime).format('YYYY-MM-DD HH:mm:ss'), ', 跳过');
       }
       const excludeKeysRules = this.rssRules.filter(item => item.excludeKeys);
       if (excludeKeysRules.length === 0) {

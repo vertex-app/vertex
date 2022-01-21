@@ -75,13 +75,13 @@ export default {
         title: ' Rss',
         path: '/rss'
       }, {
-        icon: ['fas', 'trash-alt'],
-        title: ' 删种规则',
-        path: '/delete-rule'
-      }, {
         icon: ['fas', 'rss-square'],
         title: ' Rss 规则',
         path: '/rss-rule'
+      }, {
+        icon: ['fas', 'trash-alt'],
+        title: ' 删种规则',
+        path: '/delete-rule'
       }, {
         icon: ['fas', 'magnet'],
         title: ' 种子聚合',

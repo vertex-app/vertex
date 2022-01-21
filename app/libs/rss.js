@@ -1,5 +1,6 @@
 const parser = require('xml2js').parseString;
 const crypto = require('crypto');
+const moment = require('moment');
 const bencode = require('bencode');
 const util = require('./util');
 
@@ -27,6 +28,7 @@ const _getTorrents = async function (rssUrl) {
     torrent.link = link;
     torrent.id = link.substring(link.indexOf('?id=') + 4);
     torrent.url = items[i].enclosure[0].$.url;
+    torrent.pubTime = moment(items[i].pubDate[0]).unix();
     torrents.push(torrent);
   }
   return torrents;

@@ -96,18 +96,12 @@
                     <el-table-column
                       width="200">
                       <template slot="header">
-                        <el-dropdown
-                          size="mini"
-                          split-button type="primary"
-                          @command="handlePeriod">
-                          选择周期
-                          <el-dropdown-menu slot="dropdown">
-                            <el-dropdown-item command="fiveminute">5 分钟</el-dropdown-item>
-                            <el-dropdown-item command="hour">时</el-dropdown-item>
-                            <el-dropdown-item command="day">日</el-dropdown-item>
-                            <el-dropdown-item command="month">月</el-dropdown-item>
-                          </el-dropdown-menu>
-                        </el-dropdown>
+                        <el-select size="mini" v-model="period" @change="handlePeriod" placeholder="选择周期">
+                          <el-option label="5 分钟" value="fiveminute"></el-option>
+                          <el-option label="时" value="hour"></el-option>
+                          <el-option label="日" value="day"></el-option>
+                          <el-option label="月" value="month"></el-option>
+                        </el-select>
                       </template>
                       <template slot-scope="scope">
                         {{formatTime(scope.row)}}
@@ -181,6 +175,7 @@ export default {
           ]
         }
       },
+      period: '',
       vnstatPeriod: 'hour',
       usernameDisplay: true,
       hostDisplay: true,
@@ -444,8 +439,8 @@ export default {
     };
   },
   methods: {
-    handlePeriod (period) {
-      this.vnstatPeriod = period;
+    handlePeriod (vnstatPeriod) {
+      this.vnstatPeriod = vnstatPeriod;
       this.chart.xAxis.data = this.vnstat[this.vnstatPeriod].interfaces[0].traffic[this.vnstatPeriod].map(item => this.formatTime(item).slice(-5)).reverse();
       this.chart.series[0].data = this.vnstat[this.vnstatPeriod].interfaces[0].traffic[this.vnstatPeriod].map(item => item.tx).reverse();
       this.chart.series[1].data = this.vnstat[this.vnstatPeriod].interfaces[0].traffic[this.vnstatPeriod].map(item => item.rx).reverse();
