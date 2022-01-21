@@ -231,7 +231,8 @@ class Rss {
         continue;
       }
       if (this.sleepTime && (moment().unix() - +this.sleepTime) < torrent.pubTime) {
-        logger.info(this.alias, '已设置延迟时间', this.sleepTime, ', ', torrent.name, '发布时间为', moment(torrent.pubTime).format('YYYY-MM-DD HH:mm:ss'), ', 跳过');
+        logger.info(this.alias, '已设置等待时间', this.sleepTime, ', ', torrent.name, '发布时间为', moment(torrent.pubTime * 1000).format('YYYY-MM-DD HH:mm:ss'), ', 跳过');
+        continue;
       }
       const excludeKeysRules = this.rssRules.filter(item => item.excludeKeys);
       if (excludeKeysRules.length === 0) {
