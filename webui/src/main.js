@@ -58,7 +58,7 @@ Vue.use(vuescroll, {
     bar: {
       hoverStyle: true,
       onlyShowBarOnScroll: false,
-      background: 'lightCyan'
+      background: 'rgba(234,112,180,0.7)'
     }
   },
   name: 'vue-scroll'

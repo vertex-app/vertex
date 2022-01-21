@@ -24,6 +24,7 @@ class RssMod {
     const rssSet = { ...options };
     rssSet.deleteRules = rssSet.deleteRules || [];
     rssSet.sameServerClients = rssSet.sameServerClients || [];
+    rssSet.reseedClients = rssSet.reseedClients || [];
     fs.writeFileSync(path.join(__dirname, '../data/rss/', options.id + '.json'), JSON.stringify(rssSet, null, 2));
     if (global.runningRss[options.id]) global.runningRss[options.id].destroy();
     if (rssSet.enable) global.runningRss[options.id] = new Rss(rssSet);
