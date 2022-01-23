@@ -132,7 +132,7 @@ const _getTorrentsTorrentDB = async function (rssUrl) {
     const link = items[i].comments[0];
     torrent.link = link;
     torrent.hash = items[i].guid[0];
-    torrent.url = items[i].persistent[0];
+    torrent.url = items[i].persistentlink[0];
     torrents.push(torrent);
   }
   return torrents;
