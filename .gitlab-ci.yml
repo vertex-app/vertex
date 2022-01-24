@@ -63,6 +63,7 @@ build_docker_image_and_push:
       docker buildx build --platform linux/amd64,linux/arm64 --cache-from $IMAGE_TAG_SHA --tag lswl/vertex:$TIME . --push
     - |
       docker buildx build --platform linux/amd64,linux/arm64 --cache-from $IMAGE_TAG_SHA --tag $IMAGE_TAG_LATEST . --push
+    - TIME=$(TZ=Asia/Shanghai date -d @`date +%s` "+%Y-%m-%d %H:%M:%S")
     - |
       curl --location --request POST 'https://vertex-push.lswl.workers.dev' \
       --header 'Content-Type: application/json' \

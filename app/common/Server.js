@@ -7,6 +7,8 @@ class Server {
     this.ssh = null;
     this.id = server.id;
     this.server = server;
+    this.server.keepaliveCountMax = 100;
+    this.server.keepaliveInterval = 5000;
     this.reconnectTime = server.reconnectTime || 10;
     this.connected = false;
     this.connect(this.server);
