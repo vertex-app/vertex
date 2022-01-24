@@ -334,7 +334,7 @@ class Client {
         }
       }
     } catch (e) {
-      logger.error(e);
+      logger.error('客户端', this.clientAlias, '\n', e);
     }
   }
 }
