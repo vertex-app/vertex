@@ -107,6 +107,10 @@ class Rss {
     if (this.autoReseed && torrent.hash.indexOf('fakehash') === -1) {
       for (const key of this.reseedClients) {
         const client = this.clients[key];
+        if (!client) {
+          logger.error('Rss', this.alias, '客户端', key, '不存在');
+          continue;
+        }
         for (const _torrent of client.maindata.torrents) {
           if (+_torrent.size === +torrent.size && +_torrent.completed === +_torrent.size) {
             const bencodeInfo = await rss.getTorrentNameByBencode(torrent.url);
