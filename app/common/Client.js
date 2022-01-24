@@ -159,7 +159,7 @@ class Client {
     this.deleteRules = util.listDeleteRule().filter(item => this._deleteRules.indexOf(item.id) !== -1);
     for (const rule of this.deleteRules) {
       if (rule.fitTime) {
-        rule.fitTimeJob = new CronJob('*/5 * * * * *', () => this.flashFitTime());
+        rule.fitTimeJob = new CronJob('*/5 * * * * *', () => this.flashFitTime(rule));
         rule.fitTimeJob.start();
       }
     }
