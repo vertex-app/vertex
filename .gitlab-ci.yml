@@ -55,6 +55,7 @@ build_docker_image_and_push:
     - cd docker
     - ls src/static
     - TIME=$(TZ=Asia/Shanghai date -d @`date +%s` "+%Y_%m_%d_%H_%M_%S")
+    - TIME_PUSH=$(TZ=Asia/Shanghai date -d @`date +%s` "+%Y-%m-%d %H:%M:%S")
     - echo $TIME
     - COMMIT_MESSAGE=`echo $CI_COMMIT_MESSAGE | sed 's/\n//g'`
     - |
@@ -63,8 +64,7 @@ build_docker_image_and_push:
       docker buildx build --platform linux/amd64,linux/arm64 --cache-from $IMAGE_TAG_SHA --tag lswl/vertex:$TIME . --push
     - |
       docker buildx build --platform linux/amd64,linux/arm64 --cache-from $IMAGE_TAG_SHA --tag $IMAGE_TAG_LATEST . --push
-    - TIME=$(TZ=Asia/Shanghai date -d @`date +%s` "+%Y-%m-%d %H:%M:%S")
     - |
       curl --location --request POST 'https://vertex-push.lswl.workers.dev' \
       --header 'Content-Type: application/json' \
-      --data-raw "{\"key\": \"$KEY\",\"time\": \"$TIME\",\"message\": \"$COMMIT_MESSAGE\",\"sha1\": \"${CI_COMMIT_SHA:0:12}\"}"
+      --data-raw "{\"key\": \"$KEY\",\"time\": \"$TIME_PUSH\",\"message\": \"$COMMIT_MESSAGE\",\"sha1\": \"${CI_COMMIT_SHA:0:12}\"}"

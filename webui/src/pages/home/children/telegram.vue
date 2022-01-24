@@ -1,10 +1,10 @@
 <template>
   <div class="telegram">
-    <div class="telegram-div">
+    <div class="radius-div">
       <el-table
         :data="bot"
         stripe
-        style="width: 100%">
+        style="margin: 20px">
         <el-table-column
           prop="id"
           label="ID"
@@ -28,41 +28,41 @@
           </template>
         </el-table-column>
       </el-table>
-      <div class="collapse-div">
-        <el-collapse  class="collapse" v-model="botCollapse">
-          <el-collapse-item title="新增 | 编辑 Bot" name="1">
-            <div style="width: fit-content; margin: 6px 0;">
-              <el-tag>bot ID: {{botId}}</el-tag>
-            </div>
-            <div style="width: fit-content; margin: 6px 0;">
-              <el-input
-                size="small"
-                style="width: 500px"
-                placeholder="别名"
-                v-model="botAlias">
-              </el-input>
-            </div>
-            <div style="width: fit-content; margin: 6px 0;">
-              <el-input
-                size="small"
-                style="width: 500px"
-                placeholder="Token"
-                v-model="botToken">
-              </el-input>
-            </div>
-            <div style="width: fit-content; margin: 16px 0 0 0;">
-              <el-button @click="handleBotClick" type="primary" size="small">新增 | 编辑</el-button>
-              <el-button @click="clearBot" type="primary" size="small">清空</el-button>
-            </div>
-          </el-collapse-item>
-        </el-collapse>
-      </div>
     </div>
-    <div class="telegram-div">
+    <div class="radius-div">
+      <el-collapse  class="collapse" v-model="botCollapse">
+        <el-collapse-item title="新增 | 编辑 Bot" name="1">
+          <div style="width: fit-content; margin: 6px 0;">
+            <el-tag>bot ID: {{botId}}</el-tag>
+          </div>
+          <div style="width: fit-content; margin: 6px 0;">
+            <el-input
+              size="small"
+              style="width: 500px"
+              placeholder="别名"
+              v-model="botAlias">
+            </el-input>
+          </div>
+          <div style="width: fit-content; margin: 6px 0;">
+            <el-input
+              size="small"
+              style="width: 500px"
+              placeholder="Token"
+              v-model="botToken">
+            </el-input>
+          </div>
+          <div style="width: fit-content; margin: 16px 0 0 0;">
+            <el-button @click="handleBotClick" type="primary" size="small">新增 | 编辑</el-button>
+            <el-button @click="clearBot" type="primary" size="small">清空</el-button>
+          </div>
+        </el-collapse-item>
+      </el-collapse>
+    </div>
+    <div class="radius-div">
       <el-table
         :data="channel"
         stripe
-        style="width: 100%">
+        style="margin: 20px">
         <el-table-column
           prop="id"
           label="ID"
@@ -86,35 +86,35 @@
           </template>
         </el-table-column>
       </el-table>
-      <div class="collapse-div">
-        <el-collapse class="collapse" v-model="channelCollapse">
-          <el-collapse-item title="新增 | 编辑 频道" name="1">
-            <div style="width: fit-content; margin: 6px 0;">
-              <el-tag>频道 ID: {{channelId}}</el-tag>
-            </div>
-            <div style="width: fit-content; margin: 6px 0;">
-              <el-input
-                size="small"
-                style="width: 500px"
-                placeholder="别名"
-                v-model="cAlias">
-              </el-input>
-            </div>
-            <div style="width: fit-content; margin: 6px 0;">
-              <el-input
-                size="small"
-                style="width: 500px"
-                placeholder="频道 ID"
-                v-model="cId">
-              </el-input>
-            </div>
-            <div style="width: fit-content; margin: 16px 0 0 0;">
-              <el-button @click="handleChannelClick" type="primary" size="small">新增 | 编辑</el-button>
-              <el-button @click="clearChannel" type="primary" size="small">清空</el-button>
-            </div>
-          </el-collapse-item>
-        </el-collapse>
-      </div>
+    </div>
+    <div class="radius-div">
+      <el-collapse class="collapse" v-model="channelCollapse">
+        <el-collapse-item title="新增 | 编辑 频道" name="1">
+          <div style="width: fit-content; margin: 6px 0;">
+            <el-tag>频道 ID: {{channelId}}</el-tag>
+          </div>
+          <div style="width: fit-content; margin: 6px 0;">
+            <el-input
+              size="small"
+              style="width: 500px"
+              placeholder="别名"
+              v-model="cAlias">
+            </el-input>
+          </div>
+          <div style="width: fit-content; margin: 6px 0;">
+            <el-input
+              size="small"
+              style="width: 500px"
+              placeholder="频道 ID"
+              v-model="cId">
+            </el-input>
+          </div>
+          <div style="width: fit-content; margin: 16px 0 0 0;">
+            <el-button @click="handleChannelClick" type="primary" size="small">新增 | 编辑</el-button>
+            <el-button @click="clearChannel" type="primary" size="small">清空</el-button>
+          </div>
+        </el-collapse-item>
+      </el-collapse>
     </div>
   </div>
 </template>
@@ -235,7 +235,7 @@ export default {
   margin: 20px 0;
 }
 
-.collapse-div {
+.radius-div {
   border-radius: 8px;
   background: #FFFFFF;
 }

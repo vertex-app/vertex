@@ -1,19 +1,17 @@
 <template>
   <div class="home">
-    <div class="network home-div">
+    <div class="radius-div">
       <el-table
         :data="serverList"
         stripe
-        style="width: 100%">
+        style="margin: 20px">
         <el-table-column
           prop="id"
-          label="ID"
-          width="200">
+          label="ID">
         </el-table-column>
         <el-table-column
           prop="alias"
-          label="别名"
-          width="200">
+          label="别名">
         </el-table-column>
         <el-table-column>
           <template slot="header" slot-scope="scope">
@@ -27,8 +25,7 @@
           </template>
         </el-table-column>
         <el-table-column
-          label="CPU"
-          width="144">
+          label="CPU">
           <template slot-scope="scope">
             {{cpuUse[scope.row.id] ? (100 - cpuUse[scope.row.id].all.idle).toFixed(2) + '%' : null}}
           </template>
@@ -40,20 +37,19 @@
           </template>
         </el-table-column>
         <el-table-column
-          label="启用"
-          width="100">
+          label="启用">
           <template slot-scope="scope">
             <el-tag :type="scope.row.enable ? '' : 'danger'">{{scope.row.enable}}</el-tag>
           </template>
         </el-table-column>
         <el-table-column
-          label="状态"
-          width="100">
+          label="状态">
           <template slot-scope="scope">
             <el-tag :type="scope.row.status ? '' : 'danger'">{{scope.row.status ? '正常' : '连接失败'}}</el-tag>
           </template>
         </el-table-column>
         <el-table-column
+          fixed="right"
           label="操作">
           <template slot-scope="scope">
             <el-button style="margin-left: 0" @click="reloadServer(scope.row)" type="warning" size="small">重置连接</el-button>
@@ -62,7 +58,7 @@
         </el-table-column>
       </el-table>
     </div>
-    <div class="collapse-div">
+    <div class="radius-div">
       <el-collapse  class="collapse" v-model="clientCollapse">
         <el-collapse-item :title="`${server.alias || ''} 详情`" name="1">
           <div class="server-status home-div">
@@ -552,21 +548,7 @@ export default {
 </script>
 
 <style scoped>
-.home-div {
-  margin: 20px 0;
-}
-
-.progress {
-  margin: 10px 0;
-}
-
-.progress-div {
-  padding: 6px 0px;
-  border-radius: 8px;
-  background: #FFFFFF;
-}
-
-.collapse-div {
+.radius-div {
   border-radius: 8px;
   background: #FFFFFF;
 }

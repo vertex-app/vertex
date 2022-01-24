@@ -21,8 +21,7 @@
     "moment": "^2.29.1",
     "vue": "^2.6.11",
     "vue-echarts": "^6.0.0",
-    "vue-router": "^3.5.2",
-    "vuescroll": "^4.17.3"
+    "vue-router": "^3.5.2"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.0",
