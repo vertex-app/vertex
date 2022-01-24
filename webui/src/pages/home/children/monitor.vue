@@ -52,9 +52,11 @@
         </el-table-column>
         <el-table-column
           fixed="right"
-          label="操作">
+          label="操作"
+          width="244px">
           <template slot-scope="scope">
-            <el-button style="margin-left: 0" @click="reloadServer(scope.row)" type="warning" size="small">重置连接</el-button>
+            <el-button @click="gotoClient(scope.row)" type="primary" :disabled="!scope.row.bindClient" size="small">客户端</el-button>
+            <el-button style="margin-left: 0" @click="reloadServer(scope.row)" type="warning" size="small">重置</el-button>
             <el-button style="margin-left: 0" :disabled="!scope.row.status" @click="displayDetails(scope.row)" type="primary" size="small">查看详情</el-button>
           </template>
         </el-table-column>
@@ -114,9 +116,7 @@
           fixed="right"
           label="操作">
           <template slot-scope="scope">
-            <el-button @click="gotoClient(scope.row)" type="primary" size="small">打开</el-button>
-            <el-button @click="modifyClient(scope.row)" type="warning" size="small">编辑</el-button>
-            <el-button @click="deleteClient(scope.row)" :disabled="scope.row.used" type="danger" size="small">删除</el-button>
+            <el-button @click="gotoClient(scope.row)" type="primary" size="small">打开客户端</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -601,7 +601,12 @@ export default {
       this.clientList = res ? res.data : [];
     },
     gotoClient (row) {
-      window.open(row.clientUrl);
+      if (row.clientUrl) {
+        window.open(row.clientUrl);
+      } else {
+        const url = this.clientList.filter(item => item.id === row.bindClient)[0].clientUrl;
+        window.open(url);
+      }
     }
   },
   async mounted () {

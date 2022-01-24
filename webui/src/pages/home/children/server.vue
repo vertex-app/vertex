@@ -90,6 +90,12 @@
               <el-input v-model="server.host" style="width: 500px;"></el-input>
               <div><el-tag type="info">IP: 192.168.1.1 或域名: my.seed.box</el-tag></div>
             </el-form-item>
+            <el-form-item label="绑定客户端" prop="bindClient">
+              <el-select v-model="server.bindClient" placeholder="客户端">
+                <el-option v-for="client of clientList" :disabled="!client.enable" :key="client.id" :label="client.clientAlias" :value="client.id"></el-option>
+              </el-select>
+              <div><el-tag type="info">服务器绑定的客户端, 将在监控页提供链接</el-tag></div>
+            </el-form-item>
             <el-form-item required label="用户名" prop="username">
               <el-input v-model="server.username"></el-input>
               <div><el-tag type="info">若不使用脚本功能, 建议填写非 root 账户</el-tag></div>
@@ -103,12 +109,6 @@
             <el-form-item label="重连次数" prop="reconnectTime">
               <el-input v-model="server.reconnectTime">重连次数</el-input>
               <div><el-tag type="info">最大的 SSH 自动重连次数, 执行操作遇到错误时会自动重连, 默认为 10</el-tag></div>
-            </el-form-item>
-            <el-form-item label="绑定客户端" prop="bindClient">
-              <el-select v-model="server.bindClient" placeholder="客户端">
-                <el-option v-for="client of clientList" :disabled="!client.enable" :key="client.id" :label="client.clientAlias" :value="client.id"></el-option>
-              </el-select>
-              <div><el-tag type="info">服务器绑定的客户端, 将在监控页提供链接</el-tag></div>
             </el-form-item>
             <el-form-item size="small">
               <el-button type="primary" @click="handleServerClick">新增 | 编辑</el-button>
