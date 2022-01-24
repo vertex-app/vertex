@@ -7,11 +7,13 @@
         style="margin: 20px">
         <el-table-column
           prop="id"
-          label="ID">
+          label="ID"
+          width="144px">
         </el-table-column>
         <el-table-column
           prop="alias"
-          label="别名">
+          label="别名"
+          width="200px">
         </el-table-column>
         <el-table-column>
           <template slot="header" slot-scope="scope">
@@ -54,6 +56,67 @@
           <template slot-scope="scope">
             <el-button style="margin-left: 0" @click="reloadServer(scope.row)" type="warning" size="small">重置连接</el-button>
             <el-button style="margin-left: 0" :disabled="!scope.row.status" @click="displayDetails(scope.row)" type="primary" size="small">查看详情</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+    </div>
+    <div class="radius-div">
+      <el-table
+        :data="clientList"
+        stripe
+        style="margin: 20px">
+        <el-table-column
+          prop="id"
+          label="ID"
+          width="144px">
+        </el-table-column>
+        <el-table-column
+          prop="clientAlias"
+          label="别名"
+          width="200px">
+        </el-table-column>
+        <el-table-column>
+          <template slot="header" slot-scope="scope">
+            <el-switch
+              v-model="urlDisplay">
+            </el-switch>
+            WebUI - Url
+          </template>
+          <template slot-scope="scope">
+            {{ urlDisplay ? scope.row.clientUrl : '**********' }}
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="type"
+          label="客户端类型">
+        </el-table-column>
+        <el-table-column
+          label="↑/↓">
+          <template slot-scope="scope">
+            {{scope.row.status ? `${$formatSize(scope.row.uploadSpeed)}/s / ${$formatSize(scope.row.downloadSpeed)}/s` : null}}
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="enable"
+          label="启用"
+          width="80px">
+          <template slot-scope="scope">
+            <el-tag :type="scope.row.enable ? '' : 'danger'">{{scope.row.enable}}</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column
+          label="状态">
+          <template slot-scope="scope">
+            <el-tag :type="scope.row.status ? '' : 'danger'">{{scope.row.enable ? scope.row.status ? '正常' : '连接失败' : '未启用'}}</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column
+          fixed="right"
+          label="操作">
+          <template slot-scope="scope">
+            <el-button @click="gotoClient(scope.row)" type="primary" size="small">打开</el-button>
+            <el-button @click="modifyClient(scope.row)" type="warning" size="small">编辑</el-button>
+            <el-button @click="deleteClient(scope.row)" :disabled="scope.row.used" type="danger" size="small">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -127,6 +190,7 @@ export default {
   data () {
     return {
       serverList: [],
+      clientList: [],
       netSpeed: {},
       cpuUse: {},
       diskUse: {},
@@ -175,6 +239,7 @@ export default {
       vnstatPeriod: 'hour',
       usernameDisplay: true,
       hostDisplay: true,
+      urlDisplay: true,
       customColors: [
         { color: '#90EE90', percentage: 20 },
         { color: '#48D1CC', percentage: 40 },
@@ -530,15 +595,24 @@ export default {
       const res = await this.$axiosGet('/api/server/reload?id=' + row.id);
       await this.$messageBox(res);
       this.getServerList();
+    },
+    async listClient () {
+      const res = await this.$axiosGet('/api/client/list?_=' + Math.random());
+      this.clientList = res ? res.data : [];
+    },
+    gotoClient (row) {
+      window.open(row.clientUrl);
     }
   },
   async mounted () {
     await this.getNetSpeed();
     await this.getCpuUse();
     await this.getServerList();
+    await this.listClient();
     this.freshData = setInterval(() => {
       this.getNetSpeed();
       this.getCpuUse();
+      this.listClient();
     }, 5000);
   },
   beforeDestroy () {

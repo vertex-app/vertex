@@ -66,8 +66,9 @@
         <el-table-column
           fixed="right"
           label="操作"
-          width="200">
+          width="244">
           <template slot-scope="scope">
+            <el-button @click="gotoClient(scope.row)" type="primary" size="small">打开</el-button>
             <el-button @click="modifyClient(scope.row)" type="warning" size="small">编辑</el-button>
             <el-button @click="deleteClient(scope.row)" :disabled="scope.row.used" type="danger" size="small">删除</el-button>
           </template>
@@ -251,6 +252,9 @@ export default {
     async listDeleteRule () {
       const res = await this.$axiosGet('/api/deleteRule/list');
       this.deleteRuleList = res ? res.data : [];
+    },
+    gotoClient (row) {
+      window.open(row.clientUrl);
     }
   },
   async mounted () {
