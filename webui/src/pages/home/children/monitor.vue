@@ -2,6 +2,65 @@
   <div class="home">
     <div class="radius-div">
       <el-table
+        :data="clientList"
+        stripe
+        style="margin: 20px">
+        <el-table-column
+          prop="id"
+          label="ID"
+          width="144px">
+        </el-table-column>
+        <el-table-column
+          prop="clientAlias"
+          label="别名"
+          width="200px">
+        </el-table-column>
+        <el-table-column>
+          <template slot="header" slot-scope="scope">
+            <el-switch
+              v-model="urlDisplay">
+            </el-switch>
+            WebUI - Url
+          </template>
+          <template slot-scope="scope">
+            {{ urlDisplay ? scope.row.clientUrl : '**********' }}
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="type"
+          label="客户端类型">
+        </el-table-column>
+        <el-table-column
+          label="↑/↓">
+          <template slot-scope="scope">
+            {{scope.row.status ? `${$formatSize(scope.row.uploadSpeed)}/s / ${$formatSize(scope.row.downloadSpeed)}/s` : null}}
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="enable"
+          label="启用"
+          width="80px">
+          <template slot-scope="scope">
+            <el-tag :type="scope.row.enable ? '' : 'danger'">{{scope.row.enable}}</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column
+          label="状态">
+          <template slot-scope="scope">
+            <el-tag :type="scope.row.status ? '' : 'danger'">{{scope.row.enable ? scope.row.status ? '正常' : '连接失败' : '未启用'}}</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column
+          fixed="right"
+          label="操作">
+          <template slot-scope="scope">
+            <el-button @click="gotoClient(scope.row)" type="primary" size="small">打开客户端</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+    </div>
+    <div class="radius-div">
+      <el-table
         :data="serverList"
         stripe
         style="margin: 20px">
@@ -58,65 +117,6 @@
             <el-button @click="gotoClient(scope.row)" type="primary" :disabled="!scope.row.bindClient" size="small">客户端</el-button>
             <el-button style="margin-left: 0" @click="reloadServer(scope.row)" type="warning" size="small">重置</el-button>
             <el-button style="margin-left: 0" :disabled="!scope.row.status" @click="displayDetails(scope.row)" type="primary" size="small">查看详情</el-button>
-          </template>
-        </el-table-column>
-      </el-table>
-    </div>
-    <div class="radius-div">
-      <el-table
-        :data="clientList"
-        stripe
-        style="margin: 20px">
-        <el-table-column
-          prop="id"
-          label="ID"
-          width="144px">
-        </el-table-column>
-        <el-table-column
-          prop="clientAlias"
-          label="别名"
-          width="200px">
-        </el-table-column>
-        <el-table-column>
-          <template slot="header" slot-scope="scope">
-            <el-switch
-              v-model="urlDisplay">
-            </el-switch>
-            WebUI - Url
-          </template>
-          <template slot-scope="scope">
-            {{ urlDisplay ? scope.row.clientUrl : '**********' }}
-          </template>
-        </el-table-column>
-        <el-table-column
-          prop="type"
-          label="客户端类型">
-        </el-table-column>
-        <el-table-column
-          label="↑/↓">
-          <template slot-scope="scope">
-            {{scope.row.status ? `${$formatSize(scope.row.uploadSpeed)}/s / ${$formatSize(scope.row.downloadSpeed)}/s` : null}}
-          </template>
-        </el-table-column>
-        <el-table-column
-          prop="enable"
-          label="启用"
-          width="80px">
-          <template slot-scope="scope">
-            <el-tag :type="scope.row.enable ? '' : 'danger'">{{scope.row.enable}}</el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column
-          label="状态">
-          <template slot-scope="scope">
-            <el-tag :type="scope.row.status ? '' : 'danger'">{{scope.row.enable ? scope.row.status ? '正常' : '连接失败' : '未启用'}}</el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column
-          fixed="right"
-          label="操作">
-          <template slot-scope="scope">
-            <el-button @click="gotoClient(scope.row)" type="primary" size="small">打开客户端</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -583,6 +583,9 @@ export default {
         return;
       }
       this.vnstat = res.data;
+      for (const key of Object.keys(this.vnstat)) {
+        this.vnstat[key].interfaces = this.vnstat[key].interfaces.sort((a, b) => b.total.rx - a.total.rx);
+      }
     },
     async getMemoryUse () {
       const res = await this.$axiosGet('/api/server/memoryUse?_=' + Math.random());
