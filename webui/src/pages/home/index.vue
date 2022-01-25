@@ -125,6 +125,14 @@ export default {
   overflow-y: auto;
 }
 
+.el-menu-item {
+  color: #dde6f9;
+}
+
+.el-menu-item.is-active, .el-menu-item:hover {
+  color: #409EFF;
+}
+
 body > .el-container {
   margin-bottom: 40px;
 }

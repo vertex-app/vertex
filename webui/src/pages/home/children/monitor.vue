@@ -32,14 +32,6 @@
           </template>
         </el-table-column>
         <el-table-column
-          prop="enable"
-          label="启用"
-          width="80px">
-          <template slot-scope="scope">
-            <el-tag :type="scope.row.enable ? '' : 'danger'">{{scope.row.enable}}</el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column
           label="状态">
           <template slot-scope="scope">
             <el-tag :type="scope.row.status ? '' : 'danger'">{{scope.row.enable ? scope.row.status ? '正常' : '连接失败' : '未启用'}}</el-tag>
@@ -50,6 +42,7 @@
           label="操作">
           <template slot-scope="scope">
             <el-button @click="gotoClient(scope.row)" type="primary" size="small">打开客户端</el-button>
+            <el-button @click="gotoTorrentList(scope.row)" type="primary" size="small">种子列表</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -76,7 +69,8 @@
           </template>
         </el-table-column>
         <el-table-column
-          label="CPU">
+          label="CPU"
+          width="80px">
           <template slot-scope="scope">
             {{cpuUse[scope.row.id] ? (100 - cpuUse[scope.row.id].all.idle).toFixed(2) + '%' : null}}
           </template>
@@ -600,6 +594,9 @@ export default {
         const url = this.clientList.filter(item => item.id === row.bindClient)[0].clientUrl;
         window.open(url);
       }
+    },
+    gotoTorrentList (row) {
+      this.$router.push('/torrent-mix?clients=' + JSON.stringify([row.id]));
     }
   },
   async mounted () {

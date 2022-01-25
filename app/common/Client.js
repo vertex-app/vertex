@@ -240,7 +240,7 @@ class Client {
       logger.debug('客户端', this.clientAlias, '获取种子信息成功');
     } catch (error) {
       logger.error(error);
-      logger.error('客户端', this.clientAlias, '获取种子信息成功失败\n', error.message);
+      logger.error('客户端', this.clientAlias, '获取种子信息失败\n', error.message);
       await this.telegramProxy.sendMessage(msgTemplate.getMaindataErrorString(this.clientAlias, error.message));
       await this.login();
     }
