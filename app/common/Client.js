@@ -128,8 +128,8 @@ class Client {
       fit = fit && categories.some(category => torrent.category === category);
     }
     if (!fitTimeJob && rule.fitTime) {
-      logger.debug('当前时间:', moment().format('YYYY-MM-DD HH:mm:ss'),
-        '开始时间:', moment(this.fitTime[rule.id][torrent.hash] * 1000).format('YYYY-MM-DD HH:mm:ss'), '设置持续时间:', rule.fitTime);
+      logger.debug('开始时间:', moment(this.fitTime[rule.id][torrent.hash] * 1000 || 0).format('YYYY-MM-DD HH:mm:ss'), '设置持续时间:', rule.fitTime,
+        '删种规则: ', rule.alias, '种子: ', torrent.name);
       fit = fit && (moment().unix() - this.fitTime[rule.id][torrent.hash] > rule.fitTime);
     }
     return fit !== '1' && fit;
@@ -252,7 +252,7 @@ class Client {
       this.login();
       throw new Error('状态码: ' + statusCode);
     }
-    logger.info('客户端', this.clientAlias, '添加种子成功, 规则:', rule.alias);
+    logger.info('客户端', this.clientAlias, '添加种子', torrentName, '成功, 规则:', rule.alias);
     await this.telegramProxy.sendMessage(msgTemplate.addTorrentString(isSkipChecking, taskName, this.clientAlias, torrentName, size, torrentReseedName, rule));
   };
 

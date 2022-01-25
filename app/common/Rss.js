@@ -121,7 +121,7 @@ class Rss {
                   [torrent.hash, torrent.name, this.alias, torrent.link, moment().unix(), 'reseed']);
                 return;
               } catch (error) {
-                logger.error(this.alias, '客户端', this.clientAlias, '添加种子失败: ', error.message);
+                logger.error(this.alias, '客户端', this.clientAlias, '添加种子', torrent.name, '失败: ', error.message);
                 await this.telegramProxy.sendMessage(msgTemplate.addTorrentErrorString(this.alias, torrent.name, util.formatSize(+torrent.size), error.message));
               }
             }
