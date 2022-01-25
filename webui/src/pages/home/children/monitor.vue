@@ -6,11 +6,6 @@
         stripe
         style="margin: 20px">
         <el-table-column
-          prop="id"
-          label="ID"
-          width="144px">
-        </el-table-column>
-        <el-table-column
           prop="clientAlias"
           label="别名"
           width="200px">
@@ -65,11 +60,6 @@
         stripe
         style="margin: 20px">
         <el-table-column
-          prop="id"
-          label="ID"
-          width="144px">
-        </el-table-column>
-        <el-table-column
           prop="alias"
           label="别名"
           width="200px">
@@ -115,7 +105,7 @@
           width="244px">
           <template slot-scope="scope">
             <el-button @click="gotoClient(scope.row)" type="primary" :disabled="!scope.row.bindClient" size="small">客户端</el-button>
-            <el-button style="margin-left: 0" @click="reloadServer(scope.row)" type="warning" size="small">重置</el-button>
+            <el-button style="margin-left: 0" @click="reloadServer(scope.row)" type="warning" size="small">重连</el-button>
             <el-button style="margin-left: 0" :disabled="!scope.row.status" @click="displayDetails(scope.row)" type="primary" size="small">查看详情</el-button>
           </template>
         </el-table-column>
