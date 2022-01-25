@@ -18,11 +18,14 @@ export default {
   methods: {
     async getBackground () {
       const res = await this.$axiosGet('/api/setting/getBackground');
-      if (!res.data) return;
+      if (!res.data) {
+        document.body.style.background = 'url(\'/assets/images/background.jpg\')';
+        return;
+      }
       document.body.style.background = `url(${res.data})`;
     }
   },
-  mounted () {
+  created () {
     this.getBackground();
   }
 };
@@ -32,10 +35,6 @@ export default {
 @font-face{
   font-family: 'consolas';
   src: url('/assets/fonts/consolas.woff');
-}
-
-body {
-  background: url('/assets/images/background.jpg');
 }
 
 #app {
