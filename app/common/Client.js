@@ -276,7 +276,7 @@ class Client {
         }
       }
       await this.client.deleteTorrent(this.clientUrl, this.cookie, hash, isDeleteFiles);
-      logger.info('客户端', this.clientAlias, '删除种子成功:', torrentName, '规则:', note);
+      logger.info('客户端', this.clientAlias, '删除种子成功:', torrentName, note);
       await this.telegramProxy.sendMessage(
         msgTemplate.deleteTorrentString(this.clientAlias, torrentName, size,
           `${util.formatSize(upload)}/${util.formatSize(download)}`,

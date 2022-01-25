@@ -18,11 +18,10 @@ export default {
   methods: {
     async getBackground () {
       const res = await this.$axiosGet('/api/setting/getBackground');
-      if (!res.data) {
-        document.body.style.background = 'url(\'/assets/images/background.jpg\')';
-        return;
-      }
-      document.body.style.background = `url(${res.data})`;
+      document.body.style.background = res.data ? `url(${res.data})` : 'url(\'/assets/images/background.jpg\')';
+      document.body.style.backgroundPositionX = 'center';
+      document.body.style.backgroundPositionY = 'center';
+      document.body.style.backgroundSize = 'cover';
     }
   },
   created () {
@@ -32,6 +31,12 @@ export default {
 </script>
 
 <style>
+body {
+  height: 100vh;
+  background-position-x: center;
+  background-size: cover;
+}
+
 @font-face{
   font-family: 'consolas';
   src: url('/assets/fonts/consolas.woff');
