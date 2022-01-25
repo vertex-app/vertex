@@ -259,7 +259,7 @@ export default {
     }
   },
   async mounted () {
-    this.clients = JSON.parse(this.$route.query.clients);
+    this.clients = JSON.parse(this.$route.query.clients || '[]');
     this.listClient();
     this.listTorrent();
     this.freshTorrent = setInterval(() => {
