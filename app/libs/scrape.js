@@ -90,9 +90,17 @@ const _hrToTheGlory = async function (url, cookie) {
   return hr;
 };
 
+const _hrToCHDBits = async function (url, cookie) {
+  const d = await getDocument(url, cookie);
+  const hr5 = d.body.innerHTML.indexOf('<b>H&amp;R:&nbsp;</b>5day</td></tr>');
+  const hr3 = d.body.innerHTML.indexOf('<b>H&amp;R:&nbsp;</b>3day</td></tr>');
+  return hr3 !== -1 || hr5 !== -1;
+};
+
 const hrWrapper = {
   'www.hddolby.com': _hr,
-  'totheglory.im': _hrToTheGlory
+  'totheglory.im': _hrToTheGlory,
+  'chdbits.co': _hrToCHDBits
 };
 
 exports.free = async (url, cookie) => {
