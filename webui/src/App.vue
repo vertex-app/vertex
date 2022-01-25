@@ -20,7 +20,6 @@ export default {
       const res = await this.$axiosGet('/api/setting/getBackground');
       if (!res.data) return;
       document.body.style.background = `url(${res.data})`;
-      console.log(document.body);
     }
   },
   mounted () {

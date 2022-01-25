@@ -1,4 +1,6 @@
 const express = require('express');
+const fs = require('fs');
+const path = require('path');
 const app = express();
 const router = express.Router();
 
@@ -36,6 +38,11 @@ const init = function () {
 (async () => {
   global.CONFIG = config;
   global.LOGGER = logger;
+  const setting = JSON.parse(fs.readFileSync(path.join(__dirname, './data/setting.json')));
+  global.auth = {
+    username: setting.username || 'admin',
+    password: setting.password || '5f4dcc3b5aa765d61d8327deb882cf99'
+  };
   init();
   app.listen(process.env.PORT, () => {
     logger.info('Server started, listening', process.env.PORT);
