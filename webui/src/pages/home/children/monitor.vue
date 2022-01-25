@@ -6,6 +6,7 @@
         stripe
         style="margin: 20px">
         <el-table-column
+          sortable
           prop="clientAlias"
           label="别名"
           width="200px">
@@ -53,6 +54,7 @@
         stripe
         style="margin: 20px">
         <el-table-column
+          sortable
           prop="alias"
           label="别名"
           width="200px">

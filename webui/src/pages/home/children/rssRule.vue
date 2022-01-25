@@ -11,6 +11,7 @@
           width="100">
         </el-table-column>
         <el-table-column
+          sortable
           prop="alias"
           label="别名">
         </el-table-column>
