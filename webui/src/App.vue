@@ -16,6 +16,15 @@ export default {
     };
   },
   methods: {
+    async getBackground () {
+      const res = await this.$axiosGet('/api/setting/getBackground');
+      if (!res.data) return;
+      document.body.style.background = `url(${res.data})`;
+      console.log(document.body);
+    }
+  },
+  mounted () {
+    this.getBackground();
   }
 };
 </script>
@@ -27,7 +36,7 @@ export default {
 }
 
 body {
-  background: url('https://pic.lswl.in/images/2022/01/20/0477a2b150b8d7d13335d30b12c840f2.jpg');
+  background: url('/assets/images/background.jpg');
 }
 
 #app {

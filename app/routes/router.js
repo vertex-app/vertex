@@ -26,7 +26,7 @@ const checkAuth = async function (req, res, next) {
   const pathname = req._parsedOriginalUrl.pathname;
   const excludePath = [
     '/api/user/login',
-
+    '/api/setting/getBackground',
     '/login'
   ];
   if (req.session.user && ['/', '/login'].includes(pathname)) {
@@ -117,6 +117,10 @@ module.exports = function (app, express, router) {
   router.get('/torrent/info', ctrl.Torrent.info);
 
   router.get('/log/get', ctrl.Log.get);
+
+  router.get('/setting/get', ctrl.Setting.get);
+  router.get('/setting/getBackground', ctrl.Setting.getBackground);
+  router.post('/setting/modify', ctrl.Setting.modify);
 
   app.use('/api', router);
   app.use('*', (req, res, next) => {

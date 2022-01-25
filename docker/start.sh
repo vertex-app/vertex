@@ -38,6 +38,12 @@ else
   echo '/vertex/config/config.yaml exists, continue'
 fi
 
+if [ ! -f '/vertex/data/setting.json' ]; then
+  cp /root/vertex/app/config_backup/setting.json /vertex/data/
+else
+  echo '/vertex/data/setting.json exists, continue'
+fi
+
 cd ~/vertex
 export PORT=3000
 node app/app.js
