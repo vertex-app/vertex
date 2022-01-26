@@ -135,7 +135,7 @@
             </el-form-item>
             <el-form-item label="等待时间" prop="sleepTime">
               <el-input v-model="rss.sleepTime" style="width: 500px;"></el-input>
-              <div><el-tag type="info">在种子发布后的一段时间内不会操作该种, 直到等待时间之后, 再行判断是否添加</el-tag></div>
+              <div><el-tag type="info">若在 Rss 时种子是非免费状态, 将在种子发布后的一段时间内重复抓取免费状态, 建议等待时间略小于 Rss 周期</el-tag></div>
             </el-form-item>
             <el-form-item v-if="!hideReseed" required label="自动辅种 Beta" prop="autoReseed">
               <el-checkbox v-model="rss.autoReseed"></el-checkbox>
