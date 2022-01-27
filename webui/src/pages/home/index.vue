@@ -87,9 +87,9 @@ export default {
         title: ' 种子历史',
         path: '/torrent-history'
       }, {
-        icon: ['fab', 'telegram-plane'],
-        title: ' Telegram',
-        path: '/telegram'
+        icon: ['fas', 'bullhorn'],
+        title: ' 推送工具',
+        path: '/push'
       }, {
         icon: ['fas', 'sticky-note'],
         title: ' 日志',

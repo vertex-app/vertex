@@ -83,14 +83,10 @@ module.exports = function (app, express, router) {
   router.post('/server/delete', ctrl.Server.delete);
   router.get('/server/reload', ctrl.Server.reload);
 
-  router.post('/telegram/addBot', ctrl.Telegram.addBot);
-  router.post('/telegram/addChannel', ctrl.Telegram.addChannel);
-  router.get('/telegram/listBot', ctrl.Telegram.listBot);
-  router.get('/telegram/listChannel', ctrl.Telegram.listChannel);
-  router.post('/telegram/modifyBot', ctrl.Telegram.modifyBot);
-  router.post('/telegram/modifyChannel', ctrl.Telegram.modifyChannel);
-  router.post('/telegram/deleteBot', ctrl.Telegram.deleteBot);
-  router.post('/telegram/deleteChannel', ctrl.Telegram.deleteChannel);
+  router.post('/push/add', ctrl.Push.add);
+  router.get('/push/list', ctrl.Push.list);
+  router.post('/push/modify', ctrl.Push.modify);
+  router.post('/push/delete', ctrl.Push.delete);
 
   router.get('/client/list', ctrl.Client.list);
   router.post('/client/add', ctrl.Client.add);

@@ -34,7 +34,7 @@ build_docker_image_and_push:
     - docker:20.10-dind
   before_script:
     - apk update
-    - apk add tzdata curl bash
+    - apk add tzdata curl bash coreutils
     - docker info
     - echo $IMAGE_TAG_SHA
     - echo $IMAGE_TAG_LATEST
@@ -54,8 +54,8 @@ build_docker_image_and_push:
     - tar -xzvf static.tar.gz -C docker/src/
     - cd docker
     - ls src/static
-    - TIME=$(TZ=Asia/Shanghai date -d @`date +%s` "+%Y_%m_%d_%H_%M_%S")
-    - TIME_PUSH=$(TZ=Asia/Shanghai date -d @`date +%s` "+%Y-%m-%d %H:%M:%S")
+    - TIME=$(TZ=Asia/Shanghai date -d $CI_COMMIT_TIMESTAMP "+%Y_%m_%d_%H_%M_%S")
+    - PUSH_TIME=$(TZ=Asia/Shanghai date -d $CI_COMMIT_TIMESTAMP "+%Y-%m-%d %H:%M:%S")
     - echo $TIME
     - COMMIT_MESSAGE=`echo $CI_COMMIT_MESSAGE | sed 's/\n//g'`
     - |
@@ -67,4 +67,4 @@ build_docker_image_and_push:
     - |
       curl --location --request POST 'https://vertex-push.lswl.workers.dev' \
       --header 'Content-Type: application/json' \
-      --data-raw "{\"key\": \"$KEY\",\"time\": \"$TIME_PUSH\",\"message\": \"$COMMIT_MESSAGE\",\"sha1\": \"${CI_COMMIT_SHA:0:12}\"}"
+      --data-raw "{\"key\": \"$KEY\",\"time\": \"$PUSH_TIME\",\"message\": \"$COMMIT_MESSAGE\",\"sha1\": \"${CI_COMMIT_SHA:0:12}\"}"

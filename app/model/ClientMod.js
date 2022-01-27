@@ -37,7 +37,7 @@ class ClientMod {
     const rssList = util.listRss();
     const clientList = util.listClient();
     for (const client of clientList) {
-      client.used = rssList.some(item => item.client === client.id);
+      client.used = rssList.some(item => item.client === client.id) || rssList.some(item => item.reseedClients.indexOf(client.id) !== -1);
       client.status = client.enable && global.runningClient[client.id].status && global.runningClient[client.id].maindata;
       if (client.status) {
         client.uploadSpeed = global.runningClient[client.id].maindata.uploadSpeed;

@@ -21,14 +21,14 @@
           label="启用"
           width="100">
           <template slot-scope="scope">
-            <el-tag>{{scope.row.enable}}</el-tag>
+            <el-tag :type="scope.row.enable ? '' : 'danger'">{{scope.row.enable}}</el-tag>
           </template>
         </el-table-column>
         <el-table-column
           label="客户端"
           width="150">
           <template slot-scope="scope">
-            <el-tag>{{(clientList.filter(item => scope.row.client === item.id)[0] || {}).clientAlias}}</el-tag>
+            <el-tag>{{(clientList.filter(item => scope.row.client === item.id)[0] || {}).alias}}</el-tag>
           </template>
         </el-table-column>
         <el-table-column
@@ -76,7 +76,7 @@
             </el-form-item>
             <el-form-item required label="客户端" prop="client">
               <el-select v-model="rss.client" placeholder="客户端">
-                <el-option v-for="client of clientList" :disabled="!client.enable" :key="client.id" :label="client.clientAlias" :value="client.id"></el-option>
+                <el-option v-for="client of clientList" :disabled="!client.enable" :key="client.id" :label="client.alias" :value="client.id"></el-option>
               </el-select>
               <div><el-tag type="info">选择客户端, 仅可选择已经启用的客户端</el-tag></div>
             </el-form-item>
@@ -86,20 +86,14 @@
             <el-form-item v-if="rss.scrapeHr || rss.scrapeFree" label="Cookie" prop="cookie">
               <el-input v-model="rss.cookie" style="width: 500px;"></el-input>
             </el-form-item>
-            <el-form-item required label="推送消息" prop="pushMessage">
-              <el-checkbox v-model="rss.pushMessage">推送消息</el-checkbox>
+            <el-form-item required label="推送通知" prop="pushNotify">
+              <el-checkbox v-model="rss.pushNotify">推送通知</el-checkbox>
             </el-form-item>
-            <el-form-item v-if="rss.pushMessage" required label="Telegram Bot" prop="telegram">
-              <el-select v-model="rss.telegram" placeholder="请选择 Bot">
-                <el-option v-for="bot of botList" :key="bot.id" :label="bot.alias" :value="bot.id"></el-option>
+            <el-form-item v-if="rss.pushNotify" required label="通知方式" prop="notify">
+              <el-select v-model="rss.notify" placeholder="请选择 通知方式">
+                <el-option v-for="push of pushList" :key="push.id" :label="push.alias" :value="push.id"></el-option>
               </el-select>
-              <div><el-tag type="info">Telegram Bot, 可在 Telegram 页面创建, 用于推送消息</el-tag></div>
-            </el-form-item>
-            <el-form-item v-if="rss.pushMessage" required label="Rss 信息推送频道" prop="notifyChannel">
-              <el-select v-model="rss.notifyChannel" placeholder="请选择频道">
-                <el-option v-for="channel of channelList" :key="channel.id" :label="channel.alias" :value="channel.id"></el-option>
-              </el-select>
-              <div><el-tag type="info">Rss 信息推送频道, 用于推送 Rss 相关的通知</el-tag></div>
+              <div><el-tag type="info">通知方式, 用于推送 Rss 相关信息, 在推送工具页面创建</el-tag></div>
             </el-form-item>
             <el-form-item required label="Rss 周期" prop="cron">
               <el-input v-model="rss.cron" style="width: 500px;"></el-input>
@@ -147,7 +141,7 @@
             </el-form-item>
             <el-form-item v-if="!hideReseed" required label="仅辅种以下客户端" prop="reseedClients">
               <el-checkbox-group v-model="rss.reseedClients">
-                <el-checkbox v-for="c of clientList" :disabled="!c.enable" :key="c.id" :label="c.id">{{c.clientAlias}}</el-checkbox>
+                <el-checkbox v-for="c of clientList" :disabled="!c.enable" :key="c.id" :label="c.id">{{c.alias}}</el-checkbox>
               </el-checkbox-group>
               <div><el-tag type="info">辅种时仅辅种以上客户端</el-tag></div>
             </el-form-item>
@@ -204,9 +198,8 @@ export default {
         rssRules: [],
         reseedClients: []
       },
-      botList: [],
+      pushList: [],
       urlDisplay: true,
-      channelList: [],
       rssList: [],
       rssRuleList: [],
       clientList: [],
@@ -254,17 +247,13 @@ export default {
       const res = await this.$axiosGet('/api/rss/list');
       this.rssList = res ? res.data : [];
     },
-    async listBot () {
-      const res = await this.$axiosGet('/api/telegram/listBot');
-      this.botList = res ? res.data : [];
+    async listPush () {
+      const res = await this.$axiosGet('/api/push/list');
+      this.pushList = res ? res.data : [];
     },
     async listClient () {
       const res = await this.$axiosGet('/api/client/list');
       this.clientList = res ? res.data : [];
-    },
-    async listChannel () {
-      const res = await this.$axiosGet('/api/telegram/listChannel');
-      this.channelList = res ? res.data : [];
     },
     async listRssRule () {
       const res = await this.$axiosGet('/api/rssRule/list');
@@ -276,8 +265,7 @@ export default {
     this.rss = { ...this.defaultRss };
     await this.listClient();
     this.listRss();
-    this.listBot();
-    this.listChannel();
+    this.listPush();
     this.listRssRule();
   }
 };

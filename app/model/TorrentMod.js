@@ -9,7 +9,7 @@ class TorrentMod {
       if (!clientsList.some(item => item === clientId)) continue;
       for (const torrent of clients[clientId].maindata.torrents) {
         const _torrent = { ...torrent };
-        _torrent.clientAlias = clients[clientId].clientAlias;
+        _torrent.clientAlias = clients[clientId].alias;
         const res = await util.getRecord('select link from torrents where hash = ?', [_torrent.hash]);
         _torrent.link = res ? res.link : false;
         torrentList.push(_torrent);
@@ -42,7 +42,7 @@ class TorrentMod {
       for (const torrent of clients[clientId].maindata.torrents) {
         if (torrent.hash !== torrentHash) continue;
         const _torrent = { ...torrent };
-        _torrent.clientAlias = clients[clientId].clientAlias;
+        _torrent.clientAlias = clients[clientId].alias;
         return _torrent;
       }
     }

@@ -61,26 +61,15 @@ exports.exec = util.promisify(require('child_process').exec);
 exports.uuid = uuid;
 exports.md5 = md5;
 
-exports.listBot = function () {
-  const files = fs.readdirSync(path.join(__dirname, '../data/telegram/bot'));
-  const botList = [];
+exports.listPush = function () {
+  const files = fs.readdirSync(path.join(__dirname, '../data/push'));
+  const list = [];
   for (const file of files) {
     if (path.extname(file) === '.json') {
-      botList.push(_importJson(path.join(__dirname, '../data/telegram/bot', file)));
+      list.push(_importJson(path.join(__dirname, '../data/push', file)));
     }
   }
-  return botList;
-};
-
-exports.listChannel = function () {
-  const files = fs.readdirSync(path.join(__dirname, '../data/telegram/channel'));
-  const channelList = [];
-  for (const file of files) {
-    if (path.extname(file) === '.json') {
-      channelList.push(_importJson(path.join(__dirname, '../data/telegram/channel', file)));
-    }
-  }
-  return channelList;
+  return list;
 };
 
 exports.listClient = function () {

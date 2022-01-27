@@ -4,8 +4,7 @@ const de = require('../libs/client/de');
 const moment = require('moment');
 const logger = require('../libs/logger');
 const CronJob = require('cron').CronJob;
-const Telegram = require('../libs/telegram');
-const msgTemplate = require('../libs/msgTemplate');
+const Push = require('./Push');
 
 const clients = {
   qBittorrent: qb,
@@ -14,10 +13,11 @@ const clients = {
 
 class Client {
   constructor (client) {
+    this._client = client;
     this.id = client.id;
     this.status = false;
     this.client = clients[client.type];
-    this.clientAlias = client.clientAlias;
+    this.alias = client.alias;
     this.password = client.password;
     this.username = client.username;
     this.clientUrl = client.clientUrl;
@@ -26,15 +26,16 @@ class Client {
     this.maxLeechNum = client.maxLeechNum;
     this.sameServerClients = client.sameServerClients;
     this.maindata = null;
-    this.telegramProxy = this.createTelegramProxy(util.listBot().filter(item => item.id === client.telegram)[0] || {},
-      (util.listChannel().filter(item => item.id === client.notifyChannel)[0] || {}).channelId);
-    this.channelProxy = this.createTelegramProxy(util.listBot().filter(item => item.id === client.telegram)[0] || {},
-      (util.listChannel().filter(item => item.id === client.torrentsChannel)[0] || {}).channelId);
     this.maindataJob = new CronJob(client.cron, () => this.getMaindata());
     this.maindataJob.start();
+    this.notify = util.listPush().filter(item => item.id === client.notify)[0] || {};
+    this.notify.push = client.pushNotify;
+    this.monitor = util.listPush().filter(item => item.id === client.monitor)[0] || {};
+    this.monitor.push = client.pushMonitor;
+    this.ntf = new Push(this.notify);
+    this.mnt = new Push(this.monitor);
     if (client.autoReannounce) {
-      this.reannouncedHash = [];
-      this.reannounceJob = new CronJob('*/10 * * * * *', () => this.autoReannounce());
+      this.reannounceJob = new CronJob('*/11 * * * * *', () => this.autoReannounce());
       this.reannounceJob.start();
     }
     this._deleteRules = client.deleteRules;
@@ -54,6 +55,7 @@ class Client {
     this.recordJob = new CronJob('*/5 * * * *', () => this.record());
     this.recordJob.start();
     this.messageId = 0;
+    this.errorCount = 0;
     this.login();
   };
 
@@ -136,7 +138,7 @@ class Client {
   };
 
   destroy () {
-    logger.info('销毁客户端实例', this.clientAlias);
+    logger.info('销毁客户端实例', this.alias);
     this.maindataJob.stop();
     if (this.reannounceJob) this.reannounceJob.stop();
     if (this.autoDeleteJob) this.autoDeleteJob.stop();
@@ -150,7 +152,7 @@ class Client {
   };
 
   reloadDeleteRule () {
-    logger.info('重新加载删种规则', this.clientAlias);
+    logger.info('重新加载删种规则', this.alias);
     for (const rule of this.deleteRules) {
       if (rule.fitTimeJob) {
         rule.fitTimeJob.stop();
@@ -164,31 +166,26 @@ class Client {
         rule.fitTimeJob.start();
       }
     }
-  }
+  };
 
-  createTelegramProxy (telegram, channel) {
-    const _telegram = new Telegram(telegram.token, channel, 'HTML', telegram.domain);
-    const _this = this;
-    const telegramProxy = new Proxy(_telegram, {
-      get: function (target, property) {
-        if (!_this.pushMessage) {
-          logger.debug(_this.clientAlias, '未设置推送消息, 跳过推送');
-          return () => 1;
-        };
-        return target[property];
-      }
-    });
-    return telegramProxy;
+  reloadPush () {
+    this.notify = util.listPush().filter(item => item.id === this._client.notify)[0] || {};
+    this.notify.push = this._client.pushNotify;
+    this.monitor = util.listPush().filter(item => item.id === this._client.monitor)[0] || {};
+    this.monitor.push = this._client.pushMonitor;
+    this.ntf = new Push(this.notify);
+    this.mnt = new Push(this.monitor);
   };
 
   async login () {
     try {
       this.cookie = await this.client.login(this.username, this.clientUrl, this.password);
       this.status = true;
-      logger.info('客户端', this.clientAlias, '登陆成功');
+      this.errorCount = 0;
+      logger.info('客户端', this.alias, '登陆成功');
     } catch (error) {
-      logger.error('客户端', this.clientAlias, '登陆失败', error.message);
-      await this.telegramProxy.sendMessage(msgTemplate.getCookieErrorString(this.clientAlias, error.message));
+      logger.error('客户端', this.alias, '登陆失败\n', error);
+      await this.ntf.clientLoginError(this._client, error.message);
       this.status = false;
     }
     try {
@@ -197,19 +194,21 @@ class Client {
         .filter(item => item.clientId === this.id)
         .forEach((item) => item.reloadClient());
       if (!this.messageId) {
-        await this.telegramProxy.sendMessage(msgTemplate.connectClientString(this.clientAlias, moment().format('YYYY-MM-DD HH:mm:ss')));
-        const res = await this.channelProxy.sendMessage(msgTemplate.connectClientString(this.clientAlias, moment().format('YYYY-MM-DD HH:mm:ss')));
-        if (!this.pushMessage) return;
-        this.messageId = res.body.result.message_id;
-        await this.channelProxy.deleteMessage(this.messageId - 1);
+        await this.ntf.connectClient(this._client);
+        if (this.monitor.push) {
+          this.messageId = await this.mnt.connectClient(this._client);
+        }
       }
     } catch (e) {
-      logger.info(e);
+      logger.error(e);
     }
   };
 
   async getMaindata () {
-    if (!this.cookie) return;
+    if (!this.cookie) {
+      this.login();
+      return;
+    }
     const statusLeeching = ['downloading', 'stalledDL', 'Downloading'];
     const statusSeeding = ['uploading', 'stalledUP', 'Seeding'];
     try {
@@ -237,55 +236,55 @@ class Client {
           downloadSpeed: this.maindata.downloadSpeed
         };
       }
-      await this.channelProxy.editMessage(this.messageId, msgTemplate.clientInfoString(this.maindata, serverSpeed));
-      logger.debug('客户端', this.clientAlias, '获取种子信息成功');
+      logger.debug('客户端', this.alias, '获取种子信息成功');
+      this.errorCount = 0;
     } catch (error) {
-      logger.error(error);
-      logger.error('客户端', this.clientAlias, '获取种子信息失败\n', error.message);
-      await this.telegramProxy.sendMessage(msgTemplate.getMaindataErrorString(this.clientAlias, error.message));
-      await this.login();
+      logger.error('客户端', this.alias, '获取种子信息失败\n', error);
+      this.errorCount += 1;
+      if (this.errorCount > 10) {
+        await this.ntf.getMaindataError(this._client);
+        await this.login();
+      }
+    }
+    try {
+      if (this.monitor.push) await this.mnt.edit(this.messageId, this.maindata);
+    } catch (e) {
+      logger.error('推送监控报错', '\n', e);
     }
   };
 
-  async addTorrent (taskName, torrentName, size, torrentUrl, torrentReseedName, isSkipChecking = false, uploadLimit = 0, downloadLimit = 0, savePath, category, rule) {
+  async addTorrent (torrentUrl, isSkipChecking = false, uploadLimit = 0, downloadLimit = 0, savePath, category) {
     const { statusCode } = await this.client.addTorrent(this.clientUrl, this.cookie, torrentUrl, isSkipChecking, uploadLimit, downloadLimit, savePath, category);
     if (statusCode !== 200) {
       this.login();
       throw new Error('状态码: ' + statusCode);
     }
-    logger.info('客户端', this.clientAlias, '添加种子', torrentName, '成功, 规则:', rule.alias);
-    await this.telegramProxy.sendMessage(msgTemplate.addTorrentString(isSkipChecking, taskName, this.clientAlias, torrentName, size, torrentReseedName, rule));
   };
 
-  async reannounceTorrent (hash, torrentName, tracker) {
+  async reannounceTorrent (torrent) {
     try {
-      await this.client.reannounceTorrent(this.clientUrl, this.cookie, hash);
-      this.reannouncedHash.push(hash);
-      logger.info('客户端', this.clientAlias, '重新汇报种子成功:', torrentName);
+      await this.client.reannounceTorrent(this.clientUrl, this.cookie, torrent.hash);
+      logger.info('客户端', this.alias, '重新汇报种子成功:', torrent.name);
     } catch (error) {
-      logger.error('客户端', this.clientAlias, '重新汇报种子失败:', torrentName, '\n', error.message);
-      await this.telegramProxy.sendMessage(msgTemplate.reannounceErrorString(this.clientAlias, torrentName, tracker, error.message));
+      logger.error('客户端', this.alias, '重新汇报种子失败:', torrent.name, '\n', error.message);
+      await this.ntf.reannounceTorrent(this._client, torrent);
     }
   };
 
-  async deleteTorrent (hash, torrentName, size, upload, download, uploadSpeed, downloadSpeed, ratio, tracker, note) {
+  async deleteTorrent (torrent, rule) {
     try {
       let isDeleteFiles = true;
-      for (const torrent of this.maindata.torrents) {
-        if (torrent.name === torrentName && torrent.size === size && torrent.hash !== hash) {
+      for (const _torrent of this.maindata.torrents) {
+        if (_torrent.name === torrent.name && _torrent.size === torrent.size && _torrent.hash !== torrent.hash) {
           isDeleteFiles = false;
         }
       }
-      await this.client.deleteTorrent(this.clientUrl, this.cookie, hash, isDeleteFiles);
-      logger.info('客户端', this.clientAlias, '删除种子成功:', torrentName, note);
-      await this.telegramProxy.sendMessage(
-        msgTemplate.deleteTorrentString(this.clientAlias, torrentName, size,
-          `${util.formatSize(upload)}/${util.formatSize(download)}`,
-          `${util.formatSize(uploadSpeed)}/s /${util.formatSize(downloadSpeed)}/s`, ratio, tracker, isDeleteFiles, note
-        ));
+      await this.client.deleteTorrent(this.clientUrl, this.cookie, torrent.hash, isDeleteFiles);
+      logger.info('客户端', this.alias, '删除种子成功:', torrent.name, rule);
+      await this.ntf.deleteTorrent(this._client, torrent, rule, isDeleteFiles);
     } catch (error) {
-      logger.error('客户端', this.clientAlias, '删除种子失败:', torrentName, '\n', error.message);
-      await this.telegramProxy.sendMessage(msgTemplate.deleteTorrentErrorString(this.clientAlias, torrentName, error.message));
+      logger.error('客户端', this.alias, '删除种子失败:', torrent.name, '\n', error);
+      await this.ntf.deleteTorrent(this._client, torrent, rule);
     }
   };
 
@@ -294,7 +293,7 @@ class Client {
     for (const torrent of this.maindata.torrents) {
       const now = moment().unix();
       if (now - torrent.addedTime < 300 && now - torrent.addedTime > 60 && (now - torrent.addedTime) % 60 < 10) {
-        await this.reannounceTorrent(torrent.hash, torrent.name, torrent.tracker);
+        await this.reannounceTorrent(torrent);
       }
     }
   }
@@ -305,11 +304,10 @@ class Client {
     for (const torrent of torrents) {
       for (const rule of this.deleteRules) {
         if (this._fitDeleteRule(rule, torrent)) {
-          await this.reannounceTorrent(torrent.hash, torrent.name, torrent.tracker);
+          await this.reannounceTorrent(torrent);
           await util.runRecord('update torrents set size = ?, tracker = ?, uploaded = ?, downloaded = ?, delete_time = ? where hash = ?',
             [torrent.size, torrent.tracker, torrent.uploaded, torrent.downloaded, moment().unix(), torrent.hash]);
-          await this.deleteTorrent(torrent.hash, torrent.name, torrent.size, torrent.uploaded, torrent.downloaded,
-            torrent.uploadSpeed, torrent.downloadSpeed, torrent.ratio, torrent.tracker, '规则: ' + rule.alias);
+          await this.deleteTorrent(torrent, rule);
           return;
         }
       }
@@ -317,6 +315,7 @@ class Client {
   };
 
   async record () {
+    if (!this.maindata) return;
     for (const torrent of this.maindata.torrents) {
       await util.runRecord('update torrents set size = ?, tracker = ?, uploaded = ?, downloaded = ? where hash = ?',
         [torrent.size, torrent.tracker, torrent.uploaded, torrent.downloaded, torrent.hash]);
@@ -335,7 +334,7 @@ class Client {
         }
       }
     } catch (e) {
-      logger.error('客户端', this.clientAlias, '\n', e);
+      logger.error('客户端', this.alias, '\n', e);
     }
   }
 }

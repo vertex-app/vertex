@@ -12,7 +12,7 @@ import TorrentMix from '@/pages/home/children/torrentMix';
 import TorrentHistory from '@/pages/home/children/torrentHistory';
 import DeleteRule from '@/pages/home/children/deleteRule';
 import RssRule from '@/pages/home/children/rssRule';
-import Telegram from '@/pages/home/children/telegram';
+import Push from '@/pages/home/children/push';
 import Rss from '@/pages/home/children/rss';
 import Log from '@/pages/home/children/log';
 
@@ -82,10 +82,10 @@ export default new Router({
             title: 'Rss 规则'
           }
         }, {
-          path: 'telegram',
-          component: Telegram,
+          path: 'push',
+          component: Push,
           meta: {
-            title: 'Telegram'
+            title: '推送工具'
           }
         }, {
           path: 'torrent-mix',
@@ -109,7 +109,7 @@ export default new Router({
           path: 'log',
           component: Log,
           meta: {
-            title: 'log'
+            title: '日志'
           }
         }
       ]

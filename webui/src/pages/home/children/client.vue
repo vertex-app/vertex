@@ -12,7 +12,7 @@
         </el-table-column>
         <el-table-column
           sortable
-          prop="clientAlias"
+          prop="alias"
           label="别名"
           width="144">
         </el-table-column>
@@ -42,7 +42,7 @@
           label="自动删种"
           width="100">
           <template slot-scope="scope">
-            <el-tag>{{scope.row.autoDelete}}</el-tag>
+            <el-tag :type="scope.row.autoDelete ? '' : 'danger'">{{scope.row.autoDelete}}</el-tag>
           </template>
         </el-table-column>
         <el-table-column
@@ -83,8 +83,8 @@
             <el-tag>客户端 ID: {{client.id || '新增'}}</el-tag>
           </div>
           <el-form ref="client" class="client-form" :model="client" label-width="160px" size="mini">
-            <el-form-item required label="别名" prop="clientAlias">
-              <el-input v-model="client.clientAlias"></el-input>
+            <el-form-item required label="别名" prop="alias">
+              <el-input v-model="client.alias"></el-input>
             </el-form-item>
             <el-form-item required label="启用" prop="enable">
               <el-checkbox v-model="client.enable">启用</el-checkbox>
@@ -105,26 +105,23 @@
             <el-form-item required label="WebUI - Url" prop="clientUrl">
               <el-input v-model="client.clientUrl" style="width: 500px;"></el-input>
             </el-form-item>
-            <el-form-item required label="推送消息" prop="pushMessage">
-              <el-checkbox v-model="client.pushMessage">推送消息</el-checkbox>
+            <el-form-item required label="推送通知" prop="pushNotify">
+              <el-checkbox v-model="client.pushNotify">推送通知</el-checkbox>
             </el-form-item>
-            <el-form-item v-if="client.pushMessage" required label="Telegram Bot" prop="telegram">
-              <el-select v-model="client.telegram" placeholder="请选择 Bot">
-                <el-option v-for="bot of botList" :key="bot.id" :label="bot.alias" :value="bot.id"></el-option>
+            <el-form-item v-if="client.pushNotify" required label="通知方式" prop="notify">
+              <el-select v-model="client.notify" placeholder="请选择 通知方式">
+                <el-option v-for="push of pushList" :key="push.id" :label="push.alias" :value="push.id"></el-option>
               </el-select>
-              <div><el-tag type="info">Telegram Bot, 可在 Telegram 页面创建, 用于推送消息</el-tag></div>
+              <div><el-tag type="info">通知方式, 用于推送删种等信息, 在推送工具页面创建</el-tag></div>
             </el-form-item>
-            <el-form-item v-if="client.pushMessage" required label="客户端状态频道" prop="torrentsChannel">
-              <el-select v-model="client.torrentsChannel" placeholder="请选择频道">
-                <el-option v-for="channel of channelList" :key="channel.id" :label="channel.alias" :value="channel.id"></el-option>
-              </el-select>
-              <div><el-tag type="info">客户端状态频道, 用于推送客户端上传下载速度以及各项基本信息</el-tag></div>
+            <el-form-item required label="推送客户端监控" prop="pushNotify">
+              <el-checkbox v-model="client.pushMonitor">推送客户端监控</el-checkbox>
             </el-form-item>
-            <el-form-item v-if="client.pushMessage" required label="Rss 信息推送频道" prop="notifyChannel">
-              <el-select v-model="client.notifyChannel" placeholder="请选择频道">
-                <el-option v-for="channel of channelList" :key="channel.id" :label="channel.alias" :value="channel.id"></el-option>
+            <el-form-item v-if="client.pushMonitor" required label="客户端状态频道" prop="pushMonitor">
+              <el-select v-model="client.monitor" placeholder="请选择频道">
+                <el-option v-for="push of pushList" :key="push.id" :label="push.alias" :value="push.id"></el-option>
               </el-select>
-              <div><el-tag type="info">Rss 信息推送频道, 用于推送 Rss 相关的通知</el-tag></div>
+              <div><el-tag type="info">客户端状态频道, 仅支持 Telegram! 在推送工具页面创建</el-tag></div>
             </el-form-item>
             <el-form-item required label="信息更新周期" prop="cron">
               <el-input v-model="client.cron" style="width: 500px;"></el-input>
@@ -150,7 +147,7 @@
             </el-form-item>
             <el-form-item v-if="clientList.length !== 0" label="同服客户端">
               <el-checkbox-group v-model="client.sameServerClients">
-                <el-checkbox v-for="c of clientList" :key="c.id" :label="c.id">{{c.clientAlias}}</el-checkbox>
+                <el-checkbox v-for="c of clientList" :key="c.id" :label="c.id">{{c.alias}}</el-checkbox>
               </el-checkbox-group>
               <div><el-tag type="info">在统计上限速度时, 计算所有同服客户端的速度和</el-tag></div>
             </el-form-item>
@@ -187,15 +184,13 @@ export default {
       defaultClient: {
         cron: '*/4 * * * * *',
         autoDeleteCron: '* * * * *',
-        pushMessage: true,
         autoReannounce: true,
         autoDelete: true,
         deleteRules: [],
         sameServerClients: []
       },
       urlDisplay: true,
-      botList: [],
-      channelList: [],
+      pushList: [],
       clientList: [],
       deleteRuleList: [],
       clientCollapse: ['1']
@@ -242,13 +237,9 @@ export default {
       const res = await this.$axiosGet('/api/client/list');
       this.clientList = res ? res.data : [];
     },
-    async listBot () {
-      const res = await this.$axiosGet('/api/telegram/listBot');
-      this.botList = res ? res.data : [];
-    },
-    async listChannel () {
-      const res = await this.$axiosGet('/api/telegram/listChannel');
-      this.channelList = res ? res.data : [];
+    async listPush () {
+      const res = await this.$axiosGet('/api/push/list');
+      this.pushList = res ? res.data : [];
     },
     async listDeleteRule () {
       const res = await this.$axiosGet('/api/deleteRule/list');
@@ -261,8 +252,7 @@ export default {
   async mounted () {
     this.client = { ...this.defaultClient };
     this.listClient();
-    this.listBot();
-    this.listChannel();
+    this.listPush();
     this.listDeleteRule();
   }
 };
