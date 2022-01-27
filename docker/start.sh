@@ -6,8 +6,7 @@ if [ ! -d '/vertex/data' ]; then
   mkdir /vertex/data/server
   mkdir /vertex/data/rule/delete -p
   mkdir /vertex/data/rule/rss
-  mkdir /vertex/data/telegram/channel -p
-  mkdir /vertex/data/telegram/bot
+  mkdir /vertex/data/push
 else
   echo '/vertex/data exists, continue'
 fi

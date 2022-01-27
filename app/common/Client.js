@@ -69,65 +69,73 @@ class Client {
 
   _fitDeleteRule (_rule, torrent, fitTimeJob) {
     const rule = { ..._rule };
-    rule.minDownloadSpeed = util.calSize(rule.minDownloadSpeed, rule.minDownloadSpeedUnit);
-    rule.maxDownloadSpeed = util.calSize(rule.maxDownloadSpeed, rule.maxDownloadSpeedUnit);
-    rule.minUploadSpeed = util.calSize(rule.minUploadSpeed, rule.minUploadSpeedUnit);
-    rule.maxUsedSpace = util.calSize(rule.maxUsedSpace, rule.maxUsedSpaceUnit);
-    rule.maxFreeSpace = util.calSize(rule.maxFreeSpace, rule.maxFreeSpaceUnit);
-    rule.maxAvgDownloadSpeed = util.calSize(rule.maxAvgDownloadSpeed, rule.maxAvgDownloadSpeedUnit);
+    const maindata = { ...this.maindata };
     let fit = '1';
-    const statusLeeching = ['downloading', 'stalledDL', 'Downloading'];
-    const statusSeeding = ['uploading', 'stalledUP', 'Seeding'];
-    if (rule.minUploadSpeed && !rule.maxDownloadSpeed && !rule.minDownloadSpeed) {
-      fit = fit && (torrent.uploadSpeed < +rule.minUploadSpeed) && statusSeeding.some(item => item === torrent.state);
-    }
-    if (rule.maxDownloadSpeed && rule.minUploadSpeed) {
-      fit = fit && (torrent.downloadSpeed > +rule.maxDownloadSpeed && torrent.uploadSpeed < +rule.minUploadSpeed);
-    }
-    if (rule.minDownloadSpeed && rule.minUploadSpeed) {
-      fit = fit && (torrent.downloadSpeed < +rule.minDownloadSpeed && torrent.uploadSpeed < +rule.minUploadSpeed &&
-        torrent.state !== 'stalledDL' && statusLeeching.some(item => item === torrent.state));
-    }
-    if (rule.maxAvgDownloadSpeed) {
-      fit = fit && torrent.completed / (moment().unix() - torrent.addedTime) > +rule.maxAvgDownloadSpeed;
-    }
-    if (rule.maxSeedTime) {
-      fit = fit && (moment().unix() - torrent.completedTime > +rule.maxSeedTime) && statusSeeding.some(item => item === torrent.state);
-    }
-    if (rule.maxLeechTime) {
-      fit = fit && (moment().unix() - torrent.addedTime > +rule.maxLeechTime) && statusLeeching.some(item => item === torrent.state);
-    }
-    if (rule.maxUsedSpace) {
-      fit = fit && (this.maindata.usedSpace > +rule.maxUsedSpace);
-    }
-    if (rule.maxFreeSpace) {
-      fit = fit && (this.maindata.freeSpaceOnDisk < +rule.maxFreeSpace) && statusSeeding.some(item => item === torrent.state);
-    }
-    if (rule.maxRatio) {
-      fit = fit && (torrent.ratio > rule.maxRatio) && statusSeeding.some(item => item === torrent.state);
-    }
-    if (rule.minRatio) {
-      fit = fit && (torrent.ratio < rule.minRatio && ['downloading', 'Downloading'].some(item => item === torrent.state));
-    }
-    if (rule.maxAvailability) {
-      fit = fit && ((torrent.availability || torrent.seeder) > +rule.maxAvailability);
-    }
-    if (rule.minPeerNum) {
-      fit = fit && (torrent.seeder + torrent.leecher) < +rule.minPeerNum;
-    }
-    if (rule.minProgress) {
-      fit = fit && torrent.progress < +rule.minProgress;
-    }
-    if (rule.maxProgress) {
-      fit = fit && torrent.progress > +rule.maxProgress;
-    }
-    if (rule.excludeCategory) {
-      const categories = rule.excludeCategory.split(/\r\n|\n/);
-      fit = fit && !categories.some(category => torrent.category === category);
-    }
-    if (rule.category) {
-      const categories = rule.category.split(/\r\n|\n/);
-      fit = fit && categories.some(category => torrent.category === category);
+    if (rule.type === 'javascript') {
+      fit = ((maindata, torrent) => {
+        // eslint-disable-next-line no-eval
+        return eval(rule.code);
+      })(maindata, torrent);
+    } else {
+      rule.minDownloadSpeed = util.calSize(rule.minDownloadSpeed, rule.minDownloadSpeedUnit);
+      rule.maxDownloadSpeed = util.calSize(rule.maxDownloadSpeed, rule.maxDownloadSpeedUnit);
+      rule.minUploadSpeed = util.calSize(rule.minUploadSpeed, rule.minUploadSpeedUnit);
+      rule.maxUsedSpace = util.calSize(rule.maxUsedSpace, rule.maxUsedSpaceUnit);
+      rule.maxFreeSpace = util.calSize(rule.maxFreeSpace, rule.maxFreeSpaceUnit);
+      rule.maxAvgDownloadSpeed = util.calSize(rule.maxAvgDownloadSpeed, rule.maxAvgDownloadSpeedUnit);
+      const statusLeeching = ['downloading', 'stalledDL', 'Downloading'];
+      const statusSeeding = ['uploading', 'stalledUP', 'Seeding'];
+      if (rule.minUploadSpeed && !rule.maxDownloadSpeed && !rule.minDownloadSpeed) {
+        fit = fit && (torrent.uploadSpeed < +rule.minUploadSpeed) && statusSeeding.some(item => item === torrent.state);
+      }
+      if (rule.maxDownloadSpeed && rule.minUploadSpeed) {
+        fit = fit && (torrent.downloadSpeed > +rule.maxDownloadSpeed && torrent.uploadSpeed < +rule.minUploadSpeed);
+      }
+      if (rule.minDownloadSpeed && rule.minUploadSpeed) {
+        fit = fit && (torrent.downloadSpeed < +rule.minDownloadSpeed && torrent.uploadSpeed < +rule.minUploadSpeed &&
+          torrent.state !== 'stalledDL' && statusLeeching.some(item => item === torrent.state));
+      }
+      if (rule.maxAvgDownloadSpeed) {
+        fit = fit && torrent.completed / (moment().unix() - torrent.addedTime) > +rule.maxAvgDownloadSpeed;
+      }
+      if (rule.maxSeedTime) {
+        fit = fit && (moment().unix() - torrent.completedTime > +rule.maxSeedTime) && statusSeeding.some(item => item === torrent.state);
+      }
+      if (rule.maxLeechTime) {
+        fit = fit && (moment().unix() - torrent.addedTime > +rule.maxLeechTime) && statusLeeching.some(item => item === torrent.state);
+      }
+      if (rule.maxUsedSpace) {
+        fit = fit && (this.maindata.usedSpace > +rule.maxUsedSpace);
+      }
+      if (rule.maxFreeSpace) {
+        fit = fit && (this.maindata.freeSpaceOnDisk < +rule.maxFreeSpace) && statusSeeding.some(item => item === torrent.state);
+      }
+      if (rule.maxRatio) {
+        fit = fit && (torrent.ratio > rule.maxRatio) && statusSeeding.some(item => item === torrent.state);
+      }
+      if (rule.minRatio) {
+        fit = fit && (torrent.ratio < rule.minRatio && ['downloading', 'Downloading'].some(item => item === torrent.state));
+      }
+      if (rule.maxAvailability) {
+        fit = fit && ((torrent.availability || torrent.seeder) > +rule.maxAvailability);
+      }
+      if (rule.minPeerNum) {
+        fit = fit && (torrent.seeder + torrent.leecher) < +rule.minPeerNum;
+      }
+      if (rule.minProgress) {
+        fit = fit && torrent.progress < +rule.minProgress;
+      }
+      if (rule.maxProgress) {
+        fit = fit && torrent.progress > +rule.maxProgress;
+      }
+      if (rule.excludeCategory) {
+        const categories = rule.excludeCategory.split(/\r\n|\n/);
+        fit = fit && !categories.some(category => torrent.category === category);
+      }
+      if (rule.category) {
+        const categories = rule.category.split(/\r\n|\n/);
+        fit = fit && categories.some(category => torrent.category === category);
+      }
     }
     if (!fitTimeJob && rule.fitTime) {
       logger.debug('开始时间:', moment(this.fitTime[rule.id][torrent.hash] * 1000 || 0).format('YYYY-MM-DD HH:mm:ss'), '设置持续时间:', rule.fitTime,
@@ -224,6 +232,7 @@ class Client {
           this.maindata.seedingCount += 1;
         }
       });
+      /*
       let serverSpeed;
       if (this.sameServerClients) {
         serverSpeed = {
@@ -236,6 +245,7 @@ class Client {
           downloadSpeed: this.maindata.downloadSpeed
         };
       }
+      */
       logger.debug('客户端', this.alias, '获取种子信息成功');
       this.errorCount = 0;
     } catch (error) {
