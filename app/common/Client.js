@@ -289,7 +289,7 @@ class Client {
         }
       }
       await this.client.deleteTorrent(this.clientUrl, this.cookie, torrent.hash, isDeleteFiles);
-      logger.info('客户端', this.alias, '删除种子成功:', torrent.name, rule);
+      logger.info('客户端', this.alias, '删除种子成功:', torrent.name, rule.alias);
       await this.ntf.deleteTorrent(this._client, torrent, rule, isDeleteFiles);
     } catch (error) {
       logger.error('客户端', this.alias, '删除种子失败:', torrent.name, '\n', error);

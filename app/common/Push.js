@@ -102,6 +102,8 @@ class Push {
       `种子名称: ${torrent.name}\n` +
       `种子大小: ${util.formatSize(torrent.size)}\n` +
       `已完成量: ${util.formatSize(torrent.completed)}\n` +
+      `种子状态: ${torrent.state}\n` +
+      `所属分类: ${torrent.category}\n` +
       `流量统计: ${util.formatSize(torrent.uploaded)} / ${util.formatSize(torrent.downloaded)}\n` +
       `即时速度: ${util.formatSize(torrent.uploadSpeed)}/s / ${util.formatSize(torrent.downloadSpeed)}/s\n` +
       `分享比率: ${(+torrent.ratio).toFixed(2)}\n` +
@@ -123,6 +125,8 @@ class Push {
       `种子名称: ${torrent.name}\n` +
       `种子大小: ${util.formatSize(torrent.size)}\n` +
       `已完成量: ${util.formatSize(torrent.completed)}\n` +
+      `种子状态: ${torrent.completed.state}\n` +
+      `所属分类: ${torrent.category}\n` +
       `流量统计: ${util.formatSize(torrent.uploaded)} / ${util.formatSize(torrent.downloaded)}\n` +
       `即时速度: ${util.formatSize(torrent.uploadSpeed)}/s / ${util.formatSize(torrent.downloadSpeed)}/s\n` +
       `分享比率: ${(+torrent.ratio).toFixed(2)}\n` +
