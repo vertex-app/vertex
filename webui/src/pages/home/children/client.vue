@@ -30,11 +30,11 @@
           width="150">
         </el-table-column>
         <el-table-column
-          prop="pushMessage"
+          prop="pushNotify"
           label="推送消息"
           width="100">
           <template slot-scope="scope">
-            <el-tag>{{scope.row.pushMessage}}</el-tag>
+            <el-tag :type="scope.row.pushNotify ? '' : 'danger'">{{scope.row.pushNotify}}</el-tag>
           </template>
         </el-table-column>
         <el-table-column

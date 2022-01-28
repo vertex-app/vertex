@@ -134,6 +134,7 @@ export default {
       hostDisplay: true,
       serverList: [],
       clientList: [],
+      pushList: [],
       serverCollapse: ['1']
     };
   },
@@ -183,14 +184,6 @@ export default {
       const res = await this.$axiosGet('/api/server/list');
       this.serverList = res ? res.data : [];
     },
-    async listBot () {
-      const res = await this.$axiosGet('/api/telegram/listBot');
-      this.botList = res ? res.data : [];
-    },
-    async listChannel () {
-      const res = await this.$axiosGet('/api/telegram/listChannel');
-      this.channelList = res ? res.data : [];
-    },
     async listDeleteRule () {
       const res = await this.$axiosGet('/api/deleteRule/list');
       this.deleteRuleList = res ? res.data : [];
@@ -203,8 +196,6 @@ export default {
   async mounted () {
     this.server = { ...this.defaultServer };
     this.listServer();
-    this.listBot();
-    this.listChannel();
     this.listDeleteRule();
     this.listClient();
   }

@@ -7,7 +7,7 @@
         style="margin: 20px">
         <el-table-column
           sortable
-          prop="clientAlias"
+          prop="alias"
           label="别名"
           width="200px">
         </el-table-column>
@@ -413,7 +413,7 @@ export default {
               image: '/assets/images/Vertex.svg',
               width: 64,
               height: 64,
-              opacity: 0.1
+              opacity: 0.8
             }
           }
         ],
@@ -497,7 +497,7 @@ export default {
               image: '/assets/images/Vertex.svg',
               width: 64,
               height: 64,
-              opacity: 0.1
+              opacity: 0.8
             }
           }
         ],
