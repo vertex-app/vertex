@@ -616,7 +616,7 @@ export default {
       }
       this.vnstat = res.data;
       for (const key of Object.keys(this.vnstat)) {
-        this.vnstat[key].interfaces = this.vnstat[key].interfaces.sort((a, b) => b.total.rx - a.total.rx);
+        this.vnstat[key].interfaces = this.vnstat[key].interfaces.sort((a, b) => b.traffic.total.rx - a.traffic.total.rx);
       }
     },
     async getMemoryUse () {
