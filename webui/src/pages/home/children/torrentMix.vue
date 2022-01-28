@@ -4,7 +4,7 @@
       <el-form class="client-mix-form" label-width="100px" size="mini">
         <el-form-item label="选择客户端">
           <el-checkbox-group @change="listTorrent" v-model="clients">
-            <el-checkbox v-for="client of clientList" :key="client.id" :label="client.id">{{client.clientAlias}}</el-checkbox>
+            <el-checkbox v-for="client of clientList" :key="client.id" :label="client.id">{{client.alias}}</el-checkbox>
           </el-checkbox-group>
         </el-form-item>
         <el-form-item label="排序规则">
