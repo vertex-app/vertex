@@ -155,7 +155,7 @@
             </el-form-item>
             <el-form-item v-if="rule.type === 'javascript'" label="自定义代码">
               <el-input v-model="rule.code" type="textarea" :rows="20" style="width: 500px;"></el-input>
-              <div><el-tag type="info">自定义删种逻辑代码, </el-tag></div>
+              <div><el-tag type="info">自定义删种逻辑代码</el-tag></div>
             </el-form-item>
             <el-form-item size="small">
               <el-button type="primary" @click="handleRuleClick">新增 | 编辑</el-button>
@@ -175,7 +175,7 @@ export default {
       rule: {},
       defaultRule: {
         code: '(maindata, torrent) => {\n' +
-              '  return false;' +
+              '  return false;\n' +
               '}'
       },
       ruleList: [],

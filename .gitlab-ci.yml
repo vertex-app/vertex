@@ -11,7 +11,13 @@ generate_static:
   tags:
     - compile
   script:
-    - apk add nodejs npm git
+    - apk add nodejs npm git coreutils curl
+    - PUSH_TIME=$(TZ=Asia/Shanghai date -d $CI_COMMIT_TIMESTAMP "+%Y-%m-%d %H:%M:%S")
+    - COMMIT_MESSAGE=`echo $CI_COMMIT_MESSAGE | sed 's/\n//g'`
+    - |
+      curl --location --request POST 'https://vertex-push.lswl.workers.dev' \
+      --header 'Content-Type: application/json' \
+      --data-raw "{\"key\": \"$KEY\",\"time\": \"$PUSH_TIME\",\"message\": \"$COMMIT_MESSAGE\",\"sha1\": \"${CI_COMMIT_SHA:0:12}\", \"type\": \"start\"}"
     - cd webui
     - npm i
     - npm run build
@@ -34,7 +40,7 @@ build_docker_image_and_push:
     - docker:20.10-dind
   before_script:
     - apk update
-    - apk add tzdata curl bash coreutils
+    - apk add tzdata curl coreutils
     - docker info
     - echo $IMAGE_TAG_SHA
     - echo $IMAGE_TAG_LATEST
