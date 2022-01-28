@@ -79,7 +79,7 @@ class Rss {
   }
 
   reloadClient () {
-    logger.info('重新载入客户端', this.clientAlias);
+    logger.info(this.alias, '重新载入客户端', this.clientAlias);
     this.clients = global.runningClient;
     this.client = global.runningClient[this.clientId];
   }
@@ -90,6 +90,7 @@ class Rss {
   }
 
   reloadPush () {
+    logger.info('Rss', this.alias, '重新载入推送方式');
     this.notify = util.listPush().filter(item => item.id === this._rss.notify)[0] || {};
     this.notify.push = this._rss.pushNotify;
     this.ntf = new Push(this.notify);

@@ -177,6 +177,7 @@ class Client {
   };
 
   reloadPush () {
+    logger.info('客户端', this.alias, '重新载入推送方式');
     this.notify = util.listPush().filter(item => item.id === this._client.notify)[0] || {};
     this.notify.push = this._client.pushNotify;
     this.monitor = util.listPush().filter(item => item.id === this._client.monitor)[0] || {};
