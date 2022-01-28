@@ -105,7 +105,7 @@ class Push {
       `流量统计: ${util.formatSize(torrent.uploaded)} / ${util.formatSize(torrent.downloaded)}\n` +
       `即时速度: ${util.formatSize(torrent.uploadSpeed)}/s / ${util.formatSize(torrent.downloadSpeed)}/s\n` +
       `分享比率: ${(+torrent.ratio).toFixed(2)}\n` +
-      `站点域名: ${torrent.trakcer}\n` +
+      `站点域名: ${torrent.tracker}\n` +
       `删除文件: ${deleteFile}\n` +
       `符合规则: ${rule.alias}\n`;
     if (this.markdown) {
@@ -126,7 +126,7 @@ class Push {
       `流量统计: ${util.formatSize(torrent.uploaded)} / ${util.formatSize(torrent.downloaded)}\n` +
       `即时速度: ${util.formatSize(torrent.uploadSpeed)}/s / ${util.formatSize(torrent.downloadSpeed)}/s\n` +
       `分享比率: ${(+torrent.ratio).toFixed(2)}\n` +
-      `站点域名: ${torrent.trakcer}\n` +
+      `站点域名: ${torrent.tracker}\n` +
       `符合规则: ${rule.alias}\n`;
     if (this.markdown) {
       desp = '```\n' + desp + '\n```';

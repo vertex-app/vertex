@@ -72,10 +72,8 @@ class Client {
     const maindata = { ...this.maindata };
     let fit = '1';
     if (rule.type === 'javascript') {
-      fit = ((maindata, torrent) => {
-        // eslint-disable-next-line no-eval
-        return eval(rule.code);
-      })(maindata, torrent);
+      // eslint-disable-next-line no-eval
+      fit = (eval(rule.code))(maindata, torrent);
     } else {
       rule.minDownloadSpeed = util.calSize(rule.minDownloadSpeed, rule.minDownloadSpeedUnit);
       rule.maxDownloadSpeed = util.calSize(rule.maxDownloadSpeed, rule.maxDownloadSpeedUnit);
