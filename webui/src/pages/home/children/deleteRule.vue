@@ -174,9 +174,9 @@ export default {
     return {
       rule: {},
       defaultRule: {
-        code: `(maindata, torrent) => {
-  return false;
-}`
+        code: '(maindata, torrent) => {\n' +
+              '  return false;' +
+              '}'
       },
       ruleList: [],
       ruleCollapse: ['1']

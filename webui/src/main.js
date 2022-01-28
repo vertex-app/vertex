@@ -20,10 +20,14 @@ import ECharts from 'vue-echarts';
 import { use } from 'echarts/core';
 import { CanvasRenderer } from 'echarts/renderers';
 import { BarChart, GaugeChart, LineChart } from 'echarts/charts';
-import { GridComponent, TooltipComponent, TitleComponent, LegendComponent, VisualMapComponent } from 'echarts/components';
+import {
+  GridComponent, TooltipComponent, TitleComponent,
+  LegendComponent, VisualMapComponent, GraphicComponent
+} from 'echarts/components';
 
 use([CanvasRenderer, BarChart, LineChart, GridComponent, GaugeChart,
-  TooltipComponent, TitleComponent, LegendComponent, VisualMapComponent]);
+  TooltipComponent, TitleComponent, LegendComponent, VisualMapComponent,
+  GraphicComponent]);
 
 Vue.prototype.$message = Message;
 Vue.prototype.$moment = moment;

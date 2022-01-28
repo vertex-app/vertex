@@ -366,6 +366,12 @@ export default {
           text: '流量曲线',
           left: 'center'
         },
+        grid: {
+          top: 40,
+          left: 90,
+          right: 20,
+          bottom: 40
+        },
         legend: {
           top: '7%'
         },
@@ -394,6 +400,23 @@ export default {
             formatter: this.$formatSize
           }
         },
+        graphic: [
+          {
+            type: 'image',
+            id: 'logo',
+            right: 20,
+            top: 40,
+            z: -10,
+            bounding: 'raw',
+            origin: [125, 125],
+            style: {
+              image: '/assets/images/Vertex.svg',
+              width: 64,
+              height: 64,
+              opacity: 0.1
+            }
+          }
+        ],
         series: [
           {
             name: 'Tx - 上传',
@@ -427,6 +450,12 @@ export default {
           text: '网络速率',
           left: 'center'
         },
+        grid: {
+          top: 40,
+          left: 90,
+          right: 20,
+          bottom: 40
+        },
         legend: {
           top: '8%'
         },
@@ -455,6 +484,23 @@ export default {
             formatter: this.$formatSize
           }
         },
+        graphic: [
+          {
+            type: 'image',
+            id: 'logo',
+            right: 20,
+            top: 40,
+            z: -10,
+            bounding: 'raw',
+            origin: [125, 125],
+            style: {
+              image: '/assets/images/Vertex.svg',
+              width: 64,
+              height: 64,
+              opacity: 0.1
+            }
+          }
+        ],
         series: [
           {
             name: 'Tx - 上传',
