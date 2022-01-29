@@ -153,9 +153,9 @@
               <el-input v-model="rss.category"></el-input>
               <div><el-tag type="info">分类</el-tag></div>
             </el-form-item>
-            <el-form-item label="RFT" prop="rft">
-              <el-checkbox v-model="rss.rft">RFT</el-checkbox>
-              <div><el-tag type="info">在第一次执行 rss 时拒绝所有种子</el-tag></div>
+            <el-form-item required label="最长休眠时间" prop="maxSleepTime">
+              <el-input v-model="rss.maxSleepTime"></el-input>
+              <div><el-tag type="info">最长休眠时间, 距离上次成功执行 Rss 时间大于最长休眠时间时拒绝本次 Rss 种子, 单位为秒</el-tag></div>
             </el-form-item>
             <el-form-item label="跳过大小相同种子" prop="skipSameTorrent">
               <el-checkbox v-model="rss.skipSameTorrent">跳过大小相同种子</el-checkbox>
@@ -191,7 +191,7 @@ export default {
         scrapeHr: false,
         autoReseed: false,
         onlyReseed: false,
-        rft: true,
+        maxSleepTime: 600,
         skipSameTorrent: true,
         cron: '* * * * *',
         pushMessage: true,

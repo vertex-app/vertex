@@ -9,7 +9,8 @@ class Rss {
   constructor (rss) {
     this._rss = rss;
     this.id = rss.id;
-    this.rft = rss.rft;
+    this.maxSleepTime = rss.maxSleepTime;
+    this.lastRssTime = 0;
     this.alias = rss.alias;
     this.url = rss.rssUrl;
     this.clients = global.runningClient;
@@ -227,10 +228,10 @@ class Rss {
     for (const torrent of torrents) {
       const sqlRes = await util.getRecord('SELECT * FROM torrents WHERE hash = ? AND rss_name = ?', [torrent.hash, this.alias]);
       if (sqlRes && sqlRes.id) continue;
-      if (this.rft) {
+      if (moment().unix() - this.lastRssTime > +this.maxSleepTime) {
         await util.runRecord('INSERT INTO torrents (hash, name, size, rss_name, link, add_time, insert_type) values (?, ?, ?, ?, ?, ?, ?)',
-          [torrent.hash, torrent.name, torrent.size, this.alias, torrent.link, moment().unix(), '跳过第一次添加种子']);
-        await this.ntf.rejectTorrent(this._rss, this.client, torrent, '拒绝原因: 跳过第一次添加种子');
+          [torrent.hash, torrent.name, torrent.size, this.alias, torrent.link, moment().unix(), '距离上次 Rss 超时']);
+        await this.ntf.rejectTorrent(this._rss, this.client, torrent, '拒绝原因: 距离上次 Rss 超时');
         continue;
       }
       const excludeKeysRules = this.rssRules.filter(item => item.excludeKeys);
@@ -247,7 +248,7 @@ class Rss {
         await this.ntf.rejectTorrent(this._rss, this.client, torrent, `拒绝原因: 匹配到规则 ${unfitRules[0].alias}`);
       }
     }
-    this.rft = false;
+    this.lastRssTime = moment().unix();
   }
 }
 module.exports = Rss;
