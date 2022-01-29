@@ -29,11 +29,11 @@ class RssRuleMod {
         rssRuleSet[key] = options[key];
       }
     }
+    fs.writeFileSync(path.join(__dirname, '../data/rule/rss/', options.id + '.json'), JSON.stringify(rssRuleSet, null, 2));
     Object.keys(global.runningRss)
       .map(item => global.runningRss[item])
       .filter(item => item._rssRules.some(i => i === options.id))
       .forEach(item => item.reloadRssRule());
-    fs.writeFileSync(path.join(__dirname, '../data/rule/rss/', options.id + '.json'), JSON.stringify(rssRuleSet, null, 2));
     return '修改 Rss 规则成功';
   };
 
