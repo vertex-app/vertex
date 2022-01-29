@@ -93,7 +93,7 @@
             </el-form-item>
             <el-form-item label="绑定客户端" prop="bindClient">
               <el-select v-model="server.bindClient" placeholder="客户端">
-                <el-option v-for="client of clientList" :disabled="!client.enable" :key="client.id" :label="client.clientAlias" :value="client.id"></el-option>
+                <el-option v-for="client of clientList" :disabled="!client.enable" :key="client.id" :label="client.alias" :value="client.id"></el-option>
               </el-select>
               <div><el-tag type="info">服务器绑定的客户端, 将在监控页提供链接</el-tag></div>
             </el-form-item>
