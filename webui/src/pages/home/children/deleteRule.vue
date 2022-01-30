@@ -17,6 +17,11 @@
         </el-table-column>
         <el-table-column
           sortable
+          prop="priority"
+          label="优先级">
+        </el-table-column>
+        <el-table-column
+          sortable
           prop="type"
           label="类型">
         </el-table-column>
@@ -46,6 +51,10 @@
             <el-form-item label="持续时间" prop="fitTime">
               <el-input v-model="rule.fitTime" type="input"></el-input>
               <div><el-tag type="info">符合删种规则的持续时间, 只有到达持续时间之后才会删种, 单位为 秒, 不启用留空, 建议考虑客户端的删种周期一起设置</el-tag></div>
+            </el-form-item>
+            <el-form-item label="优先级" prop="priority">
+              <el-input v-model="rule.priority" type="input"></el-input>
+              <div><el-tag type="info">优先级越高的规则越执行, 默认为 0</el-tag></div>
             </el-form-item>
             <el-form-item required label="类型" prop="type">
               <el-select v-model="rule.type" style="width: 144px" placeholder="类型">
@@ -174,6 +183,7 @@ export default {
     return {
       rule: {},
       defaultRule: {
+        priority: 0,
         code: '(maindata, torrent) => {\n' +
               '  return false;\n' +
               '}'

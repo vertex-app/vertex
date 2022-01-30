@@ -39,7 +39,7 @@ class Client {
       this.reannounceJob.start();
     }
     this._deleteRules = client.deleteRules;
-    this.deleteRules = util.listDeleteRule().filter(item => client.deleteRules.indexOf(item.id) !== -1);
+    this.deleteRules = util.listDeleteRule().filter(item => client.deleteRules.indexOf(item.id) !== -1).sort((a, b) => b.priority - a.priority);
     if (client.autoDelete) {
       this.autoDeleteJob = new CronJob(client.autoDeleteCron, () => this.autoDelete());
       this.autoDeleteJob.start();
@@ -164,7 +164,7 @@ class Client {
         rule.fitTimeJob.stop();
       }
     }
-    this.deleteRules = util.listDeleteRule().filter(item => this._deleteRules.indexOf(item.id) !== -1);
+    this.deleteRules = util.listDeleteRule().filter(item => this._deleteRules.indexOf(item.id) !== -1).sort((a, b) => +b.priority - +a.priority);
     for (const rule of this.deleteRules) {
       if (rule.fitTime) {
         this.fitTime[rule.id] = {};
