@@ -206,6 +206,8 @@ class Rss {
             [torrent.hash, torrent.name, torrent.size, this.alias, torrent.link, moment().unix(), '添加']);
         } catch (error) {
           logger.error(this.alias, '客户端', this.clientAlias, '添加种子失败:', error.message);
+          await util.runRecord('INSERT INTO torrents (hash, name, size, rss_name, link, add_time, insert_type) values (?, ?, ?, ?, ?, ?, ?)',
+            [torrent.hash, torrent.name, torrent.size, this.alias, torrent.link, moment().unix(), '添加种子失败']);
           await this.ntf.addTorrentError(this._rss, this.client, torrent);
         }
       } else {
