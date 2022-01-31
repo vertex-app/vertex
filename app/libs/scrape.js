@@ -71,6 +71,7 @@ const freeWrapper = {
   'pthome.net': _free,
   'pt.soulvoice.club': _free,
   'et8.org': _free,
+  'hdfans.org': _free,
   'hdchina.org': _freeHDChina,
   'open.cd': _freeOpencd,
   'www.open.cd': _freeOpencd,
