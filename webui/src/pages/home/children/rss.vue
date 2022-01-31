@@ -26,7 +26,16 @@
         </el-table-column>
         <el-table-column
           label="客户端"
-          width="150">
+          width="150"
+          :filters="clientList.filter(item => rssList.some(rssItem => rssItem.client === item.id)).map(item => {
+            return {
+              text: item.alias,
+              value: item.id
+            }
+          })"
+          :filter-method="(value, row, column) => {
+            return row.client === value
+          }">
           <template slot-scope="scope">
             <el-tag>{{(clientList.filter(item => scope.row.client === item.id)[0] || {}).alias}}</el-tag>
           </template>
