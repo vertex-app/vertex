@@ -3,6 +3,7 @@ RUN \
   apk add redis bash git nodejs npm python3 make gcc libc-dev g++ tzdata && \
   git clone https://gitlab.lswl.in/lswl/vertex.git ~/vertex && \
   cd /root/vertex && \
+  git checkout BRANCH && \
   rm .git webui -rf && \
   npm i --save && \
   mkdir /vertex && \

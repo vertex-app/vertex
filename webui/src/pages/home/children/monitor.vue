@@ -9,7 +9,7 @@
           sortable
           prop="alias"
           label="别名"
-          width="200px">
+          width="144px">
         </el-table-column>
         <el-table-column>
           <template slot="header" slot-scope="scope">
@@ -24,7 +24,8 @@
         </el-table-column>
         <el-table-column
           prop="type"
-          label="客户端类型">
+          label="客户端类型"
+          width="144px">
         </el-table-column>
         <el-table-column
           label="↑/↓">
@@ -33,17 +34,19 @@
           </template>
         </el-table-column>
         <el-table-column
-          label="状态">
+          label="状态"
+          width="80px">
           <template slot-scope="scope">
             <el-tag :type="scope.row.status ? '' : 'danger'">{{scope.row.enable ? scope.row.status ? '正常' : '连接失败' : '未启用'}}</el-tag>
           </template>
         </el-table-column>
         <el-table-column
           fixed="right"
-          label="操作">
+          label="操作"
+          width="244px">
           <template slot-scope="scope">
             <el-button @click="gotoClient(scope.row)" type="primary" size="small">打开客户端</el-button>
-            <el-button @click="gotoTorrentList(scope.row)" type="primary" size="small">种子列表</el-button>
+            <el-button style="margin-left: 0" @click="gotoTorrentList(scope.row)" type="primary" size="small">种子列表</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -57,7 +60,7 @@
           sortable
           prop="alias"
           label="别名"
-          width="200px">
+          width="144px">
         </el-table-column>
         <el-table-column>
           <template slot="header" slot-scope="scope">
@@ -84,13 +87,15 @@
           </template>
         </el-table-column>
         <el-table-column
-          label="启用">
+          label="启用"
+          width="80px">
           <template slot-scope="scope">
             <el-tag :type="scope.row.enable ? '' : 'danger'">{{scope.row.enable}}</el-tag>
           </template>
         </el-table-column>
         <el-table-column
-          label="状态">
+          label="状态"
+          width="80px">
           <template slot-scope="scope">
             <el-tag :type="scope.row.status ? '' : 'danger'">{{scope.row.status ? '正常' : '连接失败'}}</el-tag>
           </template>
@@ -406,7 +411,7 @@ export default {
             id: 'logo',
             right: 20,
             top: 40,
-            z: -10,
+            z: 999,
             bounding: 'raw',
             origin: [125, 125],
             style: {
@@ -490,7 +495,7 @@ export default {
             id: 'logo',
             right: 20,
             top: 40,
-            z: -10,
+            z: 999,
             bounding: 'raw',
             origin: [125, 125],
             style: {

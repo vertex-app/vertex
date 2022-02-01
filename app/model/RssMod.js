@@ -33,6 +33,12 @@ class RssMod {
 
   list () {
     const rssList = util.listRss();
+    for (const rss of rssList) {
+      if (rss.client) {
+        rss.clientArr = [rss.client];
+        delete rss.client;
+      }
+    }
     return rssList;
   };
 }

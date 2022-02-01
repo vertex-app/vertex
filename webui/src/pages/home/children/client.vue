@@ -87,7 +87,7 @@
               <el-input v-model="client.alias"></el-input>
             </el-form-item>
             <el-form-item required label="启用" prop="enable">
-              <el-checkbox v-model="client.enable">启用</el-checkbox>
+              <el-checkbox v-model="client.enable" :disabled="client.used">启用</el-checkbox>
             </el-form-item>
             <el-form-item required label="客户端类型" prop="type">
               <el-select v-model="client.type" placeholder="客户端类型">

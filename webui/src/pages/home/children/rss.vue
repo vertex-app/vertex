@@ -27,17 +27,17 @@
         <el-table-column
           label="客户端"
           width="150"
-          :filters="clientList.filter(item => rssList.some(rssItem => rssItem.client === item.id)).map(item => {
+          :filters="clientList.filter(item => rssList.some(rssItem => rssItem.clientArr.indexOf(item.id) !== -1)).map(item => {
             return {
               text: item.alias,
               value: item.id
             }
           })"
           :filter-method="(value, row, column) => {
-            return row.client === value
+            return row.clientArr.indexOf(value) !== -1;
           }">
           <template slot-scope="scope">
-            <el-tag>{{(clientList.filter(item => scope.row.client === item.id)[0] || {}).alias}}</el-tag>
+            <el-tag>{{clientList.filter(item => scope.row.clientArr.indexOf(item.id) !== -1).map(item => item.alias).join(', ')}}</el-tag>
           </template>
         </el-table-column>
         <el-table-column
@@ -83,11 +83,18 @@
             <el-form-item required label="启用" prop="enable">
               <el-checkbox v-model="rss.enable">启用</el-checkbox>
             </el-form-item>
-            <el-form-item required label="客户端" prop="client">
-              <el-select v-model="rss.client" placeholder="客户端">
-                <el-option v-for="client of clientList" :disabled="!client.enable" :key="client.id" :label="client.alias" :value="client.id"></el-option>
-              </el-select>
+            <el-form-item required label="客户端" prop="clientArr">
+              <el-checkbox-group v-model="rss.clientArr">
+                <el-checkbox v-for="client of clientList" :key="client.id" :disabled="!client.enable" :label="client.id">{{client.alias}}</el-checkbox>
+              </el-checkbox-group>
               <div><el-tag type="info">选择客户端, 仅可选择已经启用的客户端</el-tag></div>
+            </el-form-item>
+            <el-form-item required label="排序规则" prop="clientSortBy">
+              <el-select v-model="rss.clientSortBy" style="width: 144px" placeholder="排序规则">
+                  <el-option label="下载种子数量" value="leechingCount"></el-option>
+                  <el-option label="当前上传速度" value="uploadSpeed"></el-option>
+                  <el-option label="当前下载速度" value="downloadSpeed"></el-option>
+                </el-select>
             </el-form-item>
             <el-form-item required label="Rss - Url" prop="rssUrl">
               <el-input v-model="rss.rssUrl" style="width: 500px;"></el-input>
@@ -195,6 +202,7 @@ export default {
       hideReseed: true,
       rss: {},
       defaultRss: {
+        clientArr: [],
         enable: false,
         scrapeFree: false,
         scrapeHr: false,

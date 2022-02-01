@@ -52,7 +52,7 @@ class Push {
   async addTorrent (rss, client, torrent) {
     const text = '添加种子: ' + torrent.name;
     let desp = `Rss 任务: ${rss.alias}\n` +
-      `客户端: ${client.alias}\n` +
+      `客户端名: ${client.alias}\n` +
       `种子名称: ${torrent.name}\n` +
       `种子大小: ${util.formatSize(torrent.size)}`;
     if (this.markdown) {
@@ -67,7 +67,7 @@ class Push {
   async addTorrentError (rss, client, torrent) {
     const text = '添加种子失败: ' + torrent.name;
     let desp = `Rss 任务: ${rss.alias}\n` +
-      `客户端: ${client.alias}\n` +
+      `客户端名: ${client.alias}\n` +
       `种子名称: ${torrent.name}\n` +
       `种子大小: ${util.formatSize(torrent.size)}\n` +
       '详细原因请前往 Vertex 日志页面查看';
@@ -80,10 +80,10 @@ class Push {
     await this._push(this.pushType.indexOf('addError') !== -1, text, desp);
   };
 
-  async rejectTorrent (rss, client, torrent, note) {
+  async rejectTorrent (rss, client = {}, torrent, note) {
     const text = '拒绝种子: ' + torrent.name;
     let desp = `Rss 任务: ${rss.alias}\n` +
-      `客户端: ${client.alias}\n` +
+      `客户端名: ${client.alias || '未定义'}\n` +
       `种子名称: ${torrent.name}\n` +
       `种子大小: ${util.formatSize(torrent.size)}\n` +
       note;
@@ -98,7 +98,7 @@ class Push {
 
   async deleteTorrent (client, torrent, rule, deleteFile) {
     const text = '删除种子: ' + torrent.name;
-    let desp = `客户端: ${client.alias}\n` +
+    let desp = `客户端名: ${client.alias}\n` +
       `种子名称: ${torrent.name}\n` +
       `种子大小: ${util.formatSize(torrent.size)}\n` +
       `已完成量: ${util.formatSize(torrent.completed)}\n` +
@@ -121,7 +121,7 @@ class Push {
 
   async deleteTorrentError (client, torrent, rule) {
     const text = '删除种子失败: ' + torrent.name;
-    let desp = `客户端: ${client.alias}\n` +
+    let desp = `客户端名: ${client.alias}\n` +
       `种子名称: ${torrent.name}\n` +
       `种子大小: ${util.formatSize(torrent.size)}\n` +
       `已完成量: ${util.formatSize(torrent.completed)}\n` +
@@ -143,7 +143,7 @@ class Push {
 
   async reannounceTorrent (client, torrent) {
     const text = '重新汇报种子: ' + torrent.name;
-    let desp = `客户端: ${client.alias}\n` +
+    let desp = `客户端名: ${client.alias}\n` +
       `种子名称: ${torrent.name}`;
     if (this.markdown) {
       desp = '```\n' + desp + '\n```';
@@ -168,7 +168,7 @@ class Push {
 
   async clientLoginError (client, message) {
     const text = '客户端登陆失败: ' + client.alias;
-    let desp = `客户端: ${client.alias}\n` +
+    let desp = `客户端名: ${client.alias}\n` +
       `附加信息: ${message}`;
     if (this.markdown) {
       desp = '```\n' + desp + '\n```';
@@ -181,7 +181,7 @@ class Push {
 
   async getMaindataError (client) {
     const text = '获取客户端信息失败: ' + client.alias;
-    let desp = `客户端: ${client.alias}\n` +
+    let desp = `客户端名: ${client.alias}\n` +
       '详细原因请前往 Vertex 日志页面查看';
     if (this.markdown) {
       desp = '```\n' + desp + '\n```';

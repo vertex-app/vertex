@@ -196,10 +196,6 @@ class Client {
       this.status = false;
     }
     try {
-      Object.keys(global.runningRss)
-        .map(item => global.runningRss[item])
-        .filter(item => item.clientId === this.id)
-        .forEach((item) => item.reloadClient());
       if (!this.messageId) {
         await this.ntf.connectClient(this._client);
         if (this.monitor.push) {

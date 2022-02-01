@@ -64,6 +64,7 @@ build_docker_image_and_push:
     - mkdir docker/src
     - tar -xzvf static.tar.gz -C docker/src/
     - cd docker
+    - sed -i 's/BRANCH/'$CI_COMMIT_BRANCH'/' Dockerfile
     - ls src/static
     - |
       docker buildx build --platform linux/amd64,linux/arm64 --cache-from $IMAGE_TAG_SHA --tag $IMAGE_TAG_SHA . --push
