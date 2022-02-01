@@ -16,7 +16,7 @@ generate_static:
     - |
       curl --location --request POST 'https://vertex-push.lswl.workers.dev' \
       --header 'Content-Type: application/json' \
-      --data-raw "{\"key\": \"$KEY\",\"time\": \"$PUSH_TIME\",\"message\": \"$COMMIT_MESSAGE\",\"sha1\": \"${CI_COMMIT_SHA:0:12}\", \"type\": \"start\"}"
+      --data-raw "{\"key\": \"$KEY\",\"time\": \"$PUSH_TIME\",\"message\": \"$COMMIT_MESSAGE\",\"branch\": \"$CI_COMMIT_BRANCH\",\"sha1\": \"${CI_COMMIT_SHA:0:12}\", \"type\": \"start\"}"
     - cd webui
     - npm i
     - npm run build
@@ -35,6 +35,7 @@ build_docker_image_and_push:
     DOCKER_DRIVER: overlay2
     IMAGE_TAG_SHA: lswl/vertex:$CI_COMMIT_SHA
     IMAGE_TAG_LATEST: lswl/vertex:latest
+    IMAGE_TAG_BRANCH: lswl/vertex:$CI_COMMIT_BRANCH
   services:
     - docker:20.10-dind
   before_script:
@@ -43,6 +44,11 @@ build_docker_image_and_push:
     - docker info
     - echo $IMAGE_TAG_SHA
     - echo $IMAGE_TAG_LATEST
+    - echo $IMAGE_TAG_BRANCH
+    - TIME=$(TZ=Asia/Shanghai date -d $CI_COMMIT_TIMESTAMP "+%Y_%m_%d_%H_%M_%S")
+    - PUSH_TIME=$(TZ=Asia/Shanghai date -d $CI_COMMIT_TIMESTAMP "+%Y-%m-%d %H:%M:%S")
+    - echo $TIME
+    - COMMIT_MESSAGE=`echo $CI_COMMIT_MESSAGE | sed 's/\n//g'`
     - docker run --privileged --rm tonistiigi/binfmt --install all
     - mkdir -p ~/.docker/cli-plugins
     - wget "https://github.com/docker/buildx/releases/download/v0.7.1/buildx-v0.7.1.linux-arm64" -qO ~/.docker/cli-plugins/docker-buildx
@@ -59,10 +65,6 @@ build_docker_image_and_push:
     - tar -xzvf static.tar.gz -C docker/src/
     - cd docker
     - ls src/static
-    - TIME=$(TZ=Asia/Shanghai date -d $CI_COMMIT_TIMESTAMP "+%Y_%m_%d_%H_%M_%S")
-    - PUSH_TIME=$(TZ=Asia/Shanghai date -d $CI_COMMIT_TIMESTAMP "+%Y-%m-%d %H:%M:%S")
-    - echo $TIME
-    - COMMIT_MESSAGE=`echo $CI_COMMIT_MESSAGE | sed 's/\n//g'`
     - |
       docker buildx build --platform linux/amd64,linux/arm64 --cache-from $IMAGE_TAG_SHA --tag $IMAGE_TAG_SHA . --push
     - |
@@ -70,6 +72,8 @@ build_docker_image_and_push:
     - |
       docker buildx build --platform linux/amd64,linux/arm64 --cache-from $IMAGE_TAG_SHA --tag $IMAGE_TAG_LATEST . --push
     - |
+      docker buildx build --platform linux/amd64,linux/arm64 --cache-from $IMAGE_TAG_SHA --tag $IMAGE_TAG_BRANCH . --push
+    - |
       curl --location --request POST 'https://vertex-push.lswl.workers.dev' \
       --header 'Content-Type: application/json' \
-      --data-raw "{\"key\": \"$KEY\",\"time\": \"$PUSH_TIME\",\"message\": \"$COMMIT_MESSAGE\",\"sha1\": \"${CI_COMMIT_SHA:0:12}\"}"
+      --data-raw "{\"key\": \"$KEY\",\"time\": \"$PUSH_TIME\",\"message\": \"$COMMIT_MESSAGE\",\"branch\": \"$CI_COMMIT_BRANCH\",\"sha1\": \"${CI_COMMIT_SHA:0:12}\"}"
