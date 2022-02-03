@@ -43,6 +43,8 @@ class ClientMod {
       if (client.status) {
         client.uploadSpeed = global.runningClient[client.id].maindata.uploadSpeed;
         client.downloadSpeed = global.runningClient[client.id].maindata.downloadSpeed;
+        client.leechingCount = global.runningClient[client.id].maindata.leechingCount;
+        client.seedingCount = global.runningClient[client.id].maindata.seedingCount;
       }
     }
     return clientList;

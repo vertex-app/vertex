@@ -11,7 +11,8 @@
           label="别名"
           width="144px">
         </el-table-column>
-        <el-table-column>
+        <el-table-column
+          min-width="272px">
           <template slot="header" slot-scope="scope">
             <el-switch
               v-model="urlDisplay">
@@ -28,7 +29,15 @@
           width="144px">
         </el-table-column>
         <el-table-column
-          label="↑/↓">
+          label="做种 / 下载"
+          min-width="144px">
+          <template slot-scope="scope">
+            {{scope.row.status ? `${scope.row.seedingCount} / ${scope.row.leechingCount}` : null}}
+          </template>
+        </el-table-column>
+        <el-table-column
+          label="上传速度 / 下载速度"
+          min-width="256px">
           <template slot-scope="scope">
             {{scope.row.status ? `${$formatSize(scope.row.uploadSpeed)}/s / ${$formatSize(scope.row.downloadSpeed)}/s` : null}}
           </template>
@@ -62,7 +71,8 @@
           label="别名"
           width="144px">
         </el-table-column>
-        <el-table-column>
+        <el-table-column
+          min-width="272px">
           <template slot="header" slot-scope="scope">
             <el-switch
               v-model="hostDisplay">
@@ -81,7 +91,8 @@
           </template>
         </el-table-column>
         <el-table-column
-          label="↑/↓">
+          label="上传速度 / 下载速度"
+          min-width="256px">
           <template slot-scope="scope">
             {{netSpeed[scope.row.id] ? `${$formatSize(netSpeed[scope.row.id][0].txBytes)}/s / ${$formatSize(netSpeed[scope.row.id][0].rxBytes)}/s` : null}}
           </template>

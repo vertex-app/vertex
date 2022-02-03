@@ -17,6 +17,11 @@
         </el-table-column>
         <el-table-column
           sortable
+          prop="fitTime"
+          label="持续时间">
+        </el-table-column>
+        <el-table-column
+          sortable
           prop="priority"
           label="优先级">
         </el-table-column>
