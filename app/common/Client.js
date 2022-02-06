@@ -72,8 +72,13 @@ class Client {
     const maindata = { ...this.maindata };
     let fit = '1';
     if (rule.type === 'javascript') {
-      // eslint-disable-next-line no-eval
-      fit = (eval(rule.code))(maindata, torrent);
+      try {
+        // eslint-disable-next-line no-eval
+        fit = (eval(rule.code))(maindata, torrent);
+      } catch (e) {
+        logger.error('删种规则', this.alias, '存在语法错误\n', e);
+        return false;
+      }
     } else {
       rule.minDownloadSpeed = util.calSize(rule.minDownloadSpeed, rule.minDownloadSpeedUnit);
       rule.maxDownloadSpeed = util.calSize(rule.maxDownloadSpeed, rule.maxDownloadSpeedUnit);

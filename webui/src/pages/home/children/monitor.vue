@@ -3,6 +3,7 @@
     <div class="radius-div">
       <el-table
         :data="clientList"
+        :default-sort="{prop: 'alias'}"
         stripe
         style="margin: 20px">
         <el-table-column
@@ -63,6 +64,7 @@
     <div class="radius-div">
       <el-table
         :data="serverList"
+        :default-sort="{prop: 'alias'}"
         stripe
         style="margin: 20px">
         <el-table-column

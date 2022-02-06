@@ -3,6 +3,7 @@
     <div class="radius-div">
       <el-table
         :data="ruleList"
+        :default-sort="{prop: 'alias'}"
         stripe
         style="margin: 20px">
         <el-table-column
@@ -22,6 +23,7 @@
         </el-table-column>
         <el-table-column
           sortable
+          :sort-method="(a, b) => +a.priority - +b.priority"
           prop="priority"
           label="优先级">
         </el-table-column>

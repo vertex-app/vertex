@@ -4,6 +4,7 @@
       <el-table
         :data="rssList"
         stripe
+        :default-sort="{prop: 'alias'}"
         style="margin: 20px">
         <el-table-column
           prop="id"

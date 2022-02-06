@@ -2,6 +2,7 @@
   <div class="client">
     <div class="radius-div">
       <el-table
+        :default-sort="{prop: 'alias'}"
         :data="clientList"
         stripe
         style="margin: 20px">
