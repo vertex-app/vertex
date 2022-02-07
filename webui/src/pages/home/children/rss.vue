@@ -92,10 +92,10 @@
             </el-form-item>
             <el-form-item required label="排序规则" prop="clientSortBy">
               <el-select v-model="rss.clientSortBy" style="width: 144px" placeholder="排序规则">
-                  <el-option label="下载种子数量" value="leechingCount"></el-option>
-                  <el-option label="当前上传速度" value="uploadSpeed"></el-option>
-                  <el-option label="当前下载速度" value="downloadSpeed"></el-option>
-                </el-select>
+                <el-option label="下载种子数量" value="leechingCount"></el-option>
+                <el-option label="当前上传速度" value="uploadSpeed"></el-option>
+                <el-option label="当前下载速度" value="downloadSpeed"></el-option>
+              </el-select>
             </el-form-item>
             <el-form-item required label="Rss - Url" prop="rssUrl">
               <el-input v-model="rss.rssUrl" style="width: 500px;"></el-input>

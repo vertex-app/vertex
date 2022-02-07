@@ -158,8 +158,8 @@
                     stripe>
                     <el-table-column
                       width="200">
-                      <template slot="header">
-                        <el-select size="mini" v-model="period" @change="handlePeriod" placeholder="选择周期">
+                      <template slot="header" slot-scope="scope">
+                        <el-select size="mini" v-model="vnstatPeriod" @change="handlePeriod" placeholder="选择周期">
                           <el-option label="5 分钟" value="fiveminute"></el-option>
                           <el-option label="时" value="hour"></el-option>
                           <el-option label="日" value="day"></el-option>
@@ -239,7 +239,6 @@ export default {
           ]
         }
       },
-      period: '',
       vnstatPeriod: 'hour',
       usernameDisplay: true,
       hostDisplay: true,
@@ -551,7 +550,6 @@ export default {
   },
   methods: {
     handlePeriod (vnstatPeriod) {
-      this.vnstatPeriod = vnstatPeriod;
       this.chart.xAxis.data = this.vnstat[this.vnstatPeriod].interfaces[0].traffic[this.vnstatPeriod].map(item => this.formatTime(item).slice(-5)).reverse();
       this.chart.series[0].data = this.vnstat[this.vnstatPeriod].interfaces[0].traffic[this.vnstatPeriod].map(item => item.tx).reverse();
       this.chart.series[1].data = this.vnstat[this.vnstatPeriod].interfaces[0].traffic[this.vnstatPeriod].map(item => item.rx).reverse();
@@ -570,7 +568,7 @@ export default {
       this.memoryChart.series[0].data[0].value = (memoryPoint.used / memoryPoint.total * 100).toFixed(2);
       this.diskChart.series[0].data[0].name = `${this.$formatSize(maxSizePoint.used)} / ${this.$formatSize(maxSizePoint.size)}`;
       this.memoryChart.series[0].data[0].name = `${this.$formatSize(memoryPoint.used)} / ${this.$formatSize(memoryPoint.total)}`;
-      this.handlePeriod('hour');
+      this.handlePeriod(this.vnstatPeriod);
       this.clientCollapse = ['1'];
     },
     formatTime (row) {
