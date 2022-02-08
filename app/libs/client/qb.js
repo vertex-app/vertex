@@ -4,7 +4,7 @@ const url = require('url');
 
 exports.login = async function (username, clientUrl, password) {
   const message = {
-    url: clientUrl + `/api/v2/auth/login?username=${username}&password=${password}`
+    url: clientUrl + `/api/v2/auth/login?username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`
   };
   const res = await util.requestPromise(message);
   if (res.body.indexOf('Ok') !== -1) {
