@@ -38,7 +38,7 @@
             return row.clientArr.indexOf(value) !== -1;
           }">
           <template slot-scope="scope">
-            <el-tag>{{clientList.filter(item => scope.row.clientArr.indexOf(item.id) !== -1).map(item => item.alias).join(', ')}}</el-tag>
+            <el-tag v-for="i of clientList.filter(item => scope.row.clientArr.indexOf(item.id) !== -1)" :key="i.id">{{i.alias.substring(0, 15)}}</el-tag>
           </template>
         </el-table-column>
         <el-table-column
