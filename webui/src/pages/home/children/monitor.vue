@@ -74,7 +74,7 @@
           width="144px">
         </el-table-column>
         <el-table-column
-          min-width="272px">
+          min-width="160px">
           <template slot="header" slot-scope="scope">
             <el-switch
               v-model="hostDisplay">
@@ -239,7 +239,7 @@ export default {
           ]
         }
       },
-      vnstatPeriod: 'hour',
+      vnstatPeriod: 'day',
       usernameDisplay: true,
       hostDisplay: true,
       urlDisplay: true,
@@ -572,6 +572,7 @@ export default {
       this.clientCollapse = ['1'];
     },
     formatTime (row) {
+      if (typeof row.date === 'string') return row.date;
       return `${row.date.year}-${row.date.month < 10 ? '0' + row.date.month : row.date.month}` +
         (row.date.day ? `-${row.date.day < 10 ? '0' + row.date.day : row.date.day}` : '') +
         (row.time
@@ -633,6 +634,15 @@ export default {
       this.vnstat = res.data;
       for (const key of Object.keys(this.vnstat)) {
         this.vnstat[key].interfaces = this.vnstat[key].interfaces.sort((a, b) => b.traffic.total.rx - a.traffic.total.rx);
+      }
+      const today = this.vnstat.day.interfaces[0].traffic.day[0];
+      if (today) {
+        const estimated = { ...today };
+        estimated.id += 1;
+        estimated.date = '预计今日';
+        estimated.rx = parseInt(estimated.rx * 3600 * 24 / (this.$moment().diff(this.$moment().startOf('day'), 'seconds')));
+        estimated.tx = parseInt(estimated.tx * 3600 * 24 / (this.$moment().diff(this.$moment().startOf('day'), 'seconds')));
+        this.vnstat.day.interfaces[0].traffic.day.unshift(estimated);
       }
     },
     async getMemoryUse () {
