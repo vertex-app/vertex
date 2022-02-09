@@ -132,17 +132,27 @@
               <el-checkbox v-model="client.autoReannounce">自动汇报</el-checkbox>
               <div><el-tag type="info">自动在种子添加后的 5 分钟内每分钟汇报一次, 获取更多 Peers</el-tag></div>
             </el-form-item>
-            <el-form-item label="上限速度" prop="maxSpeed">
-              <el-input v-model="client.maxSpeed">
-                <el-select v-model="client.maxSpeedUnit" slot="append" style="width: 80px" placeholder="单位">
+            <el-form-item label="上限上传速度" prop="maxUploadSpeed">
+              <el-input v-model="client.maxUploadSpeed">
+                <el-select v-model="client.maxUploadSpeedUnit" slot="append" style="width: 80px" placeholder="单位">
                   <el-option label="KiB/s" value="KiB"></el-option>
                   <el-option label="MiB/s" value="MiB"></el-option>
                   <el-option label="GiB/s" value="GiB"></el-option>
                 </el-select>
               </el-input>
-              <div><el-tag type="info">若客户端的上传或下载速度在此速度之上时, 不再添加种子</el-tag></div>
+              <div><el-tag type="info">若客户端的上传速度在此速度之上时, 不再添加种子</el-tag></div>
             </el-form-item>
-            <el-form-item required label="最大下载数量" prop="maxLeechNum">
+            <el-form-item label="上限下载速度" prop="maxDownloadSpeed">
+              <el-input v-model="client.maxDownloadSpeed">
+                <el-select v-model="client.maxDownloadSpeedUnit" slot="append" style="width: 80px" placeholder="单位">
+                  <el-option label="KiB/s" value="KiB"></el-option>
+                  <el-option label="MiB/s" value="MiB"></el-option>
+                  <el-option label="GiB/s" value="GiB"></el-option>
+                </el-select>
+              </el-input>
+              <div><el-tag type="info">若客户端的下载速度在此速度之上时, 不再添加种子</el-tag></div>
+            </el-form-item>
+            <el-form-item label="最大下载数量" prop="maxLeechNum">
               <el-input v-model="client.maxLeechNum" style="width: 500px;"></el-input>
               <div><el-tag type="info">最大的下载活动种子数量, 在超过此数量时, 将不会添加种子</el-tag></div>
             </el-form-item>

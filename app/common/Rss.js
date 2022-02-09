@@ -117,20 +117,28 @@ class Rss {
       }
     }
     if (!this.onlyReseed) {
-      let serverSpeed;
+      let speed;
       if (_client.sameServerClients) {
-        const speed = {
+        speed = {
           uploadSpeed: this._sum(_client.sameServerClients.map(index => global.runningClient[index].maindata.uploadSpeed)),
           downloadSpeed: this._sum(_client.sameServerClients.map(index => global.runningClient[index].maindata.downloadSpeed))
         };
-        serverSpeed = Math.max(speed.uploadSpeed, speed.downloadSpeed);
       } else {
-        serverSpeed = Math.max(_client.maindata.uploadSpeed, _client.maindata.downloadSpeed);
+        speed = {
+          uploadSpeed: _client.maindata.uploadSpeed,
+          downloadSpeed: _client.maindata.downloadSpeed
+        };
       }
-      if (_client.maxSpeed && serverSpeed > _client.maxSpeed) {
+      if (_client.maxUploadSpeed && speed.uploadSpeed > _client.maxUploadSpeed) {
         await util.runRecord('INSERT INTO torrents (hash, name, size, rss_name, link, add_time, insert_type) values (?, ?, ?, ?, ?, ?, ?)',
-          [torrent.hash, torrent.name, torrent.size, this.alias, torrent.link, moment().unix(), '超过客户端最大速度']);
-        await this.ntf.rejectTorrent(this._rss, _client, torrent, `拒绝原因: 超过客户端最大速度 ${util.formatSize(serverSpeed)}/s`);
+          [torrent.hash, torrent.name, torrent.size, this.alias, torrent.link, moment().unix(), '超过客户端最大上传速度']);
+        await this.ntf.rejectTorrent(this._rss, _client, torrent, `拒绝原因: 超过客户端最大上传速度 ${util.formatSize(speed.uploadSpeed)}/s`);
+        return;
+      }
+      if (_client.maxDownloadSpeed && speed.downloadSpeed > _client.maxDownloadSpeed) {
+        await util.runRecord('INSERT INTO torrents (hash, name, size, rss_name, link, add_time, insert_type) values (?, ?, ?, ?, ?, ?, ?)',
+          [torrent.hash, torrent.name, torrent.size, this.alias, torrent.link, moment().unix(), '超过客户端最大下载速度']);
+        await this.ntf.rejectTorrent(this._rss, _client, torrent, `拒绝原因: 超过客户端最大下载速度 ${util.formatSize(speed.downloadSpeed)}/s`);
         return;
       }
       const leechNum = _client.maindata.torrents.filter(item => ['downloading', 'stalledDL', 'Downloading'].indexOf(item.state) !== -1).length;

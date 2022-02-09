@@ -124,7 +124,7 @@
                   <el-option label="GiB/s" value="GiB"></el-option>
                 </el-select>
               </el-input>
-              <div><el-tag type="info">限制种子的上传速度</el-tag></div>
+              <div><el-tag type="info">限制种子的上传速度, 0 为不限速</el-tag></div>
             </el-form-item>
             <el-form-item required label="限制下载速度" prop="downloadLimit">
               <el-input v-model="rss.downloadLimit">
@@ -134,15 +134,15 @@
                   <el-option label="GiB/s" value="GiB"></el-option>
                 </el-select>
               </el-input>
-              <div><el-tag type="info">限制种子的下载速度</el-tag></div>
+              <div><el-tag type="info">限制种子的下载速度, 0 为不限速</el-tag></div>
             </el-form-item>
             <el-form-item required label="抓取免费" prop="scrapeFree">
               <el-checkbox v-model="rss.scrapeFree"></el-checkbox>
-              <div><el-tag type="info">仅添加免费种子, 仅会在 rss 时判断 1 次, 因此魔力促销类可能不会添加</el-tag></div>
+              <div><el-tag type="info">仅添加免费种子, 仅会在 rss 时判断 1 次, 因此魔力促销类可能不会添加, 不支持的站点不要勾!</el-tag></div>
             </el-form-item>
             <el-form-item required label="排除 HR" prop="scrapeHr">
               <el-checkbox v-model="rss.scrapeHr"></el-checkbox>
-              <div><el-tag type="info">仅添加非 HR 种子, 仅会在 rss 时判断 1 次</el-tag></div>
+              <div><el-tag type="info">仅添加非 HR 种子, 仅会在 rss 时判断 1 次, 不支持的站点不要勾!</el-tag></div>
             </el-form-item>
             <el-form-item label="等待时间" prop="sleepTime">
               <el-input v-model="rss.sleepTime" style="width: 500px;"></el-input>
