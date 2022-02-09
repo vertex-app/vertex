@@ -24,6 +24,7 @@ class Client {
     this.pushMessage = client.pushMessage;
     this.maxUploadSpeed = util.calSize(client.maxUploadSpeed, client.maxUploadSpeedUnit);
     this.maxDownloadSpeed = util.calSize(client.maxDownloadSpeed, client.maxDownloadSpeedUnit);
+    this.minFreeSpace = util.calSize(client.minFreeSpace, client.minFreeSpaceUnit);
     this.maxLeechNum = client.maxLeechNum;
     this.sameServerClients = client.sameServerClients;
     this.maindata = null;

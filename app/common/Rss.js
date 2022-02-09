@@ -141,11 +141,17 @@ class Rss {
         await this.ntf.rejectTorrent(this._rss, _client, torrent, `拒绝原因: 超过客户端最大下载速度 ${util.formatSize(speed.downloadSpeed)}/s`);
         return;
       }
-      const leechNum = _client.maindata.torrents.filter(item => ['downloading', 'stalledDL', 'Downloading'].indexOf(item.state) !== -1).length;
+      const leechNum = _client.maindata.leechingCount;
       if (_client.maxLeechNum && leechNum >= _client.maxLeechNum) {
         await util.runRecord('INSERT INTO torrents (hash, name, size, rss_name, link, add_time, insert_type) values (?, ?, ?, ?, ?, ?, ?)',
           [torrent.hash, torrent.name, torrent.size, this.alias, torrent.link, moment().unix(), '超过客户端最大下载数量']);
         await this.ntf.rejectTorrent(this._rss, _client, torrent, `拒绝原因: 超过客户端最大下载数量 ${leechNum}`);
+        return;
+      }
+      if (_client.minFreeSpace && _client.maindata.freeSpaceOnDisk <= _client.minFreeSpace) {
+        await util.runRecord('INSERT INTO torrents (hash, name, size, rss_name, link, add_time, insert_type) values (?, ?, ?, ?, ?, ?, ?)',
+          [torrent.hash, torrent.name, torrent.size, this.alias, torrent.link, moment().unix(), '低于客户端最小剩余空间']);
+        await this.ntf.rejectTorrent(this._rss, _client, torrent, `拒绝原因: 低于客户端最小剩余空间 ${util.formatSize(_client.maindata.freeSpaceOnDisk)}`);
         return;
       }
       if (this.scrapeFree) {
@@ -232,11 +238,13 @@ class Rss {
     }
     const firstClient = this.clientArr.map(item => global.runningClient[item])
       .filter(item => !!item)
+      .filter(item => {
+        return (!item.maxDownloadSpeed || item.maxDownloadSpeed > item.maindata.downloadSpeed) &&
+          (!item.maxUploadSpeed || item.maxUploadSpeed > item.maindata.uploadSpeed) &&
+          (!item.maxLeechNum || item.maxLeechNum > item.maindata.leechingCount) &&
+          (!item.minFreeSpace || item.minFreeSpace < item.maindata.freeSpaceOnDisk);
+      })
       .sort((a, b) => a.maindata[this.clientSortBy] - b.maindata[this.clientSortBy])[0];
-    if (!firstClient) {
-      logger.error(this.alias, '无可用客户端');
-      return;
-    }
     for (const torrent of torrents) {
       const sqlRes = await util.getRecord('SELECT * FROM torrents WHERE hash = ? AND rss_name = ?', [torrent.hash, this.alias]);
       if (sqlRes && sqlRes.id) continue;
@@ -244,6 +252,13 @@ class Rss {
         await util.runRecord('INSERT INTO torrents (hash, name, size, rss_name, link, add_time, insert_type) values (?, ?, ?, ?, ?, ?, ?)',
           [torrent.hash, torrent.name, torrent.size, this.alias, torrent.link, moment().unix(), '距离上次 Rss 超时']);
         await this.ntf.rejectTorrent(this._rss, undefined, torrent, '拒绝原因: 距离上次 Rss 超时');
+        continue;
+      }
+      if (!firstClient) {
+        await util.runRecord('INSERT INTO torrents (hash, name, size, rss_name, link, add_time, insert_type) values (?, ?, ?, ?, ?, ?, ?)',
+          [torrent.hash, torrent.name, torrent.size, this.alias, torrent.link, moment().unix(), '无可用客户端']);
+        await this.ntf.rejectTorrent(this._rss, undefined, torrent, '拒绝原因: 无可用客户端');
+        logger.error(this.alias, '无可用客户端');
         continue;
       }
       const excludeKeysRules = this.rssRules.filter(item => item.excludeKeys);

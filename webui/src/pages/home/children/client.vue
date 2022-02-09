@@ -156,6 +156,16 @@
               <el-input v-model="client.maxLeechNum" style="width: 500px;"></el-input>
               <div><el-tag type="info">最大的下载活动种子数量, 在超过此数量时, 将不会添加种子</el-tag></div>
             </el-form-item>
+            <el-form-item label="最小剩余空间" prop="minFreeSpace">
+              <el-input v-model="client.minFreeSpace">
+                <el-select v-model="client.minFreeSpaceUnit" slot="append" style="width: 80px" placeholder="单位">
+                  <el-option label="KiB" value="KiB"></el-option>
+                  <el-option label="MiB" value="MiB"></el-option>
+                  <el-option label="GiB" value="GiB"></el-option>
+                </el-select>
+              </el-input>
+              <div><el-tag type="info">若客户端的下载速度在此速度之上时, 不再添加种子</el-tag></div>
+            </el-form-item>
             <el-form-item v-if="clientList.length !== 0" label="同服客户端">
               <el-checkbox-group v-model="client.sameServerClients">
                 <el-checkbox v-for="c of clientList" :key="c.id" :label="c.id">{{c.alias}}</el-checkbox>
