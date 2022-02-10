@@ -236,15 +236,17 @@ class Rss {
       await this.ntf.rssError(this._rss);
       return;
     }
-    const firstClient = this.clientArr.map(item => global.runningClient[item])
-      .filter(item => !!item)
+    const availableClients = this.clientArr
+      .map(item => global.runningClient[item])
+      .filter(item => !!item);
+    const firstClient = availableClients
       .filter(item => {
         return (!item.maxDownloadSpeed || item.maxDownloadSpeed > item.maindata.downloadSpeed) &&
           (!item.maxUploadSpeed || item.maxUploadSpeed > item.maindata.uploadSpeed) &&
           (!item.maxLeechNum || item.maxLeechNum > item.maindata.leechingCount) &&
           (!item.minFreeSpace || item.minFreeSpace < item.maindata.freeSpaceOnDisk);
       })
-      .sort((a, b) => a.maindata[this.clientSortBy] - b.maindata[this.clientSortBy])[0];
+      .sort((a, b) => a.maindata[this.clientSortBy] - b.maindata[this.clientSortBy])[0] || availableClients[0];
     for (const torrent of torrents) {
       const sqlRes = await util.getRecord('SELECT * FROM torrents WHERE hash = ? AND rss_name = ?', [torrent.hash, this.alias]);
       if (sqlRes && sqlRes.id) continue;

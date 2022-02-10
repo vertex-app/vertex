@@ -319,6 +319,9 @@ class Client {
       for (const rule of this.deleteRules) {
         if (this._fitDeleteRule(rule, torrent)) {
           await this.reannounceTorrent(torrent);
+          logger.info(torrent.name, '重新汇报完毕, 等待 5s');
+          Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 5000);
+          logger.info(torrent.name, '等待 5s 完毕, 执行删种');
           await util.runRecord('update torrents set size = ?, tracker = ?, uploaded = ?, downloaded = ?, delete_time = ? where hash = ?',
             [torrent.size, torrent.tracker, torrent.uploaded, torrent.downloaded, moment().unix(), torrent.hash]);
           await this.deleteTorrent(torrent, rule);
