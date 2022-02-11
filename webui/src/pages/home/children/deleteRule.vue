@@ -69,105 +69,67 @@
                   <el-option label="JavaScript" value="javascript"></el-option>
                 </el-select>
             </el-form-item>
-            <el-form-item v-if="rule.type === 'normal'" label="上传速度小于">
-              <el-input v-model="rule.minUploadSpeed" type="number">
-                <el-select v-model="rule.minUploadSpeedUnit" slot="append" style="width: 80px" placeholder="单位">
-                  <el-option label="KiB/s" value="KiB"></el-option>
-                  <el-option label="MiB/s" value="MiB"></el-option>
-                  <el-option label="GiB/s" value="GiB"></el-option>
-                </el-select>
-              </el-input>
-              <div><el-tag type="info">种子上传速度, 仅在种子为 做种 状态或与 下载速度小于 选项一起使用时生效</el-tag></div>
-            </el-form-item>
-            <el-form-item v-if="rule.type === 'normal'" label="下载速度大于">
-              <el-input v-model="rule.maxDownloadSpeed" type="number">
-                <el-select v-model="rule.maxDownloadSpeedUnit" slot="append" style="width: 80px" placeholder="单位">
-                  <el-option label="KiB/s" value="KiB"></el-option>
-                  <el-option label="MiB/s" value="MiB"></el-option>
-                  <el-option label="GiB/s" value="GiB"></el-option>
-                </el-select>
-              </el-input>
-              <div><el-tag type="info">种子下载速度, 仅在与上传速度小于一起使用时生效</el-tag></div>
-            </el-form-item>
-            <el-form-item v-if="rule.type === 'normal'" label="下载速度小于">
-              <el-input v-model="rule.minDownloadSpeed" type="number">
-                <el-select v-model="rule.minDownloadSpeedUnit" slot="append" style="width: 80px" placeholder="单位">
-                  <el-option label="KiB/s" value="KiB"></el-option>
-                  <el-option label="MiB/s" value="MiB"></el-option>
-                  <el-option label="GiB/s" value="GiB"></el-option>
-                </el-select>
-              </el-input>
-              <div><el-tag type="info">种子下载速度, 仅在与上传速度小于一起使用时生效</el-tag></div>
-            </el-form-item>
-            <el-form-item v-if="rule.type === 'normal'" label="平均下载速度大于">
-              <el-input v-model="rule.maxAvgDownloadSpeed" type="number">
-                <el-select v-model="rule.maxAvgDownloadSpeedUnit" slot="append" style="width: 80px" placeholder="单位">
-                  <el-option label="KiB/s" value="KiB"></el-option>
-                  <el-option label="MiB/s" value="MiB"></el-option>
-                  <el-option label="GiB/s" value="GiB"></el-option>
-                </el-select>
-              </el-input>
-              <div><el-tag type="info">种子平均下载速度</el-tag></div>
-            </el-form-item>
-            <el-form-item v-if="rule.type === 'normal'" label="种子进度小于">
-              <el-input v-model="rule.minProgress" type="number"></el-input>
-              <div><el-tag type="info">种子下载进度, 范围为 0 - 1</el-tag></div>
-            </el-form-item>
-            <el-form-item v-if="rule.type === 'normal'" label="种子进度大于">
-              <el-input v-model="rule.maxProgress" type="number"></el-input>
-              <div><el-tag type="info">种子下载进度, 范围为 0 - 1</el-tag></div>
-            </el-form-item>
-            <el-form-item v-if="rule.type === 'normal'" label="做种时间大于">
-              <el-input v-model="rule.maxSeedTime" type="number"></el-input>
-              <div><el-tag type="info">种子做种时间, 单位为 秒</el-tag></div>
-            </el-form-item>
-            <el-form-item v-if="rule.type === 'normal'" label="下载时间大于">
-              <el-input v-model="rule.maxLeechTime" type="number"></el-input>
-              <div><el-tag type="info">种子下载时间, 单位为 秒</el-tag></div>
-            </el-form-item>
-            <el-form-item v-if="rule.type === 'normal'" label="硬盘空间小于">
-              <el-input v-model="rule.maxFreeSpace" type="number">
-                <el-select v-model="rule.maxFreeSpaceUnit" slot="append" style="width: 80px" placeholder="单位">
-                  <el-option label="KiB" value="KiB"></el-option>
-                  <el-option label="MiB" value="MiB"></el-option>
-                  <el-option label="GiB" value="GiB"></el-option>
-                </el-select>
-              </el-input>
-              <div><el-tag type="info">硬盘空间 (读取自客户端), 仅对 做种 状态的种子生效</el-tag></div>
-            </el-form-item>
-            <el-form-item v-if="rule.type === 'normal'" label="空间占用大于">
-              <el-input v-model="rule.maxUsedSpace" type="number">
-                <el-select v-model="rule.maxUsedSpaceUnit" slot="append" style="width: 80px" placeholder="单位">
-                  <el-option label="KiB" value="KiB"></el-option>
-                  <el-option label="MiB" value="MiB"></el-option>
-                  <el-option label="GiB" value="GiB"></el-option>
-                </el-select>
-              </el-input>
-              <div><el-tag type="info">占用空间 (读取客户端内种子完成量的和)</el-tag></div>
-            </el-form-item>
-            <el-form-item v-if="rule.type === 'normal'" label="分享率大于">
-              <el-input v-model="rule.maxRatio" type="number"></el-input>
-              <div><el-tag type="info">分享率, 仅对 做种 状态的种子生效, 可以使用小数</el-tag></div>
-            </el-form-item>
-            <el-form-item v-if="rule.type === 'normal'" label="分享率小于">
-              <el-input v-model="rule.minRatio" type="number"></el-input>
-              <div><el-tag type="info">分享率, 仅对 下载不含等待 状态的种子生效, 建议配合进度使用, 避免删除新种, 可以使用小数</el-tag></div>
-            </el-form-item>
-            <el-form-item v-if="rule.type === 'normal'" label="可用性大于">
-              <el-input v-model="rule.maxAvailability" type="number"></el-input>
-              <div><el-tag type="info">可用性 - 近似于做种数 ( qb 4.1.9 为做种数 ), 仅对 下载 状态的种子生效, 可以使用小数</el-tag></div>
-            </el-form-item>
-            <el-form-item v-if="rule.type === 'normal'" label="连接数小于">
-              <el-input v-model="rule.minPeerNum" type="number"></el-input>
-              <div><el-tag type="info">已连接上的 Peer 数量, 包括做种与下载</el-tag></div>
-            </el-form-item>
-            <el-form-item v-if="rule.type === 'normal'" label="分类">
-              <el-input v-model="rule.category" type="textarea"></el-input>
-              <div><el-tag type="info">一行一个分类, 只会删除在分类列表内的种子</el-tag></div>
-            </el-form-item>
-            <el-form-item v-if="rule.type === 'normal'" label="排除分类">
-              <el-input v-model="rule.excludeCategory" type="textarea"></el-input>
-              <div><el-tag type="info">一行一个分类, 在分类列表内的种子不会被删除</el-tag></div>
+            <el-form-item v-if="rule.type === 'normal'" label="限制条件">
+              <el-table
+                size="mini"
+                stripe
+                :data="rule.conditions"
+                style="width: 720px">
+                <el-table-column
+                  label="选项"
+                  width="180">
+                  <template slot-scope="scope">
+                    <el-select v-model="scope.row.key" style="width: 160px" placeholder="选择选项">
+                      <el-option v-for="item of conditionKeys" :key="item.key" :label="item.name" :value="item.key"></el-option>
+                    </el-select>
+                  </template>
+                </el-table-column>
+                <el-table-column
+                  label="类型"
+                  width="144">
+                  <template slot-scope="scope">
+                    <el-select v-model="scope.row.compareType" style="width: 120px" placeholder="比较类型">
+                      <el-option label="等于" value="equals"></el-option>
+                      <el-option label="大于" value="bigger"></el-option>
+                      <el-option label="小于" value="smaller"></el-option>
+                      <el-option label="包含" value="contain"></el-option>
+                      <el-option label="包含于" value="includeIn"></el-option>
+                      <el-option label="不包含" value="notContain"></el-option>
+                      <el-option label="不包含于" value="notIncludeIn"></el-option>
+                    </el-select>
+                  </template>
+                </el-table-column>
+                <el-table-column
+                  label="值">
+                  <template slot-scope="scope">
+                    <el-input v-model="scope.row.value" placeholder="填写值"/>
+                  </template>
+                </el-table-column>
+                <el-table-column
+                  label="操作"
+                  width="96">
+                  <template slot-scope="scope">
+                    <el-button @click="rule.conditions = rule.conditions.filter(item => item !== scope.row)" type="danger" size="small">删除</el-button>
+                  </template>
+                </el-table-column>
+              </el-table>
+              <el-button @click="rule.conditions.push({ key: '', compareType: '', value: ''})" type="primary" size="small">新增</el-button>
+              <el-card style="margin: 12px 0; max-width: 640px" >
+                比较类型中的包含于或不包含于: 值部分需以半角逗号 , 为分割符, 如种子分类不包含于 KEEP, KEEP2, KEEP3 三个分类, 则应填写:
+                <el-tag>KEEP,KEEP2,KEEP3</el-tag><br>
+                个别选项解释: <br>
+                1. 分享率一: 上传 / 种子大小 的结果<br>
+                2. 分享率二: 上传 / 下载 的结果<br>
+                3. 站点域名: 种子的 Tracker 地址的域名部分<br>
+                4. 各类时间: 选项时间到当前时间的差值, 单位为 秒/s<br>
+                5. 各类大小: 单位为 字节 / Byte<br>
+                6. 各类速度: 单位为 字节/s / Byte/s<br>
+                6. 种子状态: 参照 qBittorrent 对种子状态的定义, 主要包含以下几类: <br>
+                上传中: <el-tag>uploading</el-tag>, 下载中: <el-tag>downloading</el-tag><br>
+                等待下载: <el-tag>stalledDL</el-tag>, 做种但无上传: <el-tag>stalledUP</el-tag><br>
+                更多状态请参照 qBittorrent Wiki, 若想删除等待下载状态下的种子, 应填写 stalledDL<br>
+                7. 做种下载连接: 仅计算已连接上的数量, 也即 qBittorrent WebUI 内括号外的数字 <br>
+              </el-card>
             </el-form-item>
             <el-form-item v-if="rule.type === 'javascript'" label="自定义代码">
               <el-input v-model="rule.code" type="textarea" :rows="20" style="width: 500px;"></el-input>
@@ -189,7 +151,67 @@ export default {
   data () {
     return {
       rule: {},
+      conditionKeys: [{
+        name: '种子名称',
+        key: 'name'
+      }, {
+        name: '种子进度',
+        key: 'progress'
+      }, {
+        name: '上传速度',
+        key: 'uploadSpeed'
+      }, {
+        name: '下载速度',
+        key: 'downloadSpeed'
+      }, {
+        name: '种子分类',
+        key: 'category'
+      }, {
+        name: '种子大小',
+        key: 'size'
+      }, {
+        name: '站点域名',
+        key: 'tracker'
+      }, {
+        name: '已完成量',
+        key: 'completed'
+      }, {
+        name: '已下载量',
+        key: 'downloaded'
+      }, {
+        name: '已上传量',
+        key: 'uploaded'
+      }, {
+        name: '分享率一',
+        key: 'ratio'
+      }, {
+        name: '分享率二',
+        key: 'trueRatio'
+      }, {
+        name: '种子状态',
+        key: 'state'
+      }, {
+        name: '添加时间',
+        key: 'addedTime'
+      }, {
+        name: '完成时间',
+        key: 'completedTime'
+      }, {
+        name: '保存路径',
+        key: 'savePath'
+      }, {
+        name: '做种连接',
+        key: 'seeder'
+      }, {
+        name: '下载连接',
+        key: 'leecher'
+      }],
       defaultRule: {
+        conditions: [{
+          key: '',
+          compareType: '',
+          value: ''
+        }],
         priority: 0,
         code: '(maindata, torrent) => {\n' +
               '  return false;\n' +
