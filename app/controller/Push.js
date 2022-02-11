@@ -41,9 +41,10 @@ class Push {
   async modify (req, res) {
     const options = req.body;
     try {
-      pushMod.modify(options);
+      const r = pushMod.modify(options);
       res.send({
-        success: true
+        success: true,
+        message: r
       });
     } catch (e) {
       logger.error(e);

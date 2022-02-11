@@ -113,6 +113,7 @@ module.exports = function (app, express, router) {
   router.get('/torrent/info', ctrl.Torrent.info);
 
   router.get('/log/get', ctrl.Log.get);
+  router.get('/log/clear', ctrl.Log.clear);
 
   router.get('/setting/get', ctrl.Setting.get);
   router.get('/setting/getBackground', ctrl.Setting.getBackground);

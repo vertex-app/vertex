@@ -20,5 +20,21 @@ class Log {
       });
     }
   };
+
+  async clear (req, res) {
+    try {
+      const r = logMod.clear();
+      res.send({
+        success: true,
+        message: r
+      });
+    } catch (e) {
+      logger.error(e);
+      res.send({
+        success: false,
+        message: e
+      });
+    }
+  };
 }
 module.exports = Log;
