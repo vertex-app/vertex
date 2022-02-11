@@ -42,7 +42,7 @@ class Server {
   };
 
   async destroy () {
-    logger.info('Destroying SSH Connect', this.alias);
+    logger.info('Destroying SSH Connect', this.server.alias);
     delete global.runningServer[this.id];
     await this.ssh.end();
     this.ssh = null;

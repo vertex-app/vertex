@@ -14,6 +14,14 @@
           <el-input v-model="setting.background" style="width: 500px;"></el-input>
           <div><el-tag type="info">图片外链</el-tag></div>
         </el-form-item>
+        <el-form-item label="日志级别" prop="loggerLevel">
+          <el-select v-model="setting.loggerLevel" style="width: 144px" placeholder="日志级别">
+            <el-option label="INFO" value="info"></el-option>
+            <el-option label="DEBUG" value="debug"></el-option>
+            <el-option label="ALL" value="all"></el-option>
+          </el-select>
+          <div><el-tag type="info">选择日志记录的最低级别, 默认情况下建议仅选择 INFO, 重启后生效</el-tag></div>
+        </el-form-item>
         <el-form-item label="Telegram 代理" prop="proxyPass">
           <el-input disabled v-model="setting.proxyPass"></el-input>
         </el-form-item>

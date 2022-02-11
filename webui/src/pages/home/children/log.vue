@@ -1,7 +1,7 @@
 <template>
   <div class="site-settings">
-    <div style="width: 100%">
-      <el-select v-model="type" @change="getLog" placeholder="日志类型">
+    <div style="width: 100%; text-align: left;">
+      <el-select size="small" v-model="type" @change="getLog" placeholder="选择日志级别">
         <el-option label="info" value="info"></el-option>
         <el-option label="error" value="error"></el-option>
         <el-option label="debug" value="debug"></el-option>
