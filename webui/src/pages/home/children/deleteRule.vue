@@ -113,7 +113,7 @@
                   </template>
                 </el-table-column>
               </el-table>
-              <el-button @click="rule.conditions.push({ key: '', compareType: '', value: ''})" type="primary" size="small">新增</el-button>
+              <el-button @click="rule.conditions.push({ ...condition })" type="primary" size="small">新增</el-button>
               <el-card style="margin: 12px 0; max-width: 640px" >
                 说明: <br>
                 01. 分享率一: 上传 / 种子大小 的结果<br>
@@ -224,15 +224,16 @@ export default {
         key: 'secondFromZero'
       }],
       defaultRule: {
-        conditions: [{
-          key: '',
-          compareType: '',
-          value: ''
-        }],
+        conditions: [],
         priority: 0,
         code: '(maindata, torrent) => {\n' +
               '  return false;\n' +
               '}'
+      },
+      condition: {
+        key: '',
+        compareType: '',
+        value: ''
       },
       ruleList: [],
       ruleCollapse: ['1']
@@ -273,6 +274,7 @@ export default {
     },
     async clearRule () {
       this.rule = { ...this.defaultRule };
+      this.rule.conditions = [{ ...this.condition }];
       this.$refs.rule.resetFields();
     },
     async listRule () {
@@ -282,6 +284,7 @@ export default {
   },
   async mounted () {
     this.rule = { ...this.defaultRule };
+    this.rule.conditions = [{ ...this.condition }];
     this.$refs.rule.resetFields();
     this.listRule();
   }

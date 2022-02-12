@@ -56,8 +56,6 @@ build_docker_image_and_push:
     - docker context create context_name
     - docker buildx create --name buildx_name --use context_name
     - docker buildx inspect --bootstrap
-    - docker pull --platform amd64 $IMAGE_TAG_SHA || true
-    - docker pull --platform arm64 $IMAGE_TAG_SHA || true
   stage: build_docker_image_and_push
   tags: 
     - compile
