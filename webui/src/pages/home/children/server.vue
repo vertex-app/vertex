@@ -78,7 +78,7 @@
           </div>
           <div style="width: fit-content; margin: 6px 0 12px 20px">
             <el-tag size="small" type="danger">
-              服务器需安装 sysstat 以及版本为 2.6+ 的 vnstat
+              服务器需安装 sysstat 以及版本为 2.6+ 的 vnstat, 系统语言环境应为英语
             </el-tag>
           </div>
           <el-form ref="server" class="server-form" :model="server" label-width="160px" size="mini">

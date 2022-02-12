@@ -75,7 +75,7 @@ class Client {
     torrent.ratio = torrent.uploaded / torrent.size;
     torrent.trueRatio = torrent.uploaded / torrent.downloaded;
     torrent.addedTime = moment().unix() - torrent.addedTime;
-    torrent.completedTime = moment().unix() - torrent.completedTime;
+    torrent.completedTime = moment().unix() - (torrent.completedTime || moment().unix());
     torrent.freeSpace = this.maindata.freeSpaceOnDisk;
     torrent.secondFromZero = moment().unix() - moment().startOf('day').unix();
     torrent.leechingCount = this.maindata.leechingCount;
@@ -311,8 +311,12 @@ class Client {
   async autoDelete () {
     if (!this.maindata || !this.maindata.torrents || this.maindata.torrents.length === 0) return;
     const torrents = this.maindata.torrents.sort((a, b) => a.completedTime - b.completedTime || a.addedTime - b.addedTime);
+    const deletedTorrentHash = [];
     for (const rule of this.deleteRules) {
       for (const torrent of torrents) {
+        if (deletedTorrentHash.indexOf(torrent.hash)) {
+          continue;
+        }
         if (this._fitDeleteRule(rule, torrent)) {
           await this.reannounceTorrent(torrent);
           logger.info(torrent.name, '重新汇报完毕, 等待 2s');
@@ -320,7 +324,9 @@ class Client {
           logger.info(torrent.name, '等待 2s 完毕, 执行删种');
           await util.runRecord('update torrents set size = ?, tracker = ?, uploaded = ?, downloaded = ?, delete_time = ? where hash = ?',
             [torrent.size, torrent.tracker, torrent.uploaded, torrent.downloaded, moment().unix(), torrent.hash]);
-          if (!(await this.deleteTorrent(torrent, rule))) {
+          const deleteFiles = await this.deleteTorrent(torrent, rule);
+          deletedTorrentHash.push(torrent.hash);
+          if (!deleteFiles) {
             return;
           }
         }

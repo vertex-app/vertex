@@ -56,6 +56,8 @@ build_docker_image_and_push:
     - docker context create context_name
     - docker buildx create --name buildx_name --use context_name
     - docker buildx inspect --bootstrap
+    - docker pull --platform amd64 $IMAGE_TAG_SHA || true
+    - docker pull --platform arm64 $IMAGE_TAG_SHA || true
   stage: build_docker_image_and_push
   tags: 
     - compile
@@ -67,13 +69,13 @@ build_docker_image_and_push:
     - sed -i 's/BRANCH/'$CI_COMMIT_BRANCH'/' Dockerfile
     - ls src/static
     - |
-      docker buildx build --platform linux/amd64,linux/arm64 --cache-from $IMAGE_TAG_SHA --tag $IMAGE_TAG_SHA . --push
+      docker buildx build --platform linux/amd64,linux/arm64 --cache-from lswl/vertex --tag $IMAGE_TAG_SHA . --push
     - |
-      docker buildx build --platform linux/amd64,linux/arm64 --cache-from $IMAGE_TAG_SHA --tag lswl/vertex:$TIME . --push
+      docker buildx build --platform linux/amd64,linux/arm64 --cache-from lswl/vertex --tag lswl/vertex:$TIME . --push
     - |
-      docker buildx build --platform linux/amd64,linux/arm64 --cache-from $IMAGE_TAG_SHA --tag $IMAGE_TAG_LATEST . --push
+      docker buildx build --platform linux/amd64,linux/arm64 --cache-from lswl/vertex --tag $IMAGE_TAG_LATEST . --push
     - |
-      docker buildx build --platform linux/amd64,linux/arm64 --cache-from $IMAGE_TAG_SHA --tag $IMAGE_TAG_BRANCH . --push
+      docker buildx build --platform linux/amd64,linux/arm64 --cache-from lswl/vertex --tag $IMAGE_TAG_BRANCH . --push
     - |
       curl --location --request POST 'https://vertex-push.lswl.workers.dev' \
       --header 'Content-Type: application/json' \
