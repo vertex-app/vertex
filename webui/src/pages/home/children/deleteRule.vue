@@ -205,6 +205,9 @@ export default {
       }, {
         name: '下载连接',
         key: 'leecher'
+      }, {
+        name: '剩余空间',
+        key: 'freeSpace'
       }],
       defaultRule: {
         conditions: [{
