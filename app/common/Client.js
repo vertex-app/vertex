@@ -277,8 +277,8 @@ class Client {
   };
 
   async deleteTorrent (torrent, rule) {
+    let isDeleteFiles = true;
     try {
-      let isDeleteFiles = true;
       for (const _torrent of this.maindata.torrents) {
         if (_torrent.name === torrent.name && _torrent.size === torrent.size && _torrent.hash !== torrent.hash) {
           isDeleteFiles = false;
@@ -291,6 +291,7 @@ class Client {
       logger.error('客户端', this.alias, '删除种子失败:', torrent.name, '\n', error);
       await this.ntf.deleteTorrent(this._client, torrent, rule);
     }
+    return isDeleteFiles;
   };
 
   async autoReannounce () {
@@ -306,17 +307,18 @@ class Client {
   async autoDelete () {
     if (!this.maindata || !this.maindata.torrents || this.maindata.torrents.length === 0) return;
     const torrents = this.maindata.torrents.sort((a, b) => a.completedTime - b.completedTime || a.addedTime - b.addedTime);
-    for (const torrent of torrents) {
-      for (const rule of this.deleteRules) {
+    for (const rule of this.deleteRules) {
+      for (const torrent of torrents) {
         if (this._fitDeleteRule(rule, torrent)) {
           await this.reannounceTorrent(torrent);
-          logger.info(torrent.name, '重新汇报完毕, 等待 5s');
-          Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 5000);
-          logger.info(torrent.name, '等待 5s 完毕, 执行删种');
+          logger.info(torrent.name, '重新汇报完毕, 等待 2s');
+          Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 2000);
+          logger.info(torrent.name, '等待 2s 完毕, 执行删种');
           await util.runRecord('update torrents set size = ?, tracker = ?, uploaded = ?, downloaded = ?, delete_time = ? where hash = ?',
             [torrent.size, torrent.tracker, torrent.uploaded, torrent.downloaded, moment().unix(), torrent.hash]);
-          await this.deleteTorrent(torrent, rule);
-          return;
+          if (!(await this.deleteTorrent(torrent, rule))) {
+            return;
+          }
         }
       }
     }

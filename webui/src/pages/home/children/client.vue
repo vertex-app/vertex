@@ -164,7 +164,7 @@
                   <el-option label="GiB" value="GiB"></el-option>
                 </el-select>
               </el-input>
-              <div><el-tag type="info">若客户端的下载速度在此速度之上时, 不再添加种子</el-tag></div>
+              <div><el-tag type="info">若客户端的剩余空间在此空间之下时, 不再添加种子</el-tag></div>
             </el-form-item>
             <el-form-item v-if="clientList.length !== 0" label="同服客户端">
               <el-checkbox-group v-model="client.sameServerClients">
