@@ -77,6 +77,9 @@ class Client {
     torrent.addedTime = moment().unix() - torrent.addedTime;
     torrent.completedTime = moment().unix() - torrent.completedTime;
     torrent.freeSpace = this.maindata.freeSpaceOnDisk;
+    torrent.secondFromZero = moment().unix() - moment().startOf('day').unix();
+    torrent.leechingCount = this.maindata.leechingCount;
+    torrent.seedingCount = this.maindata.seedingCount;
     for (const condition of conditions) {
       let value;
       switch (condition.compareType) {
