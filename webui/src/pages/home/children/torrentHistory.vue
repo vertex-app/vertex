@@ -13,6 +13,12 @@
             prop="c0"
             align="center"
             label="rss任务">
+            <template slot-scope="scope">
+              {{scope.row.c0 !== scope.row.name ? scope.row.c0 : ''}}
+              <el-link v-if="scope.row.c0 === scope.row.name" type="primary" :href="scope.row.link">
+                {{scope.row.c0}}
+              </el-link>
+            </template>
           </el-table-column>
           <el-table-column
             align="center"
