@@ -270,7 +270,10 @@ export default {
     },
     async modifyRule (row) {
       this.ruleCollapse = ['1'];
-      this.rule = row;
+      this.rule = { ...row };
+      this.rule.conditions = row.conditions.map(item => {
+        return { ...item };
+      });
     },
     async clearRule () {
       this.rule = { ...this.defaultRule };

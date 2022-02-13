@@ -75,7 +75,7 @@ class Client {
     torrent.ratio = torrent.uploaded / torrent.size;
     torrent.trueRatio = torrent.uploaded / torrent.downloaded;
     torrent.addedTime = moment().unix() - torrent.addedTime;
-    torrent.completedTime = moment().unix() - (torrent.completedTime || moment().unix());
+    torrent.completedTime = moment().unix() - (torrent.completedTime <= 0 ? moment().unix() : torrent.completedTime);
     torrent.freeSpace = this.maindata.freeSpaceOnDisk;
     torrent.secondFromZero = moment().unix() - moment().startOf('day').unix();
     torrent.leechingCount = this.maindata.leechingCount;
@@ -314,7 +314,8 @@ class Client {
     const deletedTorrentHash = [];
     for (const rule of this.deleteRules) {
       for (const torrent of torrents) {
-        if (deletedTorrentHash.indexOf(torrent.hash)) {
+        if (deletedTorrentHash.indexOf(torrent.hash) !== -1) {
+          logger.debug('规则', rule.alias, ', 种子', torrent.name, '已删除', '跳过');
           continue;
         }
         if (this._fitDeleteRule(rule, torrent)) {
