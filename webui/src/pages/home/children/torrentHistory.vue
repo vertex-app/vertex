@@ -93,7 +93,8 @@ export default {
     },
 
     async changePage (page) {
-      await this.listTorrent();
+      this.page = page;
+      await this.listTorrentHistory();
     },
 
     arraySpanMethod ({ row, column, rowIndex, columnIndex }) {

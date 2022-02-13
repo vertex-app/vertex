@@ -20,6 +20,7 @@ class SettingMod {
       username: options.username || 'admin',
       password: options.password || '5f4dcc3b5aa765d61d8327deb882cf99'
     };
+    global.userAgent = options.userAgent;
     return '修改全局设置成功, 刷新页面后更新。';
   };
 }

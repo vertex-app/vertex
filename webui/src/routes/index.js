@@ -5,6 +5,7 @@ import Login from '@/pages/login/index';
 import Index from '@/pages/home/index';
 import Home from '@/pages/home/children/home';
 import Monitor from '@/pages/home/children/monitor';
+import Site from '@/pages/home/children/site';
 import Setting from '@/pages/home/children/setting';
 import Server from '@/pages/home/children/server';
 import Client from '@/pages/home/children/client';
@@ -50,6 +51,12 @@ export default new Router({
           component: Monitor,
           meta: {
             title: '监控信息'
+          }
+        }, {
+          path: 'site',
+          component: Site,
+          meta: {
+            title: '站点数据'
           }
         }, {
           path: 'setting',

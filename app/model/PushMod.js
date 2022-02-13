@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const util = require('../libs/util');
 
-class TelegramMod {
+class PushMod {
   add (options) {
     const id = util.uuid.v4().split('-')[0];
     const set = { ...options };
@@ -42,4 +42,4 @@ class TelegramMod {
   };
 }
 
-module.exports = TelegramMod;
+module.exports = PushMod;

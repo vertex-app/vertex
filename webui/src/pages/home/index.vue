@@ -55,6 +55,10 @@ export default {
         title: ' 监控信息',
         path: '/monitor'
       }, {
+        icon: ['fas', 'database'],
+        title: ' 站点数据',
+        path: '/site'
+      }, {
         icon: ['fas', 'sliders-h'],
         title: ' 全局设置',
         path: '/setting'

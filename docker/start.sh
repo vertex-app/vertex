@@ -11,6 +11,12 @@ else
   echo '/vertex/data exists, continue'
 fi
 
+if [ ! -d '/vertex/data/site' ]; then
+  mkdir /vertex/data/site
+else
+  echo '/vertex/data/site exists, continue'
+fi
+
 if [ ! -d '/vertex/db' ]; then
   mkdir /vertex/db
 else

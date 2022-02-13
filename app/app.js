@@ -33,6 +33,13 @@ const init = function () {
       global.runningServer[server.id] = new Server(server);
     }
   }
+  global.runningSite = {};
+  for (const site of util.listSite()) {
+    if (site.enable) {
+      const Site = require('./common/Site');
+      global.runningSite[site.name] = new Site(site);
+    }
+  }
 };
 
 (async () => {
@@ -43,6 +50,7 @@ const init = function () {
     username: setting.username || 'admin',
     password: setting.password || '5f4dcc3b5aa765d61d8327deb882cf99'
   };
+  global.userAgent = setting.userAgent;
   init();
   app.listen(process.env.PORT, () => {
     logger.info('Server started, listening', process.env.PORT);

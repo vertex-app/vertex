@@ -56,10 +56,36 @@ const _importJson = function (path) {
 exports.scrapeFree = scrape.free;
 exports.scrapeHr = scrape.hr;
 
-exports.requestPromise = util.promisify(request);
+exports._requestPromise = util.promisify(request);
+exports.requestPromise = async function (options) {
+  if (typeof options === 'string') {
+    return await exports._requestPromise({
+      url: options,
+      headers: {
+        'User-Agent': global.userAgent || 'Vertex'
+      }
+    });
+  }
+  if (!options.headers) {
+    options.headers = {};
+  };
+  options.headers['User-Agent'] = global.userAgent || 'Vertex';
+  return await exports._requestPromise(options);
+};
 exports.exec = util.promisify(require('child_process').exec);
 exports.uuid = uuid;
 exports.md5 = md5;
+
+exports.listSite = function () {
+  const files = fs.readdirSync(path.join(__dirname, '../data/site'));
+  const list = [];
+  for (const file of files) {
+    if (path.extname(file) === '.json') {
+      list.push(_importJson(path.join(__dirname, '../data/site', file)));
+    }
+  }
+  return list;
+};
 
 exports.listPush = function () {
   const files = fs.readdirSync(path.join(__dirname, '../data/push'));
@@ -149,7 +175,9 @@ exports.calSize = function (size, unit) {
   const unitMap = {
     KiB: 1024,
     MiB: 1024 * 1024,
-    GiB: 1024 * 1024 * 1024
+    GiB: 1024 * 1024 * 1024,
+    TiB: 1024 * 1024 * 1024 * 1024,
+    PiB: 1024 * 1024 * 1024 * 1024 * 1024
   };
   return +size * (unitMap[unit] || 1);
 };

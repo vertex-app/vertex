@@ -88,6 +88,12 @@ module.exports = function (app, express, router) {
   router.post('/push/modify', ctrl.Push.modify);
   router.post('/push/delete', ctrl.Push.delete);
 
+  router.post('/site/add', ctrl.Site.add);
+  router.get('/site/list', ctrl.Site.list);
+  router.post('/site/modify', ctrl.Site.modify);
+  router.post('/site/delete', ctrl.Site.delete);
+  router.get('/site/refreshAll', ctrl.Site.refreshAll);
+
   router.get('/client/list', ctrl.Client.list);
   router.post('/client/add', ctrl.Client.add);
   router.post('/client/modify', ctrl.Client.modify);
