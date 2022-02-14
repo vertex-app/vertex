@@ -51,7 +51,11 @@ const init = function () {
     password: setting.password || '5f4dcc3b5aa765d61d8327deb882cf99'
   };
   global.userAgent = setting.userAgent;
-  init();
+  try {
+    init();
+  } catch (e) {
+    logger.error('初始化任务报错\n', e);
+  }
   app.listen(process.env.PORT, () => {
     logger.info('Server started, listening', process.env.PORT);
   });

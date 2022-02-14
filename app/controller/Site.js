@@ -72,9 +72,10 @@ class Site {
     }
   };
 
-  async refreshAll (req, res) {
+  async refresh (req, res) {
+    const options = req.query;
     try {
-      const r = await siteMod.refreshAll();
+      const r = await siteMod.refresh(options);
       res.send({
         success: true,
         message: r

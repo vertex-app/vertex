@@ -39,12 +39,17 @@ class SiteMod {
     return siteList;
   };
 
-  async refreshAll () {
-    for (const name of Object.keys(global.runningSite)) {
-      logger.info('开始刷新站点信息:', name);
-      await global.runningSite[name].refreshInfo();
+  async refresh (options) {
+    if (!options.name) {
+      for (const name of Object.keys(global.runningSite)) {
+        logger.info('开始刷新站点信息:', name);
+        global.runningSite[name].refreshInfo();
+      }
+      return '刷新任务已执行, 请稍后查看站点信息。';
+    } else {
+      if (global.runningSite[options.name]) await global.runningSite[options.name].refreshInfo();
+      return '刷新成功';
     }
-    return '刷新任务已执行, 请稍后查看站点信息。';
   }
 }
 

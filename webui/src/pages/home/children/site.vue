@@ -10,6 +10,12 @@
           sortable
           prop="name"
           label="站点">
+          <template slot-scope="scope">
+            <el-switch
+              v-model="scope.row.display">
+            </el-switch>
+            {{ scope.row.display ? scope.row.name : '*******' }}
+          </template>
         </el-table-column>
         <el-table-column
           sortable
@@ -36,12 +42,13 @@
           </template>
         </el-table-column>
         <el-table-column
-          width="200">
+          width="244">
           <template slot="header" slot-scope="scope">
             操作
             <el-button @click="refreshAll(scope)" type="primary" size="mini">{{refreshState}}</el-button>
           </template>
           <template slot-scope="scope">
+            <el-button @click="refresh(scope.row)" type="primary" size="small">刷新</el-button>
             <el-button @click="modifySite(scope.row)" type="warning" size="small">编辑</el-button>
             <el-button @click="deleteSite(scope.row)" :disabled="scope.row.used" type="danger" size="small">删除</el-button>
           </template>
@@ -63,8 +70,12 @@
             <el-form-item required label="启用" prop="enable">
               <el-checkbox v-model="site.enable">启用</el-checkbox>
             </el-form-item>
+            <el-form-item required label="更新周期" prop="cron">
+              <el-input v-model="site.cron" style="width: 300px;"></el-input>
+              <div><el-tag type="info">Crontab 表达式, 默认 4 小时一次</el-tag></div>
+            </el-form-item>
             <el-form-item required label="Cookie" prop="cookie">
-              <el-input v-model="site.cookie" :rows="20" style="width: 500px;"></el-input>
+              <el-input v-model="site.cookie" style="width: 500px;"></el-input>
             </el-form-item>
             <el-form-item size="small">
               <el-button type="primary" @click="handleSiteClick">新增 | 编辑</el-button>
@@ -81,12 +92,13 @@
 export default {
   data () {
     return {
-      refreshState: '立即刷新全部站点',
+      refreshState: '刷新全部站点',
       site: {},
       sites: ['Hares', 'CHDBits', 'LemonHD', 'HDChina', 'HDSky', 'HDHome', 'PTerClub', 'Audiences', 'OurBits'],
       defaultSite: {
         name: '',
         cookie: '',
+        cron: '0 */4 * * *',
         enable: true
       },
       siteList: [],
@@ -113,7 +125,7 @@ export default {
     async deleteSite (row) {
       const url = '/api/site/delete';
       const res = await this.$axiosPost(url, {
-        id: row.id
+        name: row.name
       });
       if (!res) {
         return;
@@ -132,17 +144,30 @@ export default {
     },
     async listSite () {
       const res = await this.$axiosGet('/api/site/list');
-      this.siteList = res ? res.data : [];
+      const siteList = res ? res.data : [];
+      for (const site of siteList) {
+        site.display = site.display || true;
+        console.log(site.display);
+      }
+      this.siteList = siteList;
     },
     async refreshAll () {
       this.refreshState = '刷新中 ......';
-      const res = await this.$axiosGet('/api/site/refreshAll');
+      const res = await this.$axiosGet('/api/site/refresh');
       if (!res) {
         return;
       }
       await this.$messageBox(res);
       this.listSite();
-      this.refreshState = '立即刷新全部站点';
+      this.refreshState = '刷新全部站点';
+    },
+    async refresh (row) {
+      const res = await this.$axiosGet(`/api/site/refresh?name=${row.name}`);
+      if (!res) {
+        return;
+      }
+      await this.$messageBox(res);
+      this.listSite();
     }
   },
   async mounted () {

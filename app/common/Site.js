@@ -20,8 +20,8 @@ class Site {
     };
     this.cookie = site.cookie;
     this.site = site.name;
-    this.cron = site.cron;
-    this.refreshJob = new CronJob('0 */4 * * *', () => this.refreshInfo());
+    this.cron = site.cron || '0 */4 * * *';
+    this.refreshJob = new CronJob(this.cron, () => this.refreshInfo());
   };
 
   async _getDocument (url) {
@@ -221,8 +221,14 @@ class Site {
       logger.debug(this.site, '站点数据成功抓取,', '数据如下:\n', info);
       this.info = info;
     } catch (e) {
-      logger.error(this.site, '站点数据抓取失败,', '报错如下:\n', e);
+      logger.error(this.site, '站点数据抓取失败 (疑似是 Cookie 失效, 或遇到 5s 盾),', '报错如下:\n', e);
     }
+  };
+
+  async destroy () {
+    logger.info('销毁站点实例', this.site);
+    this.refreshJob.stop();
+    delete global.runningSite[this.site];
   };
 };
 
