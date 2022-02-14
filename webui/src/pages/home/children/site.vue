@@ -19,6 +19,14 @@
         </el-table-column>
         <el-table-column
           sortable
+          prop="info.username"
+          label="用户名">
+          <template slot-scope="scope">
+            {{ scope.row.display ? scope.row.info.username : '*******' }}
+          </template>
+        </el-table-column>
+        <el-table-column
+          sortable
           prop="info.uploaded"
           label="上传">
           <template slot-scope="scope">
@@ -64,7 +72,7 @@
           <el-form ref="site" class="site-form" :model="site" label-width="160px" size="mini">
             <el-form-item required label="站点" prop="name">
               <el-select v-model="site.name" style="width: 160px" placeholder="选择站点">
-                <el-option v-for="item of sites" :key="item" :label="item" :value="item"></el-option>
+                <el-option :disabled="siteList.filter(i => i.name === item).length !== 0" v-for="item of sites" :key="item" :label="item" :value="item"></el-option>
               </el-select>
             </el-form-item>
             <el-form-item required label="启用" prop="enable">
