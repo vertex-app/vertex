@@ -22,7 +22,7 @@
           prop="info.username"
           label="用户名">
           <template slot-scope="scope">
-            {{ scope.row.display ? scope.row.info.username : '*******' }}
+            {{ scope.row.display ? scope.row.info ? scope.row.info.username : '' : '*******' }}
           </template>
         </el-table-column>
         <el-table-column
