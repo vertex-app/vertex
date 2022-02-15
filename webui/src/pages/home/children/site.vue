@@ -50,7 +50,17 @@
           </template>
         </el-table-column>
         <el-table-column
-          width="244">
+          sortable
+          prop="info.updateTime"
+          min-width="180"
+          label="上次刷新时间">
+          <template slot-scope="scope">
+            {{scope.row.info ? $moment(scope.row.info.updateTime * 1000).format('YYYY-MM-DD HH:mm:ss') : ''}}
+          </template>
+        </el-table-column>
+        <el-table-column
+          width="244"
+          fixed="right">
           <template slot="header" slot-scope="scope">
             操作
             <el-button @click="refreshAll(scope)" type="primary" size="mini">{{refreshState}}</el-button>
