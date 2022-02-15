@@ -14,6 +14,10 @@
           <el-input v-model="setting.background" style="width: 500px;"></el-input>
           <div><el-tag type="info">图片外链</el-tag></div>
         </el-form-item>
+        <el-form-item label="User-Agent" prop="userAgent">
+          <el-input v-model="setting.userAgent" style="width: 500px;"></el-input>
+          <div><el-tag type="info">所有网络请求所用的 User-Agent, 默认为 'Vertex'</el-tag></div>
+        </el-form-item>
         <el-form-item label="日志级别" prop="loggerLevel">
           <el-select v-model="setting.loggerLevel" style="width: 144px" placeholder="日志级别">
             <el-option label="INFO" value="info"></el-option>
