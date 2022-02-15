@@ -16,12 +16,14 @@ class Site {
       HDHome: this._hdhome,
       PTerClub: this._pterclub,
       Audiences: this._audiences,
-      OurBits: this._ourbits
+      OurBits: this._ourbits,
+      SpringSunDay: this._springsunday
     };
     this.cookie = site.cookie;
     this.site = site.name;
     this.cron = site.cron || '0 */4 * * *';
     this.refreshJob = new CronJob(this.cron, () => this.refreshInfo());
+    this.refreshJob.start();
   };
 
   async _getDocument (url) {
@@ -127,8 +129,6 @@ class Site {
     info.seeding = +document.querySelector('img[class=arrowup]').nextSibling.nodeValue.trim();
     // 下载
     info.leeching = +document.querySelector('img[class=arrowdown]').nextSibling.nodeValue.trim();
-    info.formatUploaded = util.formatSize(info.uploaded);
-    info.formatDownloaded = util.formatSize(info.downloaded);
     return info;
   };
 
@@ -167,8 +167,25 @@ class Site {
     info.seeding = +document.querySelector('img[class=arrowup]').nextSibling.nodeValue.trim();
     // 下载
     info.leeching = +document.querySelector('img[class=arrowdown]').nextSibling.nodeValue.trim();
-    info.formatUploaded = util.formatSize(info.uploaded);
-    info.formatDownloaded = util.formatSize(info.downloaded);
+    return info;
+  };
+
+  // SpringSunDay
+  async _springsunday () {
+    const info = {};
+    const document = await this._getDocument('https://springsunday.net/');
+    // 用户名
+    info.username = document.querySelector('a[href^=userdetails] b span').innerHTML;
+    // 上传
+    info.uploaded = document.querySelector('font[class=color_uploaded]').nextSibling.nodeValue.trim().replace(/(\w)B/, '$1iB');
+    info.uploaded = util.calSize(...info.uploaded.split(' '));
+    // 下载
+    info.downloaded = document.querySelector('font[class=color_downloaded]').nextSibling.nodeValue.trim().replace(/(\w)B/, '$1iB');
+    info.downloaded = util.calSize(...info.downloaded.split(' '));
+    // 做种
+    info.seeding = +document.querySelector('img[class=arrowup]').nextSibling.nodeValue.trim();
+    // 下载
+    info.leeching = +document.querySelector('img[class=arrowdown]').nextSibling.nodeValue.trim();
     return info;
   };
 

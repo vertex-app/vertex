@@ -112,7 +112,7 @@ export default {
     return {
       refreshState: '刷新全部站点',
       site: {},
-      sites: ['Hares', 'CHDBits', 'LemonHD', 'HDChina', 'HDSky', 'HDHome', 'PTerClub', 'Audiences', 'OurBits'],
+      sites: ['Hares', 'CHDBits', 'LemonHD', 'HDChina', 'HDSky', 'HDHome', 'PTerClub', 'Audiences', 'OurBits', 'SpringSunDay'],
       defaultSite: {
         name: '',
         cookie: '',

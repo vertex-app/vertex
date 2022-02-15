@@ -32,7 +32,7 @@ class DeleteRuleMod {
     fs.writeFileSync(path.join(__dirname, '../data/rule/delete/', options.id + '.json'), JSON.stringify(deleteRuleSet, null, 2));
     Object.keys(global.runningClient)
       .map(item => global.runningClient[item])
-      .filter(item => item._deleteRules.some(i => i === options.id))
+      .filter(item => (item._deleteRules.some(i => i === options.id) && !!item.autoDeleteJob))
       .forEach(item => item.reloadDeleteRule());
     return '修改规则成功';
   };
