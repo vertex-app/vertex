@@ -80,6 +80,8 @@ class Client {
     torrent.secondFromZero = moment().unix() - moment().startOf('day').unix();
     torrent.leechingCount = this.maindata.leechingCount;
     torrent.seedingCount = this.maindata.seedingCount;
+    torrent.globalUploadSpeed = this.maindata.uploadSpeed;
+    torrent.globalDownloadSpeed = this.maindata.downloadSpeed;
     for (const condition of conditions) {
       let value;
       switch (condition.compareType) {
