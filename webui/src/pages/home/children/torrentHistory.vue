@@ -15,7 +15,7 @@
             label="rss任务">
             <template slot-scope="scope">
               {{scope.row.c0 !== scope.row.name ? scope.row.c0 : ''}}
-              <el-link v-if="scope.row.c0 === scope.row.name" type="primary" :href="scope.row.link">
+              <el-link v-if="scope.row.c0 === scope.row.name" type="primary" @click="gotoDetail(scope.row)">
                 {{scope.row.c0}}
               </el-link>
             </template>
@@ -95,6 +95,11 @@ export default {
     async changePage (page) {
       this.page = page;
       await this.listTorrentHistory();
+    },
+
+    async gotoDetail (row) {
+      if (!row.link) return await this.$message.error('链接不存在');
+      window.open(row.link);
     },
 
     arraySpanMethod ({ row, column, rowIndex, columnIndex }) {
