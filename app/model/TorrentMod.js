@@ -10,7 +10,12 @@ class TorrentMod {
       for (const torrent of clients[clientId].maindata.torrents) {
         const _torrent = { ...torrent };
         _torrent.clientAlias = clients[clientId].alias;
-        const res = await util.getRecord('select link from torrents where hash = ?', [_torrent.hash]);
+        let res;
+        if (!_torrent.tracker || _torrent.tracker.indexOf('chdbits') === -1) {
+          res = await util.getRecord('select link from torrents where hash = ?', [_torrent.hash]);
+        } else {
+          res = await util.getRecord('select link from torrents where size = ? and link like ?', [_torrent.size, '%chdbits%']);
+        }
         _torrent.link = res ? res.link : false;
         torrentList.push(_torrent);
       }
