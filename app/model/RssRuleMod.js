@@ -41,7 +41,7 @@ class RssRuleMod {
     const rssRuleList = util.listRssRule();
     const rssList = util.listRss();
     for (const rssRule of rssRuleList) {
-      rssRule.used = rssList.some(item => item._rejectRules.indexOf(rssRule.id) !== -1 || item._acceptRules.indexOf(rssRule.id) !== -1);
+      rssRule.used = rssList.some(item => (item._rejectRules || []).indexOf(rssRule.id) !== -1 || (item._acceptRules || []).indexOf(rssRule.id) !== -1);
     }
     return rssRuleList;
   };

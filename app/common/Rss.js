@@ -29,8 +29,8 @@ class Rss {
     this.notify = util.listPush().filter(item => item.id === rss.notify)[0] || {};
     this.notify.push = rss.pushNotify;
     this.ntf = new Push(this.notify);
-    this._acceptRules = rss.acceptRules;
-    this._rejectRules = rss.rejectRules;
+    this._acceptRules = rss.acceptRules || [];
+    this._rejectRules = rss.rejectRules || [];
     this.acceptRules = util.listRssRule().filter(item => (this._acceptRules.indexOf(item.id) !== -1));
     this.rejectRules = util.listRssRule().filter(item => (this._rejectRules.indexOf(item.id) !== -1));
     this.downloadLimit = util.calSize(rss.downloadLimit, rss.downloadLimitUnit);

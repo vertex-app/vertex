@@ -220,7 +220,8 @@ export default {
         skipSameTorrent: true,
         cron: '* * * * *',
         pushMessage: true,
-        rssRules: [],
+        acceptRules: [],
+        rejectRules: [],
         reseedClients: []
       },
       pushList: [],

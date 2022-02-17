@@ -22,7 +22,6 @@ class RssMod {
 
   modify (options) {
     const rssSet = { ...options };
-    rssSet.deleteRules = rssSet.deleteRules || [];
     rssSet.sameServerClients = rssSet.sameServerClients || [];
     rssSet.reseedClients = rssSet.reseedClients || [];
     fs.writeFileSync(path.join(__dirname, '../data/rss/', options.id + '.json'), JSON.stringify(rssSet, null, 2));
@@ -38,6 +37,8 @@ class RssMod {
         rss.clientArr = [rss.client];
         delete rss.client;
       }
+      rss.acceptRules = rss.acceptRules || [];
+      rss.rejectRules = rss.rejectRules || [];
     }
     return rssList;
   };
