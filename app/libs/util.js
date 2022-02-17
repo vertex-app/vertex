@@ -15,7 +15,7 @@ for (const k of Object.keys(util)) {
   exports[k] = util[k];
 }
 
-exports.getRecords = async function (sql, options) {
+exports.getRecords = async function (sql, options = []) {
   let _sql = sql;
   if (options) {
     options.forEach((item) => {
@@ -26,7 +26,7 @@ exports.getRecords = async function (sql, options) {
   return db.prepare(sql).all(...options);
 };
 
-exports.runRecord = async function (sql, options) {
+exports.runRecord = async function (sql, options = []) {
   let _sql = sql;
   if (options) {
     options.forEach((item) => {
@@ -37,7 +37,7 @@ exports.runRecord = async function (sql, options) {
   return db.prepare(sql).run(...options);
 };
 
-exports.getRecord = async function (sql, options) {
+exports.getRecord = async function (sql, options = []) {
   let _sql = sql;
   if (options) {
     options.forEach((item) => {
