@@ -178,12 +178,19 @@
               <el-checkbox v-model="rss.skipSameTorrent">跳过大小相同种子</el-checkbox>
               <div><el-tag type="info">跳过所有客户端内存在大小相同种子的种子</el-tag></div>
             </el-form-item>
-            <el-form-item label="Rss规则">
-              <el-checkbox-group v-model="rss.rssRules">
+            <el-form-item label="拒绝规则">
+              <el-checkbox-group v-model="rss.rejectRules">
                 <el-checkbox v-for="rule of rssRuleList" :key="rule.id" :label="rule.id">{{rule.alias}}</el-checkbox>
               </el-checkbox-group>
               <div><el-tag  v-if="rssRuleList.length === 0" type="danger">目前没有 Rss 规则, 如需添加, 请前往 Rss 规则 页面</el-tag></div>
-              <div><el-tag type="info">Rss 规则, 种子状态符合其中一个时即触发添加种子操作</el-tag></div>
+              <div><el-tag type="info">拒绝规则, 种子状态符合其中一个时即触发拒绝种子操作</el-tag></div>
+            </el-form-item>
+            <el-form-item label="选择规则">
+              <el-checkbox-group v-model="rss.acceptRules">
+                <el-checkbox v-for="rule of rssRuleList" :key="rule.id" :label="rule.id">{{rule.alias}}</el-checkbox>
+              </el-checkbox-group>
+              <div><el-tag  v-if="rssRuleList.length === 0" type="danger">目前没有 Rss 规则, 如需添加, 请前往 Rss 规则 页面</el-tag></div>
+              <div><el-tag type="info">选择规则, 种子状态符合其中一个时即触发添加种子操作</el-tag></div>
             </el-form-item>
             <el-form-item size="small">
               <el-button type="primary" @click="handleRssClick">新增 | 编辑</el-button>

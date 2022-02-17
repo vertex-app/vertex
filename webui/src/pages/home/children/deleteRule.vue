@@ -85,7 +85,7 @@
                   </template>
                 </el-table-column>
                 <el-table-column
-                  label="类型"
+                  label="比较类型"
                   width="144">
                   <template slot-scope="scope">
                     <el-select v-model="scope.row.compareType" style="width: 120px" placeholder="比较类型">
@@ -125,7 +125,7 @@
                 07. 种子状态: 参照 qBittorrent 对种子状态的定义, 主要包含以下几类: <br>
                 &nbsp;&nbsp;&nbsp;&nbsp;上传中: <el-tag>uploading</el-tag>, 下载中: <el-tag>downloading</el-tag><br>
                 &nbsp;&nbsp;&nbsp;&nbsp;等待下载: <el-tag>stalledDL</el-tag>, 做种但无上传: <el-tag>stalledUP</el-tag><br>
-                &nbsp;&nbsp;&nbsp;&nbsp;更多状态请参照 qBittorrent Wiki, 若想删除等待下载状态下的种子, 应填写 stalledDL<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;更多状态请参照 qBittorrent Wiki, 若想删除等待下载状态下的种子, 应填写 <el-tag>stalledDL</el-tag><br>
                 08. 当前时间: 当天 0 点到当前时间的秒数<br>
                 &nbsp;&nbsp;&nbsp;&nbsp;例: 填写 当前时间大于 8*3600 与 当前时间小于 22*3600<br>
                 &nbsp;&nbsp;&nbsp;&nbsp;则只会在当天上午 8 点之后到 22 点之前删种<br>

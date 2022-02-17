@@ -25,7 +25,7 @@
                 <span>{{ $formatSize(props.row.downloaded || 0) }}</span>
               </el-form-item>
               <el-form-item label="种子链接">
-                <el-link type="primary" :href="props.row.link">{{ props.row.link }}</el-link>
+                <el-link type="primary" @click="gotoDetail(props.row)" style="line-height: 24px">{{ props.row.link }}</el-link>
               </el-form-item>
               <el-form-item label="种子状态">
                 <span>{{ props.row.type }}</span>
@@ -129,6 +129,10 @@ export default {
   background: #FFF;
 }
 
+.el-form-item {
+  margin-bottom: 0;
+}
+
 .table-expand {
   width: fit-content;
   text-align: left;
@@ -137,5 +141,12 @@ export default {
 .table-expand label {
   width: 90px;
   color: #99a9bf;
+}
+
+.el-table__expand-column .cell {
+  width: 48px;
+  height: 48px;
+  padding-left: 0;
+  padding-right: 0;
 }
 </style>

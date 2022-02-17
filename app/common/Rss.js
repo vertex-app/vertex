@@ -29,8 +29,10 @@ class Rss {
     this.notify = util.listPush().filter(item => item.id === rss.notify)[0] || {};
     this.notify.push = rss.pushNotify;
     this.ntf = new Push(this.notify);
-    this._rssRules = rss.rssRules;
-    this.rssRules = util.listRssRule().filter(item => (rss.rssRules.indexOf(item.id) !== -1));
+    this._acceptRules = rss.acceptRules;
+    this._rejectRules = rss.rejectRules;
+    this.acceptRules = util.listRssRule().filter(item => (this._acceptRules.indexOf(item.id) !== -1));
+    this.rejectRules = util.listRssRule().filter(item => (this._rejectRules.indexOf(item.id) !== -1));
     this.downloadLimit = util.calSize(rss.downloadLimit, rss.downloadLimitUnit);
     this.uploadLimit = util.calSize(rss.uploadLimit, rss.uploadLimitUnit);
     this.rssJob = new CronJob(rss.cron, () => this.rss());
@@ -53,22 +55,65 @@ class Rss {
     return sum;
   }
 
-  _fitRule (rule, torrent) {
+  _fitConditions (_torrent, conditions) {
     let fit = true;
-    if (rule.minSize) {
-      fit = fit && torrent.size > util.calSize(rule.minSize, rule.minSizeUnit);
-    }
-    if (rule.maxSize) {
-      fit = fit && torrent.size < util.calSize(rule.maxSize, rule.maxSizeUnit);
-    }
-    if (rule.includeKeys) {
-      fit = fit && this._all(torrent.name, rule.includeKeys.split(/\r\n|\n/));
-    }
-    if (rule.regExp) {
-      const regExp = new RegExp(rule.regExp);
-      fit = fit && torrent.name.match(regExp);
+    const torrent = { ..._torrent };
+    for (const condition of conditions) {
+      let value;
+      switch (condition.compareType) {
+      case 'equals':
+        fit = fit && (torrent[condition.key] === condition.value || torrent[condition.key] === +condition.value);
+        break;
+      case 'bigger':
+        value = 1;
+        condition.value.split('*').forEach(item => {
+          value *= +item;
+        });
+        fit = fit && torrent[condition.key] > value;
+        break;
+      case 'smaller':
+        value = 1;
+        condition.value.split('*').forEach(item => {
+          value *= +item;
+        });
+        fit = fit && torrent[condition.key] < value;
+        break;
+      case 'contain':
+        fit = fit && condition.value.split(',').filter(item => torrent[condition.key].indexOf(item) !== -1).length !== 0;
+        break;
+      case 'includeIn':
+        fit = fit && condition.value.split(',').indexOf(torrent[condition.key]) !== -1;
+        break;
+      case 'notContain':
+        fit = fit && condition.value.split(',').filter(item => torrent[condition.key].indexOf(item) !== -1).length === 0;
+        break;
+      case 'notIncludeIn':
+        fit = fit && condition.value.split(',').indexOf(torrent[condition.key]) === -1;
+        break;
+      }
     }
     return fit;
+  }
+
+  _fitRule (_rule, _torrent) {
+    const rule = { ..._rule };
+    const torrent = { ..._torrent };
+    if (rule.type === 'javascript') {
+      try {
+        // eslint-disable-next-line no-eval
+        return (eval(rule.code))(torrent);
+      } catch (e) {
+        logger.error('Rss 规则', this.alias, '存在语法错误\n', e);
+        return false;
+      }
+    } else {
+      try {
+        return rule.conditions.length !== 0 && this._fitConditions(torrent, rule.conditions);
+      } catch (e) {
+        logger.error('Rss 规则', this.alias, '遇到错误\n', e);
+        return false;
+      }
+    }
   }
 
   destroy () {
@@ -79,7 +124,8 @@ class Rss {
 
   reloadRssRule () {
     logger.info('重新载入 Rss 规则', this.alias);
-    this.rssRules = util.listRssRule().filter(item => (this._rssRules.indexOf(item.id) !== -1));
+    this.acceptRules = util.listRssRule().filter(item => (this._acceptRules.indexOf(item.id) !== -1));
+    this.rejectRules = util.listRssRule().filter(item => (this._rejectRules.indexOf(item.id) !== -1));
   }
 
   reloadPush () {
@@ -206,8 +252,8 @@ class Rss {
           }
         }
       }
-      const fitRules = this.rssRules.filter(item => this._fitRule(item, torrent));
-      if (fitRules.length !== 0 || this.rssRules.length === 0) {
+      const fitRules = this.acceptRules.filter(item => this._fitRule(item, torrent));
+      if (fitRules.length !== 0 || this.acceptRules.length === 0) {
         try {
           await _client.addTorrent(torrent.url, false, this.uploadLimit, this.downloadLimit, this.savePath, this.category);
           await this.ntf.addTorrent(this._rss, _client, torrent);
@@ -263,18 +309,18 @@ class Rss {
         logger.error(this.alias, '无可用客户端');
         continue;
       }
-      const excludeKeysRules = this.rssRules.filter(item => item.excludeKeys);
-      if (excludeKeysRules.length === 0) {
-        await this._pushTorrent(torrent, firstClient);
-        continue;
+      let reject = false;
+      for (const rejectRule of this.rejectRules) {
+        if (this._fitRule(rejectRule, torrent)) {
+          await util.runRecord('INSERT INTO torrents (hash, name, size, rss_name, link, add_time, insert_type) values (?, ?, ?, ?, ?, ?, ?)',
+            [torrent.hash, torrent.name, torrent.size, this.alias, torrent.link, moment().unix(), `拒绝规则: ${rejectRule.alias}`]);
+          await this.ntf.rejectTorrent(this._rss, undefined, torrent, `拒绝规则: ${rejectRule.alias}`);
+          reject = true;
+          break;
+        }
       }
-      const unfitRules = excludeKeysRules.filter(item => this._all(torrent.name, item.excludeKeys.split(/\r\n|\n/)));
-      if (unfitRules.length === 0) {
+      if (!reject) {
         await this._pushTorrent(torrent, firstClient);
-      } else {
-        await util.runRecord('INSERT INTO torrents (hash, name, size, rss_name, link, add_time, insert_type) values (?, ?, ?, ?, ?, ?, ?)',
-          [torrent.hash, torrent.name, torrent.size, this.alias, torrent.link, moment().unix(), '匹配到关键词']);
-        await this.ntf.rejectTorrent(this._rss, undefined, torrent, `拒绝原因: 匹配到规则 ${unfitRules[0].alias}`);
       }
     }
     this.lastRssTime = moment().unix();

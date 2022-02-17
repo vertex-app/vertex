@@ -33,44 +33,71 @@
             <el-tag size="small">规则 ID: {{rule.id || '新增'}}</el-tag>
           </div>
           <div style="width: fit-content; margin: 6px 0 12px 20px">
-            <el-tag size="small" type="warning">以下条件必须全部符合, 才触发添加种子操作, 留空为不启用选项</el-tag>
+            <el-tag size="small" type="warning">以下条件必须全部符合, 才触发添加种子操作</el-tag>
           </div>
           <el-form ref="rule" class="rule-form" :model="rule" label-width="160px" size="mini">
             <el-form-item required label="别名" prop="alias">
               <el-input v-model="rule.alias" type="input"></el-input>
             </el-form-item>
-            <el-form-item label="大小大于">
-              <el-input v-model="rule.minSize" type="number">
-                <el-select v-model="rule.minSizeUnit" slot="append" style="width: 80px" placeholder="单位">
-                  <el-option label="KiB" value="KiB"></el-option>
-                  <el-option label="MiB" value="MiB"></el-option>
-                  <el-option label="GiB" value="GiB"></el-option>
+            <el-form-item required label="类型" prop="type">
+              <el-select v-model="rule.type" style="width: 144px" placeholder="类型">
+                  <el-option label="普通" value="normal"></el-option>
+                  <el-option label="JavaScript" value="javascript"></el-option>
                 </el-select>
-              </el-input>
-              <div><el-tag type="info">种子大小需大于此值</el-tag></div>
             </el-form-item>
-            <el-form-item label="大小小于">
-              <el-input v-model="rule.maxSize" type="number">
-                <el-select v-model="rule.maxSizeUnit" slot="append" style="width: 80px" placeholder="单位">
-                  <el-option label="KiB" value="KiB"></el-option>
-                  <el-option label="MiB" value="MiB"></el-option>
-                  <el-option label="GiB" value="GiB"></el-option>
-                </el-select>
-              </el-input>
-              <div><el-tag type="info">种子大小需小于此值</el-tag></div>
+            <el-form-item v-if="rule.type === 'normal'" label="条件" prop="conditions">
+              <el-table
+                size="mini"
+                stripe
+                :data="rule.conditions"
+                style="width: 720px">
+                <el-table-column
+                  label="选项"
+                  width="180">
+                  <template slot-scope="scope">
+                    <el-select v-model="scope.row.key" style="width: 160px" placeholder="选择选项">
+                      <el-option v-for="item of conditionKeys" :key="item.key" :label="item.name" :value="item.key"></el-option>
+                    </el-select>
+                  </template>
+                </el-table-column>
+                <el-table-column
+                  label="比较类型"
+                  width="144">
+                  <template slot-scope="scope">
+                    <el-select v-model="scope.row.compareType" style="width: 120px" placeholder="比较类型">
+                      <el-option label="等于" value="equals"></el-option>
+                      <el-option label="大于" value="bigger"></el-option>
+                      <el-option label="小于" value="smaller"></el-option>
+                      <el-option label="包含" value="contain"></el-option>
+                      <el-option label="不包含" value="notContain"></el-option>
+                    </el-select>
+                  </template>
+                </el-table-column>
+                <el-table-column
+                  label="值">
+                  <template slot-scope="scope">
+                    <el-input v-model="scope.row.value" placeholder="填写值"/>
+                  </template>
+                </el-table-column>
+                <el-table-column
+                  label="操作"
+                  width="96">
+                  <template slot-scope="scope">
+                    <el-button @click="rule.conditions = rule.conditions.filter(item => item !== scope.row)" type="danger" size="small">删除</el-button>
+                  </template>
+                </el-table-column>
+              </el-table>
+              <el-button @click="rule.conditions.push({ ...condition })" type="primary" size="small">新增</el-button>
+              <el-card style="margin: 12px 0; max-width: 640px" >
+                说明: <br>
+                01: 区别于删种规则, Rss 规则的 包含 与 不包含 条件, 可以填写多个关键字, 需以半角逗号 , 为分割符<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;如 <el-tag>KEY,WORD</el-tag>, 表示包含 KEY 或者 WORD 两个关键词<br>
+                02: 各条件间为 且 的关系
+              </el-card>
             </el-form-item>
-            <el-form-item label="包含关键词">
-              <el-input v-model="rule.includeKeys" type="textarea"></el-input>
-              <div><el-tag type="info">种子标题需包含的关键词, 一行为一个关键词, 各个关键词间为 且 的关系, 即标题包含 所有 关键词时 才会 添加本种子</el-tag></div>
-            </el-form-item>
-            <el-form-item label="排除关键词">
-              <el-input v-model="rule.excludeKeys" type="textarea"></el-input>
-              <div><el-tag type="info">种子标题需排除的关键词, 一行为一个关键词, 各个关键词间为 且 的关系, 即标题包含 所有 关键词时 拒绝 添加本种子</el-tag></div>
-            </el-form-item>
-            <el-form-item label="正则表达式">
-              <el-input v-model="rule.regExp" type="textarea"></el-input>
-              <div><el-tag type="info">此选项需要用到 正则表达式 相关知识</el-tag></div>
-              <div><el-tag type="info">种子标题符合的正则表达式, 不需要两侧的 /, 例: Time.*2160p.* , 表示添加标题包含 Time 与 2160p 两个关键词, 且 Time 在 2160p 之前的种子</el-tag></div>
+            <el-form-item v-if="rule.type === 'javascript'" label="自定义代码">
+              <el-input v-model="rule.code" type="textarea" :rows="20" style="width: 500px;"></el-input>
+              <div><el-tag type="info">自定义 Rss 逻辑代码</el-tag></div>
             </el-form-item>
             <el-form-item size="small">
               <el-button type="primary" @click="handleRuleClick">新增 | 编辑</el-button>
@@ -88,7 +115,24 @@ export default {
   data () {
     return {
       rule: {},
-      defaultRule: {},
+      conditionKeys: [{
+        name: '种子名称',
+        key: 'name'
+      }, {
+        name: '种子大小',
+        key: 'size'
+      }],
+      defaultRule: {
+        conditions: [],
+        code: '(torrent) => {\n' +
+          '  return false;\n' +
+          '}'
+      },
+      condition: {
+        key: '',
+        compareType: '',
+        value: ''
+      },
       ruleList: [],
       ruleCollapse: ['1']
     };
@@ -125,9 +169,13 @@ export default {
     async modifyRule (row) {
       this.ruleCollapse = ['1'];
       this.rule = { ...row };
+      this.rule.conditions = row.conditions.map(item => {
+        return { ...item };
+      });
     },
     async clearRule () {
       this.rule = { ...this.defaultRule };
+      this.rule.conditions = [{ ...this.condition }];
       this.$refs.rule.resetFields();
     },
     async listRule () {
@@ -137,6 +185,7 @@ export default {
   },
   async mounted () {
     this.rule = { ...this.defaultRule };
+    this.rule.conditions = [{ ...this.condition }];
     this.$refs.rule.resetFields();
     this.listRule();
   }

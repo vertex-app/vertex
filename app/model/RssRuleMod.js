@@ -32,7 +32,7 @@ class RssRuleMod {
     fs.writeFileSync(path.join(__dirname, '../data/rule/rss/', options.id + '.json'), JSON.stringify(rssRuleSet, null, 2));
     Object.keys(global.runningRss)
       .map(item => global.runningRss[item])
-      .filter(item => item._rssRules.some(i => i === options.id))
+      .filter(item => item._rejectRules.some(i => i === options.id) || item._acceptRules.some(i => i === options.id))
       .forEach(item => item.reloadRssRule());
     return '修改 Rss 规则成功';
   };
@@ -41,7 +41,7 @@ class RssRuleMod {
     const rssRuleList = util.listRssRule();
     const rssList = util.listRss();
     for (const rssRule of rssRuleList) {
-      rssRule.used = rssList.some(item => item.rssRules.indexOf(rssRule.id) !== -1);
+      rssRule.used = rssList.some(item => item._rejectRules.indexOf(rssRule.id) !== -1 || item._acceptRules.indexOf(rssRule.id) !== -1);
     }
     return rssRuleList;
   };
