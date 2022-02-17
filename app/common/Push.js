@@ -50,7 +50,7 @@ class Push {
   }
 
   async addTorrent (rss, client, torrent) {
-    const text = '添加种子: ' + torrent.name;
+    const text = `添加种子: ${torrent.name.substring(0, 10) + '...'} | ${rss.alias} | ${util.formatSize(torrent.size)} | ${client.alias}`;
     let desp = `Rss 任务: ${rss.alias}\n` +
       `客户端名: ${client.alias}\n` +
       `种子名称: ${torrent.name}\n` +
@@ -81,7 +81,7 @@ class Push {
   };
 
   async rejectTorrent (rss, client = {}, torrent, note) {
-    const text = '拒绝种子: ' + torrent.name;
+    const text = `拒绝种子: ${torrent.name.substring(0, 10) + '...'} | ${rss.alias} | ${util.formatSize(torrent.size)} | ${client.alias || '未定义'} | ${note}`;
     let desp = `Rss 任务: ${rss.alias}\n` +
       `客户端名: ${client.alias || '未定义'}\n` +
       `种子名称: ${torrent.name}\n` +
@@ -97,7 +97,8 @@ class Push {
   };
 
   async deleteTorrent (client, torrent, rule, deleteFile) {
-    const text = '删除种子: ' + torrent.name;
+    const text = `删除种子: ${torrent.name.substring(0, 20) + '...'} | ${util.formatSize(torrent.size)} | ` +
+      `${util.formatSize(torrent.uploaded)} / ${util.formatSize(torrent.downloaded)} | ${rule.alias} | ${torrent.category} | ${torrent.tracker}`;
     let desp = `客户端名: ${client.alias}\n` +
       `种子名称: ${torrent.name}\n` +
       `种子大小: ${util.formatSize(torrent.size)}\n` +

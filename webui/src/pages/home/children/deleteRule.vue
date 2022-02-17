@@ -224,7 +224,7 @@ export default {
         name: '全局上传',
         key: 'globalUploadSpeed'
       }, {
-        name: '做种任务',
+        name: '全局下载',
         key: 'globalDownloadSpeed'
       }, {
         name: '当前时间',
