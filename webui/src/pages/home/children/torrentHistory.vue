@@ -3,48 +3,67 @@
     <div class="torrent-history-div">
       <el-table
         :data="torrentList"
-        :span-method="arraySpanMethod"
-        :row-style="rowStyle"
-        style="width: 100%;">
+        size="small"
+        stripe
+        style="width: 100%; font-size: 14px;">
+        <el-table-column type="expand">
+          <template slot-scope="props">
+            <el-form style="padding-left: 32px; width: 100%;" label-position="left" class="table-expand">
+              <el-form-item label="种子名称">
+                <span>{{ props.row.name }}</span>
+              </el-form-item>
+              <el-form-item label="种子大小">
+                <span>{{ $formatSize(props.row.size || 0) }}</span>
+              </el-form-item>
+              <el-form-item label="添加时间">
+                <span>{{ $moment(props.row.addTime * 1000).format('YYYY-MM-DD HH:mm:ss') }}</span>
+              </el-form-item>
+              <el-form-item label="上传流量">
+                <span>{{ $formatSize(props.row.uploaded || 0) }}</span>
+              </el-form-item>
+              <el-form-item label="下载流量">
+                <span>{{ $formatSize(props.row.downloaded || 0) }}</span>
+              </el-form-item>
+              <el-form-item label="种子链接">
+                <el-link type="primary" :href="props.row.link">{{ props.row.link }}</el-link>
+              </el-form-item>
+              <el-form-item label="种子状态">
+                <span>{{ props.row.type }}</span>
+              </el-form-item>
+            </el-form>
+          </template>
+        </el-table-column>
+        <el-table-column
+          align="center"
+          label="Rss"
+          width="144">
+          <template slot-scope="scope">
+            {{scope.row.rssName}}
+          </template>
+        </el-table-column>
         <el-table-column
           align="center"
           label="名称">
-          <el-table-column
-            prop="c0"
-            align="center"
-            label="rss任务">
-            <template slot-scope="scope">
-              {{scope.row.c0 !== scope.row.name ? scope.row.c0 : ''}}
-              <el-link v-if="scope.row.c0 === scope.row.name" type="primary" @click="gotoDetail(scope.row)">
-                {{scope.row.c0}}
-              </el-link>
-            </template>
-          </el-table-column>
-          <el-table-column
-            align="center"
-            prop="c1"
-            label="大小">
-          </el-table-column>
-          <el-table-column
-            align="center"
-            prop="c2"
-            label="上传/下载数据">
-          </el-table-column>
-          <el-table-column
-            align="center"
-            prop="c3"
-            label="记录时间">
-          </el-table-column>
-          <el-table-column
-            align="center"
-            prop="c4"
-            label="Tracker">
-          </el-table-column>
-          <el-table-column
-            align="center"
-            prop="c5"
-            label="备注">
-          </el-table-column>
+          <template slot-scope="scope">
+            {{scope.row.name}}
+          </template>
+        </el-table-column>
+        <el-table-column
+          align="center"
+          label="种子大小"
+          width="144">
+          <template slot-scope="scope">
+            {{$formatSize(scope.row.size || 0)}}
+          </template>
+        </el-table-column>
+        <el-table-column
+          align="center"
+          label="种子状态"
+          width="144"
+          fixed="right">
+          <template slot-scope="scope">
+            {{ scope.row.type }}
+          </template>
         </el-table-column>
       </el-table>
       <div style="margin: 0 auto; width: fit-content">
@@ -75,7 +94,7 @@ export default {
       total: 0,
       totalPage: 0,
       page: 1,
-      length: 100,
+      length: 20,
       paginationShow: true
     };
   },
@@ -83,13 +102,8 @@ export default {
     async listTorrentHistory () {
       const url = `/api/torrent/listHistory?page=${this.page}&length=${this.length}`;
       const res = await this.$axiosGet(url);
-      this.total = 200;
-      const _torrentList = [];
-      for (const torrent of res.data.torrents) {
-        _torrentList.push(torrent);
-        _torrentList.push(torrent);
-      }
-      this.torrentList = _torrentList;
+      this.total = res.data.total;
+      this.torrentList = res.data.torrents;
     },
 
     async changePage (page) {
@@ -100,59 +114,6 @@ export default {
     async gotoDetail (row) {
       if (!row.link) return await this.$message.error('链接不存在');
       window.open(row.link);
-    },
-
-    arraySpanMethod ({ row, column, rowIndex, columnIndex }) {
-      if (rowIndex % 2 === 0) {
-        switch (columnIndex) {
-        case 0:
-          row.c0 = row.name;
-          return [1, 6];
-        case 1:
-          return [0, 0];
-        case 2:
-          return [0, 0];
-        case 3:
-          return [0, 0];
-        case 4:
-          return [0, 0];
-        case 5:
-          return [0, 0];
-        }
-      } else {
-        switch (columnIndex) {
-        case 0:
-          row.c0 = row.rssName;
-          return [1, 1];
-        case 1:
-          row.c1 = `${this.$formatSize(row.size || 0)}`;
-          return [1, 1];
-        case 2:
-          row.c2 = `${this.$formatSize(row.uploaded || 0)} / ${this.$formatSize(parseInt(row.downloaded) || 0)}`;
-          return [1, 1];
-        case 3:
-          row.c3 = this.$moment(row.addTime * 1000).format('YYYY-MM-DD HH:mm:ss');
-          return [1, 1];
-        case 4:
-          row.c4 = row.tracker;
-          return [1, 1];
-        case 5:
-          row.c5 = row.type;
-          return [1, 1];
-        }
-      }
-    },
-    rowStyle ({ row, rowIndex }) {
-      if (rowIndex % 4 < 2) {
-        return {
-          background: '#B0E0E6'
-        };
-      } else if (rowIndex % 4 >= 2) {
-        return {
-          background: '#B4EEB4'
-        };
-      }
-      return '';
     }
   },
   async mounted () {
@@ -168,12 +129,13 @@ export default {
   background: #FFF;
 }
 
-.row1 {
-  background: hsl(240, 66%, 83%);
+.table-expand {
+  width: fit-content;
+  text-align: left;
 }
 
-.row2 {
-  background: #C1FFC1;
+.table-expand label {
+  width: 90px;
+  color: #99a9bf;
 }
-
 </style>
