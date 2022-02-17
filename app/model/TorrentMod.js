@@ -56,10 +56,22 @@ class TorrentMod {
 
   async listHistory (options) {
     const index = options.length * (options.page - 1);
-    const torrents = await util.getRecords('select rss_name as rssName, name, size, link, insert_type as type, uploaded, downloaded, tracker, add_time as addTime from torrents order by id desc limit ? offset ?',
+    let where = 'where 1 = 1';
+    if (options.rss) {
+      where += ` and rss_name = '${options.rss}'`;
+    }
+    if (options.key) {
+      where += ` and name like '%${options.key}%'`;
+    }
+    const torrents = await util.getRecords('select rss_name as rssName, name, size, link, insert_type as type, uploaded, downloaded, tracker, add_time as addTime from torrents ' + where + ' order by id desc limit ? offset ?',
       [options.length, index]);
-    const total = (await util.getRecord('select count(*) as total from torrents')).total;
-    return { torrents, total};
+    const total = (await util.getRecord('select count(*) as total from torrents ' + where)).total;
+    return { torrents, total };
+  }
+
+  async listRss () {
+    const rss = (await util.getRecords('select rss_name as name from torrents group by rss_name'));
+    return rss;
   }
 }
 

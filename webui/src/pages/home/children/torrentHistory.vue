@@ -1,6 +1,20 @@
 <template>
   <div class="torrent-history">
     <div class="torrent-history-div">
+       <el-form class="torrent-history-form" label-width="100px" size="mini">
+        <el-form-item label="选择 Rss">
+          <el-select v-model="selectedRss" placeholder="Rss">
+            <el-option v-for="rss of rssList" :key="rss.name" :label="rss.name" :value="rss.name"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="关键词">
+          <el-input v-model="searchKey" placeholder="关键词"/>
+        </el-form-item>
+        <el-form-item size="small">
+          <el-button type="primary" @click="listTorrentHistory">查询</el-button>
+          <el-button @click="() => { selectedRss = ''; searchKey = ''}">清空</el-button>
+        </el-form-item>
+      </el-form>
       <el-table
         :data="torrentList"
         size="small"
@@ -91,6 +105,9 @@ export default {
       clients: [],
       torrentList: [],
       clientList: [],
+      rssList: [],
+      searchKey: '',
+      selectedRss: '',
       total: 0,
       totalPage: 0,
       page: 1,
@@ -100,12 +117,17 @@ export default {
   },
   methods: {
     async listTorrentHistory () {
-      const url = `/api/torrent/listHistory?page=${this.page}&length=${this.length}`;
+      const url = `/api/torrent/listHistory?page=${this.page}&length=${this.length}&rss=${encodeURIComponent(this.selectedRss)}&key=${encodeURIComponent(this.searchKey)}`;
       const res = await this.$axiosGet(url);
       this.total = res.data.total;
       this.torrentList = res.data.torrents;
     },
 
+    async listRss () {
+      const url = '/api/torrent/listRss';
+      const res = await this.$axiosGet(url);
+      this.rssList = res.data;
+    },
     async changePage (page) {
       this.page = page;
       await this.listTorrentHistory();
@@ -118,6 +140,7 @@ export default {
   },
   async mounted () {
     this.listTorrentHistory();
+    this.listRss();
   }
 };
 </script>
@@ -129,7 +152,12 @@ export default {
   background: #FFF;
 }
 
-.el-form-item {
+.torrent-history-form {
+  width: fit-content;
+  text-align: left;
+}
+
+.table-expand .el-form-item {
   margin-bottom: 0;
 }
 
