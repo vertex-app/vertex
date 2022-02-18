@@ -123,8 +123,10 @@ module.exports = function (app, express, router) {
   router.get('/log/clear', ctrl.Log.clear);
 
   router.get('/setting/get', ctrl.Setting.get);
+  router.get('/setting/getTorrentHistorySetting', ctrl.Setting.getTorrentHistorySetting);
   router.get('/setting/getBackground', ctrl.Setting.getBackground);
   router.post('/setting/modify', ctrl.Setting.modify);
+  router.post('/setting/modifyTorrentHistorySetting', ctrl.Setting.modifyTorrentHistorySetting);
 
   app.use('/api', router);
   app.use('*', (req, res, next) => {

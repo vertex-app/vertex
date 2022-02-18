@@ -17,6 +17,12 @@ else
   echo '/vertex/data/site exists, continue'
 fi
 
+if [ ! -d '/vertex/data/setting' ]; then
+  mkdir /vertex/data/setting
+else
+  echo '/vertex/data/setting exists, continue'
+fi
+
 if [ ! -d '/vertex/db' ]; then
   mkdir /vertex/db
 else
@@ -47,6 +53,12 @@ if [ ! -f '/vertex/data/setting.json' ]; then
   cp /root/vertex/app/config_backup/setting.json /vertex/data/
 else
   echo '/vertex/data/setting.json exists, continue'
+fi
+
+if [ ! -f '/vertex/data/setting/torrent-history-settign.json' ]; then
+  cp /root/vertex/app/config_backup/torrent-history-settign.json /vertex/data/setting/
+else
+  echo '/vertex/data/setting/torrent-history-settign.json exists, continue'
 fi
 
 cd ~/vertex

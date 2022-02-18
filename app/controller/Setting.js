@@ -52,5 +52,38 @@ class Setting {
       });
     }
   };
+
+  async getTorrentHistorySetting (req, res) {
+    try {
+      const r = settingMod.getTorrentHistorySetting();
+      res.send({
+        success: true,
+        data: r
+      });
+    } catch (e) {
+      logger.error(e);
+      res.send({
+        success: false,
+        message: e
+      });
+    }
+  };
+
+  async modifyTorrentHistorySetting (req, res) {
+    const options = req.body;
+    try {
+      const r = settingMod.modifyTorrentHistorySetting(options);
+      res.send({
+        success: true,
+        message: r
+      });
+    } catch (e) {
+      logger.error(e);
+      res.send({
+        success: false,
+        message: e
+      });
+    }
+  };
 }
 module.exports = Setting;

@@ -1,7 +1,7 @@
 <template>
   <div class="torrent-history">
     <div class="torrent-history-div">
-       <el-form class="torrent-history-form" label-width="100px" size="mini">
+       <el-form class="torrent-history-form" inline label-width="100px" size="mini">
         <el-form-item label="选择 Rss">
           <el-select v-model="selectedRss" placeholder="Rss">
             <el-option v-for="rss of rssList" :key="rss.name" :label="rss.name" :value="rss.name"></el-option>
@@ -13,6 +13,16 @@
         <el-form-item size="small">
           <el-button type="primary" @click="listTorrentHistory">查询</el-button>
           <el-button @click="() => { selectedRss = ''; searchKey = ''}">清空</el-button>
+        </el-form-item>
+      </el-form>
+      <el-form class="torrent-history-form" inline label-width="100px" size="mini">
+        <el-form-item label="展示内容">
+          <el-checkbox-group v-model="setting.showKeys">
+            <el-checkbox v-for="_key of keys" :key="_key.key" :label="_key.key">{{ _key.name }}</el-checkbox>
+          </el-checkbox-group>
+        </el-form-item>
+        <el-form-item size="mini">
+          <el-button type="primary" @click="modifyTorrentHistorySetting">保存</el-button>
         </el-form-item>
       </el-form>
       <el-table
@@ -48,6 +58,7 @@
           </template>
         </el-table-column>
         <el-table-column
+          v-if="setting.showKeys.indexOf('rss') !== -1"
           align="center"
           label="Rss"
           width="144">
@@ -56,6 +67,7 @@
           </template>
         </el-table-column>
         <el-table-column
+          v-if="setting.showKeys.indexOf('name') !== -1"
           align="center"
           label="名称">
           <template slot-scope="scope">
@@ -63,6 +75,7 @@
           </template>
         </el-table-column>
         <el-table-column
+          v-if="setting.showKeys.indexOf('size') !== -1"
           align="center"
           label="种子大小"
           width="144">
@@ -71,12 +84,33 @@
           </template>
         </el-table-column>
         <el-table-column
+          v-if="setting.showKeys.indexOf('addTime') !== -1"
+          align="center"
+          label="添加时间"
+          width="200"
+          fixed="right">
+          <template slot-scope="scope">
+            {{$moment(scope.row.addTime * 1000).format('YYYY-MM-DD HH:mm:ss')}}
+          </template>
+        </el-table-column>
+        <el-table-column
+          v-if="setting.showKeys.indexOf('state') !== -1"
           align="center"
           label="种子状态"
           width="144"
           fixed="right">
           <template slot-scope="scope">
             {{ scope.row.type }}
+          </template>
+        </el-table-column>
+        <el-table-column
+          v-if="setting.showKeys.indexOf('link') !== -1"
+          align="center"
+          label="种子链接"
+          width="144"
+          fixed="right">
+          <template slot-scope="scope">
+            <el-link type="primary" @click="gotoDetail(scope.row)" style="line-height: 24px">种子链接</el-link>
           </template>
         </el-table-column>
       </el-table>
@@ -106,6 +140,28 @@ export default {
       torrentList: [],
       clientList: [],
       rssList: [],
+      setting: {
+        showKeys: []
+      },
+      keys: [{
+        key: 'name',
+        name: '种子名称'
+      }, {
+        key: 'rss',
+        name: 'Rss 名称'
+      }, {
+        key: 'size',
+        name: '种子大小'
+      }, {
+        key: 'state',
+        name: '种子状态'
+      }, {
+        key: 'addTime',
+        name: '记录时间'
+      }, {
+        key: 'link',
+        name: '种子链接'
+      }],
       searchKey: '',
       selectedRss: '',
       total: 0,
@@ -128,9 +184,25 @@ export default {
       const res = await this.$axiosGet(url);
       this.rssList = res.data;
     },
+
     async changePage (page) {
       this.page = page;
       await this.listTorrentHistory();
+    },
+
+    async getTorrentHistorySetting () {
+      const url = '/api/setting/getTorrentHistorySetting';
+      const res = await this.$axiosGet(url);
+      this.setting = { ...res.data, showKeys: res.showKeys || ['name', 'rss', 'size', 'state'] };
+    },
+
+    async modifyTorrentHistorySetting () {
+      const url = '/api/setting/modifyTorrentHistorySetting';
+      const res = await this.$axiosPost(url, this.setting);
+      if (!res) {
+        return;
+      }
+      await this.$messageBox(res);
     },
 
     async gotoDetail (row) {
@@ -141,6 +213,7 @@ export default {
   async mounted () {
     this.listTorrentHistory();
     this.listRss();
+    this.getTorrentHistorySetting();
   }
 };
 </script>
@@ -153,6 +226,7 @@ export default {
 }
 
 .torrent-history-form {
+  padding-top: 24px;
   width: fit-content;
   text-align: left;
 }
