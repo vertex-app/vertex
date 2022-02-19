@@ -119,6 +119,9 @@ export default {
         }, {
           key: 'getMaindataError',
           value: '获取客户端信息失败'
+        }, {
+          key: 'spaceAlarm',
+          value: '空间警告'
         }
       ],
       pushList: [],

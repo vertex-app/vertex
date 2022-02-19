@@ -1,7 +1,7 @@
 <template>
   <div class="torrent-history">
     <div class="torrent-history-div">
-       <el-form class="torrent-history-form" inline label-width="100px" size="mini">
+      <el-form class="torrent-history-form" inline label-width="100px" size="mini">
         <el-form-item label="选择 Rss">
           <el-select v-model="selectedRss" placeholder="Rss">
             <el-option v-for="rss of rssList" :key="rss.name" :label="rss.name" :value="rss.name"></el-option>

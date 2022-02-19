@@ -132,6 +132,19 @@
               <el-checkbox v-model="client.autoReannounce">自动汇报</el-checkbox>
               <div><el-tag type="info">自动在种子添加后的 5 分钟内每分钟汇报一次, 获取更多 Peers</el-tag></div>
             </el-form-item>
+            <el-form-item required label="空间警告" prop="spaceAlarm">
+              <el-checkbox v-model="client.spaceAlarm">空间警告</el-checkbox>
+              <div><el-tag type="info">客户端剩余空间小于一定值时推送警告通知, 15 分钟一次</el-tag></div>
+            </el-form-item>
+            <el-form-item :required="client.spaceAlarm" v-if="client.spaceAlarm" label="空间" prop="alarmSpace">
+              <el-input v-model="client.alarmSpace">
+                <el-select v-model="client.alarmSpaceUnit" slot="append" style="width: 80px" placeholder="单位">
+                  <el-option label="KiB" value="KiB"></el-option>
+                  <el-option label="MiB" value="MiB"></el-option>
+                  <el-option label="GiB" value="GiB"></el-option>
+                </el-select>
+              </el-input>
+            </el-form-item>
             <el-form-item label="上限上传速度" prop="maxUploadSpeed">
               <el-input v-model="client.maxUploadSpeed">
                 <el-select v-model="client.maxUploadSpeedUnit" slot="append" style="width: 80px" placeholder="单位">

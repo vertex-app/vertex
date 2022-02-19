@@ -25,11 +25,15 @@ class Client {
     this.maxUploadSpeed = util.calSize(client.maxUploadSpeed, client.maxUploadSpeedUnit);
     this.maxDownloadSpeed = util.calSize(client.maxDownloadSpeed, client.maxDownloadSpeedUnit);
     this.minFreeSpace = util.calSize(client.minFreeSpace, client.minFreeSpaceUnit);
+    this.alarmSpace = util.calSize(client.alarmSpace, client.alarmSpaceUnit);
     this.maxLeechNum = client.maxLeechNum;
     this.sameServerClients = client.sameServerClients;
     this.maindata = null;
     this.maindataJob = new CronJob(client.cron, () => this.getMaindata());
     this.maindataJob.start();
+    this.spaceAlarm = client.spaceAlarm;
+    this.spaceAlarmJob = new CronJob('*/15 * * * *', () => this.pushSpaceAlarm());
+    this.spaceAlarmJob.start();
     this.notify = util.listPush().filter(item => item.id === client.notify)[0] || {};
     this.notify.push = client.pushNotify;
     this.monitor = util.listPush().filter(item => item.id === client.monitor)[0] || {};
@@ -356,6 +360,15 @@ class Client {
           delete this.fitTime[rule.id][torrent.hash];
         }
       }
+    } catch (e) {
+      logger.error('客户端', this.alias, '\n', e);
+    }
+  }
+
+  async pushSpaceAlarm () {
+    if (!this.spaceAlarm || this.alarmSpace < this.maindata.freeSpaceOnDisk) return;
+    try {
+      await this.ntf.spaceAlarm(this);
     } catch (e) {
       logger.error('客户端', this.alias, '\n', e);
     }

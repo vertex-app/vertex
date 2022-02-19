@@ -193,6 +193,19 @@ class Push {
     await this._push(this.pushType.indexOf('getMaindataError') !== -1, text, desp);
   }
 
+  async spaceAlarm (client) {
+    const text = '剩余空间警告: ' + client.alias;
+    let desp = `客户端名: ${client.alias}\n` +
+      `剩余空间已不足${util.formatSize(client.maindata.freeSpaceOnDisk)}`;
+    if (this.markdown) {
+      desp = '```\n' + desp + '\n```';
+    }
+    if (this.type === 'telegram') {
+      desp = '\\#剩余空间警告\n' + desp;
+    }
+    await this._push(this.pushType.indexOf('spaceAlarm') !== -1, text, desp);
+  }
+
   async pushIyuu (text, desp) {
     const option = {
       url: `https://iyuu.cn/${this.iyuuToken}.send`,
