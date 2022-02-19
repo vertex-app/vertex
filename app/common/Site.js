@@ -310,7 +310,7 @@ class Site {
     // 做种
     info.seeding = +document.querySelector('img[class=arrowup]').nextElementSibling.innerHTML.trim();
     // 下载
-    info.leeching = +document.querySelector('img[class=arrowdown]').nextElementSibling.innerHTML.trim();
+    info.leeching = +document.querySelector('img[class=arrowdown]').nextSibling.nodeValue.replace(')', '');
     return info;
   };
 
