@@ -55,10 +55,16 @@ else
   echo '/vertex/data/setting.json exists, continue'
 fi
 
-if [ ! -f '/vertex/data/setting/torrent-history-settign.json' ]; then
-  cp /root/vertex/app/config_backup/torrent-history-settign.json /vertex/data/setting/
+if [ ! -f '/vertex/data/setting/torrent-history-setting.json' ]; then
+  cp /root/vertex/app/config_backup/torrent-history-setting.json /vertex/data/setting/
 else
-  echo '/vertex/data/setting/torrent-history-settign.json exists, continue'
+  echo '/vertex/data/setting/torrent-history-setting.json exists, continue'
+fi
+
+if [ ! -f '/vertex/data/setting/site-push-setting.json' ]; then
+  cp /root/vertex/app/config_backup/site-push-setting.json /vertex/data/setting/
+else
+  echo '/vertex/data/setting/site-push-setting.json exists, continue'
 fi
 
 cd ~/vertex

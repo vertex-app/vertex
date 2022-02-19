@@ -44,15 +44,15 @@ class Site {
     // 用户名
     info.username = document.querySelector('a[href^=userdetails] b').innerHTML;
     // 上传
-    info.uploaded = document.querySelector('font[class=color_uploaded]').nextSibling.nodeValue.trim().replace(/(\w)B/, '$1iB');
+    info.uploaded = document.querySelector('i[class="fa fa-arrow-up text-success fa-fw"]').nextElementSibling.innerHTML.trim().replace(/(\w)B/, '$1iB');
     info.uploaded = util.calSize(...info.uploaded.split(' '));
     // 下载
-    info.downloaded = document.querySelector('font[class=color_downloaded]').nextSibling.nodeValue.trim().replace(/(\w)B/, '$1iB');
+    info.downloaded = document.querySelector('i[class="fa fa-arrow-down layui-font-orange fa-fw"]').nextElementSibling.innerHTML.trim().replace(/(\w)B/, '$1iB');
     info.downloaded = util.calSize(...info.downloaded.split(' '));
     // 做种
-    info.seeding = +document.querySelector('img[class=arrowup]').nextSibling.nodeValue.trim();
+    info.seeding = +document.querySelector('i[class="fas fa-upload text-success fa-fw"]').nextElementSibling.innerHTML.trim();
     // 下载
-    info.leeching = +document.querySelector('img[class=arrowdown]').nextSibling.nodeValue.trim();
+    info.leeching = +document.querySelector('i[class="fas fa-download layui-font-red fa-fw"]').nextElementSibling.innerHTML.trim();
     return info;
   };
 
