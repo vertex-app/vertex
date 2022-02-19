@@ -206,6 +206,31 @@ class Push {
     await this._push(this.pushType.indexOf('spaceAlarm') !== -1, text, desp);
   }
 
+  async pushSiteData () {
+    const siteList = util.listSite();
+    const text = '站点数据推送';
+    let desp = '';
+    for (const site of siteList) {
+      site.info = (global.runningSite[site.name] || {}).info;
+      if (!site.info) {
+        desp += `${site.name}: 未启用\n`;
+        continue;
+      }
+      desp += `${site.name}:\n` +
+      `用户名称: ${site.info.username}\n` +
+      `上传下载: ${util.formatSize(site.info.uploaded)} / ${util.formatSize(site.info.downloaded)}\n` +
+      `做种下载: ${site.info.seeding} / ${site.info.seeding}\n` +
+      `更新时间: ${moment().unix(site.info.updateTime * 1000)}\n\n`;
+    }
+    if (this.markdown) {
+      desp = '```\n' + desp + '\n```';
+    }
+    if (this.type === 'telegram') {
+      desp = '\\#站点数据推送\n' + desp;
+    }
+    await this._push(this.pushType.indexOf('siteData') !== -1, text, desp);
+  }
+
   async pushIyuu (text, desp) {
     const option = {
       url: `https://iyuu.cn/${this.iyuuToken}.send`,

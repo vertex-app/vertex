@@ -124,9 +124,10 @@ module.exports = function (app, express, router) {
 
   router.get('/setting/get', ctrl.Setting.get);
   router.get('/setting/getTorrentHistorySetting', ctrl.Setting.getTorrentHistorySetting);
+  router.get('/setting/getSitePushSetting', ctrl.Setting.getSitePushSetting);
   router.get('/setting/getBackground', ctrl.Setting.getBackground);
   router.post('/setting/modify', ctrl.Setting.modify);
-  router.post('/setting/modifyTorrentHistorySetting', ctrl.Setting.modifyTorrentHistorySetting);
+  router.post('/setting/modifySitePushSetting', ctrl.Setting.modifySitePushSetting);
 
   app.use('/api', router);
   app.use('*', (req, res, next) => {

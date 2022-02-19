@@ -34,7 +34,7 @@ class SiteMod {
   list () {
     const siteList = util.listSite();
     for (const site of siteList) {
-      site.info = global.runningSite[site.name].info;
+      site.info = (global.runningSite[site.name] || {}).info;
     }
     return siteList;
   };

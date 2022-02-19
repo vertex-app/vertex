@@ -85,5 +85,38 @@ class Setting {
       });
     }
   };
+
+  async getSitePushSetting (req, res) {
+    try {
+      const r = settingMod.getSitePushSetting();
+      res.send({
+        success: true,
+        data: r
+      });
+    } catch (e) {
+      logger.error(e);
+      res.send({
+        success: false,
+        message: e
+      });
+    }
+  };
+
+  async modifySitePushSetting (req, res) {
+    const options = req.body;
+    try {
+      const r = settingMod.modifySitePushSetting(options);
+      res.send({
+        success: true,
+        message: r
+      });
+    } catch (e) {
+      logger.error(e);
+      res.send({
+        success: false,
+        message: e
+      });
+    }
+  };
 }
 module.exports = Setting;

@@ -122,6 +122,9 @@ export default {
         }, {
           key: 'spaceAlarm',
           value: '空间警告'
+        }, {
+          key: 'siteData',
+          value: '站点数据推送'
         }
       ],
       pushList: [],

@@ -1,6 +1,22 @@
 <template>
   <div class="site">
     <div class="radius-div">
+      <el-form class="site-push-setting-form" inline label-width="100px" size="mini">
+        <el-form-item label="推送通知" prop="push">
+          <el-checkbox v-model="setting.push">推送通知</el-checkbox>
+        </el-form-item>
+        <el-form-item label="定时推送">
+          <el-input v-model="setting.cron" placeholder="Crontab 表达式"/>
+        </el-form-item>
+        <el-form-item label="通知方式" prop="pushTo">
+          <el-select v-model="setting.pushTo" placeholder="请选择 通知方式">
+            <el-option v-for="push of pushList" :key="push.id" :label="push.alias" :value="push.id"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item size="mini">
+          <el-button type="primary" @click="modifySitePushSetting">保存</el-button>
+        </el-form-item>
+      </el-form>
       <el-table
         :data="siteList"
         :default-sort="{prop: 'alias'}"
@@ -119,6 +135,7 @@ export default {
         cron: '0 */4 * * *',
         enable: true
       },
+      setting: {},
       siteList: [],
       siteCollapse: ['1']
     };
@@ -186,12 +203,35 @@ export default {
       }
       await this.$messageBox(res);
       this.listSite();
+    },
+
+    async listPush () {
+      const res = await this.$axiosGet('/api/push/list');
+      this.pushList = res ? res.data : [];
+    },
+
+    async getSitePushSetting () {
+      const url = '/api/setting/getSitePushSetting';
+      const res = await this.$axiosGet(url);
+      this.setting = res.data;
+      this.setting.cron = this.setting.cron || '0 9,21 * * *';
+    },
+
+    async modifySitePushSetting () {
+      const url = '/api/setting/modifySitePushSetting';
+      const res = await this.$axiosPost(url, this.setting);
+      if (!res) {
+        return;
+      }
+      await this.$messageBox(res);
     }
   },
   async mounted () {
     this.site = { ...this.defaultSite };
     this.$refs.site.resetFields();
     this.listSite();
+    this.listPush();
+    this.getSitePushSetting();
   }
 };
 </script>
@@ -211,6 +251,12 @@ export default {
 }
 
 .site-form * {
+  width: fit-content;
+  text-align: left;
+}
+
+.site-push-setting-form {
+  padding-top: 24px;
   width: fit-content;
   text-align: left;
 }
