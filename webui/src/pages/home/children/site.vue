@@ -128,7 +128,7 @@ export default {
     return {
       refreshState: '刷新全部站点',
       site: {},
-      sites: ['Hares', 'CHDBits', 'LemonHD', 'HDChina', 'HDSky', 'HDHome', 'PTerClub', 'Audiences', 'OurBits', 'SpringSunDay'],
+      sites: ['HaresClub', 'CHDBits', 'LemonHD', 'HDChina', 'HDSky', 'HDHome', 'PTerClub', 'Audiences', 'OurBits', 'SpringSunDay'],
       defaultSite: {
         name: '',
         cookie: '',
@@ -137,6 +137,7 @@ export default {
       },
       setting: {},
       siteList: [],
+      pushList: [],
       siteCollapse: ['1']
     };
   },

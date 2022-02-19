@@ -73,10 +73,20 @@ const _freeDmhy = async function (url, cookie) {
   return state;
 };
 
+const _freeHaresClub = async function (url, cookie) {
+  const d = await getDocument(url, cookie);
+  if (d.body.innerHTML.indexOf('userdetails') === -1) {
+    console.log(d.body.innerHTML);
+    throw new Error('疑似登陆状态失效, 请检查 Cookie');
+  }
+  const state = d.querySelector('b font[class]');
+  return state && ['free', 'twoupfree'].indexOf(state.className) !== -1;
+};
+
 const freeWrapper = {
   'pterclub.com': _free,
   'pt.btschool.club': _free,
-  'club.hares.top': _free,
+  'club.hares.top': _freeHaresClub,
   'hdhome.org': _free,
   'springsunday.net': _free,
   'hdsky.me': _free,

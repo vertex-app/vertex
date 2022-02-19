@@ -8,7 +8,7 @@ class Site {
   constructor (site) {
     this.ssh = null;
     this.refreshWrapper = {
-      Hares: this._hares,
+      HaresClub: this._haresclub,
       CHDBits: this._chdbits,
       LemonHD: this._lemonhd,
       HDChina: this._hdchina,
@@ -38,7 +38,7 @@ class Site {
   };
 
   // 白兔
-  async _hares () {
+  async _haresclub () {
     const info = {};
     const document = await this._getDocument('https://club.hares.top/');
     // 用户名

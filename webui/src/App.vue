@@ -58,7 +58,7 @@ body {
 }
 
 *::-webkit-scrollbar {
-  width : 10px;
+  width : 5px;
   height: 1px;
 }
 *::-webkit-scrollbar-thumb {
