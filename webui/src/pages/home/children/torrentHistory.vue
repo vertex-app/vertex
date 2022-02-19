@@ -193,7 +193,7 @@ export default {
     async getTorrentHistorySetting () {
       const url = '/api/setting/getTorrentHistorySetting';
       const res = await this.$axiosGet(url);
-      this.setting = { ...res.data, showKeys: res.showKeys || ['name', 'rss', 'size', 'state'] };
+      this.setting = { ...res.data, showKeys: res.data.showKeys || ['name', 'rss', 'size', 'state'] };
     },
 
     async modifyTorrentHistorySetting () {
