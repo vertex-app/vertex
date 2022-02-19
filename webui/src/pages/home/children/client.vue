@@ -115,10 +115,10 @@
               </el-select>
               <div><el-tag type="info">通知方式, 用于推送删种等信息, 在推送工具页面创建</el-tag></div>
             </el-form-item>
-            <el-form-item required label="推送客户端监控" prop="pushNotify">
+            <el-form-item required label="推送客户端监控" prop="pushMonitor">
               <el-checkbox v-model="client.pushMonitor">推送客户端监控</el-checkbox>
             </el-form-item>
-            <el-form-item v-if="client.pushMonitor" required label="客户端状态频道" prop="pushMonitor">
+            <el-form-item v-if="client.pushMonitor" required label="客户端状态频道" prop="monitor">
               <el-select v-model="client.monitor" placeholder="请选择频道">
                 <el-option v-for="push of pushList" :key="push.id" :label="push.alias" :value="push.id"></el-option>
               </el-select>
