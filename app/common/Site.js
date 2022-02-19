@@ -17,7 +17,14 @@ class Site {
       PTerClub: this._pterclub,
       Audiences: this._audiences,
       OurBits: this._ourbits,
-      SpringSunDay: this._springsunday
+      SpringSunDay: this._springsunday,
+      MTeam: this._mteam,
+      U2: this._u2,
+      OpenCD: this._opencd,
+      BeiTai: this._beitai,
+      TCCF: this._tccf,
+      TLFBits: this._tlfbits,
+      PTMSG: this._ptmsg
     };
     this.cookie = site.cookie;
     this.site = site.name;
@@ -167,6 +174,139 @@ class Site {
     info.seeding = +document.querySelector('img[class=arrowup]').nextSibling.nodeValue.trim();
     // 下载
     info.leeching = +document.querySelector('img[class=arrowdown]').nextSibling.nodeValue.trim();
+    return info;
+  };
+
+  // MTeam
+  async _mteam () {
+    const info = {};
+    const document = await this._getDocument('https://kp.m-team.cc/');
+    // 用户名
+    info.username = document.querySelector('a[href^=userdetails] b').innerHTML;
+    // 上传
+    info.uploaded = document.querySelector('font[class=color_uploaded]').nextSibling.nodeValue.trim().replace(/(\w)B/, '$1iB');
+    info.uploaded = util.calSize(...info.uploaded.split(' '));
+    // 下载
+    info.downloaded = document.querySelector('font[class=color_downloaded]').nextSibling.nodeValue.trim().replace(/(\w)B/, '$1iB');
+    info.downloaded = util.calSize(...info.downloaded.split(' '));
+    // 做种
+    info.seeding = +document.querySelector('img[class=arrowup]').nextSibling.nodeValue.trim();
+    // 下载
+    info.leeching = +document.querySelector('img[class=arrowdown]').nextSibling.nodeValue.trim();
+    return info;
+  };
+
+  // BeiTai
+  async _beitai () {
+    const info = {};
+    const document = await this._getDocument('https://www.beitai.pt/');
+    // 用户名
+    info.username = document.querySelector('a[href^=userdetails] b').innerHTML;
+    // 上传
+    info.uploaded = document.querySelector('font[class=color_uploaded]').nextSibling.nodeValue.trim().replace(/(\w)B/, '$1iB');
+    info.uploaded = util.calSize(...info.uploaded.split(' '));
+    // 下载
+    info.downloaded = document.querySelector('font[class=color_downloaded]').nextSibling.nodeValue.trim().replace(/(\w)B/, '$1iB');
+    info.downloaded = util.calSize(...info.downloaded.split(' '));
+    // 做种
+    info.seeding = +document.querySelector('img[class=arrowup]').nextSibling.nodeValue.trim();
+    // 下载
+    info.leeching = +document.querySelector('img[class=arrowdown]').nextSibling.nodeValue.trim();
+    return info;
+  };
+
+  // TCCF
+  async _tccf () {
+    const info = {};
+    const document = await this._getDocument('https://et8.org/');
+    // 用户名
+    info.username = document.querySelector('a[href^=userdetails] b').innerHTML;
+    // 上传
+    info.uploaded = document.querySelector('font[class=color_uploaded]').nextSibling.nodeValue.trim().replace(/(\w)B/, '$1iB');
+    info.uploaded = util.calSize(...info.uploaded.split(' '));
+    // 下载
+    info.downloaded = document.querySelector('font[class=color_downloaded]').nextSibling.nodeValue.trim().replace(/(\w)B/, '$1iB');
+    info.downloaded = util.calSize(...info.downloaded.split(' '));
+    // 做种
+    info.seeding = +document.querySelector('img[class=arrowup]').nextSibling.nodeValue.trim();
+    // 下载
+    info.leeching = +document.querySelector('img[class=arrowdown]').nextSibling.nodeValue.trim();
+    return info;
+  };
+
+  // TLFBits
+  async _tlfbits () {
+    const info = {};
+    const document = await this._getDocument('https://pt.eastgame.org/');
+    // 用户名
+    info.username = document.querySelector('a[href^=userdetails] b').innerHTML;
+    // 上传
+    info.uploaded = document.querySelector('font[class=color_uploaded]').nextSibling.nodeValue.trim().replace(/(\w)B/, '$1iB');
+    info.uploaded = util.calSize(...info.uploaded.split(' '));
+    // 下载
+    info.downloaded = document.querySelector('font[class=color_downloaded]').nextSibling.nodeValue.trim().replace(/(\w)B/, '$1iB');
+    info.downloaded = util.calSize(...info.downloaded.split(' '));
+    // 做种
+    info.seeding = +document.querySelector('img[class=arrowup]').nextSibling.nodeValue.trim();
+    // 下载
+    info.leeching = +document.querySelector('img[class=arrowdown]').nextSibling.nodeValue.trim();
+    return info;
+  };
+
+  // PTMSG
+  async _ptmsg () {
+    const info = {};
+    const document = await this._getDocument('https://pt.msg.vg/');
+    // 用户名
+    info.username = document.querySelector('a[href^=userdetails] b').innerHTML;
+    // 上传
+    info.uploaded = document.querySelector('font[class=color_uploaded]').nextSibling.nodeValue.trim().replace(/(\w)B/, '$1iB');
+    info.uploaded = util.calSize(...info.uploaded.split(' '));
+    // 下载
+    info.downloaded = document.querySelector('font[class=color_downloaded]').nextSibling.nodeValue.trim().replace(/(\w)B/, '$1iB');
+    info.downloaded = util.calSize(...info.downloaded.split(' '));
+    // 做种
+    info.seeding = +document.querySelector('img[class=arrowup]').nextSibling.nodeValue.trim();
+    // 下载
+    info.leeching = +document.querySelector('img[class=arrowdown]').nextSibling.nodeValue.trim();
+    return info;
+  };
+
+  // OpenCD
+  async _opencd () {
+    const info = {};
+    const document = await this._getDocument('https://open.cd/');
+    // 用户名
+    info.username = document.querySelector('a[href^=userdetails] b').innerHTML;
+    // 上传
+    info.uploaded = document.querySelector('font[class=color_uploaded]').nextSibling.nodeValue.trim().replace(/(\w)B/, '$1iB');
+    info.uploaded = util.calSize(...info.uploaded.split(' '));
+    // 下载
+    info.downloaded = document.querySelectorAll('font[class=color_downloaded]')[1].nextSibling.nodeValue.trim().replace(/(\w)B/, '$1iB');
+    info.downloaded = util.calSize(...info.downloaded.split(' '));
+    // 做种
+    info.seeding = +document.querySelector('img[class=arrowup]').nextSibling.nodeValue.trim();
+    // 下载
+    info.leeching = +document.querySelector('img[class=arrowdown]').nextSibling.nodeValue.trim();
+    return info;
+  };
+
+  // U2
+  async _u2 () {
+    const info = {};
+    const document = await this._getDocument('https://u2.dmhy.org/');
+    // 用户名
+    info.username = document.querySelector('a[href^=userdetails] b bdo').innerHTML;
+    // 上传
+    info.uploaded = document.querySelector('span[class=color_uploaded]').nextSibling.nodeValue.trim().replace(/(\w)B/, '$1iB');
+    info.uploaded = util.calSize(...info.uploaded.split(' '));
+    // 下载
+    info.downloaded = document.querySelector('span[class=color_downloaded]').nextSibling.nodeValue.trim().replace(/(\w)B/, '$1iB');
+    info.downloaded = util.calSize(...info.downloaded.split(' '));
+    // 做种
+    info.seeding = +document.querySelector('img[class=arrowup]').nextElementSibling.innerHTML.trim();
+    // 下载
+    info.leeching = +document.querySelector('img[class=arrowdown]').nextElementSibling.innerHTML.trim();
     return info;
   };
 
