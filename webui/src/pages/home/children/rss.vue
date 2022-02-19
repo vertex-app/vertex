@@ -100,7 +100,7 @@
             <el-form-item required label="Rss - Url" prop="rssUrl">
               <el-input v-model="rss.rssUrl" style="width: 500px;"></el-input>
             </el-form-item>
-            <el-form-item v-if="rss.scrapeHr || rss.scrapeFree" label="Cookie" prop="cookie">
+            <el-form-item v-if="rss.scrapeHr || rss.scrapeFree" :required="rss.scrapeHr || rss.scrapeFree" label="Cookie" prop="cookie">
               <el-input v-model="rss.cookie" style="width: 500px;"></el-input>
             </el-form-item>
             <el-form-item required label="推送通知" prop="pushNotify">

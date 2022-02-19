@@ -107,6 +107,10 @@ class Site {
     const document = await this._getDocument('https://pterclub.com/');
     // 用户名
     info.username = document.querySelector('a[href^=userdetails] b').innerHTML;
+    // 彩虹 ID
+    if (info.username.indexOf('</span>') !== -1) {
+      info.username = info.username.match(/">.*?<\/span/g).map(item => item.replace(/">(.*?)<\/span/, '$1')).join('');
+    }
     // 上传
     info.uploaded = document.querySelector('font[class=color_uploaded]').nextSibling.nodeValue.trim().replace(/(\w)B/, '$1iB');
     info.uploaded = util.calSize(...info.uploaded.split(' '));
@@ -356,7 +360,6 @@ class Site {
     info.username = document.querySelector('a[href^=userdetails] b').innerHTML;
 
     // 基本信息
-    console.log(document.querySelectorAll('div[class="userinfo"] p'));
     const baseInfo = document.querySelectorAll('div[class="userinfo"] p')[2].innerHTML;
     // 上传
     info.uploaded = baseInfo.match(/\d*\.\d* \wB/g)[0].replace(/(\w)B/, '$1iB');
