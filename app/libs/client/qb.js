@@ -78,7 +78,9 @@ exports.getMaindata = async function (clientUrl, cookie) {
     uploadSpeed: 'up_info_speed',
     downloadSpeed: 'dl_info_speed',
     freeSpaceOnDisk: 'free_space_on_disk',
-    queuedIO: 'queued_io_jobs'
+    queuedIO: 'queued_io_jobs',
+    readCacheOverload: 'read_cache_overload',
+    writeCacheOverload: 'write_cache_overload'
   };
   const torrentFilter = {
     availability: 'availability',
@@ -107,6 +109,9 @@ exports.getMaindata = async function (clientUrl, cookie) {
   for (const k in serverFilter) {
     maindata[k] = res.server_state[serverFilter[k]];
   }
+  maindata.readCacheOverload = +maindata.readCacheOverload;
+  maindata.writeCacheOverload = +maindata.writeCacheOverload;
+  maindata.serverState = { ...res.server_state };
   for (const k in res.torrents) {
     const torrent = {};
     torrent.hash = k;

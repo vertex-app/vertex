@@ -139,6 +139,7 @@ exports.getMaindata = async function (clientUrl, cookie) {
   for (const k in serverFilter) {
     maindata[k] = res.stats[serverFilter[k]];
   }
+  maindata.serverState = { ...res.stats };
   for (const k in res.torrents) {
     const torrent = {};
     torrent.hash = k;

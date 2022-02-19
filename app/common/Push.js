@@ -220,7 +220,7 @@ class Push {
       `用户名称: ${site.info.username}\n` +
       `上传下载: ${util.formatSize(site.info.uploaded)} / ${util.formatSize(site.info.downloaded)}\n` +
       `做种下载: ${site.info.seeding} / ${site.info.seeding}\n` +
-      `更新时间: ${moment().unix(site.info.updateTime * 1000)}\n\n`;
+      `更新时间: ${moment(site.info.updateTime * 1000).format('YYYY-MM-DD HH:mm:ss')}\n\n`;
     }
     if (this.markdown) {
       desp = '```\n' + desp + '\n```';

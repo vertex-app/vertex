@@ -243,7 +243,7 @@ class Rss {
             continue;
           }
           for (const _torrent of client.maindata.torrents) {
-            if (+_torrent.size === +torrent.size && +_torrent.completed !== +_torrent.size) {
+            if (+_torrent.size === +torrent.size) {
               await util.runRecord('INSERT INTO torrents (hash, name, size, rss_name, link, add_time, insert_type) values (?, ?, ?, ?, ?, ?, ?)',
                 [torrent.hash, torrent.name, torrent.size, this.alias, torrent.link, moment().unix(), '跳过同大小种子']);
               await this.ntf.rejectTorrent(this._rss, client, torrent, '拒绝原因: 跳过同大小种子');
