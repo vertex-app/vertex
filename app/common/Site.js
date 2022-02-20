@@ -302,10 +302,10 @@ class Site {
     // 用户名
     info.username = document.querySelector('a[href^=userdetails] b bdo').innerHTML;
     // 上传
-    info.uploaded = document.querySelector('span[class=color_uploaded]').nextSibling.nodeValue.trim().replace(/(\w)B/, '$1iB');
+    info.uploaded = document.querySelector('span[class=color_uploaded]').nextSibling.nodeValue.trim();
     info.uploaded = util.calSize(...info.uploaded.split(' '));
     // 下载
-    info.downloaded = document.querySelector('span[class=color_downloaded]').nextSibling.nodeValue.trim().replace(/(\w)B/, '$1iB');
+    info.downloaded = document.querySelector('span[class=color_downloaded]').nextSibling.nodeValue.trim();
     info.downloaded = util.calSize(...info.downloaded.split(' '));
     // 做种
     info.seeding = +document.querySelector('img[class=arrowup]').nextElementSibling.innerHTML.trim();
