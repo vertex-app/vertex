@@ -63,6 +63,10 @@
               <el-input v-model="rule.priority" type="input"></el-input>
               <div><el-tag type="info">优先级越高的规则越执行, 默认为 0</el-tag></div>
             </el-form-item>
+            <el-form-item label="单次删种数量" prop="deleteNum">
+              <el-input v-model="rule.deleteNum" type="input"></el-input>
+              <div><el-tag type="info">单次删种任务的删除种子的数量, 不同规则间不累计, 留空为单次只删除一个</el-tag></div>
+            </el-form-item>
             <el-form-item required label="类型" prop="type">
               <el-select v-model="rule.type" style="width: 144px" placeholder="类型">
                   <el-option label="普通" value="normal"></el-option>

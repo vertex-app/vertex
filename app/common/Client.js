@@ -318,13 +318,21 @@ class Client {
     if (!this.maindata || !this.maindata.torrents || this.maindata.torrents.length === 0) return;
     const torrents = this.maindata.torrents.sort((a, b) => a.completedTime - b.completedTime || a.addedTime - b.addedTime);
     const deletedTorrentHash = [];
-    for (const rule of this.deleteRules) {
+    for (const _rule of this.deleteRules) {
+      const rule = { ..._rule };
+      rule.deleteNum = rule.deleteNum || 1;
+      let deletedNum = 0;
       for (const torrent of torrents) {
+        if (rule.deleteNum <= deletedNum) {
+          logger.debug('规则', rule.alias, ', 单次删除种子数量已达上限', rule.deleteNum, '退出删种任务');
+          return;
+        }
         if (deletedTorrentHash.indexOf(torrent.hash) !== -1) {
           logger.debug('规则', rule.alias, ', 种子', torrent.name, '已删除', '跳过');
           continue;
         }
         if (this._fitDeleteRule(rule, torrent)) {
+          deletedNum += 1;
           await this.reannounceTorrent(torrent);
           logger.info(torrent.name, '重新汇报完毕, 等待 2s');
           Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 2000);
