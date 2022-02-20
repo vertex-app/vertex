@@ -26,6 +26,7 @@ class SettingMod {
       password: options.password || '5f4dcc3b5aa765d61d8327deb882cf99'
     };
     global.userAgent = options.userAgent;
+    global.telegramProxy = options.telegramProxy || 'https://api.telegram.org';
     return '修改全局设置成功, 刷新页面后更新。';
   };
 
