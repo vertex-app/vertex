@@ -250,7 +250,7 @@ class Push {
 
   async pushTelegram (text, desp) {
     const option = {
-      url: 'https://api.telegram.org/bot' + this.telegramBotToken + '/sendMessage',
+      url: `${global.telegramProxy}/bot${this.telegramBotToken}/sendMessage`,
       method: 'POST',
       json: {
         chat_id: this.telegramChannel,
@@ -299,7 +299,7 @@ class Push {
     message += `<pre>Free Space: ${util.formatSize(maindata.freeSpaceOnDisk)}</pre>\n`;
     message += `<pre>Update Time: ${moment().utcOffset(8).format('YYYY-MM-DD HH:mm:ss')}</pre>`;
     const option = {
-      url: 'https://api.telegram.org/bot' + this.telegramBotToken + '/editMessageText',
+      url: `${global.telegramProxy}/bot${this.telegramBotToken}/editMessageText`,
       method: 'POST',
       json: {
         chat_id: this.telegramChannel,

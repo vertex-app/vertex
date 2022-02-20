@@ -31,6 +31,7 @@ const init = function () {
     username: setting.username || 'admin',
     password: setting.password || '5f4dcc3b5aa765d61d8327deb882cf99'
   };
+  global.telegramProxy = setting.telegramProxy || 'https://api.telegram.org';
   global.userAgent = setting.userAgent;
   global.runningClient = {};
   global.runningRss = {};

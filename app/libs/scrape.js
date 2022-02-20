@@ -15,7 +15,6 @@ const getDocument = async function (url, cookie) {
 const _free = async function (url, cookie) {
   const d = await getDocument(url, cookie);
   if (d.body.innerHTML.indexOf('userdetails') === -1) {
-    console.log(d.body.innerHTML);
     throw new Error('疑似登陆状态失效, 请检查 Cookie');
   }
   const state = d.querySelector('#top font[class]');

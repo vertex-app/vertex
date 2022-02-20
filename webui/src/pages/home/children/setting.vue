@@ -26,8 +26,9 @@
           </el-select>
           <div><el-tag type="info">选择日志记录的最低级别, 默认情况下建议仅选择 INFO, 重启后生效</el-tag></div>
         </el-form-item>
-        <el-form-item label="Telegram 代理" prop="proxyPass">
-          <el-input disabled v-model="setting.proxyPass"></el-input>
+        <el-form-item label="Telegram 代理" prop="telegramProxy">
+          <el-input v-model="setting.telegramProxy"></el-input>
+          <div><el-tag type="info">用于 Vertex 环境不方便访问 Telegram 的情情况</el-tag></div>
         </el-form-item>
         <el-form-item size="small">
           <el-button type="primary" @click="modifySetting">确认修改</el-button>
