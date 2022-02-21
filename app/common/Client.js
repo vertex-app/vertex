@@ -338,7 +338,7 @@ class Client {
           Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 2000);
           logger.info(torrent.name, '等待 2s 完毕, 执行删种');
           if (!torrent.tracker || torrent.tracker.indexOf('chdbits') === -1) {
-            await util.runRecord('update torrents set size = ? tracker = ?, uploaded = ?, downloaded = ? where hash = ?',
+            await util.runRecord('update torrents set size = ?, tracker = ?, uploaded = ?, downloaded = ? where hash = ?',
               [torrent.size, torrent.tracker, torrent.uploaded, torrent.downloaded, torrent.hash]);
           } else {
             await util.runRecord('update torrents set size = ?, tracker = ?, uploaded = ?, downloaded = ? where size = ? and link like ?', [torrent.size, torrent.tracker, torrent.uploaded, torrent.downloaded, torrent.size, '%chdbits%']);
@@ -357,7 +357,7 @@ class Client {
     if (!this.maindata) return;
     for (const torrent of this.maindata.torrents) {
       if (!torrent.tracker || torrent.tracker.indexOf('chdbits') === -1) {
-        await util.runRecord('update torrents set size = ? tracker = ?, uploaded = ?, downloaded = ? where hash = ?',
+        await util.runRecord('update torrents set size = ?, tracker = ?, uploaded = ?, downloaded = ? where hash = ?',
           [torrent.size, torrent.tracker, torrent.uploaded, torrent.downloaded, torrent.hash]);
       } else {
         await util.runRecord('update torrents set size = ?, tracker = ?, uploaded = ?, downloaded = ? where size = ? and link like ?', [torrent.size, torrent.tracker, torrent.uploaded, torrent.downloaded, torrent.size, '%chdbits%']);
