@@ -67,7 +67,8 @@ const clientProxy = function (req, res, next) {
       proxyReqOpts.rejectUnauthorized = false;
       return proxyReqOpts;
     },
-    reqBodyEncoding: null
+    reqBodyEncoding: null,
+    parseReqBody: false
   })(req, res, next);
 };
 
@@ -83,9 +84,9 @@ module.exports = function (app, express, router) {
       maxAge: 1000 * 60 * 60 * 24 * 30
     }
   }));
-  app.use(express.json());
-  app.use(express.urlencoded({ extended: false }));
-  app.use(multipartMiddleware);
+  app.use('/api', express.json());
+  app.use('/api', express.urlencoded({ extended: false }));
+  app.use('/api', multipartMiddleware);
   app.use(setIp);
   app.use(checkAuth);
 
