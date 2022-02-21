@@ -325,7 +325,7 @@ class Client {
       for (const torrent of torrents) {
         if (rule.deleteNum <= deletedNum) {
           logger.debug('规则', rule.alias, ', 单次删除种子数量已达上限', rule.deleteNum, '退出删种任务');
-          return;
+          break;
         }
         if (deletedTorrentHash.indexOf(torrent.hash) !== -1) {
           logger.debug('规则', rule.alias, ', 种子', torrent.name, '已删除', '跳过');

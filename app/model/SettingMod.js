@@ -62,10 +62,10 @@ class SettingMod {
   async getRunInfo () {
     const { uploaded, downloaded } = (await util.getRecord('select sum(uploaded) as uploaded, sum(downloaded) as downloaded from torrents'));
     const { uploadedToday, downloadedToday } = (await util.getRecord('select sum(uploaded) as uploadedToday, sum(downloaded) as downloadedToday from torrents where add_time > ?', [moment().startOf('day').unix()]));
-    const addCountToday = (await util.getRecord('select count(*) as addCount from torrents where delete_time is not null and add_time > ?', [moment().startOf('day').unix()])).addCount;
+    const addCountToday = (await util.getRecord('select count(*) as addCount from torrents where uploaded != 0 and add_time > ?', [moment().startOf('day').unix()])).addCount;
     const rejectCountToday = (await util.getRecord('select count(*) as rejectCount from torrents where delete_time is null and add_time > ?', [moment().startOf('day').unix()])).rejectCount;
     const deleteCountToday = addCountToday;
-    const addCount = (await util.getRecord('select count(*) as addCount from torrents where delete_time is not null')).addCount;
+    const addCount = (await util.getRecord('select count(*) as addCount from torrents where uploaded != 0')).addCount;
     const rejectCount = (await util.getRecord('select count(*) as rejectCount from torrents where delete_time is null')).rejectCount;
     const deleteCount = addCount;
     const perTracker = (await util.getRecords('select sum(uploaded) as uploaded, sum(downloaded) as downloaded, tracker from torrents  where tracker is not null group by tracker'));
