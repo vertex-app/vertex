@@ -58,6 +58,11 @@ const clientProxy = function (req, res, next) {
   const clientList = util.listClient();
   const clientId = req.params.client;
   const client = clientList.filter(item => item.id === clientId)[0];
+  if (!client) {
+    res.status(404);
+    res.end('Not Found');
+    return;
+  }
   proxy(client.clientUrl, {
     proxyReqOptDecorator (proxyReqOpts, srcReq) {
       proxyReqOpts.headers.cookie = global.runningClient[clientId] ? global.runningClient[clientId].cookie : '';

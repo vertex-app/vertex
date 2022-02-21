@@ -663,9 +663,9 @@ export default {
     },
     gotoClient (row) {
       if (row.clientUrl) {
-        window.open(row.clientUrl);
+        window.open(`/proxy/client/${row.id}/`);
       } else {
-        const url = this.clientList.filter(item => item.id === row.bindClient)[0].clientUrl;
+        const url = `/proxy/client/${row.bindClient}/`;
         window.open(url);
       }
     },
