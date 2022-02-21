@@ -107,13 +107,13 @@ class Client {
         fit = fit && torrent[condition.key] < value;
         break;
       case 'contain':
-        fit = fit && torrent[condition.key].indexOf(condition.value) !== -1;
+        fit = fit && condition.value.split(',').filter(item => torrent[condition.key].indexOf(item) !== -1).length !== 0;
         break;
       case 'includeIn':
         fit = fit && condition.value.split(',').indexOf(torrent[condition.key]) !== -1;
         break;
       case 'notContain':
-        fit = fit && torrent[condition.key].indexOf(condition.value) === -1;
+        fit = fit && condition.value.split(',').filter(item => torrent[condition.key].indexOf(item) !== -1).length === 0;
         break;
       case 'notIncludeIn':
         fit = fit && condition.value.split(',').indexOf(torrent[condition.key]) === -1;

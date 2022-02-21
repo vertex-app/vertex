@@ -90,9 +90,10 @@
               <el-button @click="rule.conditions.push({ ...condition })" type="primary" size="small">新增</el-button>
               <el-card style="margin: 12px 0; max-width: 640px" >
                 说明: <br>
-                01: 区别于删种规则, Rss 规则的 包含 与 不包含 条件, 可以填写多个关键字, 需以半角逗号 , 为分割符<br>
+                01: Rss 规则的 包含 与 不包含 条件, 可以填写多个关键字, 需以半角逗号 , 为分割符<br>
                 &nbsp;&nbsp;&nbsp;&nbsp;如 <el-tag>KEY,WORD</el-tag>, 表示包含 KEY 或者 WORD 两个关键词<br>
-                02: 各条件间为 且 的关系
+                02: 各条件间为 且 的关系<br>
+                03. 种子大小: 单位为 字节 / Byte, 可以使用 * 做乘法运算<br>
               </el-card>
             </el-form-item>
             <el-form-item v-if="rule.type === 'javascript'" label="自定义代码">
