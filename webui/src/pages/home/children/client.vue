@@ -216,6 +216,9 @@ export default {
     return {
       client: {},
       defaultClient: {
+        pushNotify: false,
+        pushMonitor: false,
+        spaceAlarm: false,
         cron: '*/4 * * * * *',
         autoDeleteCron: '* * * * *',
         autoReannounce: true,
@@ -280,7 +283,7 @@ export default {
       this.deleteRuleList = res ? res.data : [];
     },
     gotoClient (row) {
-      window.open(row.clientUrl);
+      window.open(`/proxy/client/${row.id}/`);
     }
   },
   async mounted () {

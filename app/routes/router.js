@@ -1,5 +1,6 @@
 const Multipart = require('connect-multiparty');
 const session = require('express-session');
+const proxy = require('express-http-proxy');
 const redis = require('redis');
 const path = require('path');
 const fs = require('fs');
@@ -51,6 +52,23 @@ const setIp = function (req, res, next) {
     req.userIp = req.userIp.substring(7);
   }
   next();
+};
+
+const clientProxy = function (req, res, next) {
+  const clientList = util.listClient();
+  const clientId = req.params.client;
+  const client = clientList.filter(item => item.id === clientId)[0];
+  proxy(client.clientUrl, {
+    proxyReqOptDecorator (proxyReqOpts, srcReq) {
+      proxyReqOpts.headers.cookie = global.runningClient[clientId] ? global.runningClient[clientId].cookie : '';
+      if (proxyReqOpts.headers['content-type'] && proxyReqOpts.headers['content-type'].indexOf('application/x-www-form-urlencoded') !== -1) {
+        proxyReqOpts.headers['content-type'] = 'application/x-www-form-urlencoded';
+      }
+      proxyReqOpts.rejectUnauthorized = false;
+      return proxyReqOpts;
+    },
+    reqBodyEncoding: null
+  })(req, res, next);
 };
 
 module.exports = function (app, express, router) {
@@ -131,6 +149,7 @@ module.exports = function (app, express, router) {
   router.post('/setting/modifySitePushSetting', ctrl.Setting.modifySitePushSetting);
 
   app.use('/api', router);
+  app.use('/proxy/client/:client', clientProxy);
   app.use('*', (req, res, next) => {
     const pathname = req._parsedOriginalUrl.pathname;
     if (pathname === '/favicon.ico') {
