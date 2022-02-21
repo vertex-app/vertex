@@ -28,9 +28,16 @@ const init = function () {
   global.CONFIG = config;
   global.LOGGER = logger;
   const setting = JSON.parse(fs.readFileSync(path.join(__dirname, './data/setting.json')));
+  if (!setting.password) {
+    const password = util.uuid.v4();
+    setting.username = 'admin';
+    setting.password = util.md5(password);
+    fs.writeFileSync(path.join(__dirname, './data/password'), password);
+    fs.writeFileSync(path.join(__dirname, './data/setting.json'), JSON.stringify(setting, null, 2));
+  }
   global.auth = {
-    username: setting.username || 'admin',
-    password: setting.password || '5f4dcc3b5aa765d61d8327deb882cf99'
+    username: setting.username,
+    password: setting.password
   };
   global.telegramProxy = setting.telegramProxy || 'https://api.telegram.org';
   global.userAgent = setting.userAgent;
