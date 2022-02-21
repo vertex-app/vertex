@@ -337,8 +337,12 @@ class Client {
           logger.info(torrent.name, '重新汇报完毕, 等待 2s');
           Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 2000);
           logger.info(torrent.name, '等待 2s 完毕, 执行删种');
-          await util.runRecord('update torrents set size = ?, tracker = ?, uploaded = ?, downloaded = ?, delete_time = ? where hash = ?',
-            [torrent.size, torrent.tracker, torrent.uploaded, torrent.downloaded, moment().unix(), torrent.hash]);
+          if (!torrent.tracker || torrent.tracker.indexOf('chdbits') === -1) {
+            await util.runRecord('update torrents set size = ? tracker = ?, uploaded = ?, downloaded = ? where hash = ?',
+              [torrent.size, torrent.tracker, torrent.uploaded, torrent.downloaded, torrent.hash]);
+          } else {
+            await util.runRecord('update torrents set size = ?, tracker = ?, uploaded = ?, downloaded = ? where size = ? and link like ?', [torrent.size, torrent.tracker, torrent.uploaded, torrent.downloaded, torrent.size, '%chdbits%']);
+          }
           const deleteFiles = await this.deleteTorrent(torrent, rule);
           deletedTorrentHash.push(torrent.hash);
           if (!deleteFiles) {
@@ -352,8 +356,12 @@ class Client {
   async record () {
     if (!this.maindata) return;
     for (const torrent of this.maindata.torrents) {
-      await util.runRecord('update torrents set size = ?, tracker = ?, uploaded = ?, downloaded = ? where hash = ?',
-        [torrent.size, torrent.tracker, torrent.uploaded, torrent.downloaded, torrent.hash]);
+      if (!torrent.tracker || torrent.tracker.indexOf('chdbits') === -1) {
+        await util.runRecord('update torrents set size = ? tracker = ?, uploaded = ?, downloaded = ? where hash = ?',
+          [torrent.size, torrent.tracker, torrent.uploaded, torrent.downloaded, torrent.hash]);
+      } else {
+        await util.runRecord('update torrents set size = ?, tracker = ?, uploaded = ?, downloaded = ? where size = ? and link like ?', [torrent.size, torrent.tracker, torrent.uploaded, torrent.downloaded, torrent.size, '%chdbits%']);
+      }
     }
   };
 
