@@ -147,6 +147,7 @@ module.exports = function (app, express, router) {
   router.get('/log/clear', ctrl.Log.clear);
 
   router.get('/setting/get', ctrl.Setting.get);
+  router.get('/setting/getRunInfo', ctrl.Setting.getRunInfo);
   router.get('/setting/getTorrentHistorySetting', ctrl.Setting.getTorrentHistorySetting);
   router.get('/setting/getSitePushSetting', ctrl.Setting.getSitePushSetting);
   router.get('/setting/getBackground', ctrl.Setting.getBackground);

@@ -118,5 +118,21 @@ class Setting {
       });
     }
   };
+
+  async getRunInfo (req, res) {
+    try {
+      const r = await settingMod.getRunInfo();
+      res.send({
+        success: true,
+        data: r
+      });
+    } catch (e) {
+      logger.error(e);
+      res.send({
+        success: false,
+        message: e
+      });
+    }
+  };
 }
 module.exports = Setting;

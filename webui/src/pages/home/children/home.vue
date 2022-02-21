@@ -1,44 +1,129 @@
 <template>
   <div class="home">
-    <el-row
-    type="flex"
-    :gutter="32"
-    justify="space-around"
-    align="top"
-    >
-      <el-col :span="6">
-        <el-card class="card">
-          <div class="card-tag">当前版本</div>
-          <div class="card-content">
-            {{version.split('\n')[0]}}
-            <br>
-            {{version.split('\n')[1]}}
-            <br>
-            {{version.split('\n')[2]}}
-          </div>
-        </el-card>
-      </el-col>
-      <el-col :span="6">
-        <el-card class="card">
-          <div class="card-tag">文档中心</div>
-          <div class="card-content">
-            <el-link href="https://lswl.in/2022/01/14/vertex/" type="primary">介绍文档</el-link>
-            <br>
-            <el-link href="https://lswl.in/2022/01/14/vertex-newbie/" type="primary">新手教程</el-link>
-            <br>
-            <el-link href="https://lswl.in/2022/01/19/vertex-supported-sites/" type="primary">支持站点</el-link>
-          </div>
-        </el-card>
-      </el-col>
-      <el-col :span="6">
-        <el-card class="card">
-          <div class="card-tag">交流群</div>
-          <div class="card-content">
-            QQ Group: 852643057
-          </div>
-        </el-card>
-      </el-col>
-    </el-row>
+    <div class="radius-div">
+      <el-descriptions style="padding: 24px" title="版本信息" :column="3" border>
+        <el-descriptions-item
+          label="更新时间">
+          {{this.version.updateTime}}
+        </el-descriptions-item>
+        <el-descriptions-item
+          label="版本编码">
+          {{this.version.head}}
+        </el-descriptions-item>
+        <el-descriptions-item
+          label="更新信息">
+          {{this.version.commitInfo}}
+        </el-descriptions-item>
+      </el-descriptions>
+      <el-descriptions style="padding: 24px" title="使用帮助" :column="3" border>
+        <el-descriptions-item
+          label="文档">
+          <el-link type="primary" @click="gotoDoc()">文档</el-link>
+        </el-descriptions-item>
+        <el-descriptions-item
+          label="更新推送频道">
+          <el-link type="primary" @click="gotoChannel()">Telegram</el-link>
+        </el-descriptions-item>
+        <el-descriptions-item
+          label="QQ 交流群组">
+          852643057
+        </el-descriptions-item>
+      </el-descriptions>
+      <el-descriptions style="padding: 24px" title="任务信息" :column="3" border>
+        <el-descriptions-item
+          label="运行时间">
+          {{$moment(runInfo.startTime * 1000).format('YYYY-MM-DD HH:mm:ss')}}<br>{{$moment(runInfo.startTime * 1000).fromNow()}}
+        </el-descriptions-item>
+        <el-descriptions-item
+          label="今日上传">
+          {{$formatSize(runInfo.uploadedToday)}}
+        </el-descriptions-item>
+        <el-descriptions-item
+          label="今日下载">
+          {{$formatSize(runInfo.downloadedToday)}}
+        </el-descriptions-item>
+        <el-descriptions-item
+          label="今日添加种子">
+          {{runInfo.addCountToday}}
+        </el-descriptions-item>
+        <el-descriptions-item
+          label="今日拒绝种子">
+          {{runInfo.rejectCountToday}}
+        </el-descriptions-item>
+        <el-descriptions-item
+          label="今日删除种子">
+          {{runInfo.deleteCountToday}}
+        </el-descriptions-item>
+        <el-descriptions-item
+          label="累计上传">
+          {{$formatSize(runInfo.uploaded)}}
+        </el-descriptions-item>
+        <el-descriptions-item
+          :span="2"
+          label="累计下载">
+          {{$formatSize(runInfo.downloaded)}}
+        </el-descriptions-item>
+        <el-descriptions-item
+          label="累计添加种子">
+          {{runInfo.addCount}}
+        </el-descriptions-item>
+        <el-descriptions-item
+          label="累计拒绝种子">
+          {{runInfo.rejectCount}}
+        </el-descriptions-item>
+        <el-descriptions-item
+          label="累计删除种子">
+          {{runInfo.deleteCount}}
+        </el-descriptions-item>
+      </el-descriptions>
+      <div style="padding: 24px;">
+        <el-table
+          :data="runInfo.perTrackerToday"
+          border
+          size="mini">
+          <el-table-column
+            prop="tracker"
+            label="今日流量"
+            width="180px">
+          </el-table-column>
+          <el-table-column
+            label="上传">
+            <template slot-scope="scope">
+              {{$formatSize(scope.row.uploaded)}}
+            </template>
+          </el-table-column>
+          <el-table-column
+            label="下载">
+            <template slot-scope="scope">
+              {{$formatSize(scope.row.downloaded)}}
+            </template>
+          </el-table-column>
+        </el-table>
+        <el-divider/>
+        <el-table
+          :data="runInfo.perTracker"
+          border
+          size="mini">
+          <el-table-column
+            prop="tracker"
+            label="累计流量"
+            width="180px">
+          </el-table-column>
+          <el-table-column
+            label="上传">
+            <template slot-scope="scope">
+              {{$formatSize(scope.row.uploaded)}}
+            </template>
+          </el-table-column>
+          <el-table-column
+            label="下载">
+            <template slot-scope="scope">
+              {{$formatSize(scope.row.downloaded)}}
+            </template>
+          </el-table-column>
+        </el-table>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -46,31 +131,35 @@
 export default {
   data () {
     return {
-      version: 'dev'
+      version: 'dev',
+      runInfo: {
+        perTracker: [],
+        perTrackerToday: []
+      }
     };
   },
+  methods: {
+    async getRunInfo () {
+      const res = await this.$axiosGet('/api/setting/getRunInfo');
+      this.runInfo = res ? res.data : {};
+    },
+    async gotoChannel () {
+      window.open('https://t.me/lswl_vertex');
+    },
+    async gotoDoc () {
+      window.open('https://vertex.icu');
+    }
+  },
   mounted () {
+    this.getRunInfo();
     this.version = process.env.version || this.version;
   }
 };
 </script>
 
 <style scoped>
-.card {
-  width: 320px;
-}
-
-.card-tag {
-  max-width: 320px;
-  margin-left: 16px;
-  text-align: left;
-  font-size: 18px;
-}
-
-.card-content {
-  margin-top: 12px;
-  text-align: left;
-  margin-left: 16px;
-  max-width: 300px;
+.radius-div {
+  border-radius: 8px;
+  background: rgb(255,255,255);
 }
 </style>

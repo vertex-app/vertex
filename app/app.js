@@ -1,4 +1,5 @@
 const express = require('express');
+const moment = require('moment');
 const fs = require('fs');
 const path = require('path');
 const app = express();
@@ -37,6 +38,7 @@ const init = function () {
   global.runningRss = {};
   global.runningServer = {};
   global.runningSite = {};
+  global.startTime = moment().unix();
   for (const client of util.listClient()) {
     if (client.enable) {
       const Client = require('./common/Client');
