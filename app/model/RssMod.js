@@ -10,7 +10,7 @@ class RssMod {
     rssSet.id = id;
     fs.writeFileSync(path.join(__dirname, '../data/rss/', id + '.json'), JSON.stringify(rssSet, null, 2));
     if (global.runningRss[id]) global.runningRss[id].destroy();
-    global.runningRss[id] = new Rss(rssSet);
+    if (rssSet.enable) global.runningRss[id] = new Rss(rssSet);
     return '添加 Rss 成功';
   };
 
