@@ -42,6 +42,9 @@
               <el-form-item label="添加时间">
                 <span>{{ $moment(props.row.addTime * 1000).format('YYYY-MM-DD HH:mm:ss') }}</span>
               </el-form-item>
+              <el-form-item label="删除时间">
+                <span>{{props.row.deleteTime ? $moment(props.row.deleteTime * 1000).format('YYYY-MM-DD HH:mm:ss') : '∞' }}</span>
+              </el-form-item>
               <el-form-item label="上传流量">
                 <span>{{ $formatSize(props.row.uploaded || 0) }}</span>
               </el-form-item>
@@ -91,6 +94,16 @@
           fixed="right">
           <template slot-scope="scope">
             {{$moment(scope.row.addTime * 1000).format('YYYY-MM-DD HH:mm:ss')}}
+          </template>
+        </el-table-column>
+        <el-table-column
+          v-if="setting.showKeys.indexOf('deleteTime') !== -1"
+          align="center"
+          label="删除时间"
+          width="200"
+          fixed="right">
+          <template slot-scope="scope">
+            {{scope.row.deleteTime ? $moment(scope.row.deleteTime * 1000).format('YYYY-MM-DD HH:mm:ss') : '∞' }}
           </template>
         </el-table-column>
         <el-table-column
@@ -158,6 +171,9 @@ export default {
       }, {
         key: 'addTime',
         name: '记录时间'
+      }, {
+        key: 'deleteTime',
+        name: '删除时间'
       }, {
         key: 'link',
         name: '种子链接'

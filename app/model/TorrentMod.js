@@ -63,7 +63,7 @@ class TorrentMod {
     if (options.key) {
       where += ` and name like '%${options.key}%'`;
     }
-    const torrents = await util.getRecords('select rss_name as rssName, name, size, link, insert_type as type, uploaded, downloaded, tracker, add_time as addTime from torrents ' + where + ' order by id desc limit ? offset ?',
+    const torrents = await util.getRecords('select rss_name as rssName, name, size, link, insert_type as type, uploaded, downloaded, tracker, add_time as addTime, delete_time as deleteTime from torrents ' + where + ' order by id desc limit ? offset ?',
       [options.length, index]);
     const total = (await util.getRecord('select count(*) as total from torrents ' + where)).total;
     return { torrents, total };
