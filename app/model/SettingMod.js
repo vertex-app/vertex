@@ -23,8 +23,8 @@ class SettingMod {
   modify (options) {
     fs.writeFileSync(settingPath, JSON.stringify(options, null, 2));
     global.auth = {
-      username: options.username || 'admin',
-      password: options.password || '5f4dcc3b5aa765d61d8327deb882cf99'
+      username: options.username,
+      password: options.password
     };
     global.userAgent = options.userAgent;
     global.telegramProxy = options.telegramProxy || 'https://api.telegram.org';
@@ -71,10 +71,10 @@ class SettingMod {
     const perTracker = (await util.getRecords('select sum(uploaded) as uploaded, sum(downloaded) as downloaded, tracker from torrents  where tracker is not null group by tracker'));
     const perTrackerToday = (await util.getRecords('select sum(uploaded) as uploaded, sum(downloaded) as downloaded, tracker from torrents  where add_time > ? and tracker is not null group by tracker', [moment().startOf('day').unix()]));
     return {
-      uploaded,
-      downloaded,
-      uploadedToday,
-      downloadedToday,
+      uploaded: uploaded || 0,
+      downloaded: downloaded || 0,
+      uploadedToday: uploadedToday || 0,
+      downloadedToday: downloadedToday || 0,
       addCount,
       rejectCount,
       deleteCount,

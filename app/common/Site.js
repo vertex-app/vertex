@@ -49,7 +49,7 @@ class Site {
     const info = {};
     const document = await this._getDocument('https://club.hares.top/');
     // 用户名
-    info.username = document.querySelector('a[href^=userdetails] b').innerHTML;
+    info.username = document.querySelector('a[href^=userdetails] b,a[href^=userdetails] em').innerHTML;
     // 上传
     info.uploaded = document.querySelector('i[class="fa fa-arrow-up text-success fa-fw"]').nextElementSibling.innerHTML.trim().replace(/(\w)B/, '$1iB');
     info.uploaded = util.calSize(...info.uploaded.split(' '));
