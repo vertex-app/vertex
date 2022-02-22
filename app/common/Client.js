@@ -290,7 +290,7 @@ class Client {
     let isDeleteFiles = true;
     try {
       for (const _torrent of this.maindata.torrents) {
-        if (_torrent.name === torrent.name && _torrent.size === torrent.size && _torrent.hash !== torrent.hash) {
+        if (_torrent.name === torrent.name && _torrent.size === torrent.size && _torrent.hash !== torrent.hash && _torrent.savePath === torrent.savePath) {
           isDeleteFiles = false;
         }
       }
