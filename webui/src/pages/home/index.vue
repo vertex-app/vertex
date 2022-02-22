@@ -16,6 +16,7 @@
     <el-container>
       <el-header style="text-align: right;">
         <i :class="`${isCollapse ? 'el-icon-right' : 'el-icon-back'} menu-collapse`" @click="collapseChange"></i>
+        <el-button type="danger" size="mini" @click="logout">退出</el-button>
       </el-header>
         <el-main>
           <router-view></router-view>
@@ -41,6 +42,12 @@ export default {
     },
     selectMenu (idx) {
       this.$goto(idx, this.$router);
+    },
+    async logout () {
+      const res = await this.$axiosGet('/api/user/logout');
+      if (res) {
+        window.location.href = '/login';
+      }
     }
   },
   async mounted () {

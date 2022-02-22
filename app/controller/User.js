@@ -22,5 +22,12 @@ class User {
       });
     }
   };
+
+  logout (req, res) {
+    req.session.destroy();
+    res.send({
+      success: true
+    });
+  }
 }
 module.exports = User;

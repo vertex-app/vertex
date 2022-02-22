@@ -96,6 +96,8 @@ module.exports = function (app, express, router) {
   app.use(checkAuth);
 
   router.get('/user/login', ctrl.User.login);
+  router.get('/user/logout', ctrl.User.logout);
+
   router.get('/server/netSpeed', ctrl.Server.netSpeed);
   router.get('/server/cpuUse', ctrl.Server.cpuUse);
   router.get('/server/diskUse', ctrl.Server.diskUse);
