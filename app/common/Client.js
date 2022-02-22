@@ -338,10 +338,10 @@ class Client {
           Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 2000);
           logger.info(torrent.name, '等待 2s 完毕, 执行删种');
           if (!torrent.tracker || torrent.tracker.indexOf('chdbits') === -1) {
-            await util.runRecord('update torrents set size = ?, tracker = ?, uploaded = ?, downloaded = ? where hash = ?',
-              [torrent.size, torrent.tracker, torrent.uploaded, torrent.downloaded, torrent.hash]);
+            await util.runRecord('update torrents set size = ?, tracker = ?, uploaded = ?, downloaded = ?, delete_time = ? where hash = ?',
+              [torrent.size, torrent.tracker, torrent.uploaded, torrent.downloaded, moment().unix(), torrent.hash]);
           } else {
-            await util.runRecord('update torrents set size = ?, tracker = ?, uploaded = ?, downloaded = ? where size = ? and link like ?', [torrent.size, torrent.tracker, torrent.uploaded, torrent.downloaded, torrent.size, '%chdbits%']);
+            await util.runRecord('update torrents set size = ?, tracker = ?, uploaded = ?, downloaded = ?, delete_time = ? where size = ? and link like ?', [torrent.size, torrent.tracker, torrent.uploaded, torrent.downloaded, moment().unix(), torrent.size, '%chdbits%']);
           }
           const deleteFiles = await this.deleteTorrent(torrent, rule);
           deletedTorrentHash.push(torrent.hash);
