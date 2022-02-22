@@ -41,6 +41,7 @@ const init = function () {
   };
   global.telegramProxy = setting.telegramProxy || 'https://api.telegram.org';
   global.userAgent = setting.userAgent;
+  global.dataPath = setting.dataPath || '/vertex';
   global.runningClient = {};
   global.runningRss = {};
   global.runningServer = {};

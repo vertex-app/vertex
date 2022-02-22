@@ -2,6 +2,7 @@ const util = require('util');
 const fs = require('fs');
 const path = require('path');
 const uuid = require('uuid');
+const tar = require('tar');
 const md5 = require('md5-node');
 const request = require('request');
 const Database = require('better-sqlite3');
@@ -75,6 +76,7 @@ exports.requestPromise = async function (options) {
 exports.exec = util.promisify(require('child_process').exec);
 exports.uuid = uuid;
 exports.md5 = md5;
+exports.tar = tar;
 
 exports.listSite = function () {
   const files = fs.readdirSync(path.join(__dirname, '../data/site'));

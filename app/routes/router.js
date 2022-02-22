@@ -156,6 +156,8 @@ module.exports = function (app, express, router) {
   router.post('/setting/modify', ctrl.Setting.modify);
   router.post('/setting/modifyTorrentHistorySetting', ctrl.Setting.modifyTorrentHistorySetting);
   router.post('/setting/modifySitePushSetting', ctrl.Setting.modifySitePushSetting);
+  router.get('/setting/backupVertex', ctrl.Setting.backupVertex);
+  router.post('/setting/restoreVertex', ctrl.Setting.restoreVertex);
 
   app.use('/api', router);
   app.use('/proxy/client/:client', clientProxy);

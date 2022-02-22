@@ -27,6 +27,7 @@ class SettingMod {
       password: options.password
     };
     global.userAgent = options.userAgent;
+    global.dataPath = options.dataPath || '/vertex';
     global.telegramProxy = options.telegramProxy || 'https://api.telegram.org';
     return '修改全局设置成功, 刷新页面后更新。';
   };
@@ -85,6 +86,26 @@ class SettingMod {
       perTracker,
       perTrackerToday
     };
+  };
+
+  async backupVertex () {
+    const backupsFile = `/tmp/Vertex-backups-${moment().format('YYYY-MM-DD_HH:mm:ss')}.tar.gz`;
+    await util.tar.c({
+      gzip: true,
+      file: backupsFile,
+      cwd: global.dataPath
+    }, ['vertex']);
+    return backupsFile;
+  }
+
+  async restoreVertex (options) {
+    const backupsFile = options.file.path || options.file.originalFilename;
+    await util.tar.x({
+      gzip: true,
+      file: backupsFile,
+      C: global.dataPath
+    });
+    return '数据导入成功, 重启容器后生效。';
   }
 }
 

@@ -134,5 +134,34 @@ class Setting {
       });
     }
   };
+
+  async backupVertex (req, res) {
+    try {
+      const file = await settingMod.backupVertex();
+      res.download(file);
+    } catch (e) {
+      logger.error(e);
+      res.send({
+        success: false,
+        message: e
+      });
+    }
+  }
+
+  async restoreVertex (req, res) {
+    try {
+      const r = await settingMod.restoreVertex(req.files);
+      res.send({
+        success: false,
+        message: r
+      });
+    } catch (e) {
+      logger.error(e);
+      res.send({
+        success: false,
+        message: e
+      });
+    }
+  }
 }
 module.exports = Setting;

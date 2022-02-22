@@ -14,6 +14,10 @@
           <el-input v-model="setting.background" style="width: 500px;"></el-input>
           <div><el-tag type="info">图片外链</el-tag></div>
         </el-form-item>
+        <el-form-item label="数据目录路径" prop="dataPath">
+          <el-input v-model="setting.dataPath" style="width: 500px;"></el-input>
+          <div><el-tag type="warning">数据目录路径, Docker 安装无需修改</el-tag></div>
+        </el-form-item>
         <el-form-item label="User-Agent" prop="userAgent">
           <el-input v-model="setting.userAgent" style="width: 500px;"></el-input>
           <div><el-tag type="info">所有网络请求所用的 User-Agent, 默认为 'Vertex'</el-tag></div>
@@ -28,10 +32,27 @@
         </el-form-item>
         <el-form-item label="Telegram 代理" prop="telegramProxy">
           <el-input v-model="setting.telegramProxy"></el-input>
-          <div><el-tag type="info">用于 Vertex 环境不方便访问 Telegram 的情情况</el-tag></div>
+          <div><el-tag type="info">用于 Vertex 环境不方便访问 Telegram 的情况</el-tag></div>
         </el-form-item>
         <el-form-item size="small">
           <el-button type="primary" @click="modifySetting">确认修改</el-button>
+        </el-form-item>
+      </el-form>
+      <el-divider/>
+      <el-form class="setting-form" label-width="160px" size="mini">
+        <div style="top: 24px; padding-left: 32px; font-size: 24px">备份与恢复</div>
+        <el-divider></el-divider>
+        <el-form-item size="small" label="备份">
+          <el-button type="primary" @click="backupVertex">下载备份</el-button>
+        </el-form-item>
+        <el-form-item size="small" label="恢复">
+          <el-upload
+            :auto-upload="true"
+            action="/api/setting/restoreVertex"
+            :on-success="handleSuccess">
+            <el-button size="small" type="primary">点击选择文件</el-button>
+          </el-upload>
+          <div><el-tag type="danger">请务必上传由 Vertex 生成的备份文件, 若上传其它文件, 将导致 Vertex 启动失败。</el-tag></div>
         </el-form-item>
       </el-form>
     </div>
@@ -63,6 +84,12 @@ export default {
       }
       await this.$messageBox(res);
       this.getSetting();
+    },
+    async backupVertex () {
+      window.open('/api/setting/backupVertex');
+    },
+    async handleSuccess (responce) {
+      await this.$messageBox(responce);
     }
   },
   mounted () {
