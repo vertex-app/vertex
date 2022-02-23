@@ -72,8 +72,7 @@ const clientProxy = function (req, res, next) {
       proxyReqOpts.rejectUnauthorized = false;
       return proxyReqOpts;
     },
-    reqBodyEncoding: null,
-    parseReqBody: false
+    reqBodyEncoding: null
   })(req, res, next);
 };
 
