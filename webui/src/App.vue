@@ -57,19 +57,14 @@ body {
   width: auto;
 }
 
-*::-webkit-scrollbar {
-  width : 5px;
-  height: 1px;
-}
-
- .el-table__expand-icon {
+.el-table__expand-icon {
   width: 72px;
   height: 48px;
   padding-left: 0;
   padding-right: 0;
  }
 
- .el-table__expand-column .cell {
+.el-table__expand-column .cell {
   width: 72px;
   height: 48px;
   padding-left: 0;
@@ -90,6 +85,12 @@ body {
       transparent
   );
 }
+
+*::-webkit-scrollbar {
+  width : 7px;
+  height: 10px;
+}
+
 *::-webkit-scrollbar-track {
   box-shadow   : inset 0 0 5px rgba(0, 0, 0, 0.2);
   background   : #ededed;

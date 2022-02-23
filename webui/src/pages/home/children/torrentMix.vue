@@ -319,7 +319,7 @@ export default {
         ...res.data,
         showKeys: res.data.showKeys || ['clientAlias', 'name', 'size', 'flow', 'link', 'speed'],
         sort: {},
-        clients: res.data.clients || []
+        clients: res.data.clients || JSON.parse(this.$route.query.clients || '[]')
       };
     },
 
@@ -333,10 +333,9 @@ export default {
     }
   },
   async mounted () {
-    this.clients = JSON.parse(this.$route.query.clients || '[]');
-    this.listClient();
+    await this.listClient();
+    await this.getTorrentMixSetting();
     this.listTorrent();
-    this.getTorrentMixSetting();
     /*
     this.freshTorrent = setInterval(() => {
       this.listTorrent();
