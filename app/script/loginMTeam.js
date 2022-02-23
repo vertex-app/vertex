@@ -18,7 +18,7 @@ const request = require('util').promisify(require('request'));
     console.log('疑似遇到 5s 盾, 请手动获取 Cookie 并重试.');
     return;
   }
-  const { body: verify } = await request({
+  const { headers } = await request({
     url: 'https://kp.m-team.cc/verify.php?returnto=%2F',
     method: 'POST',
     headers: {
@@ -29,10 +29,9 @@ const request = require('util').promisify(require('request'));
       otp: process.argv[4]
     }
   });
-  username = verify.match(/userdetails.*?<b>(.*)<\/b>/);
-  if (username) {
-    console.log('登录成功', username[1]);
+  if (headers.location === 'https://kp.m-team.cc/') {
+    console.log('登录成功');
   } else {
-    console.log('登陆失败, 请重试', verify);
+    console.log('登陆失败, 请重试');
   }
 })();

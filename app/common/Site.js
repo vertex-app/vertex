@@ -25,7 +25,9 @@ class Site {
       TCCF: this._tccf,
       TLFBits: this._tlfbits,
       PTMSG: this._ptmsg,
-      HDFans: this._hdfans
+      HDFans: this._hdfans,
+      DICMusic: this._dicmusic,
+      GPW: this._gpw
     };
     this.cookie = site.cookie;
     this.site = site.name;
@@ -391,6 +393,66 @@ class Site {
     info.seeding = +document.querySelector('i[class="fas fa-arrow-up"]').nextSibling.nodeValue.trim();
     // 下载
     info.leeching = +document.querySelector('i[class="fas fa-arrow-down"]').nextSibling.nodeValue.trim().replace(')', '');
+    return info;
+  };
+
+  // DICMusic
+  async _dicmusic () {
+    const info = {};
+    const document = await this._getDocument('https://dicmusic.club/user.php');
+    // 用户名
+    info.username = document.querySelector('a[href^="user.php"]').innerHTML;
+    // uid
+    info.uid = document.querySelector('a[href^="torrents.php?type=seeding&userid="]').href.match(/userid=(\d+)/)[1];
+    // 上传
+    info.uploaded = document.querySelector('a[href^="torrents.php?type=seeding&userid="]').nextElementSibling.innerHTML.trim().replace(/(\w)B/, '$1iB');
+    info.uploaded = util.calSize(...info.uploaded.split(' '));
+    // 下载
+    info.downloaded = document.querySelector('a[href^="torrents.php?type=leeching&userid="]').nextElementSibling.innerHTML.trim().replace(/(\w)B/, '$1iB');
+    info.downloaded = util.calSize(...info.downloaded.split(' '));
+
+    // ajax
+    const { body: stats } = await util.requestPromise({
+      url: 'https://dicmusic.club/ajax.php?action=community_stats&userid=' + info.uid,
+      headers: {
+        cookie: this.cookie
+      }
+    });
+    const statsJson = JSON.parse(stats);
+    // 做种
+    info.seeding = statsJson.response.seeding;
+    // 下载
+    info.leeching = statsJson.response.leeching;
+    return info;
+  };
+
+  // GPW
+  async _gpw () {
+    const info = {};
+    const document = await this._getDocument('https://greatposterwall.com/user.php');
+    // 用户名
+    info.username = document.querySelector('span[class=Header-profileName]').innerHTML;
+    // uid
+    info.uid = document.querySelector('a[href^="torrents.php?type=seeding&userid="]').href.match(/userid=(\d+)/)[1];
+    // 上传
+    info.uploaded = document.querySelector('a[href^="torrents.php?type=seeding&userid="] span').innerHTML.trim().replace(/(\w)B/, '$1iB');
+    info.uploaded = util.calSize(...info.uploaded.split(' '));
+    // 下载
+    info.downloaded = document.querySelector('a[href^="torrents.php?type=leeching&userid="] span').innerHTML.trim().replace(/(\w)B/, '$1iB');
+    info.downloaded = util.calSize(...info.downloaded.split(' '));
+
+    // ajax
+    const { body: stats } = await util.requestPromise({
+      url: 'https://greatposterwall.com/ajax.php?action=community_stats&userid=' + info.uid,
+      headers: {
+        cookie: this.cookie
+      }
+    });
+    const statsJson = JSON.parse(stats);
+    // 做种
+    info.seeding = statsJson.response.seeding;
+    // 下载
+    info.leeching = statsJson.response.leeching;
     return info;
   };
 
