@@ -3,69 +3,172 @@
     <div class="torrent-mix-div">
       <el-form class="client-mix-form" label-width="100px" size="mini">
         <el-form-item label="选择客户端">
-          <el-checkbox-group @change="listTorrent" v-model="clients">
+          <el-checkbox-group @change="listTorrent" v-model="setting.clients">
             <el-checkbox v-for="client of clientList" :key="client.id" :label="client.id">{{client.alias}}</el-checkbox>
           </el-checkbox-group>
         </el-form-item>
         <el-form-item label="排序规则">
-          <el-select @change="listTorrent"  v-model="sort.key" placeholder="排序字段">
+          <el-select @change="listTorrent"  v-model="setting.sort.key" placeholder="排序字段">
             <el-option v-for="sortKey of sortKeys" :key="sortKey.key" :label="sortKey.value" :value="sortKey.key"></el-option>
           </el-select>
-          <el-select @change="listTorrent"  v-model="sort.type" placeholder="升降序">
+          <el-select @change="listTorrent"  v-model="setting.sort.type" placeholder="升降序">
             <el-option v-for="sortType of sortTypes" :key="sortType.key" :label="sortType.value" :value="sortType.key"></el-option>
           </el-select>
+        </el-form-item>
+        <el-form-item label="展示内容">
+          <el-checkbox-group v-model="setting.showKeys">
+            <el-checkbox v-for="_key of keys" :key="_key.key" :label="_key.key">{{ _key.name }}</el-checkbox>
+          </el-checkbox-group>
+        </el-form-item>
+        <el-form-item size="mini">
+          <el-button type="primary" @click="modifyTorrentMixSetting">保存</el-button>
         </el-form-item>
       </el-form>
       <el-table
         :data="torrentList"
-        :span-method="arraySpanMethod"
-        :row-style="rowStyle"
-        style="width: 100%;">
-        <el-table-column
-          align="center"
-          label="客户端别名">
-          <el-table-column
-            prop="c0"
-            align="center"
-            label="状态">
-          </el-table-column>
+        size="small"
+        stripe
+        style="width: 100%; font-size: 14px;">
+        <el-table-column type="expand" width="72">
+          <template slot-scope="props">
+            <el-form style="padding-left: 32px; width: 100%;" label-position="left" class="table-expand">
+              <el-form-item label="客户端名">
+                <span>{{ props.row.clientAlias }}</span>
+              </el-form-item>
+              <el-form-item label="种子名称">
+                <span>{{ props.row.name }}</span>
+              </el-form-item>
+              <el-form-item label="种子大小">
+                <span>{{ $formatSize(props.row.size || 0) }}</span>
+              </el-form-item>
+              <el-form-item label="种子分类">
+                <span>{{props.row.category}}</span>
+              </el-form-item>
+              <el-form-item label="保存路径">
+                <span>{{props.row.savePath}}</span>
+              </el-form-item>
+              <el-form-item label="种子状态">
+                <span>{{ props.row.state }}</span>
+              </el-form-item>
+              <el-form-item label="添加时间">
+                <span>{{ $moment(props.row.addedTime * 1000).format('YYYY-MM-DD HH:mm:ss') }}</span>
+              </el-form-item>
+              <el-form-item label="删除时间">
+                <span>{{props.row.completedTime ? $moment(props.row.completedTime * 1000).format('YYYY-MM-DD HH:mm:ss') : '∞' }}</span>
+              </el-form-item>
+              <el-form-item label="上传速度">
+                <span>{{ $formatSize(props.row.uploadSpeed || 0) }}/s</span>
+              </el-form-item>
+              <el-form-item label="下载速度">
+                <span>{{ $formatSize(props.row.downloadSpeed || 0) }}/s</span>
+              </el-form-item>
+              <el-form-item label="上传流量">
+                <span>{{ $formatSize(props.row.uploaded || 0) }}</span>
+              </el-form-item>
+              <el-form-item label="下载流量">
+                <span>{{ $formatSize(props.row.downloaded || 0) }}</span>
+              </el-form-item>
+              <el-form-item label="站点域名">
+                <span>{{ props.row.tracker }}</span>
+              </el-form-item>
+              <el-form-item label="种子链接">
+                <el-link type="primary" @click="gotoDetail(props.row)" style="line-height: 24px">{{ props.row.link || '无' }}</el-link>
+              </el-form-item>
+            </el-form>
+          </template>
         </el-table-column>
         <el-table-column
+          v-if="setting.showKeys.indexOf('clientAlias') !== -1"
           align="center"
-          label="名称">
-          <el-table-column
-            align="center"
-            prop="c1"
-            label="上传/下载速度">
-          </el-table-column>
-          <el-table-column
-            align="center"
-            prop="c2"
-            label="上传/下载数据">
-          </el-table-column>
-          <el-table-column
-            align="center"
-            prop="c3"
-            label="做种/下载">
-          </el-table-column>
-          <el-table-column
-            align="center"
-            prop="c4"
-            label="大小">
-          </el-table-column>
-          <el-table-column
-            align="center"
-            prop="c5"
-            label="Tracker">
-          </el-table-column>
-        </el-table-column>
-        <el-table-column
-          align="center"
-          label="操作">
+          label="客户端"
+          width="144">
           <template slot-scope="scope">
-            <el-button style="margin-left: 0" @click="queryDetail(scope.row)" type="primary" size="small">详情</el-button>
-            <el-button style="margin-left: 0" @click="gotoDetail(scope.row)" type="primary" size="small">种子页</el-button>
-            <el-button style="margin-left: 0" type="danger" size="small">删除</el-button>
+            {{scope.row.clientAlias}}
+          </template>
+        </el-table-column>
+        <el-table-column
+          v-if="setting.showKeys.indexOf('name') !== -1"
+          align="center"
+          label="名称"
+          min-width="244">
+          <template slot-scope="scope">
+            {{scope.row.name}}
+          </template>
+        </el-table-column>
+        <el-table-column
+          v-if="setting.showKeys.indexOf('size') !== -1"
+          align="center"
+          label="种子大小"
+          width="144">
+          <template slot-scope="scope">
+            {{$formatSize(scope.row.size || 0)}}
+          </template>
+        </el-table-column>
+        <el-table-column
+          v-if="setting.showKeys.indexOf('category') !== -1"
+          align="center"
+          label="种子分类"
+          width="144">
+          <template slot-scope="scope">
+            {{scope.row.category}}
+          </template>
+        </el-table-column>
+        <el-table-column
+          v-if="setting.showKeys.indexOf('speed') !== -1"
+          align="center"
+          label="种子速度"
+          width="144">
+          <template slot-scope="scope">
+            {{$formatSize(scope.row.uploadSpeed || 0)}}/s
+            <br>
+            {{$formatSize(scope.row.downloadSpeed || 0)}}/s
+          </template>
+        </el-table-column>
+        <el-table-column
+          v-if="setting.showKeys.indexOf('flow') !== -1"
+          align="center"
+          label="种子数据"
+          width="144">
+          <template slot-scope="scope">
+            {{$formatSize(scope.row.uploaded || 0)}}
+            <br>
+            {{$formatSize(scope.row.downloaded || 0)}}
+          </template>
+        </el-table-column>
+        <el-table-column
+          v-if="setting.showKeys.indexOf('addedTime') !== -1"
+          align="center"
+          label="添加时间"
+          width="200">
+          <template slot-scope="scope">
+            {{$moment(scope.row.addedTime * 1000).format('YYYY-MM-DD HH:mm:ss')}}
+          </template>
+        </el-table-column>
+        <el-table-column
+          v-if="setting.showKeys.indexOf('completedTime') !== -1"
+          align="center"
+          label="完成时间"
+          width="200">
+          <template slot-scope="scope">
+            {{scope.row.completedTime ? $moment(scope.row.completedTime * 1000).format('YYYY-MM-DD HH:mm:ss') : '∞' }}
+          </template>
+        </el-table-column>
+        <el-table-column
+          v-if="setting.showKeys.indexOf('state') !== -1"
+          align="center"
+          label="种子状态"
+          width="144">
+          <template slot-scope="scope">
+            {{ scope.row.state }}
+          </template>
+        </el-table-column>
+        <el-table-column
+          v-if="setting.showKeys.indexOf('link') !== -1"
+          align="center"
+          label="种子链接"
+          width="144">
+          <template slot-scope="scope">
+            <el-link type="primary" @click="gotoDetail(scope.row)" style="line-height: 24px">种子链接</el-link>
           </template>
         </el-table-column>
       </el-table>
@@ -83,20 +186,6 @@
           :total="total">
         </el-pagination>
       </div>
-      <el-dialog :title="torrentInfo.name" :visible.sync="torrentInfoVisible" width="80%">
-        <el-descriptions title="">
-          <el-descriptions-item label="开始时间">{{$moment(torrentInfo.addedTime * 1000).format('YYYY-MM-DD HH:mm:ss')}}</el-descriptions-item>
-          <el-descriptions-item label="完成时间">{{torrentInfo.completedTime > $moment().unix() ? '∞' : $moment(torrentInfo.completedTime * 1000).format('YYYY-MM-DD HH:mm:ss')}}</el-descriptions-item>
-          <el-descriptions-item label="当前进度">{{(torrentInfo.progress * 100).toFixed(2) + '%'}}</el-descriptions-item>
-          <el-descriptions-item label="已上传">{{$formatSize(torrentInfo.uploaded)}}</el-descriptions-item>
-          <el-descriptions-item label="已下载">{{$formatSize(torrentInfo.downloaded)}}</el-descriptions-item>
-          <el-descriptions-item label="总大小">{{$formatSize(torrentInfo.size)}}</el-descriptions-item>
-          <el-descriptions-item label="上传速度">{{$formatSize(torrentInfo.uploadSpeed)}}/s</el-descriptions-item>
-          <el-descriptions-item label="下载速度">{{$formatSize(torrentInfo.downloadSpeed)}}/s</el-descriptions-item>
-          <el-descriptions-item label="分享率">{{torrentInfo.ratio.toFixed(2)}}</el-descriptions-item>
-          <el-descriptions-item label="做种 / 下载">{{`${torrentInfo.seeder}/${torrentInfo.leecher}`}}</el-descriptions-item>
-      </el-descriptions>
-      </el-dialog>
     </div>
   </div>
 </template>
@@ -115,8 +204,44 @@ export default {
       totalPage: 0,
       page: 1,
       length: 20,
-      sort: {
+      setting: {
+        showKeys: ['clientAlias', 'name', 'size', 'flow', 'link', 'speed'],
+        sort: {
+        },
+        clients: []
       },
+      keys: [{
+        key: 'name',
+        name: '种子名称'
+      }, {
+        key: 'clientAlias',
+        name: '客户端名'
+      }, {
+        key: 'size',
+        name: '种子大小'
+      }, {
+        key: 'category',
+        name: '种子分类'
+      }, {
+        key: 'state',
+        name: '种子状态'
+      }, {
+        key: 'speed',
+        name: '种子速度'
+      }, {
+        key: 'flow',
+        name: '种子数据'
+      }, {
+        key: 'addedTime',
+        name: '添加时间'
+      }, {
+        key: 'completedTime',
+        name: '完成时间'
+      }, {
+        key: 'link',
+        name: '种子链接'
+      }],
+      searchKey: '',
       sortKeys: [
         {
           key: 'name',
@@ -147,35 +272,21 @@ export default {
           value: '降序'
         }
       ],
-      stateMap: {
-        downloading: '下载',
-        stalledDL: '等待',
-        Downloading: '下载',
-        uploading: '上传',
-        stalledUP: '做种',
-        Seeding: '做种'
-      },
-      torrentInfoVisible: false,
       paginationShow: true
     };
   },
   methods: {
     async listTorrent () {
-      let url = `/api/torrent/list?clientList=${encodeURIComponent(JSON.stringify(this.clients))}&page=${this.page}&length=${this.length}`;
-      if (this.sort.key) {
-        url += `&sortKey=${this.sort.key}`;
+      let url = `/api/torrent/list?clientList=${encodeURIComponent(JSON.stringify(this.setting.clients))}&page=${this.page}&length=${this.length}`;
+      if (this.setting.sort.key) {
+        url += `&sortKey=${this.setting.sort.key}`;
       }
-      if (this.sort.type) {
-        url += `&sortType=${this.sort.type}`;
+      if (this.setting.sort.type) {
+        url += `&sortType=${this.setting.sort.type}`;
       }
       const res = await this.$axiosGet(url);
       this.total = res ? res.data.total : 0;
-      const torrentList = res ? res.data.torrents : [];
-      this.torrentList = [];
-      for (const torrent of torrentList) {
-        this.torrentList.push(torrent);
-        this.torrentList.push(torrent);
-      }
+      this.torrentList = res ? res.data.torrents : [];
     },
 
     async queryDetail (row) {
@@ -190,7 +301,8 @@ export default {
 
     async changePage (page) {
       this.torrents = [];
-      const url = `/torrent-mix?clientList=${encodeURIComponent(JSON.stringify(this.clients))}&page=${page}&length=${this.length}`;
+      this.page = page;
+      const url = `/torrent-mix?clientList=${encodeURIComponent(JSON.stringify(this.setting.clients))}&page=${page}&length=${this.length}`;
       this.$router.push(url);
       await this.listTorrent();
     },
@@ -200,71 +312,36 @@ export default {
       this.clientList = res ? res.data.filter(item => item.enable) : [];
     },
 
-    arraySpanMethod ({ row, column, rowIndex, columnIndex }) {
-      if (rowIndex % 2 === 0) {
-        switch (columnIndex) {
-        case 0:
-          row.c0 = row.clientAlias;
-          return [1, 1];
-        case 1:
-          row.c1 = row.name;
-          return [1, 5];
-        case 2:
-          return [0, 0];
-        case 3:
-          return [0, 0];
-        case 4:
-          return [0, 0];
-        case 5:
-          return [0, 0];
-        case 6:
-          return [2, 1];
-        }
-      } else {
-        switch (columnIndex) {
-        case 0:
-          row.c0 = this.stateMap[row.state];
-          return [1, 1];
-        case 1:
-          row.c1 = `${this.$formatSize(row.uploadSpeed)}/s / ${this.$formatSize(row.downloadSpeed)}/s`;
-          return [1, 1];
-        case 2:
-          row.c2 = `${this.$formatSize(row.uploaded)} / ${this.$formatSize(row.downloaded)}`;
-          return [1, 1];
-        case 3:
-          row.c3 = `${row.seeder} / ${row.leecher}`;
-          return [1, 1];
-        case 4:
-          row.c4 = this.$formatSize(row.size);
-          return [1, 1];
-        case 5:
-          row.c5 = row.tracker;
-          return [1, 1];
-        case 6:
-          return [0, 0];
-        }
-      }
+    async getTorrentMixSetting () {
+      const url = '/api/setting/getTorrentMixSetting';
+      const res = await this.$axiosGet(url);
+      this.setting = {
+        ...res.data,
+        showKeys: res.data.showKeys || ['clientAlias', 'name', 'size', 'flow', 'link', 'speed'],
+        sort: {},
+        clients: res.data.clients || []
+      };
     },
-    rowStyle ({ row, rowIndex }) {
-      if (rowIndex % 4 < 2) {
-        return {
-          background: '#B0E0E6'
-        };
-      } else if (rowIndex % 4 >= 2) {
-        return {
-          background: '#B4EEB4'
-        };
+
+    async modifyTorrentMixSetting () {
+      const url = '/api/setting/modifyTorrentMixSetting';
+      const res = await this.$axiosPost(url, this.setting);
+      if (!res) {
+        return;
       }
-      return '';
+      await this.$messageBox(res);
     }
   },
   async mounted () {
     this.clients = JSON.parse(this.$route.query.clients || '[]');
     this.listClient();
     this.listTorrent();
+    this.getTorrentMixSetting();
+    /*
     this.freshTorrent = setInterval(() => {
       this.listTorrent();
     }, 5000);
+    */
   },
   beforeDestroy () {
     clearInterval(this.freshTorrent);
@@ -284,12 +361,24 @@ export default {
   text-align: left;
 }
 
-.row1 {
-  background: hsl(240, 66%, 83%);
+.table-expand .el-form-item {
+  margin-bottom: 0;
 }
 
-.row2 {
-  background: #C1FFC1;
+.table-expand {
+  width: fit-content;
+  text-align: left;
 }
 
+.table-expand label {
+  width: 90px;
+  color: #99a9bf;
+}
+
+.el-table__expand-column .cell {
+  width: 48px;
+  height: 48px;
+  padding-left: 0;
+  padding-right: 0;
+}
 </style>

@@ -30,7 +30,7 @@
         size="small"
         stripe
         style="width: 100%; font-size: 14px;">
-        <el-table-column type="expand">
+        <el-table-column type="expand" width="72">
           <template slot-scope="props">
             <el-form style="padding-left: 32px; width: 100%;" label-position="left" class="table-expand">
               <el-form-item label="种子名称">
@@ -72,7 +72,8 @@
         <el-table-column
           v-if="setting.showKeys.indexOf('name') !== -1"
           align="center"
-          label="名称">
+          label="名称"
+          min-width="244">
           <template slot-scope="scope">
             {{scope.row.name}}
           </template>
@@ -90,8 +91,7 @@
           v-if="setting.showKeys.indexOf('addTime') !== -1"
           align="center"
           label="添加时间"
-          width="200"
-          fixed="right">
+          width="200">
           <template slot-scope="scope">
             {{$moment(scope.row.addTime * 1000).format('YYYY-MM-DD HH:mm:ss')}}
           </template>
@@ -100,8 +100,7 @@
           v-if="setting.showKeys.indexOf('deleteTime') !== -1"
           align="center"
           label="删除时间"
-          width="200"
-          fixed="right">
+          width="200">
           <template slot-scope="scope">
             {{scope.row.deleteTime ? $moment(scope.row.deleteTime * 1000).format('YYYY-MM-DD HH:mm:ss') : '∞' }}
           </template>
@@ -110,8 +109,7 @@
           v-if="setting.showKeys.indexOf('state') !== -1"
           align="center"
           label="种子状态"
-          width="144"
-          fixed="right">
+          width="144">
           <template slot-scope="scope">
             {{ scope.row.type }}
           </template>
@@ -120,8 +118,7 @@
           v-if="setting.showKeys.indexOf('link') !== -1"
           align="center"
           label="种子链接"
-          width="144"
-          fixed="right">
+          width="144">
           <template slot-scope="scope">
             <el-link type="primary" @click="gotoDetail(scope.row)" style="line-height: 24px">种子链接</el-link>
           </template>
@@ -261,10 +258,4 @@ export default {
   color: #99a9bf;
 }
 
-.el-table__expand-column .cell {
-  width: 48px;
-  height: 48px;
-  padding-left: 0;
-  padding-right: 0;
-}
 </style>

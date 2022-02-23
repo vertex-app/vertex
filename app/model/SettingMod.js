@@ -7,6 +7,7 @@ const Push = require('../common/Push');
 
 const settingPath = path.join(__dirname, '../data/setting.json');
 const torrentHistorySettingPath = path.join(__dirname, '../data/setting/torrent-history-setting.json');
+const torrentMixSettingPath = path.join(__dirname, '../data/setting/torrent-mix-setting.json');
 const sitePushSettingPath = path.join(__dirname, '../data/setting/site-push-setting.json');
 
 class SettingMod {
@@ -39,6 +40,16 @@ class SettingMod {
 
   modifyTorrentHistorySetting (options) {
     fs.writeFileSync(torrentHistorySettingPath, JSON.stringify(options, null, 2));
+    return '修改成功';
+  };
+
+  getTorrentMixSetting () {
+    const settingStr = fs.readFileSync(torrentMixSettingPath, { encoding: 'utf-8' });
+    return JSON.parse(settingStr);
+  };
+
+  modifyTorrentMixSetting (options) {
+    fs.writeFileSync(torrentMixSettingPath, JSON.stringify(options, null, 2));
     return '修改成功';
   };
 

@@ -61,6 +61,21 @@ body {
   width : 5px;
   height: 1px;
 }
+
+ .el-table__expand-icon {
+  width: 72px;
+  height: 48px;
+  padding-left: 0;
+  padding-right: 0;
+ }
+
+ .el-table__expand-column .cell {
+  width: 72px;
+  height: 48px;
+  padding-left: 0;
+  padding-right: 0;
+}
+
 *::-webkit-scrollbar-thumb {
   border-radius   : 10px;
   background-color: skyblue;

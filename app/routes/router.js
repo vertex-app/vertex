@@ -150,10 +150,12 @@ module.exports = function (app, express, router) {
   router.get('/setting/get', ctrl.Setting.get);
   router.get('/setting/getRunInfo', ctrl.Setting.getRunInfo);
   router.get('/setting/getTorrentHistorySetting', ctrl.Setting.getTorrentHistorySetting);
+  router.get('/setting/getTorrentMixSetting', ctrl.Setting.getTorrentMixSetting);
   router.get('/setting/getSitePushSetting', ctrl.Setting.getSitePushSetting);
   router.get('/setting/getBackground', ctrl.Setting.getBackground);
   router.post('/setting/modify', ctrl.Setting.modify);
   router.post('/setting/modifyTorrentHistorySetting', ctrl.Setting.modifyTorrentHistorySetting);
+  router.post('/setting/modifyTorrentMixSetting', ctrl.Setting.modifyTorrentMixSetting);
   router.post('/setting/modifySitePushSetting', ctrl.Setting.modifySitePushSetting);
   router.get('/setting/backupVertex', ctrl.Setting.backupVertex);
   router.post('/setting/restoreVertex', ctrl.Setting.restoreVertex);

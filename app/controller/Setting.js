@@ -86,6 +86,39 @@ class Setting {
     }
   };
 
+  async getTorrentMixSetting (req, res) {
+    try {
+      const r = settingMod.getTorrentMixSetting();
+      res.send({
+        success: true,
+        data: r
+      });
+    } catch (e) {
+      logger.error(e);
+      res.send({
+        success: false,
+        message: e
+      });
+    }
+  };
+
+  async modifyTorrentMixSetting (req, res) {
+    const options = req.body;
+    try {
+      const r = settingMod.modifyTorrentMixSetting(options);
+      res.send({
+        success: true,
+        message: r
+      });
+    } catch (e) {
+      logger.error(e);
+      res.send({
+        success: false,
+        message: e
+      });
+    }
+  };
+
   async getSitePushSetting (req, res) {
     try {
       const r = settingMod.getSitePushSetting();
