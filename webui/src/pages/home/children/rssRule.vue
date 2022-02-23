@@ -18,8 +18,16 @@
         </el-table-column>
         <el-table-column
           label="操作"
-          width="200">
+          width="256">
           <template slot-scope="scope">
+            <el-button
+              type="primary"
+              size="small"
+              v-clipboard:copy="JSON.stringify(scope.row, null, 2)"
+              v-clipboard:success="onCopy"
+              v-clipboard:error="onError">
+              复制
+            </el-button>
             <el-button @click="modifyRule(scope.row)" type="warning" size="small">编辑</el-button>
             <el-button @click="deleteRule(scope.row)" :disabled="scope.row.used" type="danger" size="small">删除</el-button>
           </template>
@@ -102,11 +110,22 @@
             </el-form-item>
             <el-form-item size="small">
               <el-button type="primary" @click="handleRuleClick">新增 | 编辑</el-button>
+              <el-button type="primary" @click="importRuleVisible = !importRuleVisible">导入</el-button>
               <el-button @click="clearRule">清空</el-button>
             </el-form-item>
           </el-form>
         </el-collapse-item>
       </el-collapse>
+      <el-dialog title="导入规则" :visible.sync="importRuleVisible" width="80%">
+        <el-form class="torrent-history-form" label-width="144px" size="mini" style="width: 80%;">
+          <el-form-item label="规则">
+            <el-input v-model="importRuleText" type="textarea" :rows="20"></el-input>
+          </el-form-item>
+          <el-form-item size="mini">
+            <el-button type="primary" @click="importRule">导入</el-button>
+          </el-form-item>
+        </el-form>
+      </el-dialog>
     </div>
   </div>
 </template>
@@ -135,7 +154,9 @@ export default {
         value: ''
       },
       ruleList: [],
-      ruleCollapse: ['1']
+      ruleCollapse: ['1'],
+      importRuleVisible: false,
+      importRuleText: ''
     };
   },
   methods: {
@@ -182,6 +203,25 @@ export default {
     async listRule () {
       const res = await this.$axiosGet('/api/rssRule/list');
       this.ruleList = res ? res.data : [];
+    },
+    onCopy () {
+      this.$message.info('复制到剪贴板成功');
+    },
+    onError (e) {
+      this.$message.error(e.message);
+    },
+    importRule () {
+      this.clearRule();
+      try {
+        this.rule = {
+          ...JSON.parse(this.importRuleText),
+          id: undefined
+        };
+        this.importRuleVisible = false;
+        this.importRuleText = '';
+      } catch (e) {
+        this.$message.error('输入内容有误');
+      }
     }
   },
   async mounted () {

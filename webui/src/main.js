@@ -1,4 +1,5 @@
 import Vue from 'vue';
+import VueClipboard from 'vue-clipboard2';
 import {
   Button, Select, Input, Message, Image, Row, Col, Card, Link, MessageBox,
   Divider, Tag, Pagination, DatePicker, TimePicker, Upload, Checkbox, Option,
@@ -46,6 +47,8 @@ const components = [
 
 Vue.component('v-chart', ECharts);
 components.forEach((component) => Vue.use(component));
+
+Vue.use(VueClipboard);
 
 library.add(solid);
 library.add(brands);
