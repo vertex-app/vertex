@@ -24,7 +24,8 @@ class Site {
       BeiTai: this._beitai,
       TCCF: this._tccf,
       TLFBits: this._tlfbits,
-      PTMSG: this._ptmsg
+      PTMSG: this._ptmsg,
+      HDFans: this._hdfans
     };
     this.cookie = site.cookie;
     this.site = site.name;
@@ -261,6 +262,25 @@ class Site {
   async _ptmsg () {
     const info = {};
     const document = await this._getDocument('https://pt.msg.vg/');
+    // 用户名
+    info.username = document.querySelector('a[href^=userdetails] b').innerHTML;
+    // 上传
+    info.uploaded = document.querySelector('font[class=color_uploaded]').nextSibling.nodeValue.trim().replace(/(\w)B/, '$1iB');
+    info.uploaded = util.calSize(...info.uploaded.split(' '));
+    // 下载
+    info.downloaded = document.querySelector('font[class=color_downloaded]').nextSibling.nodeValue.trim().replace(/(\w)B/, '$1iB');
+    info.downloaded = util.calSize(...info.downloaded.split(' '));
+    // 做种
+    info.seeding = +document.querySelector('img[class=arrowup]').nextSibling.nodeValue.trim();
+    // 下载
+    info.leeching = +document.querySelector('img[class=arrowdown]').nextSibling.nodeValue.trim();
+    return info;
+  };
+
+  // HDFans
+  async _hdfans () {
+    const info = {};
+    const document = await this._getDocument('https://hdfans.org/');
     // 用户名
     info.username = document.querySelector('a[href^=userdetails] b').innerHTML;
     // 上传

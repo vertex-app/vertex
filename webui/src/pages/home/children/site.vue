@@ -25,7 +25,8 @@
         <el-table-column
           sortable
           prop="name"
-          label="站点">
+          label="站点"
+          min-width="180">
           <template slot-scope="scope">
             <el-switch
               v-model="scope.row.display">
@@ -36,7 +37,8 @@
         <el-table-column
           sortable
           prop="info.username"
-          label="用户名">
+          label="用户名"
+          min-width="144">
           <template slot-scope="scope">
             {{ scope.row.display ? scope.row.info ? scope.row.info.username : '' : '*******' }}
           </template>
@@ -44,7 +46,8 @@
         <el-table-column
           sortable
           prop="info.uploaded"
-          label="上传">
+          label="上传"
+          min-width="144">
           <template slot-scope="scope">
             {{scope.row.info ? $formatSize(scope.row.info.uploaded) : ''}}
           </template>
@@ -52,7 +55,8 @@
         <el-table-column
           sortable
           prop="info.downloaded"
-          label="下载">
+          label="下载"
+          min-width="144">
           <template slot-scope="scope">
             {{scope.row.info ? $formatSize(scope.row.info.downloaded) : ''}}
           </template>
@@ -60,7 +64,8 @@
         <el-table-column
           sortable
           prop="info.seeding"
-          label="做种/下载">
+          label="做种/下载"
+          min-width="144">
           <template slot-scope="scope">
             {{scope.row.info ? scope.row.info.seeding + ' / ' + scope.row.info.leeching : ''}}
           </template>
@@ -131,7 +136,7 @@ export default {
       sites: ['HaresClub', 'CHDBits', 'LemonHD', 'HDChina',
         'HDSky', 'HDHome', 'PTerClub', 'Audiences', 'OurBits',
         'SpringSunDay', 'MTeam', 'OpenCD', 'U2', 'BeiTai',
-        'TCCF', 'TLFBits', 'PTMSG'],
+        'TCCF', 'TLFBits', 'PTMSG', 'HDFans'],
       defaultSite: {
         name: '',
         cookie: '',
