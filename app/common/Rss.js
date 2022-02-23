@@ -246,10 +246,17 @@ class Rss {
             if (+_torrent.size === +torrent.size) {
               await util.runRecord('INSERT INTO torrents (hash, name, size, rss_name, link, add_time, insert_type) values (?, ?, ?, ?, ?, ?, ?)',
                 [torrent.hash, torrent.name, torrent.size, this.alias, torrent.link, moment().unix(), '跳过同大小种子']);
-              await this.ntf.rejectTorrent(this._rss, client, torrent, '拒绝原因: 跳过同大小种子');
+              await this.ntf.rejectTorrent(this._rss, _client, torrent, '拒绝原因: 跳过同大小种子');
               return;
             }
           }
+        }
+        const sameTorrent = await util.getRecord('select * from torrents where size = ? and add_time > ?', [torrent.size, moment().unix() - 1200]);
+        if (sameTorrent && sameTorrent.id) {
+          await util.runRecord('INSERT INTO torrents (hash, name, size, rss_name, link, add_time, insert_type) values (?, ?, ?, ?, ?, ?, ?)',
+            [torrent.hash, torrent.name, torrent.size, this.alias, torrent.link, moment().unix(), '跳过同大小种子']);
+          await this.ntf.rejectTorrent(this._rss, _client, torrent, '拒绝原因: 跳过同大小种子');
+          return;
         }
       }
       const fitRules = this.acceptRules.filter(item => this._fitRule(item, torrent));
