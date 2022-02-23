@@ -22,6 +22,7 @@
         </el-form-item>
         <el-form-item size="mini">
           <el-button type="primary" @click="modifyTorrentMixSetting">保存</el-button>
+          <el-button type="primary" @click="listTorrent">刷新列表</el-button>
         </el-form-item>
       </el-form>
       <el-table
@@ -54,7 +55,7 @@
                 <span>{{ $moment(props.row.addedTime * 1000).format('YYYY-MM-DD HH:mm:ss') }}</span>
               </el-form-item>
               <el-form-item label="删除时间">
-                <span>{{props.row.completedTime ? $moment(props.row.completedTime * 1000).format('YYYY-MM-DD HH:mm:ss') : '∞' }}</span>
+                <span>{{$moment().unix() > props.row.completedTime ? $moment(props.row.completedTime * 1000).format('YYYY-MM-DD HH:mm:ss') : '∞' }}</span>
               </el-form-item>
               <el-form-item label="上传速度">
                 <span>{{ $formatSize(props.row.uploadSpeed || 0) }}/s</span>
@@ -150,7 +151,7 @@
           label="完成时间"
           width="200">
           <template slot-scope="scope">
-            {{scope.row.completedTime ? $moment(scope.row.completedTime * 1000).format('YYYY-MM-DD HH:mm:ss') : '∞' }}
+            {{$moment().unix() > scope.row.completedTime ? $moment(scope.row.completedTime * 1000).format('YYYY-MM-DD HH:mm:ss') : '∞' }}
           </template>
         </el-table-column>
         <el-table-column
