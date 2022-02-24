@@ -343,7 +343,7 @@ class Client {
           } else {
             await util.runRecord('update torrents set size = ?, tracker = ?, upload = ?, download = ?, delete_time = ? where size = ? and link like ?', [torrent.size, torrent.tracker, torrent.uploaded, torrent.downloaded, moment().unix(), torrent.size, '%chdbits%']);
           }
-          await util.runRecord('insert into torrents (hash, upload, download, time) value (?, ?, ?, ?)',
+          await util.runRecord('insert into torrent_flow (hash, upload, download, time) values (?, ?, ?, ?)',
             [torrent.hash, torrent.uploaded, torrent.downloaded, moment().unix()]);
           const deleteFiles = await this.deleteTorrent(torrent, rule);
           deletedTorrentHash.push(torrent.hash);
@@ -366,7 +366,7 @@ class Client {
       } else {
         await util.runRecord('update torrents set size = ?, tracker = ?, upload = ?, download = ? where size = ? and link like ?', [torrent.size, torrent.tracker, torrent.uploaded, torrent.downloaded, torrent.size, '%chdbits%']);
       }
-      await util.runRecord('insert into torrents (hash, upload, download, time) value (?, ?, ?, ?)',
+      await util.runRecord('insert into torrent_flow (hash, upload, download, time) values (?, ?, ?, ?)',
         [torrent.hash, torrent.uploaded, torrent.downloaded, moment().unix()]);
     }
   };

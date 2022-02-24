@@ -4,7 +4,8 @@
       <el-form class="torrent-history-form" inline label-width="100px" size="mini">
         <el-form-item label="选择 Rss">
           <el-select v-model="selectedRss" placeholder="Rss">
-            <el-option v-for="rss of rssList" :key="rss.name" :label="rss.name" :value="rss.id"></el-option>
+            <el-option v-for="rss of rssList" :key="rss.id" :label="rss.alias" :value="rss.id"></el-option>
+            <el-option label="已删除" value="deleted"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="类型">
@@ -76,7 +77,7 @@
           label="Rss"
           width="144">
           <template slot-scope="scope">
-            {{scope.row.rssName}}
+            {{rssList.filter(item => item.id === scope.row.rssId)[0] ? rssList.filter(item => item.id === scope.row.rssId)[0].alias : '已删除'}}
           </template>
         </el-table-column>
         <el-table-column
@@ -130,7 +131,7 @@
           label="种子状态"
           width="144">
           <template slot-scope="scope">
-            {{ scope.row.type }}
+            {{ scope.row.recordNote }}
           </template>
         </el-table-column>
         <el-table-column
@@ -209,7 +210,7 @@ export default {
   },
   methods: {
     async listTorrentHistory () {
-      const url = `/api/torrent/listHistory?page=${this.page}&length=${this.length}&rss=${encodeURIComponent(this.selectedRss)}&key=${encodeURIComponent(this.searchKey)}`;
+      const url = `/api/torrent/listHistory?page=${this.page}&length=${this.length}&rss=${encodeURIComponent(this.selectedRss)}&key=${encodeURIComponent(this.searchKey)}&type=${this.selectedType}`;
       const res = await this.$axiosGet(url);
       this.total = res.data.total;
       this.torrentList = res.data.torrents;
