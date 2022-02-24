@@ -11,12 +11,23 @@ const _getSum = function (a, b) {
   return a + b;
 };
 
+const _getRssContent = async function (rssUrl) {
+  let body;
+  const cache = await redis.get(`vertex:rss:${rssUrl}`);
+  if (cache) {
+    body = cache;
+  } else {
+    const res = await util.requestPromise(rssUrl + '&____=' + Math.random());
+    body = res.body;
+    await redis.setWithExpire(`vertex:rss:${rssUrl}`, body, 60);
+  }
+  return body;
+};
+
 const _getTorrents = async function (rssUrl) {
-  let res;
-  res = await util.requestPromise(rssUrl + '&____=' + Math.random());
-  res = await parseXml(res.body);
+  const rss = await parseXml(await _getRssContent(rssUrl));
   const torrents = [];
-  const items = res.rss.channel[0].item;
+  const items = rss.rss.channel[0].item;
   for (let i = 0; i < items.length; ++i) {
     const torrent = {
       size: 0,
@@ -40,11 +51,9 @@ const _getTorrents = async function (rssUrl) {
 };
 
 const _getTorrentsFileList = async function (rssUrl) {
-  let res;
-  res = await util.requestPromise(rssUrl + '&____=' + Math.random());
-  res = await parseXml(res.body);
+  const rss = await parseXml(await _getRssContent(rssUrl));
   const torrents = [];
-  const items = res.rss.channel[0].item;
+  const items = rss.rss.channel[0].item;
   for (let i = 0; i < items.length; ++i) {
     const torrent = {
       size: 0,
@@ -75,11 +84,9 @@ const _getTorrentsFileList = async function (rssUrl) {
 };
 
 const _getTorrentsBluTopia = async function (rssUrl) {
-  let res;
-  res = await util.requestPromise(rssUrl + '?____=' + Math.random());
-  res = await parseXml(res.body);
+  const rss = await parseXml(await _getRssContent(rssUrl));
   const torrents = [];
-  const items = res.rss.channel[0].item;
+  const items = rss.rss.channel[0].item;
   for (let i = 0; i < items.length; ++i) {
     const torrent = {
       size: 0,
@@ -110,11 +117,9 @@ const _getTorrentsBluTopia = async function (rssUrl) {
 };
 
 const _getTorrentsTorrentDB = async function (rssUrl) {
-  let res;
-  res = await util.requestPromise(rssUrl + '?____=' + Math.random());
-  res = await parseXml(res.body);
+  const rss = await parseXml(await _getRssContent(rssUrl));
   const torrents = [];
-  const items = res.rss.channel[0].item;
+  const items = rss.rss.channel[0].item;
   for (let i = 0; i < items.length; ++i) {
     const torrent = {
       size: 0,
