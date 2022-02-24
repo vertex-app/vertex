@@ -87,7 +87,7 @@ class SettingMod {
     for (const torrent of torrents) {
       uploadedToday += torrent.upload;
       downloadedToday += torrent.download;
-      const _torrent = await util.getRecord('select tracker from torrents where hash = ? where tracker is not null', [torrent.hash]);
+      const _torrent = await util.getRecord('select tracker from torrents where hash = ? and tracker is not null', [torrent.hash]);
       if (!_torrent) {
         continue;
       }
