@@ -39,11 +39,21 @@ const _getTorrents = async function (rssUrl) {
     };
     torrent.size = items[i].enclosure[0].$.length;
     torrent.name = items[i].title[0];
-    torrent.hash = items[i].guid[0]._ || items[i].guid[0];
     const link = items[i].link[0];
     torrent.link = link;
     torrent.id = link.substring(link.indexOf('?id=') + 4);
     torrent.url = items[i].enclosure[0].$.url;
+    torrent.hash = items[i].guid[0]._ || items[i].guid[0];
+    if (torrent.url.indexOf('chdbits') !== -1) {
+      const cache = await redis.get(`vertex:hash:${torrent.url}`);
+      if (cache) {
+        torrent.hash = cache;
+      } else {
+        const { hash } = await exports.getTorrentNameByBencode(torrent.url);
+        torrent.hash = hash;
+        await redis.set(`vertex:hash:${torrent.url}`);
+      }
+    }
     torrent.pubTime = moment(items[i].pubDate[0]).unix();
     torrents.push(torrent);
   }

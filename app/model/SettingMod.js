@@ -80,13 +80,26 @@ class SettingMod {
     const rejectCount = (await util.getRecord('select count(*) as rejectCount from torrents where record_type = 2')).rejectCount;
     const deleteCount = (await util.getRecord('select count(*) as deleteCount from torrents where delete_time is not null')).deleteCount;
     const perTracker = (await util.getRecords('select sum(upload) as uploaded, sum(download) as downloaded, tracker from torrents where tracker is not null group by tracker'));
-    const perTrackerToday = (await util.getRecords('select sum(upload) as uploaded, sum(download) as downloaded, tracker from torrents  where add_time > ? and tracker is not null group by tracker', [moment().startOf('day').unix()]));
+    const perTrackerTodaySet = {};
     let uploadedToday = 0;
     let downloadedToday = 0;
     const torrents = await util.getRecords('select hash, max(upload) - min(upload) as upload,  max(download) - min(download) as download from torrent_flow where time >= ? group by hash', [moment().startOf('day').unix()]);
     for (const torrent of torrents) {
       uploadedToday += torrent.upload;
       downloadedToday += torrent.download;
+      const _torrent = await util.getRecord('select tracker from torrents where hash = ? where tracker is not null', [torrent.hash]);
+      if (!_torrent) {
+        continue;
+      }
+      if (!perTrackerTodaySet[_torrent.trakcer]) {
+        perTrackerTodaySet[_torrent.trakcer] = { uploaded: 0, downloaded: 0 };
+      }
+      perTrackerTodaySet[_torrent.trakcer].uploaded += torrent.upload;
+      perTrackerTodaySet[_torrent.trakcer].downloaded += torrent.downloaded;
+    }
+    const perTrackerToday = [];
+    for (const tracker of Object.keys(perTrackerTodaySet)) {
+      perTrackerToday.push({ tracker, ...perTrackerTodaySet[tracker] });
     }
     return {
       uploaded: uploaded || 0,
