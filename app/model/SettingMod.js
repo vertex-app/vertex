@@ -91,11 +91,11 @@ class SettingMod {
       if (!_torrent) {
         continue;
       }
-      if (!perTrackerTodaySet[_torrent.trakcer]) {
-        perTrackerTodaySet[_torrent.trakcer] = { uploaded: 0, downloaded: 0 };
+      if (!perTrackerTodaySet[_torrent.tracker]) {
+        perTrackerTodaySet[_torrent.tracker] = { uploaded: 0, downloaded: 0 };
       }
-      perTrackerTodaySet[_torrent.trakcer].uploaded += torrent.upload;
-      perTrackerTodaySet[_torrent.trakcer].downloaded += torrent.downloaded;
+      perTrackerTodaySet[_torrent.tracker].uploaded += torrent.upload;
+      perTrackerTodaySet[_torrent.tracker].downloaded += torrent.download;
     }
     const perTrackerToday = [];
     for (const tracker of Object.keys(perTrackerTodaySet)) {
