@@ -72,16 +72,22 @@ class SettingMod {
   };
 
   async getRunInfo () {
-    const { uploaded, downloaded } = (await util.getRecord('select sum(uploaded) as uploaded, sum(downloaded) as downloaded from torrents'));
-    const { uploadedToday, downloadedToday } = (await util.getRecord('select sum(uploaded) as uploadedToday, sum(downloaded) as downloadedToday from torrents where add_time > ?', [moment().startOf('day').unix()]));
-    const addCountToday = (await util.getRecord('select count(*) as addCount from torrents where uploaded != 0 and add_time > ?', [moment().startOf('day').unix()])).addCount;
-    const rejectCountToday = (await util.getRecord('select count(*) as rejectCount from torrents where delete_time is null and add_time > ?', [moment().startOf('day').unix()])).rejectCount;
-    const deleteCountToday = (await util.getRecord('select count(*) as deleteCount from torrents where delete_time is not null and add_time > ?', [moment().startOf('day').unix()])).deleteCount;
-    const addCount = (await util.getRecord('select count(*) as addCount from torrents where uploaded != 0')).addCount;
-    const rejectCount = (await util.getRecord('select count(*) as rejectCount from torrents where delete_time is null')).rejectCount;
+    const { uploaded, downloaded } = (await util.getRecord('select sum(upload) as uploaded, sum(download) as downloaded from torrents'));
+    const addCountToday = (await util.getRecord('select count(*) as addCount from torrents where record_type = 1 and record_time > ?', [moment().startOf('day').unix()])).addCount;
+    const rejectCountToday = (await util.getRecord('select count(*) as rejectCount from torrents where record_type = 2 and record_time > ?', [moment().startOf('day').unix()])).rejectCount;
+    const deleteCountToday = (await util.getRecord('select count(*) as deleteCount from torrents where delete_time is not null and record_time > ?', [moment().startOf('day').unix()])).deleteCount;
+    const addCount = (await util.getRecord('select count(*) as addCount from torrents where record_type = 1')).addCount;
+    const rejectCount = (await util.getRecord('select count(*) as rejectCount from torrents where record_type = 2')).rejectCount;
     const deleteCount = (await util.getRecord('select count(*) as deleteCount from torrents where delete_time is not null')).deleteCount;
-    const perTracker = (await util.getRecords('select sum(uploaded) as uploaded, sum(downloaded) as downloaded, tracker from torrents  where tracker is not null group by tracker'));
-    const perTrackerToday = (await util.getRecords('select sum(uploaded) as uploaded, sum(downloaded) as downloaded, tracker from torrents  where add_time > ? and tracker is not null group by tracker', [moment().startOf('day').unix()]));
+    const perTracker = (await util.getRecords('select sum(upload) as uploaded, sum(download) as downloaded, tracker from torrents where tracker is not null group by tracker'));
+    const perTrackerToday = (await util.getRecords('select sum(upload) as uploaded, sum(download) as downloaded, tracker from torrents  where add_time > ? and tracker is not null group by tracker', [moment().startOf('day').unix()]));
+    let uploadedToday = 0;
+    let downloadedToday = 0;
+    const torrents = await util.getRecords('select hash, max(upload) - min(upload) as upload,  max(download) - min(download) as download from torrent_flow where time >= ? group by hash', [moment().startOf('day').unix()]);
+    for (const torrent of torrents) {
+      uploadedToday += torrent.upload;
+      downloadedToday += torrent.download;
+    }
     return {
       uploaded: uploaded || 0,
       downloaded: downloaded || 0,

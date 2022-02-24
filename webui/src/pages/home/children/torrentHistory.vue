@@ -4,7 +4,14 @@
       <el-form class="torrent-history-form" inline label-width="100px" size="mini">
         <el-form-item label="选择 Rss">
           <el-select v-model="selectedRss" placeholder="Rss">
-            <el-option v-for="rss of rssList" :key="rss.name" :label="rss.name" :value="rss.name"></el-option>
+            <el-option v-for="rss of rssList" :key="rss.name" :label="rss.name" :value="rss.id"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="类型">
+          <el-select v-model="selectedType" placeholder="Rss">
+            <el-option label="添加" :value="1"></el-option>
+            <el-option label="拒绝" :value="2"></el-option>
+            <el-option label="错误" :value="3"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="关键词">
@@ -12,7 +19,7 @@
         </el-form-item>
         <el-form-item size="small">
           <el-button type="primary" @click="listTorrentHistory">查询</el-button>
-          <el-button @click="() => { selectedRss = ''; searchKey = ''}">清空</el-button>
+          <el-button @click="() => { selectedRss = ''; searchKey = ''; selectedType = ''}">清空</el-button>
         </el-form-item>
       </el-form>
       <el-form class="torrent-history-form" inline label-width="100px" size="mini">
@@ -39,23 +46,26 @@
               <el-form-item label="种子大小">
                 <span>{{ $formatSize(props.row.size || 0) }}</span>
               </el-form-item>
+              <el-form-item label="记录时间">
+                <span>{{ $moment(props.row.recordTime * 1000).format('YYYY-MM-DD HH:mm:ss') }}</span>
+              </el-form-item>
               <el-form-item label="添加时间">
-                <span>{{ $moment(props.row.addTime * 1000).format('YYYY-MM-DD HH:mm:ss') }}</span>
+                <span>{{props.row.addTime ? $moment(props.row.addTime * 1000).format('YYYY-MM-DD HH:mm:ss') : '∞' }}</span>
               </el-form-item>
               <el-form-item label="删除时间">
                 <span>{{props.row.deleteTime ? $moment(props.row.deleteTime * 1000).format('YYYY-MM-DD HH:mm:ss') : '∞' }}</span>
               </el-form-item>
               <el-form-item label="上传流量">
-                <span>{{ $formatSize(props.row.uploaded || 0) }}</span>
+                <span>{{ $formatSize(props.row.upload || 0) }}</span>
               </el-form-item>
               <el-form-item label="下载流量">
-                <span>{{ $formatSize(props.row.downloaded || 0) }}</span>
+                <span>{{ $formatSize(props.row.download || 0) }}</span>
               </el-form-item>
               <el-form-item label="种子链接">
                 <el-link type="primary" @click="gotoDetail(props.row)" style="line-height: 24px">{{ props.row.link }}</el-link>
               </el-form-item>
-              <el-form-item label="种子状态">
-                <span>{{ props.row.type }}</span>
+              <el-form-item label="记录备注">
+                <span>{{ props.row.recordNote }}</span>
               </el-form-item>
             </el-form>
           </template>
@@ -88,12 +98,21 @@
           </template>
         </el-table-column>
         <el-table-column
+          v-if="setting.showKeys.indexOf('recordTime') !== -1"
+          align="center"
+          label="记录时间"
+          width="200">
+          <template slot-scope="scope">
+            {{$moment(scope.row.recordTime * 1000).format('YYYY-MM-DD HH:mm:ss')}}
+          </template>
+        </el-table-column>
+        <el-table-column
           v-if="setting.showKeys.indexOf('addTime') !== -1"
           align="center"
           label="添加时间"
           width="200">
           <template slot-scope="scope">
-            {{$moment(scope.row.addTime * 1000).format('YYYY-MM-DD HH:mm:ss')}}
+            {{scope.row.addTime ? $moment(scope.row.addTime * 1000).format('YYYY-MM-DD HH:mm:ss') : '∞' }}
           </template>
         </el-table-column>
         <el-table-column
@@ -166,8 +185,11 @@ export default {
         key: 'state',
         name: '种子状态'
       }, {
-        key: 'addTime',
+        key: 'recordTime',
         name: '记录时间'
+      }, {
+        key: 'addTime',
+        name: '添加时间'
       }, {
         key: 'deleteTime',
         name: '删除时间'
@@ -177,6 +199,7 @@ export default {
       }],
       searchKey: '',
       selectedRss: '',
+      selectedType: '',
       total: 0,
       totalPage: 0,
       page: 1,
@@ -193,7 +216,7 @@ export default {
     },
 
     async listRss () {
-      const url = '/api/torrent/listRss';
+      const url = '/api/rss/list';
       const res = await this.$axiosGet(url);
       this.rssList = res.data;
     },

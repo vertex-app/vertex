@@ -1,7 +1,3 @@
-auth:
-  username: user
-  password: 5f4dcc3b5aa765d61d8327deb882cf99
-
 redis:
   host: 127.0.0.1
   port: 6379

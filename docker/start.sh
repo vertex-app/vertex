@@ -30,7 +30,7 @@ else
 fi
 
 if [ ! -f '/vertex/db/sql.db' ]; then
-  wget "https://minio.lswl.in/share/sql.db" -O /vertex/db/sql.db
+  cp /root/vertex/app/config_backup/sql.db /vertex/db/sql.db
 else
   echo '/vertex/db/sql.db exists, continue'
 fi
@@ -43,7 +43,7 @@ fi
 
 if [ ! -f '/vertex/config/config.yaml' ]; then
   mkdir /vertex/config
-  cp /root/vertex/app/config_backup/* /vertex/config/
+  cp /root/vertex/app/config_backup/*.yaml /vertex/config/
   cp /vertex/config/config.example.yaml /vertex/config/config.yaml
 else
   echo '/vertex/config/config.yaml exists, continue'

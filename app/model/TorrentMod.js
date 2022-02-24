@@ -57,21 +57,22 @@ class TorrentMod {
   async listHistory (options) {
     const index = options.length * (options.page - 1);
     let where = 'where 1 = 1';
-    if (options.rss) {
-      where += ` and rss_name = '${options.rss}'`;
+    if (options.rss && options.rss === 'deleted') {
+      where += ` and rss_id NOT IN (${util.listRss().map(item => item.id).join('\', \'')})`;
+    } else if (options.rss) {
+      where += ` and rss_id = '${options.rss}'`;
     }
     if (options.key) {
       where += ` and name like '%${options.key}%'`;
     }
-    const torrents = await util.getRecords('select rss_name as rssName, name, size, link, insert_type as type, uploaded, downloaded, tracker, add_time as addTime, delete_time as deleteTime from torrents ' + where + ' order by id desc limit ? offset ?',
-      [options.length, index]);
+    if (options.type) {
+      where += ` and record_type like '%${options.type}%'`;
+    }
+    const parmas = [options.length, index];
+    const torrents = await util.getRecords('select rss_id as rssId, name, size, link, record_type as recordType, record_note as recordNote, upload, download, tracker, record_time as recordTime, add_time as addTime, delete_time as deleteTime from torrents ' + where + ' order by id desc limit ? offset ?',
+      parmas);
     const total = (await util.getRecord('select count(*) as total from torrents ' + where)).total;
     return { torrents, total };
-  }
-
-  async listRss () {
-    const rss = (await util.getRecords('select rss_name as name from torrents group by rss_name'));
-    return rss;
   }
 }
 

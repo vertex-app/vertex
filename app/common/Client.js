@@ -338,11 +338,13 @@ class Client {
           Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 2000);
           logger.info(torrent.name, '等待 2s 完毕, 执行删种');
           if (!torrent.tracker || torrent.tracker.indexOf('chdbits') === -1) {
-            await util.runRecord('update torrents set size = ?, tracker = ?, uploaded = ?, downloaded = ?, delete_time = ? where hash = ?',
-              [torrent.size, torrent.tracker, torrent.uploaded, torrent.downloaded, moment().unix(), torrent.hash]);
+            await util.runRecord('update torrents set size = ?, tracker = ?, upload = ?, download = ?, delete_time = ? where hash = ?',
+              [torrent.size, torrent.tracker, torrent.uploaded, torrent.downloaded, moment().startOf('minute').unix(), torrent.hash]);
           } else {
-            await util.runRecord('update torrents set size = ?, tracker = ?, uploaded = ?, downloaded = ?, delete_time = ? where size = ? and link like ?', [torrent.size, torrent.tracker, torrent.uploaded, torrent.downloaded, moment().unix(), torrent.size, '%chdbits%']);
+            await util.runRecord('update torrents set size = ?, tracker = ?, upload = ?, download = ?, delete_time = ? where size = ? and link like ?', [torrent.size, torrent.tracker, torrent.uploaded, torrent.downloaded, moment().unix(), torrent.size, '%chdbits%']);
           }
+          await util.runRecord('insert into torrents (hash, upload, download, time) value (?, ?, ?, ?)',
+            [torrent.hash, torrent.uploaded, torrent.downloaded, moment().unix()]);
           const deleteFiles = await this.deleteTorrent(torrent, rule);
           deletedTorrentHash.push(torrent.hash);
           if (!deleteFiles) {
@@ -356,12 +358,16 @@ class Client {
   async record () {
     if (!this.maindata) return;
     for (const torrent of this.maindata.torrents) {
+      const sqlRes = await util.getRecord('SELECT * FROM torrents WHERE hash = ? or (size = ? and link like ?)', [torrent.hash, torrent.size, '%chdbits%']);
+      if (!sqlRes) continue;
       if (!torrent.tracker || torrent.tracker.indexOf('chdbits') === -1) {
-        await util.runRecord('update torrents set size = ?, tracker = ?, uploaded = ?, downloaded = ? where hash = ?',
+        await util.runRecord('update torrents set size = ?, tracker = ?, upload = ?, download = ? where hash = ?',
           [torrent.size, torrent.tracker, torrent.uploaded, torrent.downloaded, torrent.hash]);
       } else {
-        await util.runRecord('update torrents set size = ?, tracker = ?, uploaded = ?, downloaded = ? where size = ? and link like ?', [torrent.size, torrent.tracker, torrent.uploaded, torrent.downloaded, torrent.size, '%chdbits%']);
+        await util.runRecord('update torrents set size = ?, tracker = ?, upload = ?, download = ? where size = ? and link like ?', [torrent.size, torrent.tracker, torrent.uploaded, torrent.downloaded, torrent.size, '%chdbits%']);
       }
+      await util.runRecord('insert into torrents (hash, upload, download, time) value (?, ?, ?, ?)',
+        [torrent.hash, torrent.uploaded, torrent.downloaded, moment().unix()]);
     }
   };
 
