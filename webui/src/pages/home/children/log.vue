@@ -6,6 +6,7 @@
         <el-option label="info" value="info"></el-option>
         <el-option label="error" value="error"></el-option>
         <el-option label="debug" value="debug"></el-option>
+        <el-option label="trace" value="access"></el-option>
       </el-select>
       <el-button type="primary" size="small" @click="clearLogFiles">清空历史日志文件</el-button>
     </div>

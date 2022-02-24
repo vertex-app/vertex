@@ -65,7 +65,7 @@ class Server {
           let stdout;
           if (err) return reject(err);
           stream.on('close', () => {
-            logger.debug({ command, stderr, stdout });
+            logger.trace({ command, stderr, stdout });
             resolve({
               stderr,
               stdout
