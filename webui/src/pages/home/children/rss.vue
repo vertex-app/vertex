@@ -97,6 +97,26 @@
                 <el-option label="当前下载速度" value="downloadSpeed"></el-option>
               </el-select>
             </el-form-item>
+            <el-form-item label="客户端最高上传速度" prop="maxClientUploadSpeed">
+              <el-input v-model="rss.maxClientUploadSpeed">
+                <el-select v-model="rss.maxClientUploadSpeedUnit" slot="append" style="width: 80px" placeholder="单位">
+                  <el-option label="KiB/s" value="KiB"></el-option>
+                  <el-option label="MiB/s" value="MiB"></el-option>
+                  <el-option label="GiB/s" value="GiB"></el-option>
+                </el-select>
+              </el-input>
+              <div><el-tag type="info">客户端上传速度在此速度之上时, 不添加种子, 留空或 0 不启用</el-tag></div>
+            </el-form-item>
+            <el-form-item label="客户端最高下载速度" prop="maxClientDownloadSpeed">
+              <el-input v-model="rss.maxClientDownloadSpeed">
+                <el-select v-model="rss.maxClientDownloadSpeedUnit" slot="append" style="width: 80px" placeholder="单位">
+                  <el-option label="KiB/s" value="KiB"></el-option>
+                  <el-option label="MiB/s" value="MiB"></el-option>
+                  <el-option label="GiB/s" value="GiB"></el-option>
+                </el-select>
+              </el-input>
+              <div><el-tag type="info">客户端下载速度在此速度之上时, 不添加种子, 留空或 0 不启用</el-tag></div>
+            </el-form-item>
             <el-form-item required label="Rss - Url" prop="rssUrl">
               <el-input v-model="rss.rssUrl" style="width: 500px;"></el-input>
             </el-form-item>

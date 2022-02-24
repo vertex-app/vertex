@@ -35,6 +35,8 @@ class Rss {
     this.rejectRules = util.listRssRule().filter(item => (this._rejectRules.indexOf(item.id) !== -1));
     this.downloadLimit = util.calSize(rss.downloadLimit, rss.downloadLimitUnit);
     this.uploadLimit = util.calSize(rss.uploadLimit, rss.uploadLimitUnit);
+    this.maxClientUploadSpeed = util.calSize(rss.maxClientUploadSpeed, rss.maxClientUploadSpeedUnit);
+    this.maxClientDownloadSpeed = util.calSize(rss.maxClientDownloadSpeed, rss.maxClientDownloadSpeedUnit);
     this.rssJob = new CronJob(rss.cron, () => this.rss());
     this.rssJob.start();
   }
@@ -291,7 +293,11 @@ class Rss {
     }
     const availableClients = this.clientArr
       .map(item => global.runningClient[item])
-      .filter(item => !!item);
+      .filter(item => {
+        return !!item &&
+          (!this.maxClientUploadSpeed || this.maxClientUploadSpeed > item.maindata.uploadSpeed) &&
+          (!this.maxClientDownloadSpeed || this.maxClientDownloadSpeed > item.maindata.downloadSpeed);
+      });
     const firstClient = availableClients
       .filter(item => {
         return (!item.maxDownloadSpeed || item.maxDownloadSpeed > item.maindata.downloadSpeed) &&
