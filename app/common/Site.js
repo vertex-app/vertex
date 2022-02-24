@@ -461,6 +461,7 @@ class Site {
       const info = await this.refreshWrapper[this.site].call(this);
       info.updateTime = moment().unix();
       logger.debug(this.site, '站点数据成功抓取,', '数据如下:\n', info);
+      await util.runRecord('insert into sites (site, uid, username, upload, download, bonus, seeding_size, seeding_num, level, update_time) values (?, ? , ?, ?, ?, ?, ?, ?, ?, ?)', [this.site, info.uid || 0, info.username, info.uploaded, info.downloaded, info.bonus || 0, info.seedingSize || 0, info.seeding, info.level || '', info.updateTime]);
       this.info = info;
     } catch (e) {
       logger.error(this.site, '站点数据抓取失败 (疑似是 Cookie 失效, 或遇到 5s 盾),', '报错如下:\n', e);

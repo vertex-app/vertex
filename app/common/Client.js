@@ -58,7 +58,7 @@ class Client {
         }
       }
     }
-    this.recordJob = new CronJob('*/5 * * * *', () => this.record());
+    this.recordJob = new CronJob('*/1 * * * *', () => this.record());
     this.recordJob.start();
     this.messageId = 0;
     this.errorCount = 0;
