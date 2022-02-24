@@ -3,8 +3,13 @@ const crypto = require('crypto');
 const moment = require('moment');
 const bencode = require('bencode');
 const util = require('./util');
+const redis = require('./redis');
 
 const parseXml = util.promisify(parser);
+
+const _getSum = function (a, b) {
+  return a + b;
+};
 
 const _getTorrents = async function (rssUrl) {
   let res;
@@ -138,10 +143,47 @@ const _getTorrentsTorrentDB = async function (rssUrl) {
   return torrents;
 };
 
+const _getUHDBits = async function (rssUrl) {
+  let res;
+  res = await util.requestPromise(rssUrl + '?____=' + Math.random());
+  res = await parseXml(res.body);
+  const torrents = [];
+  const items = res.rss.channel[0].item;
+  for (let i = 0; i < items.length; ++i) {
+    const torrent = {
+      size: 0,
+      name: '',
+      hash: '',
+      id: 0,
+      url: '',
+      link: ''
+    };
+    torrent.name = items[i].title[0];
+    const link = items[i].comments[0];
+    torrent.link = link;
+    torrent.url = items[i].link[0];
+    torrent.id = +torrent.url.match(/id=(\d+)/)[1];
+    const cache = await redis.get(`vertex:hash:${torrent.url}`);
+    if (cache) {
+      const _torrent = JSON.parse(cache);
+      torrent.hash = _torrent.hash;
+      torrent.size = _torrent.size;
+    } else {
+      const { hash, size } = await exports.getTorrentNameByBencode(torrent.url);
+      torrent.hash = hash;
+      torrent.size = size;
+      await redis.set(`vertex:hash:${torrent.url}`, JSON.stringify(torrent));
+    }
+    torrents.push(torrent);
+  }
+  return torrents;
+};
+
 const _getTorrentsWrapper = {
   'filelist.io': _getTorrentsFileList,
   'blutopia.xyz': _getTorrentsBluTopia,
-  'torrentdb.net': _getTorrentsTorrentDB
+  'torrentdb.net': _getTorrentsTorrentDB,
+  'uhdbits.org': _getUHDBits
 };
 
 exports.getTorrents = async function (rssUrl) {
@@ -170,6 +212,7 @@ exports.getTorrentNameByBencode = async function (url) {
   });
   const buffer = Buffer.from(res.body, 'utf-8');
   const torrent = bencode.decode(buffer);
+  const size = torrent.info.length || torrent.info.files.map(i => i.length).reduce(_getSum, 0);
   const fsHash = crypto.createHash('sha1');
   fsHash.update(bencode.encode(torrent.info));
   const md5 = fsHash.digest('md5');
@@ -179,6 +222,7 @@ exports.getTorrentNameByBencode = async function (url) {
   }
   return {
     hash,
+    size,
     name: torrent.info.name.toString()
   };
 };
