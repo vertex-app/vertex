@@ -42,8 +42,8 @@ class Site {
     this.info = {
       username: record.username,
       uid: record.uid,
-      uploaded: record.upload,
-      downloaded: record.download,
+      upload: record.upload,
+      download: record.download,
       seedingSize: record.seeding_size,
       seeding: record.seeding_num,
       updateTime: record.update_time,
@@ -69,11 +69,11 @@ class Site {
     // 用户名
     info.username = document.querySelector('a[href^=userdetails] b,a[href^=userdetails] em').innerHTML;
     // 上传
-    info.uploaded = document.querySelector('i[class="fa fa-arrow-up text-success fa-fw"]').nextElementSibling.innerHTML.trim().replace(/(\w)B/, '$1iB');
-    info.uploaded = util.calSize(...info.uploaded.split(' '));
+    info.upload = document.querySelector('i[class="fa fa-arrow-up text-success fa-fw"]').nextElementSibling.innerHTML.trim().replace(/(\w)B/, '$1iB');
+    info.upload = util.calSize(...info.upload.split(' '));
     // 下载
-    info.downloaded = document.querySelector('i[class="fa fa-arrow-down layui-font-orange fa-fw"]').nextElementSibling.innerHTML.trim().replace(/(\w)B/, '$1iB');
-    info.downloaded = util.calSize(...info.downloaded.split(' '));
+    info.download = document.querySelector('i[class="fa fa-arrow-down layui-font-orange fa-fw"]').nextElementSibling.innerHTML.trim().replace(/(\w)B/, '$1iB');
+    info.download = util.calSize(...info.download.split(' '));
     // 做种
     info.seeding = +document.querySelector('i[class="fas fa-upload text-success fa-fw"]').nextElementSibling.innerHTML.trim();
     // 下载
@@ -88,11 +88,11 @@ class Site {
     // 用户名
     info.username = document.querySelector('a[href^=userdetails] b').innerHTML;
     // 上传
-    info.uploaded = document.querySelector('font[class=color_uploaded]').nextSibling.nodeValue.trim().replace(/(\w)B/, '$1iB');
-    info.uploaded = util.calSize(...info.uploaded.split(' '));
+    info.upload = document.querySelector('font[class=color_uploaded]').nextSibling.nodeValue.trim().replace(/(\w)B/, '$1iB');
+    info.upload = util.calSize(...info.upload.split(' '));
     // 下载
-    info.downloaded = document.querySelector('font[class=color_downloaded]').nextSibling.nodeValue.trim().replace(/(\w)B/, '$1iB');
-    info.downloaded = util.calSize(...info.downloaded.split(' '));
+    info.download = document.querySelector('font[class=color_downloaded]').nextSibling.nodeValue.trim().replace(/(\w)B/, '$1iB');
+    info.download = util.calSize(...info.download.split(' '));
     // 做种
     info.seeding = +document.querySelector('img[class=arrowup]').nextSibling.nodeValue.trim();
     // 下载
@@ -107,11 +107,11 @@ class Site {
     // 用户名
     info.username = document.querySelector('a[href^=userdetails] b').innerHTML;
     // 上传
-    info.uploaded = document.querySelector('font[class=color_uploaded]').nextSibling.nodeValue.trim().replace(/(\w)B/, '$1iB');
-    info.uploaded = util.calSize(...info.uploaded.split(' '));
+    info.upload = document.querySelector('font[class=color_uploaded]').nextSibling.nodeValue.trim().replace(/(\w)B/, '$1iB');
+    info.upload = util.calSize(...info.upload.split(' '));
     // 下载
-    info.downloaded = document.querySelector('font[class=color_downloaded]').nextSibling.nodeValue.trim().replace(/(\w)B/, '$1iB');
-    info.downloaded = util.calSize(...info.downloaded.split(' '));
+    info.download = document.querySelector('font[class=color_downloaded]').nextSibling.nodeValue.trim().replace(/(\w)B/, '$1iB');
+    info.download = util.calSize(...info.download.split(' '));
     // 做种
     info.seeding = +document.querySelector('img[class=arrowup]').nextSibling.nodeValue.trim();
     // 下载
@@ -130,11 +130,11 @@ class Site {
       info.username = info.username.match(/">.*?<\/span/g).map(item => item.replace(/">(.*?)<\/span/, '$1')).join('');
     }
     // 上传
-    info.uploaded = document.querySelector('font[class=color_uploaded]').nextSibling.nodeValue.trim().replace(/(\w)B/, '$1iB');
-    info.uploaded = util.calSize(...info.uploaded.split(' '));
+    info.upload = document.querySelector('font[class=color_uploaded]').nextSibling.nodeValue.trim().replace(/(\w)B/, '$1iB');
+    info.upload = util.calSize(...info.upload.split(' '));
     // 下载
-    info.downloaded = document.querySelector('font[class=color_downloaded]').nextSibling.nodeValue.trim().replace(/(\w)B/, '$1iB');
-    info.downloaded = util.calSize(...info.downloaded.split(' '));
+    info.download = document.querySelector('font[class=color_downloaded]').nextSibling.nodeValue.trim().replace(/(\w)B/, '$1iB');
+    info.download = util.calSize(...info.download.split(' '));
     // 做种
     info.seeding = +document.querySelector('img[class=arrowup]').nextSibling.nodeValue.trim();
     // 下载
@@ -149,11 +149,11 @@ class Site {
     // 用户名
     info.username = document.querySelector('a[href^=userdetails] b').innerHTML;
     // 上传
-    info.uploaded = document.querySelector('font[class=color_uploaded]').nextSibling.nodeValue.trim().replace(/(\w)B/, '$1iB');
-    info.uploaded = util.calSize(...info.uploaded.split(' '));
+    info.upload = document.querySelector('font[class=color_uploaded]').nextSibling.nodeValue.trim().replace(/(\w)B/, '$1iB');
+    info.upload = util.calSize(...info.upload.split(' '));
     // 下载
-    info.downloaded = document.querySelector('font[class=color_downloaded]').nextSibling.nodeValue.trim().replace(/(\w)B/, '$1iB');
-    info.downloaded = util.calSize(...info.downloaded.split(' '));
+    info.download = document.querySelector('font[class=color_downloaded]').nextSibling.nodeValue.trim().replace(/(\w)B/, '$1iB');
+    info.download = util.calSize(...info.download.split(' '));
     // 做种
     info.seeding = +document.querySelector('img[class=arrowup]').nextSibling.nodeValue.trim();
     // 下载
@@ -168,11 +168,11 @@ class Site {
     // 用户名
     info.username = document.querySelector('a[href^=userdetails] b').innerHTML;
     // 上传
-    info.uploaded = document.querySelector('font[class=color_uploaded]').nextSibling.nodeValue.trim().replace(/(\w)B/, '$1iB');
-    info.uploaded = util.calSize(...info.uploaded.split(' '));
+    info.upload = document.querySelector('font[class=color_uploaded]').nextSibling.nodeValue.trim().replace(/(\w)B/, '$1iB');
+    info.upload = util.calSize(...info.upload.split(' '));
     // 下载
-    info.downloaded = document.querySelector('font[class=color_downloaded]').nextSibling.nodeValue.trim().replace(/(\w)B/, '$1iB');
-    info.downloaded = util.calSize(...info.downloaded.split(' '));
+    info.download = document.querySelector('font[class=color_downloaded]').nextSibling.nodeValue.trim().replace(/(\w)B/, '$1iB');
+    info.download = util.calSize(...info.download.split(' '));
     // 做种
     info.seeding = +document.querySelector('img[class=arrowup]').nextSibling.nodeValue.trim();
     // 下载
@@ -187,11 +187,11 @@ class Site {
     // 用户名
     info.username = document.querySelector('a[href^=userdetails] b').innerHTML;
     // 上传
-    info.uploaded = document.querySelector('font[class=color_uploaded]').nextSibling.nodeValue.trim().replace(/(\w)B/, '$1iB');
-    info.uploaded = util.calSize(...info.uploaded.split(' '));
+    info.upload = document.querySelector('font[class=color_uploaded]').nextSibling.nodeValue.trim().replace(/(\w)B/, '$1iB');
+    info.upload = util.calSize(...info.upload.split(' '));
     // 下载
-    info.downloaded = document.querySelector('font[class=color_downloaded]').nextSibling.nodeValue.trim().replace(/(\w)B/, '$1iB');
-    info.downloaded = util.calSize(...info.downloaded.split(' '));
+    info.download = document.querySelector('font[class=color_downloaded]').nextSibling.nodeValue.trim().replace(/(\w)B/, '$1iB');
+    info.download = util.calSize(...info.download.split(' '));
     // 做种
     info.seeding = +document.querySelector('img[class=arrowup]').nextSibling.nodeValue.trim();
     // 下载
@@ -206,11 +206,11 @@ class Site {
     // 用户名
     info.username = document.querySelector('a[href^=userdetails] b').innerHTML;
     // 上传
-    info.uploaded = document.querySelector('font[class=color_uploaded]').nextSibling.nodeValue.trim().replace(/(\w)B/, '$1iB');
-    info.uploaded = util.calSize(...info.uploaded.split(' '));
+    info.upload = document.querySelector('font[class=color_uploaded]').nextSibling.nodeValue.trim().replace(/(\w)B/, '$1iB');
+    info.upload = util.calSize(...info.upload.split(' '));
     // 下载
-    info.downloaded = document.querySelector('font[class=color_downloaded]').nextSibling.nodeValue.trim().replace(/(\w)B/, '$1iB');
-    info.downloaded = util.calSize(...info.downloaded.split(' '));
+    info.download = document.querySelector('font[class=color_downloaded]').nextSibling.nodeValue.trim().replace(/(\w)B/, '$1iB');
+    info.download = util.calSize(...info.download.split(' '));
     // 做种
     info.seeding = +document.querySelector('img[class=arrowup]').nextSibling.nodeValue.trim();
     // 下载
@@ -225,11 +225,11 @@ class Site {
     // 用户名
     info.username = document.querySelector('a[href^=userdetails] b').innerHTML;
     // 上传
-    info.uploaded = document.querySelector('font[class=color_uploaded]').nextSibling.nodeValue.trim().replace(/(\w)B/, '$1iB');
-    info.uploaded = util.calSize(...info.uploaded.split(' '));
+    info.upload = document.querySelector('font[class=color_uploaded]').nextSibling.nodeValue.trim().replace(/(\w)B/, '$1iB');
+    info.upload = util.calSize(...info.upload.split(' '));
     // 下载
-    info.downloaded = document.querySelector('font[class=color_downloaded]').nextSibling.nodeValue.trim().replace(/(\w)B/, '$1iB');
-    info.downloaded = util.calSize(...info.downloaded.split(' '));
+    info.download = document.querySelector('font[class=color_downloaded]').nextSibling.nodeValue.trim().replace(/(\w)B/, '$1iB');
+    info.download = util.calSize(...info.download.split(' '));
     // 做种
     info.seeding = +document.querySelector('img[class=arrowup]').nextSibling.nodeValue.trim();
     // 下载
@@ -244,11 +244,11 @@ class Site {
     // 用户名
     info.username = document.querySelector('a[href^=userdetails] b').innerHTML;
     // 上传
-    info.uploaded = document.querySelector('font[class=color_uploaded]').nextSibling.nodeValue.trim().replace(/(\w)B/, '$1iB');
-    info.uploaded = util.calSize(...info.uploaded.split(' '));
+    info.upload = document.querySelector('font[class=color_uploaded]').nextSibling.nodeValue.trim().replace(/(\w)B/, '$1iB');
+    info.upload = util.calSize(...info.upload.split(' '));
     // 下载
-    info.downloaded = document.querySelector('font[class=color_downloaded]').nextSibling.nodeValue.trim().replace(/(\w)B/, '$1iB');
-    info.downloaded = util.calSize(...info.downloaded.split(' '));
+    info.download = document.querySelector('font[class=color_downloaded]').nextSibling.nodeValue.trim().replace(/(\w)B/, '$1iB');
+    info.download = util.calSize(...info.download.split(' '));
     // 做种
     info.seeding = +document.querySelector('img[class=arrowup]').nextSibling.nodeValue.trim();
     // 下载
@@ -263,11 +263,11 @@ class Site {
     // 用户名
     info.username = document.querySelector('a[href^=userdetails] b').innerHTML;
     // 上传
-    info.uploaded = document.querySelector('font[class=color_uploaded]').nextSibling.nodeValue.trim().replace(/(\w)B/, '$1iB');
-    info.uploaded = util.calSize(...info.uploaded.split(' '));
+    info.upload = document.querySelector('font[class=color_uploaded]').nextSibling.nodeValue.trim().replace(/(\w)B/, '$1iB');
+    info.upload = util.calSize(...info.upload.split(' '));
     // 下载
-    info.downloaded = document.querySelector('font[class=color_downloaded]').nextSibling.nodeValue.trim().replace(/(\w)B/, '$1iB');
-    info.downloaded = util.calSize(...info.downloaded.split(' '));
+    info.download = document.querySelector('font[class=color_downloaded]').nextSibling.nodeValue.trim().replace(/(\w)B/, '$1iB');
+    info.download = util.calSize(...info.download.split(' '));
     // 做种
     info.seeding = +document.querySelector('img[class=arrowup]').nextSibling.nodeValue.trim();
     // 下载
@@ -282,11 +282,11 @@ class Site {
     // 用户名
     info.username = document.querySelector('a[href^=userdetails] b').innerHTML;
     // 上传
-    info.uploaded = document.querySelector('font[class=color_uploaded]').nextSibling.nodeValue.trim().replace(/(\w)B/, '$1iB');
-    info.uploaded = util.calSize(...info.uploaded.split(' '));
+    info.upload = document.querySelector('font[class=color_uploaded]').nextSibling.nodeValue.trim().replace(/(\w)B/, '$1iB');
+    info.upload = util.calSize(...info.upload.split(' '));
     // 下载
-    info.downloaded = document.querySelector('font[class=color_downloaded]').nextSibling.nodeValue.trim().replace(/(\w)B/, '$1iB');
-    info.downloaded = util.calSize(...info.downloaded.split(' '));
+    info.download = document.querySelector('font[class=color_downloaded]').nextSibling.nodeValue.trim().replace(/(\w)B/, '$1iB');
+    info.download = util.calSize(...info.download.split(' '));
     // 做种
     info.seeding = +document.querySelector('img[class=arrowup]').nextSibling.nodeValue.trim();
     // 下载
@@ -301,11 +301,11 @@ class Site {
     // 用户名
     info.username = document.querySelector('a[href^=userdetails] b').innerHTML;
     // 上传
-    info.uploaded = document.querySelector('font[class=color_uploaded]').nextSibling.nodeValue.trim().replace(/(\w)B/, '$1iB');
-    info.uploaded = util.calSize(...info.uploaded.split(' '));
+    info.upload = document.querySelector('font[class=color_uploaded]').nextSibling.nodeValue.trim().replace(/(\w)B/, '$1iB');
+    info.upload = util.calSize(...info.upload.split(' '));
     // 下载
-    info.downloaded = document.querySelector('font[class=color_downloaded]').nextSibling.nodeValue.trim().replace(/(\w)B/, '$1iB');
-    info.downloaded = util.calSize(...info.downloaded.split(' '));
+    info.download = document.querySelector('font[class=color_downloaded]').nextSibling.nodeValue.trim().replace(/(\w)B/, '$1iB');
+    info.download = util.calSize(...info.download.split(' '));
     // 做种
     info.seeding = +document.querySelector('img[class=arrowup]').nextSibling.nodeValue.trim();
     // 下载
@@ -320,11 +320,11 @@ class Site {
     // 用户名
     info.username = document.querySelector('a[href^=userdetails] b').innerHTML;
     // 上传
-    info.uploaded = document.querySelector('font[class=color_uploaded]').nextSibling.nodeValue.trim().replace(/(\w)B/, '$1iB');
-    info.uploaded = util.calSize(...info.uploaded.split(' '));
+    info.upload = document.querySelector('font[class=color_uploaded]').nextSibling.nodeValue.trim().replace(/(\w)B/, '$1iB');
+    info.upload = util.calSize(...info.upload.split(' '));
     // 下载
-    info.downloaded = document.querySelectorAll('font[class=color_downloaded]')[1].nextSibling.nodeValue.trim().replace(/(\w)B/, '$1iB');
-    info.downloaded = util.calSize(...info.downloaded.split(' '));
+    info.download = document.querySelectorAll('font[class=color_downloaded]')[1].nextSibling.nodeValue.trim().replace(/(\w)B/, '$1iB');
+    info.download = util.calSize(...info.download.split(' '));
     // 做种
     info.seeding = +document.querySelector('img[class=arrowup]').nextSibling.nodeValue.trim();
     // 下载
@@ -339,11 +339,11 @@ class Site {
     // 用户名
     info.username = document.querySelector('a[href^=userdetails] b bdo').innerHTML;
     // 上传
-    info.uploaded = document.querySelector('span[class=color_uploaded]').nextSibling.nodeValue.trim();
-    info.uploaded = util.calSize(...info.uploaded.split(' '));
+    info.upload = document.querySelector('span[class=color_uploaded]').nextSibling.nodeValue.trim();
+    info.upload = util.calSize(...info.upload.split(' '));
     // 下载
-    info.downloaded = document.querySelector('span[class=color_downloaded]').nextSibling.nodeValue.trim();
-    info.downloaded = util.calSize(...info.downloaded.split(' '));
+    info.download = document.querySelector('span[class=color_downloaded]').nextSibling.nodeValue.trim();
+    info.download = util.calSize(...info.download.split(' '));
     // 做种
     info.seeding = +document.querySelector('img[class=arrowup]').nextElementSibling.innerHTML.trim();
     // 下载
@@ -358,11 +358,11 @@ class Site {
     // 用户名
     info.username = document.querySelector('a[href^=userdetails] b span').innerHTML;
     // 上传
-    info.uploaded = document.querySelector('font[class=color_uploaded]').nextSibling.nodeValue.trim().replace(/(\w)B/, '$1iB');
-    info.uploaded = util.calSize(...info.uploaded.split(' '));
+    info.upload = document.querySelector('font[class=color_uploaded]').nextSibling.nodeValue.trim().replace(/(\w)B/, '$1iB');
+    info.upload = util.calSize(...info.upload.split(' '));
     // 下载
-    info.downloaded = document.querySelector('font[class=color_downloaded]').nextSibling.nodeValue.trim().replace(/(\w)B/, '$1iB');
-    info.downloaded = util.calSize(...info.downloaded.split(' '));
+    info.download = document.querySelector('font[class=color_downloaded]').nextSibling.nodeValue.trim().replace(/(\w)B/, '$1iB');
+    info.download = util.calSize(...info.download.split(' '));
     // 做种
     info.seeding = +document.querySelector('img[class=arrowup]').nextSibling.nodeValue.trim();
     // 下载
@@ -377,11 +377,11 @@ class Site {
     // 用户名
     info.username = document.querySelector('a[href^=userdetails] b').innerHTML;
     // 上传
-    info.uploaded = document.querySelectorAll('td[class="bottom nowrap"]')[6].innerHTML.trim().replace(/(\w)B/, '$1iB');
-    info.uploaded = util.calSize(...info.uploaded.split(' '));
+    info.upload = document.querySelectorAll('td[class="bottom nowrap"]')[6].innerHTML.trim().replace(/(\w)B/, '$1iB');
+    info.upload = util.calSize(...info.upload.split(' '));
     // 下载
-    info.downloaded = document.querySelectorAll('td[class="bottom nowrap"]')[22].innerHTML.trim().replace(/(\w)B/, '$1iB');
-    info.downloaded = util.calSize(...info.downloaded.split(' '));
+    info.download = document.querySelectorAll('td[class="bottom nowrap"]')[22].innerHTML.trim().replace(/(\w)B/, '$1iB');
+    info.download = util.calSize(...info.download.split(' '));
     // 做种
     info.seeding = +document.querySelectorAll('td[class="bottom nowrap"]')[8].innerHTML.split('<')[0];
     // 下载
@@ -399,11 +399,11 @@ class Site {
     // 基本信息
     const baseInfo = document.querySelectorAll('div[class="userinfo"] p')[2].innerHTML;
     // 上传
-    info.uploaded = baseInfo.match(/\d*\.\d* \wB/g)[0].replace(/(\w)B/, '$1iB');
-    info.uploaded = util.calSize(...info.uploaded.split(' '));
+    info.upload = baseInfo.match(/\d*\.\d* \wB/g)[0].replace(/(\w)B/, '$1iB');
+    info.upload = util.calSize(...info.upload.split(' '));
     // 下载
-    info.downloaded = baseInfo.match(/\d*\.\d* \wB/g)[1].replace(/(\w)B/, '$1iB');
-    info.downloaded = util.calSize(...info.downloaded.split(' '));
+    info.download = baseInfo.match(/\d*\.\d* \wB/g)[1].replace(/(\w)B/, '$1iB');
+    info.download = util.calSize(...info.download.split(' '));
     // 做种
     info.seeding = +document.querySelector('i[class="fas fa-arrow-up"]').nextSibling.nodeValue.trim();
     // 下载
@@ -420,11 +420,11 @@ class Site {
     // uid
     info.uid = document.querySelector('a[href^="torrents.php?type=seeding&userid="]').href.match(/userid=(\d+)/)[1];
     // 上传
-    info.uploaded = document.querySelector('a[href^="torrents.php?type=seeding&userid="]').nextElementSibling.innerHTML.trim().replace(/(\w)B/, '$1iB');
-    info.uploaded = util.calSize(...info.uploaded.split(' '));
+    info.upload = document.querySelector('a[href^="torrents.php?type=seeding&userid="]').nextElementSibling.innerHTML.trim().replace(/(\w)B/, '$1iB');
+    info.upload = util.calSize(...info.upload.split(' '));
     // 下载
-    info.downloaded = document.querySelector('a[href^="torrents.php?type=leeching&userid="]').nextElementSibling.innerHTML.trim().replace(/(\w)B/, '$1iB');
-    info.downloaded = util.calSize(...info.downloaded.split(' '));
+    info.download = document.querySelector('a[href^="torrents.php?type=leeching&userid="]').nextElementSibling.innerHTML.trim().replace(/(\w)B/, '$1iB');
+    info.download = util.calSize(...info.download.split(' '));
 
     // ajax
     const { body: stats } = await util.requestPromise({
@@ -450,11 +450,11 @@ class Site {
     // uid
     info.uid = document.querySelector('a[href^="torrents.php?type=seeding&userid="]').href.match(/userid=(\d+)/)[1];
     // 上传
-    info.uploaded = document.querySelector('a[href^="torrents.php?type=seeding&userid="] span').innerHTML.trim().replace(/(\w)B/, '$1iB');
-    info.uploaded = util.calSize(...info.uploaded.split(' '));
+    info.upload = document.querySelector('a[href^="torrents.php?type=seeding&userid="] span').innerHTML.trim().replace(/(\w)B/, '$1iB');
+    info.upload = util.calSize(...info.upload.split(' '));
     // 下载
-    info.downloaded = document.querySelector('a[href^="torrents.php?type=leeching&userid="] span').innerHTML.trim().replace(/(\w)B/, '$1iB');
-    info.downloaded = util.calSize(...info.downloaded.split(' '));
+    info.download = document.querySelector('a[href^="torrents.php?type=leeching&userid="] span').innerHTML.trim().replace(/(\w)B/, '$1iB');
+    info.download = util.calSize(...info.download.split(' '));
 
     // ajax
     const { body: stats } = await util.requestPromise({
@@ -476,7 +476,7 @@ class Site {
       const info = await this.refreshWrapper[this.site].call(this);
       info.updateTime = moment().startOf('hour').unix();
       logger.debug(this.site, '站点数据成功抓取,', '数据如下:\n', info);
-      await util.runRecord('insert into sites (site, uid, username, upload, download, bonus, seeding_size, seeding_num, level, update_time) values (?, ? , ?, ?, ?, ?, ?, ?, ?, ?)', [this.site, info.uid || 0, info.username, info.uploaded, info.downloaded, info.bonus || 0, info.seedingSize || 0, info.seeding, info.level || '', info.updateTime]);
+      await util.runRecord('insert into sites (site, uid, username, upload, download, bonus, seeding_size, seeding_num, level, update_time) values (?, ? , ?, ?, ?, ?, ?, ?, ?, ?)', [this.site, info.uid || 0, info.username, info.upload, info.download, info.bonus || 0, info.seedingSize || 0, info.seeding, info.level || '', info.updateTime]);
       this.info = info;
     } catch (e) {
       logger.error(this.site, '站点数据抓取失败 (疑似是 Cookie 失效, 或遇到 5s 盾),', '报错如下:\n', e);

@@ -31,14 +31,14 @@
         style="margin: 20px">
         <el-table-column
           sortable
-          prop="site"
+          prop="name"
           label="站点"
           min-width="180">
           <template slot-scope="scope">
             <el-switch
               v-model="scope.row.display">
             </el-switch>
-            {{ scope.row.display ? scope.row.site : '*******' }}
+            {{ scope.row.display ? scope.row.name : '*******' }}
           </template>
         </el-table-column>
         <el-table-column
@@ -52,7 +52,7 @@
         </el-table-column>
         <el-table-column
           sortable
-          prop="uploaded"
+          prop="upload"
           label="上传"
           min-width="144">
           <template slot-scope="scope">
@@ -61,7 +61,7 @@
         </el-table-column>
         <el-table-column
           sortable
-          prop="downloaded"
+          prop="download"
           label="下载"
           min-width="144">
           <template slot-scope="scope">
@@ -74,16 +74,16 @@
           label="做种/体积"
           min-width="144">
           <template slot-scope="scope">
-            {{scope.row.seeding_num + ' / ' + scope.row.seeding_size}}
+            {{scope.row.seeding + ' / ' + scope.row.seedingSize}}
           </template>
         </el-table-column>
         <el-table-column
           sortable
-          prop="update_time"
+          prop="updateTime"
           min-width="180"
           label="上次刷新时间">
           <template slot-scope="scope">
-            {{scope.row.update_time ? $moment(scope.row.update_time * 1000).format('YYYY-MM-DD HH:mm:ss') : '∞'}}
+            {{scope.row.updateTime ? $moment(scope.row.updateTime * 1000).format('YYYY-MM-DD HH:mm:ss') : '∞'}}
           </template>
         </el-table-column>
         <el-table-column
@@ -116,7 +116,7 @@
             <el-form-item required label="启用" prop="enable">
               <el-checkbox v-model="site.enable">启用</el-checkbox>
             </el-form-item>
-            <el-form-item required label="更新周期" prop="cron">
+            <el-form-item label="更新周期" prop="cron">
               <el-input v-model="site.cron" style="width: 300px;"></el-input>
               <div><el-tag type="info">Crontab 表达式, 默认 4 小时一次</el-tag></div>
             </el-form-item>
@@ -171,11 +171,13 @@ export default {
         tooltip: {
           trigger: 'axis',
           formatter: (params) => {
-            let str = '';
+            let str = params[0].axisValue + '</br>';
             params = params.sort((a, b) => b.value - a.value);
             for (const param of params) {
               const size = this.$formatSize(param.value);
-              str += `${param.seriesName}: ${'&nbsp;'.repeat(30 - size.length - param.seriesName.length || 1)}${size}</br>`;
+              const increase = this.$formatSize(this.chart.series[param.seriesIndex].data[param.dataIndex] - (this.chart.series[param.seriesIndex].data[param.dataIndex - 1] || 0));
+              str += `${param.seriesName}: ${'&nbsp;'.repeat(25 - size.length - param.seriesName.length || 1)}${size}` +
+                `, ↑ ${'&nbsp;'.repeat(12 - increase.length || 1)}${increase}</br>`;
             }
             return str;
           }
@@ -254,8 +256,9 @@ export default {
     },
     async listSite () {
       const res = await this.$axiosGet('/api/site/list');
-      const recordList = res ? res.data : [];
-      const siteList = [];
+      if (!res) return;
+      const recordList = res.data.sites;
+      const siteList = res.data.siteList;
       const template = {
         name: '',
         type: 'line',
@@ -267,19 +270,15 @@ export default {
         smooth: true
       };
       this.chart.series = [];
-      const dateSet = {};
+      const dateSet = res.data.timeGroup;
       for (const site of Object.keys(recordList)) {
         const siteRecord = recordList[site];
-        siteList.push(siteRecord[siteRecord.length - 1]);
         const siteLine = { ...template };
-        siteLine.data = siteRecord.map(i => {
-          dateSet[i.update_time] = 1;
-          return i.upload;
-        });
+        siteLine.data = Object.keys(siteRecord).map(i => siteRecord[i].upload);
         siteLine.name = site;
         this.chart.series.push(siteLine);
       }
-      this.chart.xAxis.data = Object.keys(dateSet).map(i => this.$moment(i * 1000).format('YYYY-MM-DD HH'));
+      this.chart.xAxis.data = dateSet.map(i => this.$moment(i * 1000).format('YYYY-MM-DD HH:mm'));
       for (const site of siteList) {
         site.display = site.display || true;
       }
@@ -362,6 +361,6 @@ export default {
 }
 
 .chart {
-  height: 400px;
+  height: 600px;
 }
 </style>

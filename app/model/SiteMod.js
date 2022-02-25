@@ -32,14 +32,32 @@ class SiteMod {
   };
 
   async list () {
-    const _sites = util.listSite().map(i => i.name).join('\', \'');
+    const siteList = util.listSite().filter(i => !!global.runningSite[i.name]);
+    for (let site of siteList) {
+      console.log(site, global.runningSite[site.name].info);
+      site = Object.assign(site, global.runningSite[site.name].info);
+    }
+    const _sites = siteList.map(i => i.name).join('\', \'');
     const records = await util.getRecords(`select * from sites where site in ('${_sites}')`);
+    const timeGroup = (await util.getRecords(`select update_time from sites where site in ('${_sites}') group by update_time`)).map(i => i.update_time);
     const sites = {};
     for (const record of records) {
-      if (!sites[record.site]) sites[record.site] = [];
-      sites[record.site].push(record);
+      if (!sites[record.site]) sites[record.site] = {};
+      sites[record.site][record.update_time] = record;
     }
-    return sites;
+    for (const _site of Object.keys(sites)) {
+      const site = sites[_site];
+      for (const [index, time] of timeGroup.entries()) {
+        if (!site[time]) {
+          site[time] = site[timeGroup[index - 1]] || 0;
+        }
+      }
+    }
+    return {
+      siteList,
+      sites,
+      timeGroup
+    };
   };
 
   async refresh (options) {
