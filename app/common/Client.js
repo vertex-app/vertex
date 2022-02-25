@@ -379,6 +379,7 @@ class Client {
         [torrent.hash, torrent.uploaded, torrent.downloaded, now]);
       if (updateTrackerIncrease) {
         if (!trackerSet[torrent.tracker]) trackerSet[torrent.tracker] = { upload: 0, download: 0, time: now };
+        torrentSet[torrent.hash] = torrentSet[torrent.hash] || { upload: torrent.uploaded, download: torrent.downloaded }
         trackerSet[torrent.tracker].upload += torrent.uploaded - torrentSet[torrent.hash].upload;
         trackerSet[torrent.tracker].download += torrent.downloaded - torrentSet[torrent.hash].download;
       }
@@ -388,9 +389,10 @@ class Client {
         const tracker = trackerSet[key];
         const record = await util.getRecord('select * from tracker_flow where tracker = ? and time = ?', [key, now]);
         if (!record) {
-          return await util.runRecord('insert into tracker_flow (tracker, upload, download, time) values (?, ?, ?, ?)', [key, tracker.upload, tracker.download, now]);
+          await util.runRecord('insert into tracker_flow (tracker, upload, download, time) values (?, ?, ?, ?)', [key, tracker.upload, tracker.download, now]);
+        } else {
+          await util.runRecord('update tracker_flow set upload = upload + ?, download = download + ? where tracker = ? and time = ?', [tracker.upload, tracker.download, key, now]);
         }
-        await util.runRecord('update tracker_flow set upload = upload + ?, download = download + ? where tracker = ? and time = ?', [tracker.upload, tracker.download, key, now]);
       }
     }
   };
