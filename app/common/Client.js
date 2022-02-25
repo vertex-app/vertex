@@ -132,14 +132,14 @@ class Client {
         // eslint-disable-next-line no-eval
         fit = (eval(rule.code))(maindata, torrent);
       } catch (e) {
-        logger.error('删种规则', this.alias, '存在语法错误\n', e);
+        logger.error('客户端, ', this.alias, '删种规则', rule.alias, '存在语法错误\n', e);
         return false;
       }
     } else {
       try {
         fit = rule.conditions.length !== 0 && this._fitConditions(torrent, rule.conditions);
       } catch (e) {
-        logger.error('删种规则', this.alias, '遇到错误\n', e);
+        logger.error('客户端, ', this.alias, '删种规则', rule.alias, '遇到错误\n', e);
         return false;
       }
     }
