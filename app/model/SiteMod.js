@@ -31,12 +31,15 @@ class SiteMod {
     return '编辑站点成功';
   };
 
-  list () {
-    const siteList = util.listSite();
-    for (const site of siteList) {
-      site.info = (global.runningSite[site.name] || {}).info;
+  async list () {
+    const _sites = util.listSite().map(i => i.name).join('\', \'');
+    const records = await util.getRecords(`select * from sites where site in ('${_sites}')`);
+    const sites = {};
+    for (const record of records) {
+      if (!sites[record.site]) sites[record.site] = [];
+      sites[record.site].push(record);
     }
-    return siteList;
+    return sites;
   };
 
   async refresh (options) {

@@ -1,15 +1,22 @@
 <template>
   <div class="site">
     <div class="radius-div">
+      <el-collapse  class="collapse" v-model="siteCollapse">
+        <el-collapse-item title="流量历史" name="1">
+          <v-chart class="chart" :option="chart" autoresize />
+        </el-collapse-item>
+      </el-collapse>
+    </div>
+    <div class="radius-div">
       <el-form class="site-push-setting-form" inline label-width="100px" size="mini">
         <el-form-item label="推送通知" prop="push">
           <el-checkbox v-model="setting.push">推送通知</el-checkbox>
         </el-form-item>
         <el-form-item label="定时推送">
-          <el-input v-model="setting.cron" placeholder="Crontab 表达式"/>
+          <el-input v-model="setting.cron" placeholder="Crontab 表达式" style="width: 144px;"/>
         </el-form-item>
         <el-form-item label="通知方式" prop="pushTo">
-          <el-select v-model="setting.pushTo" placeholder="请选择 通知方式">
+          <el-select v-model="setting.pushTo" placeholder="请选择 通知方式" style="width: 144px;">
             <el-option v-for="push of pushList" :key="push.id" :label="push.alias" :value="push.id"></el-option>
           </el-select>
         </el-form-item>
@@ -24,59 +31,59 @@
         style="margin: 20px">
         <el-table-column
           sortable
-          prop="name"
+          prop="site"
           label="站点"
           min-width="180">
           <template slot-scope="scope">
             <el-switch
               v-model="scope.row.display">
             </el-switch>
-            {{ scope.row.display ? scope.row.name : '*******' }}
+            {{ scope.row.display ? scope.row.site : '*******' }}
           </template>
         </el-table-column>
         <el-table-column
           sortable
-          prop="info.username"
+          prop="username"
           label="用户名"
           min-width="144">
           <template slot-scope="scope">
-            {{ scope.row.display ? scope.row.info ? scope.row.info.username : '' : '*******' }}
+            {{ scope.row.display ? scope.row.username : '*******' }}
           </template>
         </el-table-column>
         <el-table-column
           sortable
-          prop="info.uploaded"
+          prop="uploaded"
           label="上传"
           min-width="144">
           <template slot-scope="scope">
-            {{scope.row.info ? $formatSize(scope.row.info.uploaded) : ''}}
+            {{$formatSize(scope.row.upload || 0)}}
           </template>
         </el-table-column>
         <el-table-column
           sortable
-          prop="info.downloaded"
+          prop="downloaded"
           label="下载"
           min-width="144">
           <template slot-scope="scope">
-            {{scope.row.info ? $formatSize(scope.row.info.downloaded) : ''}}
+            {{$formatSize(scope.row.download || 0)}}
           </template>
         </el-table-column>
         <el-table-column
           sortable
-          prop="info.seeding"
-          label="做种/下载"
+          prop="seeding_size"
+          label="做种/体积"
           min-width="144">
           <template slot-scope="scope">
-            {{scope.row.info ? scope.row.info.seeding + ' / ' + scope.row.info.leeching : ''}}
+            {{scope.row.seeding_num + ' / ' + scope.row.seeding_size}}
           </template>
         </el-table-column>
         <el-table-column
           sortable
-          prop="info.updateTime"
+          prop="update_time"
           min-width="180"
           label="上次刷新时间">
           <template slot-scope="scope">
-            {{scope.row.info ? $moment(scope.row.info.updateTime * 1000).format('YYYY-MM-DD HH:mm:ss') : ''}}
+            {{scope.row.update_time ? $moment(scope.row.update_time * 1000).format('YYYY-MM-DD HH:mm:ss') : '∞'}}
           </template>
         </el-table-column>
         <el-table-column
@@ -143,6 +150,65 @@ export default {
         cron: '0 */4 * * *',
         enable: true
       },
+      chart: {
+        title: {
+          text: '历史记录',
+          left: 'center'
+        },
+        grid: {
+          top: 40,
+          left: 90,
+          right: 20,
+          bottom: 40
+        },
+        legend: {
+          top: '7%'
+        },
+        textStyle: {
+          fontFamily: 'consolas'
+        },
+        darkMode: true,
+        tooltip: {
+          trigger: 'axis',
+          formatter: (params) => {
+            let str = '';
+            params = params.sort((a, b) => b.value - a.value);
+            for (const param of params) {
+              const size = this.$formatSize(param.value);
+              str += `${param.seriesName}: ${'&nbsp;'.repeat(30 - size.length - param.seriesName.length || 1)}${size}</br>`;
+            }
+            return str;
+          }
+        },
+        xAxis: {
+          type: 'category',
+          data: []
+        },
+        yAxis: {
+          type: 'value',
+          axisLabel: {
+            formatter: this.$formatSize
+          }
+        },
+        graphic: [
+          {
+            type: 'image',
+            id: 'logo',
+            right: 20,
+            top: 40,
+            z: 999,
+            bounding: 'raw',
+            origin: [125, 125],
+            style: {
+              image: '/assets/images/Vertex.svg',
+              width: 64,
+              height: 64,
+              opacity: 0.8
+            }
+          }
+        ],
+        series: []
+      },
       setting: {},
       siteList: [],
       pushList: [],
@@ -188,10 +254,34 @@ export default {
     },
     async listSite () {
       const res = await this.$axiosGet('/api/site/list');
-      const siteList = res ? res.data : [];
+      const recordList = res ? res.data : [];
+      const siteList = [];
+      const template = {
+        name: '',
+        type: 'line',
+        data: [],
+        symbol: 'none',
+        areaStyle: {
+          opacity: 0.1
+        },
+        smooth: true
+      };
+      this.chart.series = [];
+      const dateSet = {};
+      for (const site of Object.keys(recordList)) {
+        const siteRecord = recordList[site];
+        siteList.push(siteRecord[siteRecord.length - 1]);
+        const siteLine = { ...template };
+        siteLine.data = siteRecord.map(i => {
+          dateSet[i.update_time] = 1;
+          return i.upload;
+        });
+        siteLine.name = site;
+        this.chart.series.push(siteLine);
+      }
+      this.chart.xAxis.data = Object.keys(dateSet).map(i => this.$moment(i * 1000).format('YYYY-MM-DD HH'));
       for (const site of siteList) {
         site.display = site.display || true;
-        console.log(site.display);
       }
       this.siteList = siteList;
     },
@@ -265,8 +355,13 @@ export default {
 }
 
 .site-push-setting-form {
-  padding-top: 24px;
+  padding: 20px 0;
+  margin: 20px 0;
   width: fit-content;
   text-align: left;
+}
+
+.chart {
+  height: 400px;
 }
 </style>

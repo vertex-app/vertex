@@ -58,7 +58,7 @@ class Site {
   async list (req, res) {
     const options = req.body;
     try {
-      const r = siteMod.list(options);
+      const r = await siteMod.list(options);
       res.send({
         success: true,
         data: r

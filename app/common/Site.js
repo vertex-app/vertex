@@ -34,7 +34,22 @@ class Site {
     this.cron = site.cron || '0 */4 * * *';
     this.refreshJob = new CronJob(this.cron, () => this.refreshInfo());
     this.refreshJob.start();
+    this._init();
   };
+
+  async _init () {
+    const record = await util.getRecord('select * from sites where site = ? order by id desc limit 1', [this.site]);
+    this.info = {
+      username: record.username,
+      uid: record.uid,
+      uploaded: record.upload,
+      downloaded: record.download,
+      seedingSize: record.seeding_size,
+      seeding: record.seeding_num,
+      updateTime: record.update_time,
+      leeching: 0
+    };
+  }
 
   async _getDocument (url) {
     const html = (await util.requestPromise({
@@ -459,7 +474,7 @@ class Site {
   async refreshInfo () {
     try {
       const info = await this.refreshWrapper[this.site].call(this);
-      info.updateTime = moment().unix();
+      info.updateTime = moment().startOf('hour').unix();
       logger.debug(this.site, '站点数据成功抓取,', '数据如下:\n', info);
       await util.runRecord('insert into sites (site, uid, username, upload, download, bonus, seeding_size, seeding_num, level, update_time) values (?, ? , ?, ?, ?, ?, ?, ?, ?, ?)', [this.site, info.uid || 0, info.username, info.uploaded, info.downloaded, info.bonus || 0, info.seedingSize || 0, info.seeding, info.level || '', info.updateTime]);
       this.info = info;
