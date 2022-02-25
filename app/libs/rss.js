@@ -51,7 +51,7 @@ const _getTorrents = async function (rssUrl) {
       } else {
         const { hash } = await exports.getTorrentNameByBencode(torrent.url);
         torrent.hash = hash;
-        await redis.set(`vertex:hash:${torrent.url}`);
+        await redis.set(`vertex:hash:${torrent.url}`, hash);
       }
     }
     torrent.pubTime = moment(items[i].pubDate[0]).unix();
