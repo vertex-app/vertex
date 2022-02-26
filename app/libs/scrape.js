@@ -75,7 +75,6 @@ const _freeDmhy = async function (url, cookie) {
 const _freeHaresClub = async function (url, cookie) {
   const d = await getDocument(url, cookie);
   if (d.body.innerHTML.indexOf('userdetails') === -1) {
-    console.log(d.body.innerHTML);
     throw new Error('疑似登陆状态失效, 请检查 Cookie');
   }
   const state = d.querySelector('b font[class]');
@@ -97,6 +96,7 @@ const freeWrapper = {
   'pt.soulvoice.club': _free,
   'et8.org': _free,
   'hdfans.org': _free,
+  'www.nicept.net': _free,
   'kp.m-team.cc': _free,
   'hdchina.org': _freeHDChina,
   'open.cd': _freeOpencd,
