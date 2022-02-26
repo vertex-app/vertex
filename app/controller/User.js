@@ -18,7 +18,7 @@ class User {
       logger.error('登录失败, IP:', req.userIp);
       res.send({
         success: false,
-        message: e
+        message: e.message
       });
     }
   };

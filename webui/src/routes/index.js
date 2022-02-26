@@ -9,10 +9,11 @@ import Site from '@/pages/home/children/site';
 import Setting from '@/pages/home/children/setting';
 import Server from '@/pages/home/children/server';
 import Client from '@/pages/home/children/client';
-import TorrentMix from '@/pages/home/children/torrentMix';
-import TorrentHistory from '@/pages/home/children/torrentHistory';
-import DeleteRule from '@/pages/home/children/deleteRule';
-import RssRule from '@/pages/home/children/rssRule';
+import SearchMix from '@/pages/home/children/search-mix';
+import TorrentMix from '@/pages/home/children/torrent-mix';
+import TorrentHistory from '@/pages/home/children/torrent-history';
+import DeleteRule from '@/pages/home/children/delete-rule';
+import RssRule from '@/pages/home/children/rss-rule';
 import Push from '@/pages/home/children/push';
 import Rss from '@/pages/home/children/rss';
 import Log from '@/pages/home/children/log';
@@ -57,6 +58,12 @@ export default new Router({
           component: Site,
           meta: {
             title: '站点数据'
+          }
+        }, {
+          path: 'search-mix',
+          component: SearchMix,
+          meta: {
+            title: '聚合搜索'
           }
         }, {
           path: 'setting',

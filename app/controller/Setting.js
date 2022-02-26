@@ -15,7 +15,7 @@ class Setting {
       logger.error(e);
       res.send({
         success: false,
-        message: e
+        message: e.message
       });
     }
   };
@@ -31,7 +31,7 @@ class Setting {
       logger.error(e);
       res.send({
         success: false,
-        message: e
+        message: e.message
       });
     }
   };
@@ -48,7 +48,7 @@ class Setting {
       logger.error(e);
       res.send({
         success: false,
-        message: e
+        message: e.message
       });
     }
   };
@@ -64,7 +64,7 @@ class Setting {
       logger.error(e);
       res.send({
         success: false,
-        message: e
+        message: e.message
       });
     }
   };
@@ -81,7 +81,7 @@ class Setting {
       logger.error(e);
       res.send({
         success: false,
-        message: e
+        message: e.message
       });
     }
   };
@@ -97,7 +97,7 @@ class Setting {
       logger.error(e);
       res.send({
         success: false,
-        message: e
+        message: e.message
       });
     }
   };
@@ -114,7 +114,7 @@ class Setting {
       logger.error(e);
       res.send({
         success: false,
-        message: e
+        message: e.message
       });
     }
   };
@@ -130,7 +130,7 @@ class Setting {
       logger.error(e);
       res.send({
         success: false,
-        message: e
+        message: e.message
       });
     }
   };
@@ -147,7 +147,7 @@ class Setting {
       logger.error(e);
       res.send({
         success: false,
-        message: e
+        message: e.message
       });
     }
   };
@@ -163,7 +163,7 @@ class Setting {
       logger.error(e);
       res.send({
         success: false,
-        message: e
+        message: e.message
       });
     }
   };
@@ -176,7 +176,7 @@ class Setting {
       logger.error(e);
       res.send({
         success: false,
-        message: e
+        message: e.message
       });
     }
   }
@@ -192,7 +192,7 @@ class Setting {
       logger.error(e);
       res.send({
         success: false,
-        message: e
+        message: e.message
       });
     }
   }

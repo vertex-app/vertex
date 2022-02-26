@@ -16,7 +16,7 @@ class Client {
       logger.error(e);
       res.send({
         success: false,
-        message: e
+        message: e.message
       });
     }
   };
@@ -33,7 +33,7 @@ class Client {
       logger.error(e);
       res.send({
         success: false,
-        message: e
+        message: e.message
       });
     }
   };
@@ -50,7 +50,7 @@ class Client {
       logger.error(e);
       res.send({
         success: false,
-        message: e
+        message: e.message
       });
     }
   };
@@ -66,7 +66,7 @@ class Client {
       logger.error(e);
       res.send({
         success: false,
-        message: e
+        message: e.message
       });
     }
   };
@@ -82,7 +82,7 @@ class Client {
       logger.error(e);
       res.send({
         success: false,
-        message: e
+        message: e.message
       });
     }
   };

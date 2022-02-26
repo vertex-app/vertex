@@ -16,7 +16,7 @@ class Log {
       logger.error(e);
       res.send({
         success: false,
-        message: e
+        message: e.message
       });
     }
   };
@@ -32,7 +32,7 @@ class Log {
       logger.error(e);
       res.send({
         success: false,
-        message: e
+        message: e.message
       });
     }
   };

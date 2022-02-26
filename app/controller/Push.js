@@ -16,7 +16,7 @@ class Push {
       logger.error(e);
       res.send({
         success: false,
-        message: e
+        message: e.message
       });
     }
   };
@@ -33,7 +33,7 @@ class Push {
       logger.error(e);
       res.send({
         success: false,
-        message: e
+        message: e.message
       });
     }
   };
@@ -50,7 +50,7 @@ class Push {
       logger.error(e);
       res.send({
         success: false,
-        message: e
+        message: e.message
       });
     }
   };
@@ -67,7 +67,7 @@ class Push {
       logger.error(e);
       res.send({
         success: false,
-        message: e
+        message: e.message
       });
     }
   };

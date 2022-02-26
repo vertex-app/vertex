@@ -34,7 +34,6 @@ class SiteMod {
   async list () {
     const siteList = util.listSite().filter(i => !!global.runningSite[i.name]);
     for (let site of siteList) {
-      console.log(site, global.runningSite[site.name].info);
       site = Object.assign(site, global.runningSite[site.name].info);
     }
     const _sites = siteList.map(i => i.name).join('\', \'');
@@ -71,6 +70,14 @@ class SiteMod {
       if (global.runningSite[options.name]) await global.runningSite[options.name].refreshInfo();
       return '刷新成功';
     }
+  }
+
+  async search (options) {
+    if (!options.keyword) {
+      throw new Error('请输入关键词后搜索!!');
+    }
+    const result = await Promise.all(Object.keys(global.runningSite).map(i => global.runningSite[i].search(options.keyword)));
+    return result;
   }
 }
 

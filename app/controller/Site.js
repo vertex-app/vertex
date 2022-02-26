@@ -16,7 +16,7 @@ class Site {
       logger.error(e);
       res.send({
         success: false,
-        message: e
+        message: e.message
       });
     }
   };
@@ -33,7 +33,7 @@ class Site {
       logger.error(e);
       res.send({
         success: false,
-        message: e
+        message: e.message
       });
     }
   };
@@ -50,7 +50,7 @@ class Site {
       logger.error(e);
       res.send({
         success: false,
-        message: e
+        message: e.message
       });
     }
   };
@@ -67,7 +67,7 @@ class Site {
       logger.error(e);
       res.send({
         success: false,
-        message: e
+        message: e.message
       });
     }
   };
@@ -84,7 +84,24 @@ class Site {
       logger.error(e);
       res.send({
         success: false,
-        message: e
+        message: e.message
+      });
+    }
+  };
+
+  async search (req, res) {
+    const options = req.query;
+    try {
+      const r = await siteMod.search(options);
+      res.send({
+        success: true,
+        data: r
+      });
+    } catch (e) {
+      logger.error(e);
+      res.send({
+        success: false,
+        message: e.message
       });
     }
   };

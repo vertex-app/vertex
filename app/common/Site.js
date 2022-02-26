@@ -2,6 +2,7 @@ const logger = require('../libs/logger');
 const util = require('../libs/util');
 const CronJob = require('cron').CronJob;
 const moment = require('moment');
+const redis = require('../libs/redis');
 const { JSDOM } = require('jsdom');
 
 class Site {
@@ -29,6 +30,9 @@ class Site {
       DICMusic: this._dicmusic,
       GPW: this._gpw
     };
+    this.searchWrapper = {
+      HaresClub: this._searchHaresclub
+    };
     this.cookie = site.cookie;
     this.site = site.name;
     this.cron = site.cron || '0 */4 * * *';
@@ -52,14 +56,21 @@ class Site {
   }
 
   async _getDocument (url) {
-    const html = (await util.requestPromise({
-      url: url,
-      headers: {
-        cookie: this.cookie
-      }
-    })).body;
-    const dom = new JSDOM(html);
-    return dom.window.document;
+    const cache = await redis.get(`vertex:document:body:${url}`);
+    if (!cache) {
+      const html = (await util.requestPromise({
+        url: url,
+        headers: {
+          cookie: this.cookie
+        }
+      })).body;
+      await redis.setWithExpire(`vertex:document:body:${url}`, html, 600);
+      const dom = new JSDOM(html);
+      return dom.window.document;
+    } else {
+      const dom = new JSDOM(cache);
+      return dom.window.document;
+    }
   };
 
   // 白兔
@@ -480,6 +491,60 @@ class Site {
       this.info = info;
     } catch (e) {
       logger.error(this.site, '站点数据抓取失败 (疑似是 Cookie 失效, 或遇到 5s 盾),', '报错如下:\n', e);
+      throw new Error('站点数据抓取失败 (疑似是 Cookie 失效, 或遇到 5s 盾)');
+    }
+  };
+
+  // search
+
+  // HaresClub
+  async _searchHaresclub (keyword) {
+    const torrentList = [];
+    const document = await this._getDocument(`https://club.hares.top/torrents.php?search_area=0&search=${encodeURIComponent(keyword)}&search_mode=0&incldead=0&spstate=0&check_state=0&can_claim=0&inclbookmarked=0`);
+    const torrents = document.querySelectorAll('.torrents tbody tr');
+    for (const _torrent of torrents) {
+      const torrent = {};
+      torrent.site = this.site;
+      torrent.title = _torrent.querySelector('.layui-torrents-title-width a').title.trim();
+      torrent.subtitle = _torrent.querySelector('.layui-torrents-descr-width').innerHTML.trim();
+      torrent.category = _torrent.querySelector('a[href*="cat"] img').title;
+      torrent.link = 'https://club.hares.top/' + _torrent.querySelector('.layui-torrents-title-width a').href.trim();
+      torrent.seeders = +(_torrent.querySelector('a[href*=seeders] font') || _torrent.querySelector('a[href*=seeders]') || _torrent.childNodes[6]).innerHTML.trim();
+      torrent.leechers = +(_torrent.querySelector('a[href*=leechers]') || _torrent.childNodes[7]).innerHTML.trim();
+      torrent.snatches = +(_torrent.querySelector('a[href*=snatches] b') || _torrent.childNodes[8]).innerHTML.trim();
+      torrent.size = _torrent.childNodes[5].innerHTML.trim().replace('<br>', ' ').replace(/([KMGPT])B/, '$1iB');
+      torrent.time = moment(_torrent.childNodes[4].querySelector('span').title).unix();
+      torrent.size = util.calSize(...torrent.size.split(' '));
+      torrent.tags = [];
+      const tagsDom = _torrent.querySelectorAll('span[class~=tags]');
+      for (const tag of tagsDom) {
+        torrent.tags.push(tag.innerHTML.trim());
+      }
+      torrentList.push(torrent);
+    }
+    return {
+      site: this.site,
+      torrentList
+    };
+  }
+
+  async search (keyword) {
+    try {
+      if (!this.searchWrapper[this.site]) {
+        logger.error(this.site, '暂不支持搜索功能');
+        return {
+          site: this.site,
+          torrentList: []
+        };
+      }
+      const result = await this.searchWrapper[this.site].call(this, keyword);
+      return result;
+    } catch (e) {
+      logger.error(this.site, '站点数据抓取失败 (疑似是 Cookie 失效, 或遇到 5s 盾),', '报错如下:\n', e);
+      return {
+        site: this.site,
+        torrentList: []
+      };
     }
   };
 

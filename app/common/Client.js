@@ -379,7 +379,7 @@ class Client {
         [torrent.hash, torrent.uploaded, torrent.downloaded, now]);
       if (updateTrackerIncrease) {
         if (!trackerSet[torrent.tracker]) trackerSet[torrent.tracker] = { upload: 0, download: 0, time: now };
-        torrentSet[torrent.hash] = torrentSet[torrent.hash] || { upload: torrent.uploaded, download: torrent.downloaded }
+        torrentSet[torrent.hash] = torrentSet[torrent.hash] || { upload: torrent.uploaded, download: torrent.downloaded };
         trackerSet[torrent.tracker].upload += torrent.uploaded - torrentSet[torrent.hash].upload;
         trackerSet[torrent.tracker].download += torrent.downloaded - torrentSet[torrent.hash].download;
       }

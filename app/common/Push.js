@@ -98,7 +98,7 @@ class Push {
 
   async deleteTorrent (client, torrent, rule, deleteFile) {
     const text = `删除种子: ${torrent.name.substring(0, 20) + '...'} | ${util.formatSize(torrent.size)} | ` +
-      `${util.formatSize(torrent.uploaded)} / ${util.formatSize(torrent.downloaded)} | ${torrent.ratio} | ${rule.alias} | ${torrent.category} | ${torrent.tracker}`;
+      `${util.formatSize(torrent.uploaded)} / ${util.formatSize(torrent.downloaded)} | ${(+torrent.ratio).toFixed(2)} | ${rule.alias} | ${torrent.category} | ${torrent.tracker}`;
     let desp = `客户端名: ${client.alias}\n` +
       `种子名称: ${torrent.name}\n` +
       `种子大小: ${util.formatSize(torrent.size)}\n` +
