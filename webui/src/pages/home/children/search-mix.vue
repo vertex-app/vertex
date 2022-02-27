@@ -29,9 +29,11 @@
       </el-form>
       -->
       <el-table
-        :data="torrentList"
+        v-loading="tableLoading"
+        :data="torrentList.slice((page - 1) * length, page * length)"
         size="small"
         stripe
+        @sort-change="sortList"
         style="width: 100%; font-size: 14px;">
         <!--
         <el-table-column type="expand" width="72">
@@ -72,7 +74,7 @@
           v-if="setting.showKeys.indexOf('site') !== -1"
           align="center"
           label="站点"
-          sortable
+          sortable='custom'
           prop="site"
           width="144"
           >
@@ -85,7 +87,7 @@
         <el-table-column
           v-if="setting.showKeys.indexOf('title') !== -1"
           align="left"
-          sortable
+          sortable='custom'
           prop="title"
           label="种子">
           <template slot-scope="scope">
@@ -100,7 +102,7 @@
           v-if="setting.showKeys.indexOf('users') !== -1"
           align="center"
           label="做种 / 下载 / 完成"
-          sortable
+          sortable='custom'
           prop="seeders"
           width="200">
           <template slot-scope="scope">
@@ -110,7 +112,7 @@
         <el-table-column
           v-if="setting.showKeys.indexOf('time') !== -1"
           align="center"
-          sortable
+          sortable='custom'
           prop="time"
           label="发布时间"
           width="120">
@@ -123,7 +125,7 @@
         <el-table-column
           v-if="setting.showKeys.indexOf('size') !== -1"
           align="center"
-          sortable
+          sortable='custom'
           prop="size"
           width="144"
           label="种子大小">
@@ -218,6 +220,7 @@ export default {
       }],
       resultCount: [],
       searchKey: '',
+      tableLoading: false,
       searchStatus: '搜索',
       total: 0,
       totalPage: 0,
@@ -229,6 +232,7 @@ export default {
   methods: {
     async searchTorrent () {
       this.searchStatus = '搜索中...';
+      this.tableLoading = true;
       const url = `/api/site/search?keyword=${this.searchKey}`;
       const res = await this.$axiosGet(url);
       this.torrentAll = res.data;
@@ -241,10 +245,30 @@ export default {
         };
       }).sort((a, b) => b.count - a.count);
       this.searchStatus = '搜索';
+      this.tableLoading = false;
     },
 
     refreshList () {
       this.torrentList = this.torrentAll.filter(i => this.checkList.indexOf(i.site) !== -1).map(i => i.torrentList).flat();
+      this.total = this.torrentList.length;
+    },
+
+    sortList (option) {
+      this.page = 1;
+      if (this.torrentList.length === 0) return;
+      if (typeof this.torrentList[0][option.prop] === 'string') {
+        if (option.order === 'descending') {
+          this.torrentList = this.torrentList.sort((a, b) => b[option.prop] < a[option.prop] ? -1 : 1);
+        } else {
+          this.torrentList = this.torrentList.sort((a, b) => a[option.prop] > b[option.prop] ? 1 : -1);
+        }
+      } else {
+        if (option.order === 'descending') {
+          this.torrentList = this.torrentList.sort((a, b) => b[option.prop] - a[option.prop]);
+        } else {
+          this.torrentList = this.torrentList.sort((a, b) => a[option.prop] - b[option.prop]);
+        }
+      }
     },
 
     async changePage (page) {
@@ -257,8 +281,6 @@ export default {
     }
   },
   async mounted () {
-    this.searchKey = 'HaresWEB';
-    this.searchTorrent();
   }
 };
 </script>

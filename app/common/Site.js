@@ -72,7 +72,7 @@ class Site {
           cookie: this.cookie
         }
       })).body;
-      await redis.setWithExpire(`vertex:document:body:${url}`, html, 120);
+      await redis.setWithExpire(`vertex:document:body:${url}`, html, 30);
       const dom = new JSDOM(html);
       return dom.window.document;
     } else {
@@ -661,9 +661,14 @@ class Site {
       const torrent = {};
       torrent.site = this.site;
       torrent.title = _torrent.querySelector('td[class="embedded"] > a[href*="details"]').title.trim();
-      torrent.subtitle = _torrent.querySelector('.torrentname > tbody > tr .embedded').lastChild.nodeValue.trim();
+      const subtitleDiv = _torrent.querySelector('.torrentname > tbody > tr .embedded');
+      if (subtitleDiv.lastChild.getAttribute) {
+        torrent.subtitle = subtitleDiv.childNodes[subtitleDiv.childNodes.length - 2].nodeValue.trim();
+      } else {
+        torrent.subtitle = subtitleDiv.lastChild.nodeValue.trim();
+      }
       torrent.category = _torrent.querySelector('td a[href*=cat] img').title.trim();
-      torrent.link = 'https://hdsky.me/' + _torrent.querySelector('a[href*=details]').href.trim();
+      torrent.link = 'https://ourbits.club/' + _torrent.querySelector('a[href*=details]').href.trim();
       torrent.seeders = +(_torrent.querySelector('a[href*=seeders]') || _torrent.querySelector('a[href*=seeders] font') || _torrent.querySelector('span[class=red]')).innerHTML.trim();
       torrent.leechers = +(_torrent.querySelector('a[href*=leechers]') || _torrent.childNodes[9]).innerHTML.trim();
       torrent.snatches = +(_torrent.querySelector('a[href*=snatches] b') || _torrent.childNodes[11]).innerHTML.trim();
