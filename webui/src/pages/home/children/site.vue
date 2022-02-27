@@ -143,7 +143,7 @@ export default {
       sites: ['HaresClub', 'CHDBits', 'LemonHD', 'HDChina',
         'HDSky', 'HDHome', 'PTerClub', 'Audiences', 'OurBits',
         'SpringSunDay', 'MTeam', 'OpenCD', 'U2', 'BeiTai',
-        'TCCF', 'TLFBits', 'PTMSG', 'HDFans', 'DICMusic', 'GPW'].sort(),
+        'TCCF', 'TLFBits', 'PTMSG', 'HDFans', 'DICMusic', 'GPW', 'BTSchool'].sort(),
       defaultSite: {
         name: '',
         cookie: '',

@@ -93,16 +93,16 @@ exports.requestUsePuppeteer = async function (options) {
   const page = await browser.newPage();
   await page.setViewport({ width: 800, height: 600 });
   await page.setUserAgent(options.headers['User-Agent']);
-  await page.setCookie(
-    ...options.headers.cookie
-      .split(';')
-      .map(i => {
-        return {
-          name: i.split('=')[0],
-          value: i.split('=')[1],
-          domain: new url.URL(options.url).hostname
-        };
-      }));
+  const cookieList = options.headers.cookie.split(';').map(i => i.trim())
+    .filter(i => i !== '')
+    .map(i => {
+      return {
+        name: i.split('=')[0],
+        value: i.split('=')[1],
+        domain: new url.URL(options.url).hostname
+      };
+    });
+  if (cookieList.length !== 0) await page.setCookie(...cookieList);
   await page.goto(options.url, {});
   await page.waitFor(10000);
   const body = await page.content();

@@ -34,7 +34,12 @@ class Site {
     this.searchWrapper = {
       HaresClub: this._searchHaresclub,
       LemonHD: this._searchLemonhd,
-      MTeam: this._searchMTeam
+      MTeam: this._searchMTeam,
+      HDSky: this._searchHDSky,
+      OurBits: this._searchOurbits,
+      HDHome: this._searchHDHome,
+      PTerClub: this._searchPterclub,
+      BTSchool: this._searchBTSchool
     };
     this.cookie = site.cookie;
     this.site = site.name;
@@ -67,7 +72,7 @@ class Site {
           cookie: this.cookie
         }
       })).body;
-      await redis.setWithExpire(`vertex:document:body:${url}`, html, 30);
+      await redis.setWithExpire(`vertex:document:body:${url}`, html, 120);
       const dom = new JSDOM(html);
       return dom.window.document;
     } else {
@@ -611,6 +616,165 @@ class Site {
       torrentList
     };
   }
+
+  // HDSky
+  async _searchHDSky (keyword) {
+    const torrentList = [];
+    const document = await this._getDocument(`https://hdsky.me/torrents.php?seeders=&incldead=1&spstate=0&inclbookmarked=0&search=${encodeURIComponent(keyword)}&search_area=0&search_mode=0`);
+    const torrents = document.querySelectorAll('.torrents tbody tr:not(:first-child)');
+    for (const _torrent of torrents) {
+      const torrent = {};
+      torrent.site = this.site;
+      torrent.title = _torrent.querySelector('td[class="embedded"] > a[href*="details"]').title.trim();
+      torrent.subtitle = _torrent.querySelector('.torrentname > tbody > tr .embedded').lastChild.nodeValue.trim();
+      if (torrent.subtitle === ']') {
+        torrent.subtitle = (_torrent.querySelector('.torrentname > tbody > tr .embedded span[class=optiontag]:last-child') ||
+          _torrent.querySelector('.torrentname > tbody > tr .embedded br').nextSibling.nodeValue.trim());
+      }
+      torrent.category = _torrent.querySelector('td a[href*=cat] img').title.trim();
+      torrent.link = 'https://hdsky.me/' + _torrent.querySelector('a[href*=details]').href.trim();
+      torrent.seeders = +(_torrent.querySelector('a[href*=seeders]') || _torrent.querySelector('a[href*=seeders] font') || _torrent.querySelector('span[class=red]')).innerHTML.trim();
+      torrent.leechers = +(_torrent.querySelector('a[href*=leechers]') || _torrent.childNodes[9]).innerHTML.trim();
+      torrent.snatches = +(_torrent.querySelector('a[href*=snatches] b') || _torrent.childNodes[11]).innerHTML.trim();
+      torrent.size = _torrent.childNodes[6].innerHTML.trim().replace('<br>', ' ').replace(/([KMGPT])B/, '$1iB');
+      torrent.time = moment(_torrent.childNodes[5].querySelector('span').title).unix();
+      torrent.size = util.calSize(...torrent.size.split(' '));
+      torrent.tags = [];
+      const tagsDom = _torrent.querySelectorAll('span[class*=optiontag]');
+      for (const tag of tagsDom) {
+        torrent.tags.push(tag.innerHTML.trim());
+      }
+      torrentList.push(torrent);
+    }
+    return {
+      site: this.site,
+      torrentList
+    };
+  };
+
+  // OurBits
+  async _searchOurbits (keyword) {
+    const torrentList = [];
+    const document = await this._getDocument(`https://ourbits.club/torrents.php?incldead=1&spstate=0&inclbookmarked=0&search=${encodeURIComponent(keyword)}&search_area=0&search_mode=0`);
+    const torrents = document.querySelectorAll('.torrents tbody tr:not(:first-child)');
+    for (const _torrent of torrents) {
+      const torrent = {};
+      torrent.site = this.site;
+      torrent.title = _torrent.querySelector('td[class="embedded"] > a[href*="details"]').title.trim();
+      torrent.subtitle = _torrent.querySelector('.torrentname > tbody > tr .embedded').lastChild.nodeValue.trim();
+      torrent.category = _torrent.querySelector('td a[href*=cat] img').title.trim();
+      torrent.link = 'https://hdsky.me/' + _torrent.querySelector('a[href*=details]').href.trim();
+      torrent.seeders = +(_torrent.querySelector('a[href*=seeders]') || _torrent.querySelector('a[href*=seeders] font') || _torrent.querySelector('span[class=red]')).innerHTML.trim();
+      torrent.leechers = +(_torrent.querySelector('a[href*=leechers]') || _torrent.childNodes[9]).innerHTML.trim();
+      torrent.snatches = +(_torrent.querySelector('a[href*=snatches] b') || _torrent.childNodes[11]).innerHTML.trim();
+      torrent.size = _torrent.childNodes[6].innerHTML.trim().replace('<br>', ' ').replace(/([KMGPT])B/, '$1iB');
+      torrent.time = moment(_torrent.childNodes[5].querySelector('span').title).unix();
+      torrent.size = util.calSize(...torrent.size.split(' '));
+      torrent.tags = [];
+      const tagsDom = _torrent.querySelectorAll('div[class*=tag]');
+      for (const tag of tagsDom) {
+        torrent.tags.push(tag.innerHTML.trim());
+      }
+      torrentList.push(torrent);
+    }
+    return {
+      site: this.site,
+      torrentList
+    };
+  };
+
+  // HDHome
+  async _searchHDHome (keyword) {
+    const torrentList = [];
+    const document = await this._getDocument(`https://hdhome.org/torrents.php?incldead=1&spstate=0&inclbookmarked=0&search=${encodeURIComponent(keyword)}&search_area=0&search_mode=0&tag=`);
+    const torrents = document.querySelectorAll('.torrents tbody tr:not(:first-child)');
+    for (const _torrent of torrents) {
+      const torrent = {};
+      torrent.site = this.site;
+      torrent.title = _torrent.querySelector('td[class="embedded"] > a[href*="details"]').title.trim();
+      torrent.subtitle = _torrent.querySelector('.torrentname > tbody > tr .embedded').lastChild.innerHTML.trim();
+      torrent.category = _torrent.querySelector('td a[href*=cat] img').title.trim();
+      torrent.link = 'https://hdhome.org/' + _torrent.querySelector('a[href*=details]').href.trim();
+      torrent.seeders = +(_torrent.querySelector('a[href*=seeders]') || _torrent.querySelector('a[href*=seeders] font') || _torrent.querySelector('span[class=red]')).innerHTML.trim();
+      torrent.leechers = +(_torrent.querySelector('a[href*=leechers]') || _torrent.childNodes[9]).innerHTML.trim();
+      torrent.snatches = +(_torrent.querySelector('a[href*=snatches] b') || _torrent.childNodes[11]).innerHTML.trim();
+      torrent.size = _torrent.childNodes[6].innerHTML.trim().replace('<br>', ' ').replace(/([KMGPT])B/, '$1iB');
+      torrent.time = moment(_torrent.childNodes[5].querySelector('span').title).unix();
+      torrent.size = util.calSize(...torrent.size.split(' '));
+      torrent.tags = [];
+      const tagsDom = _torrent.querySelectorAll('span[class*=tags]');
+      for (const tag of tagsDom) {
+        torrent.tags.push(tag.innerHTML.trim());
+      }
+      torrentList.push(torrent);
+    }
+    return {
+      site: this.site,
+      torrentList
+    };
+  };
+
+  // PTerClub
+  async _searchPterclub (keyword) {
+    const torrentList = [];
+    const document = await this._getDocument(`https://pterclub.com/torrents.php?tag_exclusive=&tag_internal=&tag_mandarin=&tag_cantonese=&tag_doityourself=&tag_master=&incldead=1&spstate=0&inclbookmarked=0&search=${encodeURIComponent(keyword)}&search_area=0&search_mode=0`);
+    const torrents = document.querySelectorAll('.torrents tbody tr:not(:first-child)');
+    for (const _torrent of torrents) {
+      const torrent = {};
+      torrent.site = this.site;
+      torrent.title = _torrent.querySelector('td[class="embedded"] a[href*="details"]').title.trim();
+      torrent.subtitle = _torrent.querySelector('.torrentname > tbody > tr .embedded > div > div:nth-child(2) span').innerHTML.trim();
+      torrent.category = _torrent.querySelector('td a[href*=cat] img').title.trim();
+      torrent.link = 'https://pterclub.com/' + _torrent.querySelector('a[href*=details]').href.trim();
+      torrent.seeders = +(_torrent.querySelector('a[href*=seeders]') || _torrent.querySelector('a[href*=seeders] font') || _torrent.querySelector('span[class=red]')).innerHTML.trim();
+      torrent.leechers = +(_torrent.querySelector('a[href*=leechers]') || _torrent.childNodes[9]).innerHTML.trim();
+      torrent.snatches = +(_torrent.querySelector('a[href*=snatches] b') || _torrent.childNodes[11]).innerHTML.trim();
+      torrent.size = _torrent.childNodes[6].innerHTML.trim().replace('<br>', ' ').replace(/([KMGPT])B/, '$1iB');
+      torrent.time = moment(_torrent.childNodes[5].querySelector('span').title).unix();
+      torrent.size = util.calSize(...torrent.size.split(' '));
+      torrent.tags = [];
+      const tagsDom = _torrent.querySelectorAll('a[class*=torrents-tag]');
+      for (const tag of tagsDom) {
+        torrent.tags.push(tag.innerHTML.trim());
+      }
+      torrentList.push(torrent);
+    }
+    return {
+      site: this.site,
+      torrentList
+    };
+  };
+
+  // BTSchool
+  async _searchBTSchool (keyword) {
+    const torrentList = [];
+    const document = await this._getDocument(`https://pt.btschool.club/torrents.php?incldead=1&spstate=0&inclbookmarked=0&search=${encodeURIComponent(keyword)}&search_area=0&search_mode=0`);
+    const torrents = document.querySelectorAll('.torrents tbody tr:not(:first-child)');
+    for (const _torrent of torrents) {
+      const torrent = {};
+      torrent.site = this.site;
+      torrent.title = _torrent.querySelector('td[class="embedded"] > a[href*="details"]').title.trim();
+      torrent.subtitle = _torrent.querySelector('.torrentname > tbody > tr .embedded').lastChild.nodeValue.trim();
+      torrent.category = _torrent.querySelector('td a[href*=cat] img').title.trim();
+      torrent.link = 'https://pt.btschool.club/' + _torrent.querySelector('a[href*=details]').href.trim();
+      torrent.seeders = +(_torrent.querySelector('a[href*=seeders]') || _torrent.querySelector('a[href*=seeders] font') || _torrent.querySelector('span[class=red]')).innerHTML.trim();
+      torrent.leechers = +(_torrent.querySelector('a[href*=leechers]') || _torrent.childNodes[9]).innerHTML.trim();
+      torrent.snatches = +(_torrent.querySelector('a[href*=snatches] b') || _torrent.childNodes[11]).innerHTML.trim();
+      torrent.size = _torrent.childNodes[6].innerHTML.trim().replace('<br>', ' ').replace(/([KMGPT])B/, '$1iB');
+      torrent.time = moment(_torrent.childNodes[5].querySelector('span').title).unix();
+      torrent.size = util.calSize(...torrent.size.split(' '));
+      torrent.tags = [];
+      const tagsDom = _torrent.querySelectorAll('span[class*=label]');
+      for (const tag of tagsDom) {
+        torrent.tags.push(tag.innerHTML.trim());
+      }
+      torrentList.push(torrent);
+    }
+    return {
+      site: this.site,
+      torrentList
+    };
+  };
 
   async search (keyword) {
     try {

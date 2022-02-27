@@ -9,6 +9,13 @@
           <el-button type="primary" @click="searchTorrent">{{ this.searchStatus }}</el-button>
         </el-form-item>
       </el-form>
+      <el-form class="search-mix-form" label-width="100px" size="small">
+        <el-form-item label="搜索结果">
+          <el-checkbox-group v-model="checkList" @change="refreshList">
+            <el-checkbox v-for="item of resultCount" :key="item.site" :label="item.site">{{`${item.site}: ${item.count}`}}</el-checkbox>
+          </el-checkbox-group>
+        </el-form-item>
+      </el-form>
       <!--
       <el-form class="search-mix-form" inline label-width="100px" size="mini">
         <el-form-item label="展示内容">
@@ -177,6 +184,7 @@ export default {
   data () {
     return {
       clients: [],
+      checkList: [],
       torrentList: [],
       clientList: [],
       rssList: [],
@@ -208,6 +216,7 @@ export default {
         key: 'link',
         name: '种子链接'
       }],
+      resultCount: [],
       searchKey: '',
       searchStatus: '搜索',
       total: 0,
@@ -222,8 +231,20 @@ export default {
       this.searchStatus = '搜索中...';
       const url = `/api/site/search?keyword=${this.searchKey}`;
       const res = await this.$axiosGet(url);
-      this.torrentList = res.data.map(i => i.torrentList).flat();
+      this.torrentAll = res.data;
+      this.checkList = this.torrentAll.map(i => i.site);
+      this.refreshList();
+      this.resultCount = this.torrentAll.map(i => {
+        return {
+          site: i.site,
+          count: i.torrentList.length
+        };
+      }).sort((a, b) => b.count - a.count);
       this.searchStatus = '搜索';
+    },
+
+    refreshList () {
+      this.torrentList = this.torrentAll.filter(i => this.checkList.indexOf(i.site) !== -1).map(i => i.torrentList).flat();
     },
 
     async changePage (page) {
@@ -236,7 +257,7 @@ export default {
     }
   },
   async mounted () {
-    this.searchKey = 'hares';
+    this.searchKey = 'HaresWEB';
     this.searchTorrent();
   }
 };
