@@ -42,6 +42,15 @@
               <el-form-item label="种子大小">
                 <span>{{ $formatSize(props.row.size || 0) }}</span>
               </el-form-item>
+              <el-form-item label="上传速度">
+                <span>{{ $formatSize(props.row.uploadSpeed || 0) }}/s</span>
+              </el-form-item>
+              <el-form-item label="下载速度">
+                <span>{{ $formatSize(props.row.downloadSpeed || 0) }}/s</span>
+              </el-form-item>
+              <el-form-item label="连接数量">
+                <span>↑ {{props.row.seeder}} / ↓ {{props.row.leecher}}</span>
+              </el-form-item>
               <el-form-item label="种子分类">
                 <span>{{props.row.category}}</span>
               </el-form-item>
@@ -54,14 +63,8 @@
               <el-form-item label="添加时间">
                 <span>{{ $moment(props.row.addedTime * 1000).format('YYYY-MM-DD HH:mm:ss') }}</span>
               </el-form-item>
-              <el-form-item label="删除时间">
+              <el-form-item label="完成时间">
                 <span>{{$moment().unix() > props.row.completedTime ? $moment(props.row.completedTime * 1000).format('YYYY-MM-DD HH:mm:ss') : '∞' }}</span>
-              </el-form-item>
-              <el-form-item label="上传速度">
-                <span>{{ $formatSize(props.row.uploadSpeed || 0) }}/s</span>
-              </el-form-item>
-              <el-form-item label="下载速度">
-                <span>{{ $formatSize(props.row.downloadSpeed || 0) }}/s</span>
               </el-form-item>
               <el-form-item label="上传流量">
                 <span>{{ $formatSize(props.row.uploaded || 0) }}</span>
