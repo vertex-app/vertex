@@ -196,6 +196,9 @@ export default {
         name: '种子分类',
         key: 'category'
       }, {
+        name: '种子标签',
+        key: 'tags'
+      }, {
         name: '种子大小',
         key: 'size'
       }, {
