@@ -16,6 +16,8 @@ const scrape = require('./scrape');
 const db = new Database(path.join(__dirname, '../db/sql.db'));
 puppeteer.use(StealthPlugin());
 
+let browser;
+
 for (const k of Object.keys(util)) {
   exports[k] = util[k];
 }
@@ -76,7 +78,7 @@ exports.requestPromise = async function (options) {
   };
   options.headers['User-Agent'] = global.userAgent || 'Vertex';
   const res = await exports._requestPromise(options);
-  if (!res.body && res.body.indexOf('jschl-answer') !== -1) {
+  if (res.body && typeof res.body === 'string' && (res.body.indexOf('jschl-answer') !== -1 || res.body.indexOf('cloudflare/static') !== -1)) {
     logger.debug(new url.URL(options.url).hostname, '疑似遇到 5s 盾, 启用 Puppeteer 抓取页面....');
     return await exports.requestUsePuppeteer(options);
   }
@@ -84,11 +86,13 @@ exports.requestPromise = async function (options) {
 };
 
 exports.requestUsePuppeteer = async function (options) {
-  const browser = await puppeteer.launch({
-    executablePath: '/usr/bin/chromium',
-    args: ['--remote-debugging-port=9222', '--no-sandbox'],
-    headless: false
-  });
+  if (!browser || browser.process().exitCode === 0) {
+    browser = await puppeteer.launch({
+      executablePath: '/usr/bin/chromium',
+      args: ['--remote-debugging-port=9222', '--no-sandbox'],
+      headless: false
+    });
+  }
 
   const page = await browser.newPage();
   await page.setViewport({ width: 800, height: 600 });
@@ -106,7 +110,11 @@ exports.requestUsePuppeteer = async function (options) {
   await page.goto(options.url, {});
   await page.waitFor(10000);
   const body = await page.content();
-  await browser.close();
+  await page.close();
+  if ((await browser.pages()).length === 1) {
+    logger.info('Close Browser!!!');
+    await browser.close();
+  }
   return {
     body
   };
