@@ -1,12 +1,12 @@
 <template>
   <div class="search-mix">
     <div class="search-mix-div">
-      <el-form class="search-mix-form" inline label-width="100px" size="mini">
+      <el-form class="search-mix-form" inline label-width="100px" size="mini" @submit.native.prevent>
         <el-form-item label="关键词">
-          <el-input v-model="searchKey" placeholder="关键词"/>
+          <el-input v-model="searchKey" placeholder="关键词" @keyup.enter.native="searchTorrent"/>
         </el-form-item>
         <el-form-item size="small">
-          <el-button type="primary" @click="searchTorrent">搜索</el-button>
+          <el-button type="primary" @click="searchTorrent">{{ this.searchStatus }}</el-button>
         </el-form-item>
       </el-form>
       <!--
@@ -209,6 +209,7 @@ export default {
         name: '种子链接'
       }],
       searchKey: '',
+      searchStatus: '搜索',
       total: 0,
       totalPage: 0,
       page: 1,
@@ -218,9 +219,11 @@ export default {
   },
   methods: {
     async searchTorrent () {
+      this.searchStatus = '搜索中...';
       const url = `/api/site/search?keyword=${this.searchKey}`;
       const res = await this.$axiosGet(url);
       this.torrentList = res.data.map(i => i.torrentList).flat();
+      this.searchStatus = '搜索';
     },
 
     async changePage (page) {

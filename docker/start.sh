@@ -30,7 +30,7 @@ else
 fi
 
 if [ ! -f '/vertex/db/sql.db' ]; then
-  cp /root/vertex/app/config_backup/sql.db /vertex/db/sql.db
+  cp /app/vertex/app/config_backup/sql.db /vertex/db/sql.db
 else
   echo '/vertex/db/sql.db exists, continue'
 fi
@@ -43,36 +43,42 @@ fi
 
 if [ ! -f '/vertex/config/config.yaml' ]; then
   mkdir /vertex/config
-  cp /root/vertex/app/config_backup/*.yaml /vertex/config/
+  cp /app/vertex/app/config_backup/*.yaml /vertex/config/
   cp /vertex/config/config.example.yaml /vertex/config/config.yaml
 else
   echo '/vertex/config/config.yaml exists, continue'
 fi
 
 if [ ! -f '/vertex/data/setting.json' ]; then
-  cp /root/vertex/app/config_backup/setting.json /vertex/data/
+  cp /app/vertex/app/config_backup/setting.json /vertex/data/
 else
   echo '/vertex/data/setting.json exists, continue'
 fi
 
 if [ ! -f '/vertex/data/setting/torrent-history-setting.json' ]; then
-  cp /root/vertex/app/config_backup/torrent-history-setting.json /vertex/data/setting/
+  cp /app/vertex/app/config_backup/torrent-history-setting.json /vertex/data/setting/
 else
   echo '/vertex/data/setting/torrent-history-setting.json exists, continue'
 fi
 
 if [ ! -f '/vertex/data/setting/torrent-mix-setting.json' ]; then
-  cp /root/vertex/app/config_backup/torrent-mix-setting.json /vertex/data/setting/
+  cp /app/vertex/app/config_backup/torrent-mix-setting.json /vertex/data/setting/
 else
   echo '/vertex/data/setting/torrent-mix-setting.json exists, continue'
 fi
 
 if [ ! -f '/vertex/data/setting/site-push-setting.json' ]; then
-  cp /root/vertex/app/config_backup/site-push-setting.json /vertex/data/setting/
+  cp /app/vertex/app/config_backup/site-push-setting.json /vertex/data/setting/
 else
   echo '/vertex/data/setting/site-push-setting.json exists, continue'
 fi
 
-cd ~/vertex
+if [ -f '/tmp/.X99-lock' ]; then
+  rm /tmp/.X99-lock
+fi
+
+cd /app/vertex
 export PORT=3000
+Xvfb -ac :99 -screen 0 1280x1024x16 &
+export DISPLAY=:99
 node app/app.js

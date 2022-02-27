@@ -28,11 +28,13 @@ class Site {
       PTMSG: this._ptmsg,
       HDFans: this._hdfans,
       DICMusic: this._dicmusic,
-      GPW: this._gpw
+      GPW: this._gpw,
+      BTSchool: this._btschool
     };
     this.searchWrapper = {
       HaresClub: this._searchHaresclub,
-      LemonHD: this._searchLemonhd
+      LemonHD: this._searchLemonhd,
+      MTeam: this._searchMTeam
     };
     this.cookie = site.cookie;
     this.site = site.name;
@@ -43,7 +45,7 @@ class Site {
   };
 
   async _init () {
-    const record = await util.getRecord('select * from sites where site = ? order by id desc limit 1', [this.site]);
+    const record = await util.getRecord('select * from sites where site = ? order by id desc limit 1', [this.site]) || {};
     this.info = {
       username: record.username,
       uid: record.uid,
@@ -65,7 +67,7 @@ class Site {
           cookie: this.cookie
         }
       })).body;
-      await redis.setWithExpire(`vertex:document:body:${url}`, html, 600);
+      await redis.setWithExpire(`vertex:document:body:${url}`, html, 30);
       const dom = new JSDOM(html);
       return dom.window.document;
     } else {
@@ -306,6 +308,25 @@ class Site {
     return info;
   };
 
+  // BTSchool
+  async _btschool () {
+    const info = {};
+    const document = await this._getDocument('https://pt.btschool.club/');
+    // 用户名
+    info.username = document.querySelector('a[href^=userdetails] b').innerHTML;
+    // 上传
+    info.upload = document.querySelector('font[class=color_uploaded]').nextSibling.nodeValue.trim().replace(/(\w)B/, '$1iB');
+    info.upload = util.calSize(...info.upload.split(' '));
+    // 下载
+    info.download = document.querySelector('font[class=color_downloaded]').nextSibling.nodeValue.trim().replace(/(\w)B/, '$1iB');
+    info.download = util.calSize(...info.download.split(' '));
+    // 做种
+    info.seeding = +document.querySelector('img[class=arrowup]').nextSibling.nodeValue.trim();
+    // 下载
+    info.leeching = +document.querySelector('img[class=arrowdown]').nextSibling.nodeValue.trim();
+    return info;
+  };
+
   // HDFans
   async _hdfans () {
     const info = {};
@@ -491,8 +512,8 @@ class Site {
       await util.runRecord('insert into sites (site, uid, username, upload, download, bonus, seeding_size, seeding_num, level, update_time) values (?, ? , ?, ?, ?, ?, ?, ?, ?, ?)', [this.site, info.uid || 0, info.username, info.upload, info.download, info.bonus || 0, info.seedingSize || 0, info.seeding, info.level || '', info.updateTime]);
       this.info = info;
     } catch (e) {
-      logger.error(this.site, '站点数据抓取失败 (疑似是 Cookie 失效, 或遇到 5s 盾),', '报错如下:\n', e);
-      throw new Error('站点数据抓取失败 (疑似是 Cookie 失效, 或遇到 5s 盾)');
+      logger.error(this.site, '站点数据抓取失败 (疑似是 Cookie 失效, 或绕过 CloudFlare 5s 盾失效),', '报错如下:\n', e);
+      throw new Error('站点数据抓取失败 (疑似是 Cookie 失效, 或绕过 CloudFlare 5s 盾失效)');
     }
   };
 
@@ -538,19 +559,50 @@ class Site {
       const torrent = {};
       torrent.site = this.site;
       torrent.title = _torrent.querySelector('a[href*="details_"] b').innerHTML.trim();
-      torrent.subtitle = _torrent.childNodes[4].childNodes[1].innerHTML.trim();
-      torrent.category = _torrent.querySelector('td img[class*=cat]').class;
-      torrent.link = _torrent.querySelector('a[href*=details]').href.trim();
-      torrent.seeders = +(_torrent.querySelector('a[href*=seeders]') || _torrent.querySelector('a[href*=seeders] font') || _torrent.querySelector('a[href*=seeders] span')).innerHTML.trim();
-      torrent.leechers = +(_torrent.querySelector('a[href*=leechers]') || _torrent.childNodes[10]).innerHTML.trim();
-      torrent.snatches = +(_torrent.querySelector('a[href*=snatches] b') || _torrent.childNodes[12]).innerHTML.trim();
-      torrent.size = _torrent.childNodes[7].innerHTML.trim().replace('<br>', ' ').replace(/([KMGPT])B/, '$1iB');
-      torrent.time = moment(_torrent.childNodes[6].querySelector('span').title).unix();
+      torrent.subtitle = _torrent.children[2].children[1].innerHTML.trim();
+      torrent.category = _torrent.querySelector('td img[class*=cat]').getAttribute('class').trim();
+      torrent.link = 'https://lemonhd.org/' + _torrent.querySelector('a[href*=details]').href.trim();
+      torrent.seeders = +(_torrent.querySelector('a[href*=seeders]') || _torrent.querySelector('a[href*=seeders] font') || _torrent.querySelector('a[href*=seeders] span') || _torrent.querySelector('td span[class="red"]')).innerHTML.trim();
+      torrent.leechers = +(_torrent.querySelector('a[href*=leechers]') || _torrent.children[7]).innerHTML.trim();
+      torrent.snatches = +(_torrent.querySelector('a[href*=snatches] b') || _torrent.children[8]).innerHTML.trim();
+      torrent.size = _torrent.children[5].innerHTML.trim().replace('<br>', ' ').replace(/([KMGPT])B/, '$1iB');
+      torrent.time = moment(_torrent.children[4].querySelector('span').title).unix();
       torrent.size = util.calSize(...torrent.size.split(' '));
       torrent.tags = [];
       const tagsDom = _torrent.querySelectorAll('span[class~=tag]');
       for (const tag of tagsDom) {
         torrent.tags.push(tag.innerHTML.trim());
+      }
+      torrentList.push(torrent);
+    }
+    return {
+      site: this.site,
+      torrentList
+    };
+  }
+
+  // MTeam
+  async _searchMTeam (keyword) {
+    const torrentList = [];
+    const document = await this._getDocument(`https://kp.m-team.cc/torrents.php?incldead=1&spstate=0&inclbookmarked=0&search=${encodeURIComponent(keyword)}&search_area=0&search_mode=0`);
+    const torrents = document.querySelectorAll('.torrents tbody tr:not(:first-child)');
+    for (const _torrent of torrents) {
+      const torrent = {};
+      torrent.site = this.site;
+      torrent.title = _torrent.querySelector('td[class="embedded"] > a[href*="details"]').title.trim();
+      torrent.subtitle = _torrent.querySelector('.torrentname > tbody > tr .embedded').lastChild.nodeValue;
+      torrent.category = _torrent.querySelector('td a[href*=cat] img').title.trim();
+      torrent.link = 'https://kp.m-team.cc/' + _torrent.querySelector('a[href*=details]').href.trim();
+      torrent.seeders = +(_torrent.querySelector('a[href*=seeders]') || _torrent.querySelector('a[href*=seeders] font') || _torrent.querySelector('span[class=red]')).innerHTML.trim();
+      torrent.leechers = +(_torrent.querySelector('a[href*=leechers]') || _torrent.childNodes[9]).innerHTML.trim();
+      torrent.snatches = +(_torrent.querySelector('a[href*=snatches] b') || _torrent.childNodes[11]).innerHTML.trim();
+      torrent.size = _torrent.childNodes[6].innerHTML.trim().replace('<br>', ' ').replace(/([KMGPT])B/, '$1iB');
+      torrent.time = moment(_torrent.childNodes[5].querySelector('span').title).unix();
+      torrent.size = util.calSize(...torrent.size.split(' '));
+      torrent.tags = [];
+      const tagsDom = _torrent.querySelectorAll('img[class*=label]');
+      for (const tag of tagsDom) {
+        torrent.tags.push(tag.alt.trim());
       }
       torrentList.push(torrent);
     }
@@ -572,7 +624,7 @@ class Site {
       const result = await this.searchWrapper[this.site].call(this, keyword);
       return result;
     } catch (e) {
-      logger.error(this.site, '站点数据抓取失败 (疑似是 Cookie 失效, 或遇到 5s 盾),', '报错如下:\n', e);
+      logger.error(this.site, '种子列表抓取失败 (疑似是 Cookie 失效, 或绕过 CloudFlare 5s 盾失效),', '报错如下:\n', e);
       return {
         site: this.site,
         torrentList: []

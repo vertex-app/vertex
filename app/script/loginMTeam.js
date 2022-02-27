@@ -9,7 +9,7 @@ const request = require('util').promisify(require('request'));
       'user-agent': process.argv[2]
     }
   });
-  let username = body.match(/userdetails.*?<b>(.*)<\/b>/);
+  const username = body.match(/userdetails.*?<b>(.*)<\/b>/);
   if (username) {
     console.log('无需登录', username[1], '使用已有 Cookie 即可');
     return;
