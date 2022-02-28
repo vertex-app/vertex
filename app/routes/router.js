@@ -76,6 +76,36 @@ const clientProxy = function (req, res, next) {
   })(req, res, next);
 };
 
+const siteProxy = function (req, res, next) {
+  const siteList = util.listSite();
+  const siteId = req.params.site;
+  const site = siteList.filter(item => item.name === siteId)[0];
+  if (!site || !global.runningSite[siteId] || !global.runningSite[siteId].siteUrl) {
+    res.status(404);
+    res.end('Not Found');
+    return;
+  }
+  const siteUrl = global.runningSite[siteId].siteUrl;
+  proxy(siteUrl, {
+    proxyReqOptDecorator (proxyReqOpts, srcReq) {
+      proxyReqOpts.headers.cookie = global.runningSite[siteId] ? global.runningSite[siteId].cookie : '';
+      proxyReqOpts.headers.Referer = siteUrl;
+      if (proxyReqOpts.headers['content-type'] && proxyReqOpts.headers['content-type'].indexOf('application/x-www-form-urlencoded') !== -1) {
+        proxyReqOpts.headers['content-type'] = 'application/x-www-form-urlencoded';
+      }
+      proxyReqOpts.rejectUnauthorized = false;
+      return proxyReqOpts;
+    },
+    userResDecorator: function (proxyRes, proxyResData, userReq, userRes) {
+      if (proxyRes.headers['content-type'].indexOf('text/html') !== -1) {
+        proxyResData = proxyResData.toString('utf8').replace(/src=(['"])\//g, 'src=$1');
+      }
+      return proxyResData;
+    },
+    reqBodyEncoding: null
+  })(req, res, next);
+};
+
 module.exports = function (app, express, router) {
   app.use(session({
     genid: () => util.uuid.v4().replace(/-/g, ''),
@@ -164,6 +194,7 @@ module.exports = function (app, express, router) {
 
   app.use('/api', router);
   app.use('/proxy/client/:client', clientProxy);
+  app.use('/proxy/site/:site', siteProxy);
   app.use('*', (req, res, next) => {
     const pathname = req._parsedOriginalUrl.pathname;
     if (pathname === '/favicon.ico') {

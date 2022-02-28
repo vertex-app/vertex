@@ -55,8 +55,19 @@ class Site {
       PTerClub: 'https://pterclub.com/download.php?id={ID}',
       BTSchool: 'https://pt.btschool.club/download.php?id={ID}'
     };
+    this.siteUrlMap = {
+      HaresClub: 'https://club.hares.top/',
+      LemonHD: 'https://lemonhd.org/',
+      MTeam: 'https://kp.m-team.cc/',
+      HDSky: 'https://hdsky.me/',
+      OurBits: 'https://ourbits.club/',
+      HDHome: 'https://hdhome.org/',
+      PTerClub: 'https://pterclub.com/',
+      BTSchool: 'https://pt.btschool.club/'
+    };
     this.cookie = site.cookie;
     this.site = site.name;
+    this.siteUrl = this.siteUrlMap[this.site];
     this.cron = site.cron || '0 */4 * * *';
     this.refreshJob = new CronJob(this.cron, () => this.refreshInfo());
     this.refreshJob.start();
