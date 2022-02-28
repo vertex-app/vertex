@@ -239,7 +239,7 @@ export default {
         maxSleepTime: 600,
         skipSameTorrent: true,
         cron: '* * * * *',
-        pushMessage: true,
+        pushNotify: false,
         acceptRules: [],
         rejectRules: [],
         reseedClients: []

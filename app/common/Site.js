@@ -628,7 +628,7 @@ class Site {
       torrent.title = _torrent.querySelector('td[class="embedded"] > a[href*="details"]').title.trim();
       torrent.subtitle = _torrent.querySelector('.torrentname > tbody > tr .embedded').lastChild.nodeValue.trim();
       if (torrent.subtitle === ']') {
-        torrent.subtitle = (_torrent.querySelector('.torrentname > tbody > tr .embedded span[class=optiontag]:last-child') ||
+        torrent.subtitle = (_torrent.querySelector('.torrentname > tbody > tr .embedded span[class=optiontag]:last-of-type') ||
           _torrent.querySelector('.torrentname > tbody > tr .embedded br').nextSibling.nodeValue.trim());
       }
       torrent.category = _torrent.querySelector('td a[href*=cat] img').title.trim();

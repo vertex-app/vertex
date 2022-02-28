@@ -313,7 +313,7 @@ export default {
 
     async listClient () {
       const res = await this.$axiosGet('/api/client/list');
-      this.clientList = res ? res.data.filter(item => item.enable) : [];
+      this.clientList = res ? res.data.filter(item => item.enable).sort((a, b) => a.name > b.name ? 1 : -1) : [];
     },
 
     async getTorrentMixSetting () {
