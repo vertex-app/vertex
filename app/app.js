@@ -25,6 +25,10 @@ const init = function () {
     });
     global.sitePushJob.start();
   }
+  global.clearDatabase = new CronJob('0 0 * * *', async () => {
+    await util.runRecord('delete from torrent_flow where time < ?', [moment().unix() - 1]);
+  });
+  global.clearDatabase.start();
   global.CONFIG = config;
   global.LOGGER = logger;
   const setting = JSON.parse(fs.readFileSync(path.join(__dirname, './data/setting.json')));

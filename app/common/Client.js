@@ -59,7 +59,7 @@ class Client {
         }
       }
     }
-    this.recordJob = new CronJob('*/5 * * * *', () => this.record());
+    this.recordJob = new CronJob('*/1 * * * *', () => this.record());
     this.recordJob.start();
     this.messageId = 0;
     this.errorCount = 0;
@@ -372,7 +372,7 @@ class Client {
     if (updateTrackerIncrease) {
       let allTorrentLastMinute = await redis.get(`vertex:client:${this.id}:flow`);
       if (!allTorrentLastMinute) {
-        allTorrentLastMinute = await util.getRecords('select * from torrent_flow where time = ?', [moment().startOf('minute').subtract(5, 'minute').unix()]);
+        allTorrentLastMinute = await util.getRecords('select * from torrent_flow where time = ?', [moment().startOf('minute').subtract(1, 'minute').unix()]);
         await redis.setWithExpire(`vertex:client:${this.id}:flow`, JSON.stringify(allTorrentLastMinute), 60);
       } else {
         allTorrentLastMinute = JSON.parse(allTorrentLastMinute);
