@@ -79,6 +79,14 @@ class SiteMod {
     const result = await Promise.all(Object.keys(global.runningSite).map(i => global.runningSite[i].search(options.keyword)));
     return result;
   }
+
+  async pushTorrent (options) {
+    if (!options.id || options.id === 'undefined') {
+      throw new Error('种子 id 为空!!');
+    }
+    const result = await global.runningSite[options.site].pushTorrentById(options.id, options.client, options.savePath, options.category);
+    return result;
+  }
 }
 
 module.exports = SiteMod;

@@ -119,6 +119,7 @@ module.exports = function (app, express, router) {
   router.post('/site/delete', ctrl.Site.delete);
   router.get('/site/refresh', ctrl.Site.refresh);
   router.get('/site/search', ctrl.Site.search);
+  router.get('/site/pushTorrent', ctrl.Site.pushTorrent);
 
   router.get('/client/list', ctrl.Client.list);
   router.get('/client/getSpeedPerTracker', ctrl.Client.getSpeedPerTracker);

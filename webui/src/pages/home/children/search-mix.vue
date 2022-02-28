@@ -134,6 +134,17 @@
           </template>
         </el-table-column>
         <el-table-column
+          v-if="setting.showKeys.indexOf('size') !== -1"
+          align="center"
+          prop="size"
+          fixed="right"
+          width="144"
+          label="操作">
+          <template slot-scope="scope">
+            <el-button type="primary" size="mini" @click="() => { pushTorrentVisible = true; pushRow = scope.row}">推送种子</el-button>
+          </template>
+        </el-table-column>
+        <el-table-column
           v-if="setting.showKeys.indexOf('deleteTime') !== -1"
           align="center"
           label="删除时间"
@@ -177,6 +188,27 @@
           :total="total">
         </el-pagination>
       </div>
+      <el-dialog title="推送种子" :visible.sync="pushTorrentVisible" width="50%">
+        <el-form label-width="144px" size="mini" style="width: 80%;">
+          <el-form-item required label="客户端">
+            <el-select v-model="client" placeholder="选择客户端" style="width: 200px;">
+              <el-option v-for="client of clientList" :disabled="!client.status" :key="client.id" :label="client.alias" :value="client.id"></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="分类">
+            <el-input v-model="category" style="width: 200px;"></el-input>
+          </el-form-item>
+          <el-form-item label="保存路径">
+            <el-input v-model="savePath" style="width: 200px;"></el-input>
+          </el-form-item>
+          <el-form-item label="自动管理">
+            <el-checkbox v-model="autoTMM">自动管理</el-checkbox>
+          </el-form-item>
+          <el-form-item size="mini">
+            <el-button type="primary" @click="pushTorrent">推送种子</el-button>
+          </el-form-item>
+        </el-form>
+      </el-dialog>
     </div>
   </div>
 </template>
@@ -185,7 +217,10 @@
 export default {
   data () {
     return {
-      clients: [],
+      client: '',
+      autoTMM: false,
+      category: '',
+      savePath: '',
       checkList: [],
       torrentList: [],
       clientList: [],
@@ -219,7 +254,9 @@ export default {
         name: '种子链接'
       }],
       resultCount: [],
-      searchKey: '',
+      searchKey: '星际穿越',
+      pushRow: {},
+      pushTorrentVisible: false,
       tableLoading: false,
       searchStatus: '搜索',
       total: 0,
@@ -246,6 +283,16 @@ export default {
       }).sort((a, b) => b.count - a.count);
       this.searchStatus = '搜索';
       this.tableLoading = false;
+    },
+
+    async pushTorrent () {
+      if (this.client === '') {
+        return this.$message.error('请选择客户端');
+      }
+      const url = `/api/site/pushTorrent?id=${this.pushRow.id}&site=${this.pushRow.site}&client=${this.client}&autoTMM=${this.autoTMM}&savePath=${this.savePath}&category=${this.category}`;
+      const res = await this.$axiosGet(url);
+      if (res) await this.$messageBox(res);
+      this.pushTorrentVisible = false;
     },
 
     refreshList () {
@@ -275,12 +322,18 @@ export default {
       this.page = page;
     },
 
+    async listClient () {
+      const res = await this.$axiosGet('/api/client/list');
+      this.clientList = res ? res.data : [];
+    },
+
     async gotoDetail (row) {
       if (!row.link) return await this.$message.error('链接不存在');
       window.open(row.link);
     }
   },
   async mounted () {
+    this.listClient();
   }
 };
 </script>

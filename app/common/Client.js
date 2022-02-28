@@ -279,6 +279,16 @@ class Client {
       [hash, 0, 0, moment().unix() - moment().unix() % 300]);
   };
 
+  async addTorrentByTorrentFile (filepath, hash, isSkipChecking = false, uploadLimit = 0, downloadLimit = 0, savePath, category, autoTMM) {
+    const { statusCode } = await this.client.addTorrentByTorrentFile(this.clientUrl, this.cookie, filepath, isSkipChecking, uploadLimit, downloadLimit, savePath, category, autoTMM);
+    if (statusCode !== 200) {
+      this.login();
+      throw new Error('状态码: ' + statusCode);
+    }
+    await util.runRecord('insert into torrent_flow (hash, upload, download, time) values (?, ?, ?, ?)',
+      [hash, 0, 0, moment().unix() - moment().unix() % 300]);
+  };
+
   async reannounceTorrent (torrent) {
     try {
       await this.client.reannounceTorrent(this.clientUrl, this.cookie, torrent.hash);

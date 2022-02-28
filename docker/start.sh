@@ -29,6 +29,12 @@ else
   echo '/vertex/db exists, continue'
 fi
 
+if [ ! -d '/vertex/torrents' ]; then
+  mkdir /vertex/torrents
+else
+  echo '/vertex/torrents exists, continue'
+fi
+
 if [ ! -f '/vertex/db/sql.db' ]; then
   cp /app/vertex/app/config_backup/sql.db /vertex/db/sql.db
 else

@@ -1,6 +1,8 @@
 const util = require('../util');
 const logger = require('../logger');
 const url = require('url');
+const fs = require('fs');
+const FormData = require('form-data');
 
 exports.login = async function (username, clientUrl, password) {
   const message = {
@@ -40,6 +42,34 @@ exports.addTorrent = async function (clientUrl, cookie, torrentUrl, isSkipChecki
   }
   const res = await util.requestPromise(message);
   logger.debug(clientUrl, '添加种子', torrentUrl, '\n返回信息', { body: res.body, statusCode: res.statusCode });
+  return res;
+};
+
+exports.addTorrentByTorrentFile = async function (clientUrl, cookie, filepath, isSkipChecking, uploadLimit, downloadLimit, savePath, category, autoTMM) {
+  const message = {
+    url: clientUrl + '/api/v2/torrents/add',
+    method: 'POST',
+    headers: {
+      cookie
+    },
+    formData: {
+      torrents: fs.createReadStream(filepath),
+      skip_checking: isSkipChecking + '',
+      upLimit: uploadLimit,
+      dlLimit: downloadLimit
+    }
+  };
+  if (savePath) {
+    message.formData.savepath = savePath;
+  }
+  if (category) {
+    message.formData.category = category;
+  }
+  if (autoTMM) {
+    message.formData.autoTMM = autoTMM;
+  }
+  const res = await util.requestPromise(message);
+  logger.debug(clientUrl, '添加种子', filepath, '\n返回信息', { body: res.body, statusCode: res.statusCode });
   return res;
 };
 

@@ -117,9 +117,9 @@
         </el-collapse-item>
       </el-collapse>
       <el-dialog title="导入规则" :visible.sync="importRuleVisible" width="80%">
-        <el-form class="torrent-history-form" label-width="144px" size="mini" style="width: 80%;">
+        <el-form label-width="144px" size="mini" style="width: 80%;">
           <el-form-item label="规则">
-            <el-input v-model="importRuleText" type="textarea" :rows="20"></el-input>
+            <el-input v-model="importRuleText" type="textarea" :rows="20" style="width: 500px;"></el-input>
           </el-form-item>
           <el-form-item size="mini">
             <el-button type="primary" @click="importRule">导入</el-button>

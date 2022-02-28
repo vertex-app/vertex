@@ -105,5 +105,22 @@ class Site {
       });
     }
   };
+
+  async pushTorrent (req, res) {
+    const options = req.query;
+    try {
+      const r = await siteMod.pushTorrent(options);
+      res.send({
+        success: true,
+        message: r
+      });
+    } catch (e) {
+      logger.error(e);
+      res.send({
+        success: false,
+        message: e.message
+      });
+    }
+  };
 }
 module.exports = Site;

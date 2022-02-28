@@ -10,6 +10,7 @@ RUN \
   ln -s /vertex/data /app/vertex/app/data && \
   ln -s /vertex/db /app/vertex/app/db && \
   ln -s /vertex/logs /app/vertex/logs && \
+  ln -s /vertex/torrents /app/vertex/torrents && \
   mv /app/vertex/app/config /app/vertex/app/config_backup && \
   ln -s /vertex/config /app/vertex/app/config && \
   ln -s /app/localtime /etc/localtime && \

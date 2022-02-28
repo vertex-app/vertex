@@ -4,6 +4,10 @@ const CronJob = require('cron').CronJob;
 const moment = require('moment');
 const redis = require('../libs/redis');
 const { JSDOM } = require('jsdom');
+const bencode = require('bencode');
+const crypto = require('crypto');
+const fs = require('fs');
+const path = require('path');
 
 class Site {
   constructor (site) {
@@ -41,12 +45,26 @@ class Site {
       PTerClub: this._searchPterclub,
       BTSchool: this._searchBTSchool
     };
+    this.torrentDownloadLinkMap = {
+      HaresClub: 'https://club.hares.top/download.php?id={ID}',
+      LemonHD: 'https://lemonhd.org/download.php?id={ID}',
+      MTeam: 'https://kp.m-team.cc/download.php?id={ID}&https=1',
+      HDSky: 'https://hdsky.me/download.php?id={ID}',
+      OurBits: 'https://ourbits.club/download.php?id={ID}',
+      HDHome: 'https://hdhome.org/download.php?id={ID}',
+      PTerClub: 'https://pterclub.com/download.php?id={ID}',
+      BTSchool: 'https://pt.btschool.club/download.php?id={ID}'
+    };
     this.cookie = site.cookie;
     this.site = site.name;
     this.cron = site.cron || '0 */4 * * *';
     this.refreshJob = new CronJob(this.cron, () => this.refreshInfo());
     this.refreshJob.start();
     this._init();
+  };
+
+  _getSum (a, b) {
+    return a + b;
   };
 
   async _init () {
@@ -79,6 +97,33 @@ class Site {
       const dom = new JSDOM(cache);
       return dom.window.document;
     }
+  };
+
+  async _downloadTorrent (url) {
+    const res = await util.requestPromise({
+      url: url,
+      method: 'GET',
+      encoding: null,
+      headers: {
+        cookie: this.cookie
+      }
+    });
+    const buffer = Buffer.from(res.body, 'utf-8');
+    const torrent = bencode.decode(buffer);
+    // const size = torrent.info.length || torrent.info.files.map(i => i.length).reduce(this._getSum, 0);
+    const fsHash = crypto.createHash('sha1');
+    fsHash.update(bencode.encode(torrent.info));
+    const md5 = fsHash.digest('md5');
+    let hash = '';
+    for (const v of md5) {
+      hash += v < 16 ? '0' + v.toString(16) : v.toString(16);
+    };
+    const filepath = path.join(__dirname, '../../torrents', hash + '.torrent');
+    fs.writeFileSync(filepath, buffer);
+    return {
+      filepath,
+      hash
+    };
   };
 
   // 白兔
@@ -536,6 +581,7 @@ class Site {
       torrent.subtitle = _torrent.querySelector('.layui-torrents-descr-width').innerHTML.trim();
       torrent.category = _torrent.querySelector('a[href*="cat"] img').title;
       torrent.link = 'https://club.hares.top/' + _torrent.querySelector('.layui-torrents-title-width a').href.trim();
+      torrent.id = +torrent.link.match(/id=(\d*)/)[1];
       torrent.seeders = +(_torrent.querySelector('a[href*=seeders] font') || _torrent.querySelector('a[href*=seeders]') || _torrent.childNodes[6]).innerHTML.trim();
       torrent.leechers = +(_torrent.querySelector('a[href*=leechers]') || _torrent.childNodes[7]).innerHTML.trim();
       torrent.snatches = +(_torrent.querySelector('a[href*=snatches] b') || _torrent.childNodes[8]).innerHTML.trim();
@@ -567,6 +613,7 @@ class Site {
       torrent.subtitle = _torrent.children[2].children[1].innerHTML.trim();
       torrent.category = _torrent.querySelector('td img[class*=cat]').getAttribute('class').trim();
       torrent.link = 'https://lemonhd.org/' + _torrent.querySelector('a[href*=details]').href.trim();
+      torrent.id = +torrent.link.match(/id=(\d*)/)[1];
       torrent.seeders = +(_torrent.querySelector('a[href*=seeders]') || _torrent.querySelector('a[href*=seeders] font') || _torrent.querySelector('a[href*=seeders] span') || _torrent.querySelector('td span[class="red"]')).innerHTML.trim();
       torrent.leechers = +(_torrent.querySelector('a[href*=leechers]') || _torrent.children[7]).innerHTML.trim();
       torrent.snatches = +(_torrent.querySelector('a[href*=snatches] b') || _torrent.children[8]).innerHTML.trim();
@@ -598,6 +645,7 @@ class Site {
       torrent.subtitle = _torrent.querySelector('.torrentname > tbody > tr .embedded').lastChild.nodeValue;
       torrent.category = _torrent.querySelector('td a[href*=cat] img').title.trim();
       torrent.link = 'https://kp.m-team.cc/' + _torrent.querySelector('a[href*=details]').href.trim();
+      torrent.id = +torrent.link.match(/id=(\d*)/)[1];
       torrent.seeders = +(_torrent.querySelector('a[href*=seeders]') || _torrent.querySelector('a[href*=seeders] font') || _torrent.querySelector('span[class=red]')).innerHTML.trim();
       torrent.leechers = +(_torrent.querySelector('a[href*=leechers]') || _torrent.childNodes[9]).innerHTML.trim();
       torrent.snatches = +(_torrent.querySelector('a[href*=snatches] b') || _torrent.childNodes[11]).innerHTML.trim();
@@ -633,6 +681,7 @@ class Site {
       }
       torrent.category = _torrent.querySelector('td a[href*=cat] img').title.trim();
       torrent.link = 'https://hdsky.me/' + _torrent.querySelector('a[href*=details]').href.trim();
+      torrent.id = +torrent.link.match(/id=(\d*)/)[1];
       torrent.seeders = +(_torrent.querySelector('a[href*=seeders]') || _torrent.querySelector('a[href*=seeders] font') || _torrent.querySelector('span[class=red]')).innerHTML.trim();
       torrent.leechers = +(_torrent.querySelector('a[href*=leechers]') || _torrent.childNodes[9]).innerHTML.trim();
       torrent.snatches = +(_torrent.querySelector('a[href*=snatches] b') || _torrent.childNodes[11]).innerHTML.trim();
@@ -669,6 +718,7 @@ class Site {
       }
       torrent.category = _torrent.querySelector('td a[href*=cat] img').title.trim();
       torrent.link = 'https://ourbits.club/' + _torrent.querySelector('a[href*=details]').href.trim();
+      torrent.id = +torrent.link.match(/id=(\d*)/)[1];
       torrent.seeders = +(_torrent.querySelector('a[href*=seeders]') || _torrent.querySelector('a[href*=seeders] font') || _torrent.querySelector('span[class=red]')).innerHTML.trim();
       torrent.leechers = +(_torrent.querySelector('a[href*=leechers]') || _torrent.childNodes[9]).innerHTML.trim();
       torrent.snatches = +(_torrent.querySelector('a[href*=snatches] b') || _torrent.childNodes[11]).innerHTML.trim();
@@ -700,6 +750,7 @@ class Site {
       torrent.subtitle = _torrent.querySelector('.torrentname > tbody > tr .embedded').lastChild.innerHTML.trim();
       torrent.category = _torrent.querySelector('td a[href*=cat] img').title.trim();
       torrent.link = 'https://hdhome.org/' + _torrent.querySelector('a[href*=details]').href.trim();
+      torrent.id = +torrent.link.match(/id=(\d*)/)[1];
       torrent.seeders = +(_torrent.querySelector('a[href*=seeders]') || _torrent.querySelector('a[href*=seeders] font') || _torrent.querySelector('span[class=red]')).innerHTML.trim();
       torrent.leechers = +(_torrent.querySelector('a[href*=leechers]') || _torrent.childNodes[9]).innerHTML.trim();
       torrent.snatches = +(_torrent.querySelector('a[href*=snatches] b') || _torrent.childNodes[11]).innerHTML.trim();
@@ -731,6 +782,7 @@ class Site {
       torrent.subtitle = _torrent.querySelector('.torrentname > tbody > tr .embedded > div > div:nth-child(2) span').innerHTML.trim();
       torrent.category = _torrent.querySelector('td a[href*=cat] img').title.trim();
       torrent.link = 'https://pterclub.com/' + _torrent.querySelector('a[href*=details]').href.trim();
+      torrent.id = +torrent.link.match(/id=(\d*)/)[1];
       torrent.seeders = +(_torrent.querySelector('a[href*=seeders]') || _torrent.querySelector('a[href*=seeders] font') || _torrent.querySelector('span[class=red]')).innerHTML.trim();
       torrent.leechers = +(_torrent.querySelector('a[href*=leechers]') || _torrent.childNodes[9]).innerHTML.trim();
       torrent.snatches = +(_torrent.querySelector('a[href*=snatches] b') || _torrent.childNodes[11]).innerHTML.trim();
@@ -762,6 +814,7 @@ class Site {
       torrent.subtitle = _torrent.querySelector('.torrentname > tbody > tr .embedded').lastChild.nodeValue.trim();
       torrent.category = _torrent.querySelector('td a[href*=cat] img').title.trim();
       torrent.link = 'https://pt.btschool.club/' + _torrent.querySelector('a[href*=details]').href.trim();
+      torrent.id = +torrent.link.match(/id=(\d*)/)[1];
       torrent.seeders = +(_torrent.querySelector('a[href*=seeders]') || _torrent.querySelector('a[href*=seeders] font') || _torrent.querySelector('span[class=red]')).innerHTML.trim();
       torrent.leechers = +(_torrent.querySelector('a[href*=leechers]') || _torrent.childNodes[9]).innerHTML.trim();
       torrent.snatches = +(_torrent.querySelector('a[href*=snatches] b') || _torrent.childNodes[11]).innerHTML.trim();
@@ -800,6 +853,15 @@ class Site {
       };
     }
   };
+
+  async pushTorrentById (id, client, savePath, category, autoTMM) {
+    const downloadLinkTemplate = this.torrentDownloadLinkMap[this.site];
+    if (!downloadLinkTemplate) throw new Error(`站点 ${this.site} 暂时不支持推送种子!`);
+    const downloadLink = downloadLinkTemplate.replace(/{ID}/, id);
+    const { filepath, hash } = await this._downloadTorrent(downloadLink);
+    await global.runningClient[client].addTorrentByTorrentFile(filepath, hash, false, 0, 0, savePath, category, autoTMM);
+    return '推送成功, 种子 hash: ' + hash;
+  }
 
   async destroy () {
     logger.info('销毁站点实例', this.site);
