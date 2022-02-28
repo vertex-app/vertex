@@ -150,7 +150,7 @@ class Rss {
             const bencodeInfo = await rss.getTorrentNameByBencode(torrent.url);
             if (_torrent.name === bencodeInfo.name && _torrent.hash !== bencodeInfo.hash) {
               try {
-                await client.addTorrent(torrent.url, true, this.uploadLimit, this.downloadLimit, _torrent.savePath, this.category);
+                await client.addTorrent(torrent.url, torrent.hash, true, this.uploadLimit, this.downloadLimit, _torrent.savePath, this.category);
                 await util.runRecord('INSERT INTO torrents (hash, name, size, rss_id, category, link, record_time, add_time, record_type, record_note) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
                   [torrent.hash, torrent.name, torrent.size, this.id, this.category, torrent.link, moment().unix(), moment().unix(), 1, '辅种']);
                 await this.ntf.addTorrent(this._rss, client, torrent);
@@ -266,7 +266,7 @@ class Rss {
       const fitRules = this.acceptRules.filter(item => this._fitRule(item, torrent));
       if (fitRules.length !== 0 || this.acceptRules.length === 0) {
         try {
-          await _client.addTorrent(torrent.url, false, this.uploadLimit, this.downloadLimit, this.savePath, this.category);
+          await _client.addTorrent(torrent.url, torrent.hash, false, this.uploadLimit, this.downloadLimit, this.savePath, this.category);
           await this.ntf.addTorrent(this._rss, _client, torrent);
           await util.runRecord('INSERT INTO torrents (hash, name, size, rss_id, link, category, record_time, add_time, record_type, record_note) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
             [torrent.hash, torrent.name, torrent.size, this.id, torrent.link, this.category, moment().unix(), moment().unix(), 1, '添加种子']);

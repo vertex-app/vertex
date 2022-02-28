@@ -59,7 +59,7 @@ class Client {
         }
       }
     }
-    this.recordJob = new CronJob('*/1 * * * *', () => this.record());
+    this.recordJob = new CronJob('*/5 * * * *', () => this.record());
     this.recordJob.start();
     this.messageId = 0;
     this.errorCount = 0;
@@ -269,12 +269,14 @@ class Client {
     }
   };
 
-  async addTorrent (torrentUrl, isSkipChecking = false, uploadLimit = 0, downloadLimit = 0, savePath, category) {
+  async addTorrent (torrentUrl, hash, isSkipChecking = false, uploadLimit = 0, downloadLimit = 0, savePath, category) {
     const { statusCode } = await this.client.addTorrent(this.clientUrl, this.cookie, torrentUrl, isSkipChecking, uploadLimit, downloadLimit, savePath, category);
     if (statusCode !== 200) {
       this.login();
       throw new Error('状态码: ' + statusCode);
     }
+    await util.runRecord('insert into torrent_flow (hash, upload, download, time) values (?, ?, ?, ?)',
+      [hash, 0, 0, moment().unix() - moment().unix() % 300]);
   };
 
   async reannounceTorrent (torrent) {
@@ -339,7 +341,7 @@ class Client {
           Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 2000);
           logger.info(torrent.name, '等待 2s 完毕, 执行删种');
           await util.runRecord('update torrents set size = ?, tracker = ?, upload = ?, download = ?, delete_time = ? where hash = ?',
-            [torrent.size, torrent.tracker, torrent.uploaded, torrent.downloaded, moment().startOf('minute').unix(), torrent.hash]);
+            [torrent.size, torrent.tracker, torrent.uploaded, torrent.downloaded, moment().unix(), torrent.hash]);
           await util.runRecord('insert into torrent_flow (hash, upload, download, time) values (?, ?, ?, ?)',
             [torrent.hash, torrent.uploaded, torrent.downloaded, moment().unix()]);
           const deleteFiles = await this.deleteTorrent(torrent, rule);
@@ -360,7 +362,7 @@ class Client {
     if (updateTrackerIncrease) {
       let allTorrentLastMinute = await redis.get(`vertex:client:${this.id}:flow`);
       if (!allTorrentLastMinute) {
-        allTorrentLastMinute = await util.getRecords('select * from torrent_flow where time = ?', [moment().startOf('minute').subtract(1, 'minute').unix()]);
+        allTorrentLastMinute = await util.getRecords('select * from torrent_flow where time = ?', [moment().startOf('minute').subtract(5, 'minute').unix()]);
         await redis.setWithExpire(`vertex:client:${this.id}:flow`, JSON.stringify(allTorrentLastMinute), 60);
       } else {
         allTorrentLastMinute = JSON.parse(allTorrentLastMinute);
