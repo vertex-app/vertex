@@ -9,6 +9,7 @@ const Database = require('better-sqlite3');
 const puppeteer = require('puppeteer-extra');
 const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 const url = require('url');
+const redlock = require('./redlock');
 
 const logger = require('./logger');
 const scrape = require('./scrape');
@@ -18,9 +19,13 @@ puppeteer.use(StealthPlugin());
 
 let browser;
 
+const ttl = 15000;
+
 for (const k of Object.keys(util)) {
   exports[k] = util[k];
 }
+
+exports.redlock = redlock;
 
 exports.getRecords = async function (sql, options = []) {
   let _sql = sql;
@@ -86,14 +91,23 @@ exports.requestPromise = async function (options) {
 };
 
 exports.requestUsePuppeteer = async function (options) {
-  if (!browser || browser.process().exitCode === 0) {
-    browser = await puppeteer.launch({
-      executablePath: '/usr/bin/chromium',
-      args: ['--remote-debugging-port=9222', '--no-sandbox'],
-      headless: false
-    });
+  const lock = await exports.redlock.lock('vertex:puppeteer', ttl);
+  logger.debug('locked');
+  try {
+    if (!browser || browser.process().exitCode === 0) {
+      browser = await puppeteer.launch({
+        executablePath: '/usr/bin/chromium',
+        args: ['--remote-debugging-port=9222', '--no-sandbox'],
+        headless: false
+      });
+    }
+    lock.unlock();
+    logger.debug('unlocked');
+  } catch (e) {
+    logger.error(e);
+    lock.unlock();
+    logger.debug('unlocked');
   }
-
   const page = await browser.newPage();
   await page.setViewport({ width: 800, height: 600 });
   await page.setUserAgent(options.headers['User-Agent']);

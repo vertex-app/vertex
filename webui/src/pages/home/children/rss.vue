@@ -45,7 +45,7 @@
           label="推送消息"
           width="100">
           <template slot-scope="scope">
-            <el-tag>{{scope.row.pushMessage}}</el-tag>
+            <el-tag>{{scope.row.pushNotify}}</el-tag>
           </template>
         </el-table-column>
         <el-table-column

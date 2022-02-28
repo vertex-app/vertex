@@ -4,7 +4,7 @@
   "description": "",
   "main": "app/app.js",
   "scripts": {
-    "app": "export PORT=3000 && nodemon app/app.js"
+    "app": "export DISPLAY=:99 && export PORT=3000 && nodemon app/app.js"
   },
   "author": "",
   "license": "ISC",
@@ -30,6 +30,7 @@
     "puppeteer-extra": "^3.2.3",
     "puppeteer-extra-plugin-stealth": "^2.9.0",
     "redis": "^3.1.2",
+    "redlock": "^4.2.0",
     "request": "^2.88.2",
     "ssh2": "^1.5.0",
     "tar": "^6.1.11",
