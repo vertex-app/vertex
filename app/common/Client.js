@@ -61,8 +61,11 @@ class Client {
     }
     this.recordJob = new CronJob('*/1 * * * *', () => this.record());
     this.recordJob.start();
+    this.trackerSyncJob = new CronJob('*/5 * * * *', () => this.trackerSync());
+    this.trackerSyncJob.start();
     this.messageId = 0;
     this.errorCount = 0;
+    this.trackerStatus = {};
     this.login();
   };
 
@@ -231,6 +234,7 @@ class Client {
       this.maindata.seedingCount = 0;
       this.maindata.usedSpace = 0;
       this.maindata.torrents.forEach((item) => {
+        item.trackerStatus = this.trackerStatus[item.hash] || '';
         this.maindata.usedSpace += item.completed;
         if (statusLeeching.indexOf(item.state) !== -1) {
           this.maindata.leechingCount += 1;
@@ -424,6 +428,26 @@ class Client {
       logger.error('客户端', this.alias, '\n', e);
     }
   }
+
+  async trackerSync () {
+    if (!this.maindata || !this.maindata.torrents || this.maindata.torrents.length === 0) return;
+    const torrents = this.maindata.torrents.sort((a, b) => a.completedTime - b.completedTime || a.addedTime - b.addedTime);
+    for (const torrent of torrents) {
+      try {
+        const sqlRes = await util.getRecord('SELECT * FROM torrents WHERE hash = ?', [torrent.hash]);
+        if (!sqlRes) continue;
+        const { statusCode, body } = await this.client.getTrackerList(this.clientUrl, this.cookie, torrent.hash);
+        if (statusCode !== 200) {
+          this.login();
+          throw new Error('状态码: ' + statusCode);
+        }
+        const trackerList = JSON.parse(body);
+        this.trackerStatus[torrent.hash] = trackerList.filter(i => i.url.indexOf('**') === -1).map(i => i.msg).join('');
+      } catch (e) {
+        logger.error('客户端', this.alias, '种子', torrent.name, 'tracker 状态同步失败, 报错如下:\n', e);
+      }
+    }
+  };
 
   async pushSpaceAlarm () {
     if (!this.spaceAlarm || this.alarmSpace < this.maindata.freeSpaceOnDisk) return;

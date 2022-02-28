@@ -138,14 +138,15 @@
                 &nbsp;&nbsp;&nbsp;&nbsp;上传中: <el-tag>uploading</el-tag>, 下载中: <el-tag>downloading</el-tag><br>
                 &nbsp;&nbsp;&nbsp;&nbsp;等待下载: <el-tag>stalledDL</el-tag>, 做种但无上传: <el-tag>stalledUP</el-tag><br>
                 &nbsp;&nbsp;&nbsp;&nbsp;更多状态请参照 qBittorrent Wiki, 若想删除等待下载状态下的种子, 应填写 <el-tag>stalledDL</el-tag><br>
-                08. 当前时间: 当天 0 点到当前时间的秒数<br>
+                08. 返回信息: 种子 Tracker 列表中由 Tracker 返回的信息
+                09. 当前时间: 当天 0 点到当前时间的秒数<br>
                 &nbsp;&nbsp;&nbsp;&nbsp;例: 填写 当前时间大于 8*3600 与 当前时间小于 22*3600<br>
                 &nbsp;&nbsp;&nbsp;&nbsp;则只会在当天上午 8 点之后到 22 点之前删种<br>
                 &nbsp;&nbsp;&nbsp;&nbsp;0 点的时间戳取决于 Vertex 安装环境的时区<br>
-                09. 全局速度: 当前客户端的速度<br>
-                10. 做种下载连接: 仅计算已连接上的数量, 也即 qBittorrent WebUI 内括号外的数字 <br>
-                11. 做种下载任务: 任务的数量, 做种包含上传中状态与做种状态, 下载包含下载中与等待下载状态 <br>
-                12. 比较类型中的 包含 / 包含于 或 不包含 / 不包含于: 值部分需以半角逗号 , 为分割符, 如种子分类不包含于 KEEP, KEEP2, KEEP3 三个分类, 则应填写:
+                10. 全局速度: 当前客户端的速度<br>
+                11. 做种下载连接: 仅计算已连接上的数量, 也即 qBittorrent WebUI 内括号外的数字 <br>
+                12. 做种下载任务: 任务的数量, 做种包含上传中状态与做种状态, 下载包含下载中与等待下载状态 <br>
+                13. 比较类型中的 包含 / 包含于 或 不包含 / 不包含于: 值部分需以半角逗号 , 为分割符, 如种子分类不包含于 KEEP, KEEP2, KEEP3 三个分类, 则应填写:
                 <el-tag>KEEP,KEEP2,KEEP3</el-tag><br>
               </el-card>
             </el-form-item>
@@ -207,6 +208,9 @@ export default {
       }, {
         name: '站点域名',
         key: 'tracker'
+      }, {
+        name: '返回信息',
+        key: 'trackerStatus'
       }, {
         name: '已完成量',
         key: 'completed'
