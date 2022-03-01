@@ -41,6 +41,14 @@
             <el-form-item required label="别名" prop="alias">
               <el-input v-model="set.alias" type="input"></el-input>
             </el-form-item>
+            <el-form-item label="错误推送上限" prop="maxErrorCount">
+              <el-input v-model="set.maxErrorCount" type="input"></el-input>
+              <div><el-tag type="info">单个周期内推送错误信息次数上限, 仅计算错误信息推送, 留空为 100</el-tag></div>
+            </el-form-item>
+            <el-form-item label="重置周期" prop="clearCountCron">
+              <el-input v-model="set.clearCountCron" type="input"></el-input>
+              <div><el-tag type="info">Crontab 表达式, 在每次触发时重置推送错误信息次数为 0, 留空为 0 * * * * </el-tag></div>
+            </el-form-item>
             <el-form-item required label="类型" prop="type">
               <el-select v-model="set.type" placeholder="推送类型">
                 <el-option label="IYUU" value="iyuu"></el-option>

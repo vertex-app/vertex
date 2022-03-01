@@ -1,4 +1,5 @@
 const moment = require('moment');
+const CronJob = require('cron').CronJob;
 const util = require('../libs/util');
 const logger = require('../libs/logger');
 
@@ -12,9 +13,17 @@ class Push {
     for (const key of Object.keys(push)) {
       this[key] = push[key];
     }
+    this.clearCountCron = this.clearCountCron || '0 * * * *';
+    this.clearCountJob = new CronJob(this.clearCountCron, () => this._clearErrorCount());
+    this.maxErrorCount = +this.maxErrorCount || 100;
+    this.errorCount = 0;
     this.pushType = this.pushType || [];
     this.markdown = ['telegram'].indexOf(this.type) !== -1;
   };
+
+  _clearErrorCount () {
+    this.errotCount = 0;
+  }
 
   async _push (_push, text, desp) {
     if (_push && this.push) {
@@ -23,6 +32,10 @@ class Push {
   };
 
   async rssError (rss) {
+    if (this.errotCount > this.maxErrorCount) {
+      return logger.debug('周期内错误推送已达上限, 跳过本次推送');
+    }
+    this.errotCount += 1;
     const text = 'Rss 失败: ' + rss.alias;
     let desp = `Rss 任务: ${rss.alias}` +
       '详细原因请前往 Vertex 日志页面查看';
@@ -36,6 +49,10 @@ class Push {
   }
 
   async scrapeError (rss, torrent) {
+    if (this.errotCount > this.maxErrorCount) {
+      return logger.debug('周期内错误推送已达上限, 跳过本次推送');
+    }
+    this.errotCount += 1;
     const text = '抓取失败: ' + rss.alias;
     let desp = `Rss 任务: ${rss.alias}` +
       `种子名称: ${torrent.name}` +
@@ -65,6 +82,10 @@ class Push {
   };
 
   async addTorrentError (rss, client, torrent) {
+    if (this.errotCount > this.maxErrorCount) {
+      return logger.debug('周期内错误推送已达上限, 跳过本次推送');
+    }
+    this.errotCount += 1;
     const text = '添加种子失败: ' + torrent.name;
     let desp = `Rss 任务: ${rss.alias}\n` +
       `客户端名: ${client.alias}\n` +
@@ -121,6 +142,10 @@ class Push {
   };
 
   async deleteTorrentError (client, torrent, rule) {
+    if (this.errotCount > this.maxErrorCount) {
+      return logger.debug('周期内错误推送已达上限, 跳过本次推送');
+    }
+    this.errotCount += 1;
     const text = '删除种子失败: ' + torrent.name;
     let desp = `客户端名: ${client.alias}\n` +
       `种子名称: ${torrent.name}\n` +
@@ -168,6 +193,10 @@ class Push {
   }
 
   async clientLoginError (client, message) {
+    if (this.errotCount > this.maxErrorCount) {
+      return logger.debug('周期内错误推送已达上限, 跳过本次推送');
+    }
+    this.errotCount += 1;
     const text = '客户端登陆失败: ' + client.alias;
     let desp = `客户端名: ${client.alias}\n` +
       `附加信息: ${message}`;
@@ -181,6 +210,10 @@ class Push {
   }
 
   async getMaindataError (client) {
+    if (this.errotCount > this.maxErrorCount) {
+      return logger.debug('周期内错误推送已达上限, 跳过本次推送');
+    }
+    this.errotCount += 1;
     const text = '获取客户端信息失败: ' + client.alias;
     let desp = `客户端名: ${client.alias}\n` +
       '详细原因请前往 Vertex 日志页面查看';
