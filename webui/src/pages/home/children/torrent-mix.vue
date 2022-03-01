@@ -354,12 +354,13 @@ export default {
 
 <style scoped>
 .torrent-mix-div {
-  padding: 8px;
+  margin: 20px 0;
   border-radius: 8px;
   background: #FFF;
 }
 
 .client-mix-form {
+  padding-top: 20px;
   width: fit-content;
   text-align: left;
 }

@@ -62,53 +62,29 @@ export default {
         title: ' 监控信息',
         path: '/monitor'
       }, {
-        icon: ['fas', 'database'],
-        title: ' 站点数据',
-        path: '/site'
-      }, {
         icon: ['fab', 'searchengin'],
-        title: ' 聚合搜索',
-        path: '/search-mix'
-      }, {
-        icon: ['fas', 'sliders-h'],
-        title: ' 全局设置',
-        path: '/setting'
-      }, {
-        icon: ['fas', 'server'],
-        title: ' 服务器',
-        path: '/server'
-      }, {
-        icon: ['fas', 'server'],
-        title: ' 客户端',
-        path: '/client'
+        title: ' 站点聚合',
+        path: '/site-mix/site-database'
       }, {
         icon: ['fas', 'rss'],
-        title: ' Rss',
-        path: '/rss'
+        title: ' 刷流工具',
+        path: '/hit-and-run/rss'
       }, {
-        icon: ['fas', 'rss-square'],
-        title: ' Rss 规则',
-        path: '/rss-rule'
-      }, {
-        icon: ['fas', 'trash-alt'],
-        title: ' 删种规则',
-        path: '/delete-rule'
+        icon: ['fas', 'server'],
+        title: ' 下载服务',
+        path: '/point/server'
       }, {
         icon: ['fas', 'magnet'],
         title: ' 种子聚合',
-        path: '/torrent-mix'
+        path: '/torrent/torrent-mix'
       }, {
-        icon: ['fas', 'magnet'],
-        title: ' 种子历史',
-        path: '/torrent-history'
+        icon: ['fas', 'tv'],
+        title: ' 追光迷影',
+        path: '/binge-watching/auto-race'
       }, {
-        icon: ['fas', 'bullhorn'],
-        title: ' 推送工具',
-        path: '/push'
-      }, {
-        icon: ['fas', 'sticky-note'],
-        title: ' 日志',
-        path: '/log'
+        icon: ['fas', 'sliders-h'],
+        title: ' 全局设置',
+        path: '/global/setting'
       }
     ];
     this.menuIndex = this.$route.path;
@@ -135,10 +111,6 @@ export default {
   height: 100vh;
   text-align: center;
   overflow-y: auto;
-}
-
-.el-menu-item {
-  color: #dde6f9;
 }
 
 .el-menu-item.is-active, .el-menu-item:hover {

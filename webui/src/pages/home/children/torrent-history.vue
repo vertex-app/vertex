@@ -257,7 +257,7 @@ export default {
 
 <style scoped>
 .torrent-history-div {
-  padding: 8px;
+  margin: 20px 0;
   border-radius: 8px;
   background: #FFF;
 }

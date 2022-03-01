@@ -71,6 +71,10 @@ body {
   padding-right: 0;
 }
 
+.el-menu-item, .el-tabs__item {
+  color: #dde6f9;
+}
+
 *::-webkit-scrollbar-thumb {
   border-radius   : 10px;
   background-color: skyblue;
