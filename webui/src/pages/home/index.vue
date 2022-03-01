@@ -85,6 +85,10 @@ export default {
         icon: ['fas', 'sliders-h'],
         title: ' 全局设置',
         path: '/global/setting'
+      }, {
+        icon: ['fas', 'sticky-note'],
+        title: ' 系统日志',
+        path: '/log'
       }
     ];
     this.menuIndex = this.$route.path;

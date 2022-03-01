@@ -3,7 +3,7 @@
     <el-tabs v-model="activeName" type="card" @tab-click="handleTabsClick">
       <el-tab-pane label="全局设置" name="setting">
       </el-tab-pane>
-      <el-tab-pane label="推送工具" name="push">
+      <el-tab-pane label="通知工具" name="push">
       </el-tab-pane>
       <el-tab-pane label="日志查询" name="log">
       </el-tab-pane>

@@ -696,10 +696,11 @@ class Site {
       torrent.subtitle = _torrent.querySelector('.torrentname > tbody > tr .embedded').lastChild.nodeValue.trim();
       if (torrent.subtitle === ']') {
         torrent.subtitle = (_torrent.querySelector('.torrentname > tbody > tr .embedded span[class=optiontag]:last-of-type') ||
-          _torrent.querySelector('.torrentname > tbody > tr .embedded br').nextSibling.nodeValue.trim());
+          _torrent.querySelector('.torrentname > tbody > tr .embedded br')).nextSibling.nodeValue.trim().replace(/\[优惠剩余时间：/, '');
       }
       torrent.category = _torrent.querySelector('td a[href*=cat] img').title.trim();
       torrent.link = 'https://hdsky.me/' + _torrent.querySelector('a[href*=details]').href.trim();
+      torrent.downloadLink = _torrent.querySelector('form[action*="download"]').action;
       torrent.id = +torrent.link.match(/id=(\d*)/)[1];
       torrent.seeders = +(_torrent.querySelector('a[href*=seeders]') || _torrent.querySelector('a[href*=seeders] font') || _torrent.querySelector('span[class=red]')).innerHTML.trim();
       torrent.leechers = +(_torrent.querySelector('a[href*=leechers]') || _torrent.childNodes[9]).innerHTML.trim();
@@ -873,10 +874,12 @@ class Site {
     }
   };
 
-  async pushTorrentById (id, client, savePath, category, autoTMM) {
-    const downloadLinkTemplate = this.torrentDownloadLinkMap[this.site];
-    if (!downloadLinkTemplate) throw new Error(`站点 ${this.site} 暂时不支持推送种子!`);
-    const downloadLink = downloadLinkTemplate.replace(/{ID}/, id);
+  async pushTorrentById (id, downloadLink, client, savePath, category, autoTMM) {
+    if (!downloadLink) {
+      const downloadLinkTemplate = this.torrentDownloadLinkMap[this.site];
+      if (!downloadLinkTemplate) throw new Error(`站点 ${this.site} 暂时不支持推送种子!`);
+      downloadLink = downloadLinkTemplate.replace(/{ID}/, id);
+    }
     const { filepath, hash } = await this._downloadTorrent(downloadLink);
     await global.runningClient[client].addTorrentByTorrentFile(filepath, hash, false, 0, 0, savePath, category, autoTMM);
     return '推送成功, 种子 hash: ' + hash;

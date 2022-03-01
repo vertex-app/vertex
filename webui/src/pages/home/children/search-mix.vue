@@ -1,16 +1,23 @@
 <template>
   <div class="search-mix">
-    <div class="search-mix-div">
+    <div class="search-mix-div" style="margin: 20px 0">
       <el-form class="search-mix-form" inline label-width="100px" size="mini" @submit.native.prevent>
         <el-form-item label="关键词">
           <el-input v-model="searchKey" placeholder="关键词" @keyup.enter.native="searchTorrent"/>
         </el-form-item>
-        <el-form-item size="small">
+        <el-form-item size="mini">
           <el-button type="primary" @click="searchTorrent">{{ this.searchStatus }}</el-button>
+        </el-form-item>
+        <el-form-item label="筛选关键词">
+          <el-input v-model="filterKey" placeholder="筛选关键词" @keyup.enter.native="filteTorrent"/>
+        </el-form-item>
+        <el-form-item size="mini">
+          <el-button type="primary" @click="filteTorrent">筛选关键词</el-button>
         </el-form-item>
       </el-form>
       <el-form class="search-mix-form" label-width="100px" size="small">
         <el-form-item label="搜索结果">
+          <el-checkbox :indeterminate="isIndeterminate" v-model="checkAll" @change="handleCheckAllChange">全选</el-checkbox>
           <el-checkbox-group v-model="checkList" @change="refreshList">
             <el-checkbox v-for="item of resultCount" :key="item.site" :label="item.site">{{`${item.site}: ${item.count}`}}</el-checkbox>
           </el-checkbox-group>
@@ -89,6 +96,7 @@
           align="left"
           sortable='custom'
           prop="title"
+          min-width="800px"
           label="种子">
           <template slot-scope="scope">
             <el-link style="font-size: 16px" @click="gotoDetail(scope.row)">{{scope.row.title}}</el-link>
@@ -222,6 +230,8 @@ export default {
       category: '',
       savePath: '',
       checkList: [],
+      checkAll: true,
+      isIndeterminate: true,
       torrentList: [],
       clientList: [],
       rssList: [],
@@ -254,7 +264,8 @@ export default {
         name: '种子链接'
       }],
       resultCount: [],
-      searchKey: '星际穿越',
+      searchKey: '',
+      filterKey: '',
       pushRow: {},
       pushTorrentVisible: false,
       tableLoading: false,
@@ -289,15 +300,37 @@ export default {
       if (this.client === '') {
         return this.$message.error('请选择客户端');
       }
-      const url = `/api/site/pushTorrent?id=${this.pushRow.id}&site=${this.pushRow.site}&client=${this.client}&autoTMM=${this.autoTMM}&savePath=${this.savePath}&category=${this.category}`;
+      let url = `/api/site/pushTorrent?id=${this.pushRow.id}&site=${this.pushRow.site}&client=${this.client}&autoTMM=${this.autoTMM}&savePath=${this.savePath}&category=${this.category}`;
+      if (this.pushRow.downloadLink) {
+        url += '&downloadLink=' + encodeURIComponent(this.pushRow.downloadLink);
+      }
       const res = await this.$axiosGet(url);
       if (res) await this.$messageBox(res);
       this.pushTorrentVisible = false;
     },
 
+    async filteTorrent () {
+      this.refreshList();
+      this.torrentList = this.torrentList.filter(i => {
+        console.log(i);
+        return i.title.indexOf(this.filterKey) !== -1 || i.subtitle.indexOf(this.filterKey) !== -1;
+      });
+      this.total = this.torrentList.length;
+    },
+
+    handleCheckAllChange (value) {
+      this.checkList = value ? this.torrentAll.map(i => i.site) : [];
+      this.isIndeterminate = false;
+    },
+
     refreshList () {
       this.torrentList = this.torrentAll.filter(i => this.checkList.indexOf(i.site) !== -1).map(i => i.torrentList).flat();
+      this.isIndeterminate = this.checkList.length > 0 && this.checkList.length < this.resultCount.length;
       this.total = this.torrentList.length;
+      sessionStorage.setItem('torrentList', JSON.stringify({
+        torrentAll: this.torrentAll,
+        searchKey: this.searchKey
+      }));
     },
 
     sortList (option) {
@@ -334,6 +367,20 @@ export default {
   },
   async mounted () {
     this.listClient();
+    const torrentList = sessionStorage.getItem('torrentList');
+    if (torrentList) {
+      const torrentListJson = JSON.parse(torrentList);
+      this.torrentAll = torrentListJson.torrentAll;
+      this.searchKey = torrentListJson.searchKey;
+      this.checkList = this.torrentAll.map(i => i.site);
+      this.refreshList();
+      this.resultCount = this.torrentAll.map(i => {
+        return {
+          site: i.site,
+          count: i.torrentList.length
+        };
+      }).sort((a, b) => b.count - a.count);
+    }
   }
 };
 </script>

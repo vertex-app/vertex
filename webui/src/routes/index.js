@@ -71,12 +71,6 @@ const siteMix = {
       meta: {
         title: '站点数据'
       }
-    }, {
-      path: 'search-mix',
-      component: SearchMix,
-      meta: {
-        title: '聚合搜索'
-      }
     }
   ]
 };
@@ -115,13 +109,7 @@ const _global = {
       path: 'push',
       component: Push,
       meta: {
-        title: '推送工具'
-      }
-    }, {
-      path: 'log',
-      component: Log,
-      meta: {
-        title: '日志'
+        title: '通知工具'
       }
     }
   ]
@@ -161,10 +149,10 @@ const bingeWatching = {
         title: '自动追剧'
       }
     }, {
-      path: 'auto-race',
-      component: AutoRace,
+      path: 'search-mix',
+      component: SearchMix,
       meta: {
-        title: '自动追剧'
+        title: '聚合搜索'
       }
     }
   ]
@@ -199,6 +187,12 @@ export default new Router({
           component: Monitor,
           meta: {
             title: '监控信息'
+          }
+        }, {
+          path: 'log',
+          component: Log,
+          meta: {
+            title: '系统日志'
           }
         },
         _global,
