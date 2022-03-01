@@ -162,10 +162,20 @@ module.exports = function (app, express, router) {
   router.post('/rss/modify', ctrl.Rss.modify);
   router.post('/rss/delete', ctrl.Rss.delete);
 
+  router.get('/race/list', ctrl.Race.list);
+  router.post('/race/add', ctrl.Race.add);
+  router.post('/race/modify', ctrl.Race.modify);
+  router.post('/race/delete', ctrl.Race.delete);
+
   router.get('/deleteRule/list', ctrl.DeleteRule.list);
   router.post('/deleteRule/add', ctrl.DeleteRule.add);
   router.post('/deleteRule/modify', ctrl.DeleteRule.modify);
   router.post('/deleteRule/delete', ctrl.DeleteRule.delete);
+
+  router.get('/raceRule/list', ctrl.RaceRule.list);
+  router.post('/raceRule/add', ctrl.RaceRule.add);
+  router.post('/raceRule/modify', ctrl.RaceRule.modify);
+  router.post('/raceRule/delete', ctrl.RaceRule.delete);
 
   router.get('/rssRule/list', ctrl.RssRule.list);
   router.post('/rssRule/add', ctrl.RssRule.add);

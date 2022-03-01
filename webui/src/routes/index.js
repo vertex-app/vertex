@@ -13,6 +13,7 @@ import Global from '@/pages/home/children/global';
 import Point from '@/pages/home/children/point';
 import BingeWatching from '@/pages/home/children/binge-watching';
 import AutoRace from '@/pages/home/children/auto-race';
+import RaceRule from '@/pages/home/children/race-rule';
 import Server from '@/pages/home/children/server';
 import Client from '@/pages/home/children/client';
 import SearchMix from '@/pages/home/children/search-mix';
@@ -153,6 +154,12 @@ const bingeWatching = {
       component: SearchMix,
       meta: {
         title: '聚合搜索'
+      }
+    }, {
+      path: 'race-rule',
+      component: RaceRule,
+      meta: {
+        title: '追剧规则'
       }
     }
   ]

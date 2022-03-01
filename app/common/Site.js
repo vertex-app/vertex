@@ -443,7 +443,7 @@ class Site {
     // 做种
     info.seeding = +document.querySelector('img[class=arrowup]').nextElementSibling.innerHTML.trim();
     // 下载
-    info.leeching = +document.querySelector('img[class=arrowdown]').nextSibling.nodeValue.replace(')', '');
+    info.leeching = +(document.querySelector('a[href*=leech]') ? document.querySelector('a[href*=leech]').innerHTML : +document.querySelector('img[class=arrowdown]').nextSibling.nodeValue.replace(')', ''));
     return info;
   };
 

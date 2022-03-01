@@ -5,8 +5,6 @@
       </el-tab-pane>
       <el-tab-pane label="通知工具" name="push">
       </el-tab-pane>
-      <el-tab-pane label="日志查询" name="log">
-      </el-tab-pane>
     </el-tabs>
     <router-view></router-view>
   </div>

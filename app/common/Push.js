@@ -81,6 +81,39 @@ class Push {
     await this._push(this.pushType.indexOf('add') !== -1, text, desp);
   };
 
+  async addRaceTorrent (race, client, torrent, rule) {
+    const text = `添加追剧种子: ${torrent.title.substring(0, 10) + '...'} | ${race.alias} | ${util.formatSize(torrent.size)} | ${client.alias}`;
+    let desp = `追剧任务: ${race.alias}\n` +
+      `客户端名: ${client.alias}\n` +
+      `种子名称: ${torrent.name}\n` +
+      `种子大小: ${util.formatSize(torrent.size)}\n` +
+      `追剧规则: ${rule.alias}`;
+    if (this.markdown) {
+      desp = '```\n' + desp + '\n```';
+    }
+    if (this.type === 'telegram') {
+      desp = '\\#添加追剧种子\n' + desp;
+    }
+    await this._push(this.pushType.indexOf('addRace') !== -1, text, desp);
+  };
+
+  async addRaceTorrentError (raceAlias, client, torrent, rule) {
+    const text = `添加追剧种子失败: ${torrent.title.substring(0, 10) + '...'} | ${raceAlias} | ${util.formatSize(torrent.size)} | ${client.alias}`;
+    let desp = `追剧任务: ${raceAlias}\n` +
+      `客户端名: ${client.alias}\n` +
+      `种子名称: ${torrent.name}\n` +
+      `种子大小: ${util.formatSize(torrent.size)}\n` +
+      `追剧规则: ${rule.alias}\n` +
+      '详细信息前往 Vertex 日志页查看';
+    if (this.markdown) {
+      desp = '```\n' + desp + '\n```';
+    }
+    if (this.type === 'telegram') {
+      desp = '\\#添加追剧种子失败\n' + desp;
+    }
+    await this._push(this.pushType.indexOf('addRaceError') !== -1, text, desp);
+  };
+
   async addTorrentError (rss, client, torrent) {
     if (this.errotCount > this.maxErrorCount) {
       return logger.debug('周期内错误推送已达上限, 跳过本次推送');

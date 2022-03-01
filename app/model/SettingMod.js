@@ -124,7 +124,7 @@ class SettingMod {
       gzip: true,
       file: backupsFile,
       cwd: global.dataPath
-    }, ['vertex']);
+    }, ['vertex/db', 'vertex/data', 'vertex/config', 'vertex/torrents']);
     return backupsFile;
   }
 

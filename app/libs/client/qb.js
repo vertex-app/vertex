@@ -66,7 +66,7 @@ exports.addTorrentByTorrentFile = async function (clientUrl, cookie, filepath, i
     message.formData.category = category;
   }
   if (autoTMM) {
-    message.formData.autoTMM = autoTMM;
+    message.formData.autoTMM = '' + autoTMM;
   }
   const res = await util.requestPromise(message);
   logger.debug(clientUrl, '添加种子', filepath, '\n返回信息', { body: res.body, statusCode: res.statusCode });

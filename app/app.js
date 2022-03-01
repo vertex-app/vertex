@@ -50,6 +50,7 @@ const init = function () {
   global.runningRss = {};
   global.runningServer = {};
   global.runningSite = {};
+  global.runningRace = {};
   global.startTime = moment().unix();
   for (const client of util.listClient()) {
     if (client.enable) {
