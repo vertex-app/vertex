@@ -116,6 +116,8 @@ exports.getMaindata = async function (clientUrl, cookie) {
   };
   let res = await util.requestPromise(option);
   const serverFilter = {
+    allTimeUpload: 'alltime_ul',
+    allTimeDownload: 'alltime_dl',
     uploadSpeed: 'up_info_speed',
     downloadSpeed: 'dl_info_speed',
     freeSpaceOnDisk: 'free_space_on_disk',

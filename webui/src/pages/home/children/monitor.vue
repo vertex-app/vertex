@@ -37,6 +37,13 @@
           </template>
         </el-table-column>
         <el-table-column
+          label="历史上传 / 历史下载"
+          min-width="256px">
+          <template slot-scope="scope">
+            {{scope.row.status ? `${$formatSize(scope.row.allTimeUpload)} / ${$formatSize(scope.row.allTimeDownload)}` : null}}
+          </template>
+        </el-table-column>
+        <el-table-column
           label="上传速度 / 下载速度"
           min-width="256px">
           <template slot-scope="scope">
