@@ -163,7 +163,7 @@ exports.getMaindata = async function (clientUrl, cookie) {
       torrent[kk] = res.torrents[k][torrentFilter[kk]];
     }
     torrent.originProp = { ...res.torrents[k] };
-    torrent.tracker = torrent.tracker ? new url.URL(torrent.tracker).hostname : null;
+    torrent.tracker = torrent.tracker ? new url.URL(torrent.tracker).hostname : '';
     maindata.torrents.push(torrent);
   }
   return maindata;
