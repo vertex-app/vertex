@@ -299,7 +299,7 @@ export default {
     },
     async listClient () {
       const res = await this.$axiosGet('/api/client/list');
-      this.clientList = res ? res.data : [];
+      this.clientList = res ? res.data.sort((a, b) => a.alias > b.alias ? 1 : -1) : [];
     },
     async listRssRule () {
       const res = await this.$axiosGet('/api/rssRule/list');

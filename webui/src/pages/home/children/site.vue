@@ -126,6 +126,10 @@
               <el-input v-model="site.cron" style="width: 300px;"></el-input>
               <div><el-tag type="info">Crontab 表达式, 默认 4 小时一次</el-tag></div>
             </el-form-item>
+            <el-form-item label="最大重试次数" prop="maxRetryCount">
+              <el-input v-model="site.maxRetryCount" style="width: 200px;"></el-input>
+              <div><el-tag type="info">数据刷新失败时自动重试次数, 留空则默认为 5</el-tag></div>
+            </el-form-item>
             <el-form-item required label="Cookie" prop="cookie">
               <el-input v-model="site.cookie" style="width: 500px;"></el-input>
             </el-form-item>

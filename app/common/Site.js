@@ -68,6 +68,8 @@ class Site {
     this.cookie = site.cookie;
     this.site = site.name;
     this.siteUrl = this.siteUrlMap[this.site];
+    this.maxRetryCount = +site.maxRetryCount || 5;
+    this.retryCount = 0;
     this.cron = site.cron || '0 */4 * * *';
     this.refreshJob = new CronJob(this.cron, () => this.refreshInfo());
     this.refreshJob.start();
@@ -572,8 +574,14 @@ class Site {
       logger.debug(this.site, '站点数据成功抓取,', '数据如下:\n', info);
       await util.runRecord('insert into sites (site, uid, username, upload, download, bonus, seeding_size, seeding_num, level, update_time) values (?, ? , ?, ?, ?, ?, ?, ?, ?, ?)', [this.site, info.uid || 0, info.username, info.upload, info.download, info.bonus || 0, info.seedingSize || 0, info.seeding, info.level || '', info.updateTime]);
       this.info = info;
+      this.retryCount = 0;
     } catch (e) {
       logger.error(this.site, '站点数据抓取失败 (疑似是 Cookie 失效, 或绕过 CloudFlare 5s 盾失效),', '报错如下:\n', e);
+      if (this.maxRetryCount && this.retryCount < this.maxRetryCount) {
+        this.retryCount += 1;
+        return await this.refreshInfo();
+      }
+      this.retryCount = 0;
       throw new Error('站点数据抓取失败 (疑似是 Cookie 失效, 或绕过 CloudFlare 5s 盾失效)');
     }
   };
