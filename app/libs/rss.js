@@ -158,7 +158,7 @@ const _getTorrentsTorrentDB = async function (rssUrl) {
   return torrents;
 };
 
-const _getUHDBits = async function (rssUrl) {
+const _getTorrentsUHDBits = async function (rssUrl) {
   const rss = await parseXml(await _getRssContent(rssUrl));
   const torrents = [];
   const items = rss.rss.channel[0].item;
@@ -192,7 +192,7 @@ const _getUHDBits = async function (rssUrl) {
   return torrents;
 };
 
-const _getEmpornium = async function (rssUrl) {
+const _getTorrentsEmpornium = async function (rssUrl) {
   const rss = await parseXml(await _getRssContent(rssUrl));
   const torrents = [];
   const items = rss.rss.channel[0].item;
@@ -227,12 +227,48 @@ const _getEmpornium = async function (rssUrl) {
   return torrents;
 };
 
+const _getTorrentsSkyeySnow = async function (rssUrl) {
+  const rss = await parseXml(await _getRssContent(rssUrl));
+  const torrents = [];
+  const items = rss.rss.channel[0].item;
+  for (let i = 0; i < items.length; ++i) {
+    const torrent = {
+      size: 0,
+      name: '',
+      hash: '',
+      id: 0,
+      url: '',
+      link: ''
+    };
+    torrent.size = items[i].enclosure[0].$.length;
+    torrent.name = items[i].title[0];
+    const link = items[i].link[0];
+    torrent.link = link;
+    torrent.id = link.substring(link.indexOf('?id=') + 4);
+    torrent.url = items[i].enclosure[0].$.url;
+    if (torrent.url.indexOf('skyey') !== -1) {
+      const cache = await redis.get(`vertex:hash:${torrent.url}`);
+      if (cache) {
+        torrent.hash = cache;
+      } else {
+        const { hash } = await exports.getTorrentNameByBencode(torrent.url);
+        torrent.hash = hash;
+        await redis.set(`vertex:hash:${torrent.url}`, hash);
+      }
+    }
+    torrent.pubTime = moment(items[i].pubDate[0]).unix();
+    torrents.push(torrent);
+  }
+  return torrents;
+};
+
 const _getTorrentsWrapper = {
   'filelist.io': _getTorrentsFileList,
   'blutopia.xyz': _getTorrentsBluTopia,
   'torrentdb.net': _getTorrentsTorrentDB,
-  'uhdbits.org': _getUHDBits,
-  'www.empornium.is': _getEmpornium
+  'uhdbits.org': _getTorrentsUHDBits,
+  'www.empornium.is': _getTorrentsEmpornium,
+  'www.skyey2.com': _getTorrentsSkyeySnow
 };
 
 exports.getTorrents = async function (rssUrl) {
