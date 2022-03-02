@@ -301,7 +301,6 @@ export default {
     async switchClick (row) {
       const url = '/api/rss/modify';
       const _row = { ...row };
-      _row.enable = !_row.enable;
       const res = await this.$axiosPost(url, _row);
       if (!res) {
         return;
