@@ -36,7 +36,8 @@
           min-width="180">
           <template slot-scope="scope">
             <el-switch
-              v-model="scope.row.display">
+              v-model="scope.row.display"
+              @change="loadSite">
             </el-switch>
             {{ scope.row.display ? scope.row.name : '*******' }}
           </template>
@@ -267,8 +268,12 @@ export default {
     async listSite () {
       const res = await this.$axiosGet('/api/site/list');
       if (!res) return;
-      const recordList = res.data.sites;
-      const siteList = res.data.siteList;
+      this.siteInfo = res;
+      this.loadSite();
+    },
+    loadSite () {
+      const recordList = this.siteInfo.data.sites;
+      const siteList = this.siteInfo.data.siteList;
       const template = {
         name: '',
         type: 'line',
@@ -280,8 +285,11 @@ export default {
         smooth: true
       };
       this.chart.series = [];
-      const dateSet = res.data.timeGroup;
+      const dateSet = this.siteInfo.data.timeGroup;
       for (const site of Object.keys(recordList)) {
+        if (siteList.filter(item => item.name === site)[0].display === false) {
+          continue;
+        }
         const siteRecord = recordList[site];
         const siteLine = { ...template };
         siteLine.data = Object.keys(siteRecord).map(i => siteRecord[i].upload);
@@ -290,7 +298,7 @@ export default {
       }
       this.chart.xAxis.data = dateSet.map(i => this.$moment(i * 1000).format('YYYY-MM-DD HH:mm'));
       for (const site of siteList) {
-        site.display = site.display || true;
+        site.display = site.display === undefined ? true : site.display;
       }
       this.siteList = siteList;
     },
