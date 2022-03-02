@@ -188,7 +188,11 @@ exports.listRss = function () {
   const rssList = [];
   for (const file of files) {
     if (path.extname(file) === '.json') {
-      rssList.push(_importJson(path.join(__dirname, '../data/rss', file)));
+      const rss = _importJson(path.join(__dirname, '../data/rss', file));
+      if (rss.rssUrl) {
+        rss.rssUrls = [rss.rssUrl];
+      }
+      rssList.push();
     }
   }
   return rssList;

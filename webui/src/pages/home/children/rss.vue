@@ -119,6 +119,28 @@
               </el-input>
               <div><el-tag type="info">下载器下载速度在此速度之上时, 不添加种子, 留空或 0 不启用</el-tag></div>
             </el-form-item>
+            <el-form-item required label="RssUrl 列表" prop="RssUrls">
+              <el-table
+                size="mini"
+                stripe
+                :data="rss.rssUrls"
+                style="width: 720px">
+                <el-table-column
+                  label="RssUrl">
+                  <template slot-scope="scope">
+                    <el-input required v-model="scope.row" placeholder="填写 RssUrl" style="width: 560px;"/>
+                  </template>
+                </el-table-column>
+                <el-table-column
+                  label="操作"
+                  width="96">
+                  <template slot-scope="scope">
+                    <el-button @click="rss.rssUrls = rss.rssUrls.filter(item => item !== scope.row)" type="danger" size="small">删除</el-button>
+                  </template>
+                </el-table-column>
+              </el-table>
+              <el-button @click="rss.rssUrls.push('')" type="primary" size="small">新增</el-button>
+            </el-form-item>
             <el-form-item required label="Rss - Url" prop="rssUrl">
               <el-input v-model="rss.rssUrl" style="width: 500px;"></el-input>
             </el-form-item>
@@ -244,7 +266,8 @@ export default {
         pushNotify: false,
         acceptRules: [],
         rejectRules: [],
-        reseedClients: []
+        reseedClients: [],
+        rssUrls: ['']
       },
       pushList: [],
       urlDisplay: true,
