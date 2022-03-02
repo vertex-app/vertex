@@ -94,7 +94,7 @@ class Push {
     if (this.type === 'telegram') {
       desp = '\\#添加追剧种子\n' + desp;
     }
-    await this._push(this.pushType.indexOf('addRace') !== -1, text, desp);
+    await this._push(this.pushType.indexOf('race') !== -1, text, desp);
   };
 
   async addRaceTorrentError (raceAlias, client, torrent, rule) {
@@ -111,7 +111,7 @@ class Push {
     if (this.type === 'telegram') {
       desp = '\\#添加追剧种子失败\n' + desp;
     }
-    await this._push(this.pushType.indexOf('addRaceError') !== -1, text, desp);
+    await this._push(this.pushType.indexOf('raceError') !== -1, text, desp);
   };
 
   async addTorrentError (rss, client, torrent) {

@@ -288,7 +288,7 @@ class Rss {
     let torrents = [];
     try {
       for (const url of this.urls) {
-        torrents = torrents.push(...await rss.getTorrents(url));
+        torrents = torrents.concat(await rss.getTorrents(url));
       }
     } catch (error) {
       logger.error(this.alias, '获取 Rss 列表失败\n', error);

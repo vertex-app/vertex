@@ -133,6 +133,12 @@ export default {
         }, {
           key: 'siteData',
           value: '站点数据推送'
+        }, {
+          key: 'race',
+          value: '追剧通知'
+        }, {
+          key: 'raceError',
+          value: '追剧报错'
         }
       ],
       pushList: [],

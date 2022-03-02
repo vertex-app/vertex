@@ -122,30 +122,15 @@
               </el-input>
               <div><el-tag type="info">下载器下载速度在此速度之上时, 不添加种子, 留空或 0 不启用</el-tag></div>
             </el-form-item>
-            <el-form-item required label="RssUrl 列表" prop="RssUrls">
-              <el-table
-                size="mini"
-                stripe
-                :data="rss.rssUrls"
-                style="width: 720px">
-                <el-table-column
-                  label="RssUrl">
-                  <template slot-scope="scope">
-                    <el-input required v-model="scope.row" placeholder="填写 RssUrl" style="width: 560px;"/>
-                  </template>
-                </el-table-column>
-                <el-table-column
-                  label="操作"
-                  width="96">
-                  <template slot-scope="scope">
-                    <el-button @click="rss.rssUrls = rss.rssUrls.filter(item => item !== scope.row)" type="danger" size="small">删除</el-button>
-                  </template>
-                </el-table-column>
-              </el-table>
+            <el-form-item required label="RssUrl 列表" prop="rssUrls">
+              <div v-for="(item, index) in rss.rssUrls" :key="index" style="margin-top: 6px">
+                <el-input v-model="rss.rssUrls[index]" style="width: 350px;"></el-input>
+                <el-button
+                  @click="() => rss.rssUrls = rss.rssUrls.filter(i => i !== rss.rssUrls[index])"
+                  type="danger" size="small"
+                  style="margin-left: 6px">删除</el-button>
+              </div>
               <el-button @click="rss.rssUrls.push('')" type="primary" size="small">新增</el-button>
-            </el-form-item>
-            <el-form-item required label="Rss - Url" prop="rssUrl">
-              <el-input v-model="rss.rssUrl" style="width: 500px;"></el-input>
             </el-form-item>
             <el-form-item v-if="rss.scrapeHr || rss.scrapeFree" :required="rss.scrapeHr || rss.scrapeFree" label="Cookie" prop="cookie">
               <el-input v-model="rss.cookie" style="width: 500px;"></el-input>

@@ -11,10 +11,22 @@ else
   echo '/vertex/data exists, continue'
 fi
 
+if [ ! -d '/vertex/data/rule/race' ]; then
+  mkdir /vertex/data/rule/race
+else
+  echo '/vertex/data exists, continue'
+fi
+
 if [ ! -d '/vertex/data/site' ]; then
   mkdir /vertex/data/site
 else
   echo '/vertex/data/site exists, continue'
+fi
+
+if [ ! -d '/vertex/data/race' ]; then
+  mkdir /vertex/data/race
+else
+  echo '/vertex/data/race exists, continue'
 fi
 
 if [ ! -d '/vertex/data/setting' ]; then
