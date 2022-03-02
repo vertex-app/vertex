@@ -69,7 +69,7 @@ class Push {
   async addTorrent (rss, client, torrent) {
     const text = `添加种子: ${torrent.name.substring(0, 10) + '...'} | ${rss.alias} | ${util.formatSize(torrent.size)} | ${client.alias}`;
     let desp = `Rss 任务: ${rss.alias}\n` +
-      `客户端名: ${client.alias}\n` +
+      `下载器名: ${client.alias}\n` +
       `种子名称: ${torrent.name}\n` +
       `种子大小: ${util.formatSize(torrent.size)}`;
     if (this.markdown) {
@@ -84,7 +84,7 @@ class Push {
   async addRaceTorrent (race, client, torrent, rule) {
     const text = `添加追剧种子: ${torrent.title.substring(0, 10) + '...'} | ${race.alias} | ${util.formatSize(torrent.size)} | ${client.alias}`;
     let desp = `追剧任务: ${race.alias}\n` +
-      `客户端名: ${client.alias}\n` +
+      `下载器名: ${client.alias}\n` +
       `种子名称: ${torrent.name}\n` +
       `种子大小: ${util.formatSize(torrent.size)}\n` +
       `追剧规则: ${rule.alias}`;
@@ -100,7 +100,7 @@ class Push {
   async addRaceTorrentError (raceAlias, client, torrent, rule) {
     const text = `添加追剧种子失败: ${torrent.title.substring(0, 10) + '...'} | ${raceAlias} | ${util.formatSize(torrent.size)} | ${client.alias}`;
     let desp = `追剧任务: ${raceAlias}\n` +
-      `客户端名: ${client.alias}\n` +
+      `下载器名: ${client.alias}\n` +
       `种子名称: ${torrent.name}\n` +
       `种子大小: ${util.formatSize(torrent.size)}\n` +
       `追剧规则: ${rule.alias}\n` +
@@ -121,7 +121,7 @@ class Push {
     this.errotCount += 1;
     const text = '添加种子失败: ' + torrent.name;
     let desp = `Rss 任务: ${rss.alias}\n` +
-      `客户端名: ${client.alias}\n` +
+      `下载器名: ${client.alias}\n` +
       `种子名称: ${torrent.name}\n` +
       `种子大小: ${util.formatSize(torrent.size)}\n` +
       '详细原因请前往 Vertex 日志页面查看';
@@ -137,7 +137,7 @@ class Push {
   async rejectTorrent (rss, client = {}, torrent, note) {
     const text = `拒绝种子: ${torrent.name.substring(0, 10) + '...'} | ${rss.alias} | ${util.formatSize(torrent.size)} | ${client.alias || '未定义'} | ${note}`;
     let desp = `Rss 任务: ${rss.alias}\n` +
-      `客户端名: ${client.alias || '未定义'}\n` +
+      `下载器名: ${client.alias || '未定义'}\n` +
       `种子名称: ${torrent.name}\n` +
       `种子大小: ${util.formatSize(torrent.size)}\n` +
       note;
@@ -153,7 +153,7 @@ class Push {
   async deleteTorrent (client, torrent, rule, deleteFile) {
     const text = `删除种子: ${torrent.name.substring(0, 20) + '...'} | ${util.formatSize(torrent.size)} | ${client.alias} |` +
       `${util.formatSize(torrent.uploaded)} / ${util.formatSize(torrent.downloaded)} | ${(+torrent.ratio).toFixed(2)} | ${rule.alias} | ${torrent.category} | ${torrent.tracker}`;
-    let desp = `客户端名: ${client.alias}\n` +
+    let desp = `下载器名: ${client.alias}\n` +
       `种子名称: ${torrent.name}\n` +
       `种子大小: ${util.formatSize(torrent.size)}\n` +
       `已完成量: ${util.formatSize(torrent.completed)}\n` +
@@ -180,7 +180,7 @@ class Push {
     }
     this.errotCount += 1;
     const text = '删除种子失败: ' + torrent.name;
-    let desp = `客户端名: ${client.alias}\n` +
+    let desp = `下载器名: ${client.alias}\n` +
       `种子名称: ${torrent.name}\n` +
       `种子大小: ${util.formatSize(torrent.size)}\n` +
       `已完成量: ${util.formatSize(torrent.completed)}\n` +
@@ -202,7 +202,7 @@ class Push {
 
   async reannounceTorrent (client, torrent) {
     const text = '重新汇报种子: ' + torrent.name;
-    let desp = `客户端名: ${client.alias}\n` +
+    let desp = `下载器名: ${client.alias}\n` +
       `种子名称: ${torrent.name}`;
     if (this.markdown) {
       desp = '```\n' + desp + '\n```';
@@ -214,13 +214,13 @@ class Push {
   };
 
   async connectClient (client) {
-    const text = '客户端已连接: ' + client.alias;
-    let desp = `客户端: ${client.alias}`;
+    const text = '下载器已连接: ' + client.alias;
+    let desp = `下载器: ${client.alias}`;
     if (this.markdown) {
       desp = '```\n' + desp + '\n```';
     }
     if (this.type === 'telegram') {
-      desp = '\\#客户端已连接\n' + desp;
+      desp = '\\#下载器已连接\n' + desp;
     }
     return await this._push(this.pushType.indexOf('clientConnect') !== -1, text, desp);
   }
@@ -230,14 +230,14 @@ class Push {
       return logger.debug('周期内错误推送已达上限, 跳过本次推送');
     }
     this.errotCount += 1;
-    const text = '客户端登陆失败: ' + client.alias;
-    let desp = `客户端名: ${client.alias}\n` +
+    const text = '下载器登陆失败: ' + client.alias;
+    let desp = `下载器名: ${client.alias}\n` +
       `附加信息: ${message}`;
     if (this.markdown) {
       desp = '```\n' + desp + '\n```';
     }
     if (this.type === 'telegram') {
-      desp = '\\#客户端登陆失败\n' + desp;
+      desp = '\\#下载器登陆失败\n' + desp;
     }
     await this._push(this.pushType.indexOf('clientLoginError') !== -1, text, desp);
   }
@@ -247,21 +247,21 @@ class Push {
       return logger.debug('周期内错误推送已达上限, 跳过本次推送');
     }
     this.errotCount += 1;
-    const text = '获取客户端信息失败: ' + client.alias;
-    let desp = `客户端名: ${client.alias}\n` +
+    const text = '获取下载器信息失败: ' + client.alias;
+    let desp = `下载器名: ${client.alias}\n` +
       '详细原因请前往 Vertex 日志页面查看';
     if (this.markdown) {
       desp = '```\n' + desp + '\n```';
     }
     if (this.type === 'telegram') {
-      desp = '\\#获取客户端信息失败\n' + desp;
+      desp = '\\#获取下载器信息失败\n' + desp;
     }
     await this._push(this.pushType.indexOf('getMaindataError') !== -1, text, desp);
   }
 
   async spaceAlarm (client) {
     const text = '剩余空间警告: ' + client.alias;
-    let desp = `客户端名: ${client.alias}\n` +
+    let desp = `下载器名: ${client.alias}\n` +
       `剩余空间已不足${util.formatSize(client.maindata.freeSpaceOnDisk)}`;
     if (this.markdown) {
       desp = '```\n' + desp + '\n```';

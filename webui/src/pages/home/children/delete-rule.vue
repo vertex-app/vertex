@@ -65,7 +65,7 @@
             </el-form-item>
             <el-form-item label="持续时间" prop="fitTime">
               <el-input v-model="rule.fitTime" type="input"></el-input>
-              <div><el-tag type="info">符合删种规则的持续时间, 只有到达持续时间之后才会删种, 单位为 秒, 不启用留空, 建议考虑客户端的删种周期一起设置</el-tag></div>
+              <div><el-tag type="info">符合删种规则的持续时间, 只有到达持续时间之后才会删种, 单位为 秒, 不启用留空, 建议考虑下载器的删种周期一起设置</el-tag></div>
             </el-form-item>
             <el-form-item label="优先级" prop="priority">
               <el-input v-model="rule.priority" type="input"></el-input>
@@ -143,7 +143,7 @@
                 &nbsp;&nbsp;&nbsp;&nbsp;例: 填写 当前时间大于 8*3600 与 当前时间小于 22*3600<br>
                 &nbsp;&nbsp;&nbsp;&nbsp;则只会在当天上午 8 点之后到 22 点之前删种<br>
                 &nbsp;&nbsp;&nbsp;&nbsp;0 点的时间戳取决于 Vertex 安装环境的时区<br>
-                10. 全局速度: 当前客户端的速度<br>
+                10. 全局速度: 当前下载器的速度<br>
                 11. 做种下载连接: 仅计算已连接上的数量, 也即 qBittorrent WebUI 内括号外的数字 <br>
                 12. 做种下载任务: 任务的数量, 做种包含上传中状态与做种状态, 下载包含下载中与等待下载状态 <br>
                 13. 比较类型中的 包含 / 包含于 或 不包含 / 不包含于: 值部分需以半角逗号 , 为分割符, 如种子分类不包含于 KEEP, KEEP2, KEEP3 三个分类, 则应填写:

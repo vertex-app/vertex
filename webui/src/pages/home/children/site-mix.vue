@@ -4,7 +4,7 @@
       <el-tab-pane label="站点数据" name="site-database">
       </el-tab-pane>
     </el-tabs>
-    <router-view></router-view>
+    <router-view style="height: calc(100vh - 156px); overflow: auto;"></router-view>
   </div>
 </template>
 

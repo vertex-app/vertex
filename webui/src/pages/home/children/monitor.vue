@@ -26,7 +26,7 @@
         </el-table-column>
         <el-table-column
           prop="type"
-          label="客户端类型"
+          label="下载器类型"
           width="144px">
         </el-table-column>
         <el-table-column
@@ -62,7 +62,7 @@
           label="操作"
           width="244px">
           <template slot-scope="scope">
-            <el-button @click="gotoClient(scope.row)" type="primary" size="small">打开客户端</el-button>
+            <el-button @click="gotoClient(scope.row)" type="primary" size="small">打开下载器</el-button>
             <el-button style="margin-left: 0" @click="gotoTorrentList(scope.row)" type="primary" size="small">种子列表</el-button>
           </template>
         </el-table-column>
@@ -125,7 +125,7 @@
           label="操作"
           width="244px">
           <template slot-scope="scope">
-            <el-button @click="gotoClient(scope.row)" type="primary" :disabled="!scope.row.bindClient" size="small">客户端</el-button>
+            <el-button @click="gotoClient(scope.row)" type="primary" :disabled="!scope.row.bindClient" size="small">下载器</el-button>
             <el-button style="margin-left: 0" @click="reloadServer(scope.row)" type="warning" size="small">重连</el-button>
             <el-button style="margin-left: 0" :disabled="!scope.row.status" @click="displayDetails(scope.row)" type="primary" size="small">查看详情</el-button>
           </template>

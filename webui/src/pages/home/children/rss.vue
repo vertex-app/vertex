@@ -22,11 +22,13 @@
           label="启用"
           width="100">
           <template slot-scope="scope">
-            <el-tag :type="scope.row.enable ? '' : 'danger'">{{scope.row.enable}}</el-tag>
+            <el-switch
+              v-model="scope.row.enable">
+            </el-switch>
           </template>
         </el-table-column>
         <el-table-column
-          label="客户端"
+          label="下载器"
           width="150"
           :filters="clientList.filter(item => rssList.some(rssItem => rssItem.clientArr.indexOf(item.id) !== -1)).map(item => {
             return {
@@ -84,11 +86,11 @@
             <el-form-item required label="启用" prop="enable">
               <el-checkbox v-model="rss.enable">启用</el-checkbox>
             </el-form-item>
-            <el-form-item required label="客户端" prop="clientArr">
+            <el-form-item required label="下载器" prop="clientArr">
               <el-checkbox-group v-model="rss.clientArr">
                 <el-checkbox v-for="client of clientList" :key="client.id" :disabled="!client.enable" :label="client.id">{{client.alias}}</el-checkbox>
               </el-checkbox-group>
-              <div><el-tag type="info">选择客户端, 仅可选择已经启用的客户端</el-tag></div>
+              <div><el-tag type="info">选择下载器, 仅可选择已经启用的下载器</el-tag></div>
             </el-form-item>
             <el-form-item required label="排序规则" prop="clientSortBy">
               <el-select v-model="rss.clientSortBy" style="width: 144px" placeholder="排序规则">
@@ -97,7 +99,7 @@
                 <el-option label="当前下载速度" value="downloadSpeed"></el-option>
               </el-select>
             </el-form-item>
-            <el-form-item label="客户端最高上传速度" prop="maxClientUploadSpeed">
+            <el-form-item label="下载器最高上传速度" prop="maxClientUploadSpeed">
               <el-input v-model="rss.maxClientUploadSpeed">
                 <el-select v-model="rss.maxClientUploadSpeedUnit" slot="append" style="width: 80px" placeholder="单位">
                   <el-option label="KiB/s" value="KiB"></el-option>
@@ -105,9 +107,9 @@
                   <el-option label="GiB/s" value="GiB"></el-option>
                 </el-select>
               </el-input>
-              <div><el-tag type="info">客户端上传速度在此速度之上时, 不添加种子, 留空或 0 不启用</el-tag></div>
+              <div><el-tag type="info">下载器上传速度在此速度之上时, 不添加种子, 留空或 0 不启用</el-tag></div>
             </el-form-item>
-            <el-form-item label="客户端最高下载速度" prop="maxClientDownloadSpeed">
+            <el-form-item label="下载器最高下载速度" prop="maxClientDownloadSpeed">
               <el-input v-model="rss.maxClientDownloadSpeed">
                 <el-select v-model="rss.maxClientDownloadSpeedUnit" slot="append" style="width: 80px" placeholder="单位">
                   <el-option label="KiB/s" value="KiB"></el-option>
@@ -115,7 +117,7 @@
                   <el-option label="GiB/s" value="GiB"></el-option>
                 </el-select>
               </el-input>
-              <div><el-tag type="info">客户端下载速度在此速度之上时, 不添加种子, 留空或 0 不启用</el-tag></div>
+              <div><el-tag type="info">下载器下载速度在此速度之上时, 不添加种子, 留空或 0 不启用</el-tag></div>
             </el-form-item>
             <el-form-item required label="Rss - Url" prop="rssUrl">
               <el-input v-model="rss.rssUrl" style="width: 500px;"></el-input>
@@ -174,13 +176,13 @@
             </el-form-item>
             <el-form-item v-if="!hideReseed" required label="仅自动辅种" prop="onlyReseed">
               <el-checkbox v-model="rss.onlyReseed"></el-checkbox>
-              <div><el-tag type="info">若种子没有匹配自动辅种, 则跳过种子, 不会添加到客户端</el-tag></div>
+              <div><el-tag type="info">若种子没有匹配自动辅种, 则跳过种子, 不会添加到下载器</el-tag></div>
             </el-form-item>
-            <el-form-item v-if="!hideReseed" required label="仅辅种以下客户端" prop="reseedClients">
+            <el-form-item v-if="!hideReseed" required label="仅辅种以下下载器" prop="reseedClients">
               <el-checkbox-group v-model="rss.reseedClients">
                 <el-checkbox v-for="c of clientList" :disabled="!c.enable" :key="c.id" :label="c.id">{{c.alias}}</el-checkbox>
               </el-checkbox-group>
-              <div><el-tag type="info">辅种时仅辅种以上客户端</el-tag></div>
+              <div><el-tag type="info">辅种时仅辅种以上下载器</el-tag></div>
             </el-form-item>
             <el-form-item label="保存路径" prop="savePath">
               <el-input v-model="rss.savePath"></el-input>
@@ -196,7 +198,7 @@
             </el-form-item>
             <el-form-item label="跳过大小相同种子" prop="skipSameTorrent">
               <el-checkbox v-model="rss.skipSameTorrent">跳过大小相同种子</el-checkbox>
-              <div><el-tag type="info">跳过所有客户端内存在大小相同种子的种子</el-tag></div>
+              <div><el-tag type="info">跳过所有下载器内存在大小相同种子的种子</el-tag></div>
             </el-form-item>
             <el-form-item label="拒绝规则">
               <el-checkbox-group v-model="rss.rejectRules">

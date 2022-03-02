@@ -92,11 +92,11 @@
               <el-input v-model="server.host" style="width: 500px;"></el-input>
               <div><el-tag type="info">IP: 192.168.1.1 或域名: my.seed.box</el-tag></div>
             </el-form-item>
-            <el-form-item label="绑定客户端" prop="bindClient">
-              <el-select v-model="server.bindClient" placeholder="客户端">
+            <el-form-item label="绑定下载器" prop="bindClient">
+              <el-select v-model="server.bindClient" placeholder="下载器">
                 <el-option v-for="client of clientList" :disabled="!client.enable" :key="client.id" :label="client.alias" :value="client.id"></el-option>
               </el-select>
-              <div><el-tag type="info">服务器绑定的客户端, 将在监控页提供链接</el-tag></div>
+              <div><el-tag type="info">服务器绑定的下载器, 将在监控页提供链接</el-tag></div>
             </el-form-item>
             <el-form-item required label="用户名" prop="username">
               <el-input v-model="server.username"></el-input>

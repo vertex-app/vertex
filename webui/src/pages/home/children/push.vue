@@ -120,13 +120,13 @@ export default {
           value: '重新汇报种子'
         }, {
           key: 'clientConnect',
-          value: '客户端已连接'
+          value: '下载器已连接'
         }, {
           key: 'clientLoginError',
-          value: '客户端登陆失败'
+          value: '下载器登陆失败'
         }, {
           key: 'getMaindataError',
-          value: '获取客户端信息失败'
+          value: '获取下载器信息失败'
         }, {
           key: 'spaceAlarm',
           value: '空间警告'

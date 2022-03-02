@@ -54,17 +54,17 @@
               <el-input v-model="race.keyword" type="input" style="width: 200px;"></el-input>
               <div><el-tag type="info">在站点搜索种子所用到的关键词</el-tag></div>
             </el-form-item>
-            <el-form-item required label="客户端" prop="client">
-              <el-select v-model="race.client" placeholder="请选择客户端">
+            <el-form-item required label="下载器" prop="client">
+              <el-select v-model="race.client" placeholder="请选择下载器">
                 <el-option v-for="client of clientList" :key="client.id" :disabled="!client.enable" :label="client.alias" :value="client.id">{{client.alias}}</el-option>
               </el-select>
-              <div><el-tag type="info">选择客户端, 仅可选择已经启用的客户端</el-tag></div>
+              <div><el-tag type="info">选择下载器, 仅可选择已经启用的下载器</el-tag></div>
             </el-form-item>
             <el-form-item required label="选择站点" prop="sites">
               <el-checkbox-group v-model="race.sites">
                 <el-checkbox v-for="site of siteList" :key="site.name" :disabled="!site.enable" :label="site.name">{{site.name}}</el-checkbox>
               </el-checkbox-group>
-              <div><el-tag type="info">选择站点, 仅可选择已经启用的客户端</el-tag></div>
+              <div><el-tag type="info">选择站点, 仅可选择已经启用的下载器</el-tag></div>
             </el-form-item>
             <el-form-item required label="选择规则" prop="raceRules">
               <el-checkbox-group v-model="race.raceRules">

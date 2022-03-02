@@ -80,7 +80,7 @@ export default {
       }, {
         icon: ['fas', 'tv'],
         title: ' 追光迷影',
-        path: '/binge-watching/auto-race'
+        path: '/binge-watching/search-mix'
       }, {
         icon: ['fas', 'sliders-h'],
         title: ' 全局设置',

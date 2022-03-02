@@ -2,7 +2,7 @@
   <div class="torrent-mix">
     <div class="torrent-mix-div">
       <el-form class="client-mix-form" label-width="100px" size="mini">
-        <el-form-item label="选择客户端">
+        <el-form-item label="选择下载器">
           <el-checkbox-group @change="listTorrent" v-model="setting.clients">
             <el-checkbox v-for="client of clientList" :key="client.id" :label="client.id">{{client.alias}}</el-checkbox>
           </el-checkbox-group>
@@ -33,7 +33,7 @@
         <el-table-column type="expand" width="72">
           <template slot-scope="props">
             <el-form style="padding-left: 32px; width: 100%;" label-position="left" class="table-expand">
-              <el-form-item label="客户端名">
+              <el-form-item label="下载器名">
                 <span>{{ props.row.clientAlias }}</span>
               </el-form-item>
               <el-form-item label="种子名称">
@@ -84,7 +84,7 @@
         <el-table-column
           v-if="setting.showKeys.indexOf('clientAlias') !== -1"
           align="center"
-          label="客户端"
+          label="下载器"
           width="144">
           <template slot-scope="scope">
             {{scope.row.clientAlias}}
@@ -219,7 +219,7 @@ export default {
         name: '种子名称'
       }, {
         key: 'clientAlias',
-        name: '客户端名'
+        name: '下载器名'
       }, {
         key: 'size',
         name: '种子大小'

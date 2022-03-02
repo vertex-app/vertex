@@ -136,14 +136,14 @@ class Client {
         // eslint-disable-next-line no-eval
         fit = (eval(rule.code))(maindata, torrent);
       } catch (e) {
-        logger.error('客户端, ', this.alias, '删种规则', rule.alias, '存在语法错误\n', e);
+        logger.error('下载器, ', this.alias, '删种规则', rule.alias, '存在语法错误\n', e);
         return false;
       }
     } else {
       try {
         fit = rule.conditions.length !== 0 && this._fitConditions(torrent, rule.conditions);
       } catch (e) {
-        logger.error('客户端, ', this.alias, '删种规则', rule.alias, '遇到错误\n', e);
+        logger.error('下载器, ', this.alias, '删种规则', rule.alias, '遇到错误\n', e);
         return false;
       }
     }
@@ -158,7 +158,7 @@ class Client {
   };
 
   destroy () {
-    logger.info('销毁客户端实例', this.alias);
+    logger.info('销毁下载器实例', this.alias);
     this.maindataJob.stop();
     if (this.reannounceJob) this.reannounceJob.stop();
     if (this.autoDeleteJob) this.autoDeleteJob.stop();
@@ -189,7 +189,7 @@ class Client {
   };
 
   reloadPush () {
-    logger.info('客户端', this.alias, '重新载入推送方式');
+    logger.info('下载器', this.alias, '重新载入推送方式');
     this.notify = util.listPush().filter(item => item.id === this._client.notify)[0] || {};
     this.notify.push = this._client.pushNotify;
     this.monitor = util.listPush().filter(item => item.id === this._client.monitor)[0] || {};
@@ -203,9 +203,9 @@ class Client {
       this.cookie = await this.client.login(this.username, this.clientUrl, this.password);
       this.status = true;
       this.errorCount = 0;
-      logger.info('客户端', this.alias, '登陆成功');
+      logger.info('下载器', this.alias, '登陆成功');
     } catch (error) {
-      logger.error('客户端', this.alias, '登陆失败\n', error);
+      logger.error('下载器', this.alias, '登陆失败\n', error);
       await this.ntf.clientLoginError(this._client, error.message);
       this.status = false;
     }
@@ -256,10 +256,10 @@ class Client {
         };
       }
       */
-      logger.debug('客户端', this.alias, '获取种子信息成功');
+      logger.debug('下载器', this.alias, '获取种子信息成功');
       this.errorCount = 0;
     } catch (error) {
-      logger.error('客户端', this.alias, '获取种子信息失败\n', error);
+      logger.error('下载器', this.alias, '获取种子信息失败\n', error);
       this.errorCount += 1;
       if (this.errorCount > 10) {
         await this.ntf.getMaindataError(this._client);
@@ -296,9 +296,9 @@ class Client {
   async reannounceTorrent (torrent) {
     try {
       await this.client.reannounceTorrent(this.clientUrl, this.cookie, torrent.hash);
-      logger.info('客户端', this.alias, '重新汇报种子成功:', torrent.name);
+      logger.info('下载器', this.alias, '重新汇报种子成功:', torrent.name);
     } catch (error) {
-      logger.error('客户端', this.alias, '重新汇报种子失败:', torrent.name, '\n', error.message);
+      logger.error('下载器', this.alias, '重新汇报种子失败:', torrent.name, '\n', error.message);
       await this.ntf.reannounceTorrent(this._client, torrent);
     }
   };
@@ -312,10 +312,10 @@ class Client {
         }
       }
       await this.client.deleteTorrent(this.clientUrl, this.cookie, torrent.hash, isDeleteFiles);
-      logger.info('客户端', this.alias, '删除种子成功:', torrent.name, rule.alias);
+      logger.info('下载器', this.alias, '删除种子成功:', torrent.name, rule.alias);
       await this.ntf.deleteTorrent(this._client, torrent, rule, isDeleteFiles);
     } catch (error) {
-      logger.error('客户端', this.alias, '删除种子失败:', torrent.name, '\n', error);
+      logger.error('下载器', this.alias, '删除种子失败:', torrent.name, '\n', error);
       await this.ntf.deleteTorrent(this._client, torrent, rule);
     }
     return isDeleteFiles;
@@ -425,7 +425,7 @@ class Client {
         }
       }
     } catch (e) {
-      logger.error('客户端', this.alias, '\n', e);
+      logger.error('下载器', this.alias, '\n', e);
     }
   }
 
@@ -444,7 +444,7 @@ class Client {
         const trackerList = JSON.parse(body);
         this.trackerStatus[torrent.hash] = trackerList.filter(i => i.url.indexOf('**') === -1).map(i => i.msg).join('');
       } catch (e) {
-        logger.error('客户端', this.alias, '种子', torrent.name, 'tracker 状态同步失败, 报错如下:\n', e);
+        logger.error('下载器', this.alias, '种子', torrent.name, 'tracker 状态同步失败, 报错如下:\n', e);
       }
     }
   };
@@ -454,7 +454,7 @@ class Client {
     try {
       await this.ntf.spaceAlarm(this);
     } catch (e) {
-      logger.error('客户端', this.alias, '\n', e);
+      logger.error('下载器', this.alias, '\n', e);
     }
   }
 }

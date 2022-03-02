@@ -27,7 +27,7 @@
         </el-table-column>
         <el-table-column
           prop="type"
-          label="客户端类型"
+          label="下载器类型"
           width="150">
         </el-table-column>
         <el-table-column
@@ -79,9 +79,9 @@
     </div>
     <div class="radius-div">
       <el-collapse  class="collapse" v-model="clientCollapse">
-        <el-collapse-item title="新增 | 编辑 客户端" name="1">
+        <el-collapse-item title="新增 | 编辑 下载器" name="1">
           <div style="width: fit-content; margin: 6px 0 12px 20px">
-            <el-tag>客户端 ID: {{client.id || '新增'}}</el-tag>
+            <el-tag>下载器 ID: {{client.id || '新增'}}</el-tag>
           </div>
           <el-form ref="client" class="client-form" :model="client" label-width="160px" size="mini">
             <el-form-item required label="别名" prop="alias">
@@ -90,12 +90,12 @@
             <el-form-item required label="启用" prop="enable">
               <el-checkbox v-model="client.enable" :disabled="client.used">启用</el-checkbox>
             </el-form-item>
-            <el-form-item required label="客户端类型" prop="type">
-              <el-select v-model="client.type" placeholder="客户端类型">
+            <el-form-item required label="下载器类型" prop="type">
+              <el-select v-model="client.type" placeholder="下载器类型">
                 <el-option label="qBittorrent" value="qBittorrent"></el-option>
                 <el-option disabled label="Deluge" value="deluge"></el-option>
               </el-select>
-              <div><el-tag type="info">客户端类型, 目前仅支持 qBittorrent</el-tag></div>
+              <div><el-tag type="info">下载器类型, 目前仅支持 qBittorrent</el-tag></div>
             </el-form-item>
             <el-form-item v-if="client.type !== 'deluge'" required label="用户名" prop="username">
               <el-input v-model="client.username"></el-input>
@@ -115,18 +115,18 @@
               </el-select>
               <div><el-tag type="info">通知方式, 用于推送删种等信息, 在推送工具页面创建</el-tag></div>
             </el-form-item>
-            <el-form-item required label="推送客户端监控" prop="pushMonitor">
-              <el-checkbox v-model="client.pushMonitor">推送客户端监控</el-checkbox>
+            <el-form-item required label="推送下载器监控" prop="pushMonitor">
+              <el-checkbox v-model="client.pushMonitor">推送下载器监控</el-checkbox>
             </el-form-item>
-            <el-form-item v-if="client.pushMonitor" required label="客户端状态频道" prop="monitor">
+            <el-form-item v-if="client.pushMonitor" required label="下载器状态频道" prop="monitor">
               <el-select v-model="client.monitor" placeholder="请选择频道">
                 <el-option v-for="push of pushList.filter(item => item.type === 'telegram')" :key="push.id" :label="push.alias" :value="push.id"></el-option>
               </el-select>
-              <div><el-tag type="info">客户端状态频道, 仅支持 Telegram! 在推送工具页面创建</el-tag></div>
+              <div><el-tag type="info">下载器状态频道, 仅支持 Telegram! 在推送工具页面创建</el-tag></div>
             </el-form-item>
             <el-form-item required label="信息更新周期" prop="cron">
               <el-input v-model="client.cron" style="width: 500px;"></el-input>
-              <div><el-tag type="info">客户端信息更新 Cron 表达式, 默认为 4s 更新一次</el-tag></div>
+              <div><el-tag type="info">下载器信息更新 Cron 表达式, 默认为 4s 更新一次</el-tag></div>
             </el-form-item>
             <el-form-item required label="自动汇报" prop="autoReannounce">
               <el-checkbox v-model="client.autoReannounce">自动汇报</el-checkbox>
@@ -134,7 +134,7 @@
             </el-form-item>
             <el-form-item required label="空间警告" prop="spaceAlarm">
               <el-checkbox v-model="client.spaceAlarm">空间警告</el-checkbox>
-              <div><el-tag type="info">客户端剩余空间小于一定值时推送警告通知, 15 分钟一次</el-tag></div>
+              <div><el-tag type="info">下载器剩余空间小于一定值时推送警告通知, 15 分钟一次</el-tag></div>
             </el-form-item>
             <el-form-item :required="client.spaceAlarm" v-if="client.spaceAlarm" label="空间" prop="alarmSpace">
               <el-input v-model="client.alarmSpace">
@@ -153,7 +153,7 @@
                   <el-option label="GiB/s" value="GiB"></el-option>
                 </el-select>
               </el-input>
-              <div><el-tag type="info">若客户端的上传速度在此速度之上时, 不再添加种子</el-tag></div>
+              <div><el-tag type="info">若下载器的上传速度在此速度之上时, 不再添加种子</el-tag></div>
             </el-form-item>
             <el-form-item label="上限下载速度" prop="maxDownloadSpeed">
               <el-input v-model="client.maxDownloadSpeed">
@@ -163,7 +163,7 @@
                   <el-option label="GiB/s" value="GiB"></el-option>
                 </el-select>
               </el-input>
-              <div><el-tag type="info">若客户端的下载速度在此速度之上时, 不再添加种子</el-tag></div>
+              <div><el-tag type="info">若下载器的下载速度在此速度之上时, 不再添加种子</el-tag></div>
             </el-form-item>
             <el-form-item label="最大下载数量" prop="maxLeechNum">
               <el-input v-model="client.maxLeechNum" style="width: 500px;"></el-input>
@@ -177,13 +177,13 @@
                   <el-option label="GiB" value="GiB"></el-option>
                 </el-select>
               </el-input>
-              <div><el-tag type="info">若客户端的剩余空间在此空间之下时, 不再添加种子</el-tag></div>
+              <div><el-tag type="info">若下载器的剩余空间在此空间之下时, 不再添加种子</el-tag></div>
             </el-form-item>
-            <el-form-item v-if="clientList.length !== 0" label="同服客户端">
+            <el-form-item v-if="clientList.length !== 0" label="同服下载器">
               <el-checkbox-group v-model="client.sameServerClients">
                 <el-checkbox v-for="c of clientList" :key="c.id" :label="c.id">{{c.alias}}</el-checkbox>
               </el-checkbox-group>
-              <div><el-tag type="info">在统计上限速度时, 计算所有同服客户端的速度和</el-tag></div>
+              <div><el-tag type="info">在统计上限速度时, 计算所有同服下载器的速度和</el-tag></div>
             </el-form-item>
             <el-form-item label="自动删种">
               <el-checkbox v-model="client.autoDelete">自动删种</el-checkbox>

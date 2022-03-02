@@ -8,7 +8,7 @@
       <el-tab-pane label="追剧规则" name="race-rule">
       </el-tab-pane>
     </el-tabs>
-    <router-view></router-view>
+    <router-view style="height: calc(100vh - 156px); overflow: auto;"></router-view>
   </div>
 </template>
 

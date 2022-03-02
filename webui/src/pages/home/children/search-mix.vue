@@ -198,8 +198,8 @@
       </div>
       <el-dialog title="推送种子" :visible.sync="pushTorrentVisible" width="50%">
         <el-form label-width="144px" size="mini" style="width: 80%;">
-          <el-form-item required label="客户端">
-            <el-select v-model="client" placeholder="选择客户端" style="width: 200px;">
+          <el-form-item required label="下载器">
+            <el-select v-model="client" placeholder="选择下载器" style="width: 200px;">
               <el-option v-for="client of clientList" :disabled="!client.status" :key="client.id" :label="client.alias" :value="client.id"></el-option>
             </el-select>
           </el-form-item>
@@ -298,7 +298,7 @@ export default {
 
     async pushTorrent () {
       if (this.client === '') {
-        return this.$message.error('请选择客户端');
+        return this.$message.error('请选择下载器');
       }
       let url = `/api/site/pushTorrent?id=${this.pushRow.id}&site=${this.pushRow.site}&client=${this.client}&autoTMM=${this.autoTMM}&savePath=${this.savePath}&category=${this.category}`;
       if (this.pushRow.downloadLink) {

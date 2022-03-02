@@ -3,20 +3,20 @@
     <div class="torrent-history-div">
       <el-form class="torrent-history-form" inline label-width="100px" size="mini">
         <el-form-item label="选择 Rss">
-          <el-select v-model="selectedRss" placeholder="Rss">
+          <el-select v-model="selectedRss" placeholder="Rss" @change="listTorrentHistory">
             <el-option v-for="rss of rssList" :key="rss.id" :label="rss.alias" :value="rss.id"></el-option>
             <el-option label="已删除" value="deleted"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="类型">
-          <el-select v-model="selectedType" placeholder="Rss">
+          <el-select v-model="selectedType" placeholder="Rss" @change="listTorrentHistory">
             <el-option label="添加" :value="1"></el-option>
             <el-option label="拒绝" :value="2"></el-option>
             <el-option label="错误" :value="3"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="关键词">
-          <el-input v-model="searchKey" placeholder="关键词"/>
+          <el-input v-model="searchKey" placeholder="关键词" @keyup.enter.native="listTorrentHistory"/>
         </el-form-item>
         <el-form-item size="small">
           <el-button type="primary" @click="listTorrentHistory">查询</el-button>
@@ -219,7 +219,7 @@ export default {
     async listRss () {
       const url = '/api/rss/list';
       const res = await this.$axiosGet(url);
-      this.rssList = res.data;
+      this.rssList = res ? res.data.sort((a, b) => a.alias - b.alias) : [];
     },
 
     async changePage (page) {

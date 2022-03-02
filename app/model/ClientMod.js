@@ -14,13 +14,13 @@ class ClientMod {
     fs.writeFileSync(path.join(__dirname, '../data/client/', id + '.json'), JSON.stringify(clientSet, null, 2));
     if (global.runningClient[id]) global.runningClient[id].destroy();
     if (clientSet.enable) global.runningClient[id] = new Client(clientSet);
-    return '添加客户端成功';
+    return '添加下载器成功';
   };
 
   delete (options) {
     fs.unlinkSync(path.join(__dirname, '../data/client/', options.id + '.json'));
     if (global.runningClient[options.id]) global.runningClient[options.id].destroy();
-    return '删除客户端成功';
+    return '删除下载器成功';
   };
 
   modify (options) {
@@ -30,7 +30,7 @@ class ClientMod {
     if (global.runningClient[options.id]) global.runningClient[options.id].destroy();
     if (clientSet.enable) global.runningClient[options.id] = new Client(clientSet);
     fs.writeFileSync(path.join(__dirname, '../data/client/', options.id + '.json'), JSON.stringify(clientSet, null, 2));
-    return '修改客户端成功';
+    return '修改下载器成功';
   };
 
   list () {

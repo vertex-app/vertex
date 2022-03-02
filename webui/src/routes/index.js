@@ -84,7 +84,7 @@ const point = {
       path: 'client',
       component: Client,
       meta: {
-        title: '客户端'
+        title: '下载器'
       }
     }, {
       path: 'server',
