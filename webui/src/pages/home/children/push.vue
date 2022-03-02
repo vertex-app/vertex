@@ -139,6 +139,9 @@ export default {
         }, {
           key: 'raceError',
           value: '追剧报错'
+        }, {
+          key: 'douban',
+          value: '豆瓣相关'
         }
       ],
       pushList: [],

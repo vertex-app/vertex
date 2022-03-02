@@ -82,14 +82,14 @@ class Race {
         // eslint-disable-next-line no-eval
         fit = (eval(rule.code))(torrent);
       } catch (e) {
-        logger.error('下载器, ', this.alias, '追剧规则', rule.alias, '存在语法错误\n', e);
+        logger.error('下载器, ', this.alias, '择剧规则', rule.alias, '存在语法错误\n', e);
         return false;
       }
     } else {
       try {
         fit = rule.conditions.length !== 0 && this._fitConditions(torrent, rule.conditions);
       } catch (e) {
-        logger.error('下载器, ', this.alias, '追剧规则', rule.alias, '遇到错误\n', e);
+        logger.error('下载器, ', this.alias, '择剧规则', rule.alias, '遇到错误\n', e);
         return false;
       }
     }
@@ -106,19 +106,19 @@ class Race {
       .map(i => raceRuleList.filter(ii => ii.id === i)[0])
       .filter(i => i)
       .sort((a, b) => +b.priority - +a.priority);
-    logger.info(this.alias, '追剧规则总计', raceRules.length, ', 开始按照优先级查找');
+    logger.info(this.alias, '择剧规则总计', raceRules.length, ', 开始按照优先级查找');
     for (const rule of raceRules) {
-      logger.info(this.alias, '追剧规则:', rule.alias, '开始匹配');
+      logger.info(this.alias, '择剧规则:', rule.alias, '开始匹配');
       for (const torrent of torrents) {
         if (this._fitRaceRule(rule, torrent)) {
-          logger.info(this.alias, '追剧规则:', rule.alias, ',种子:', torrent.title, '/', torrent.subtitle, '匹配成功, 准备推送至下载器:', global.runningClient[this.client].alias);
+          logger.info(this.alias, '择剧规则:', rule.alias, ',种子:', torrent.title, '/', torrent.subtitle, '匹配成功, 准备推送至下载器:', global.runningClient[this.client].alias);
           try {
             await global.runningSite[torrent.site].pushTorrentById(torrent.id, torrent.downloadLink, this.client, this.savePath, this.category, this.autoTMM);
           } catch (e) {
-            logger.error(this.alias, '追剧规则:', rule.alias, ',种子:', torrent.title, '/', torrent.subtitle, '推送至下载器:', global.runningClient[this.client].alias, '失败, 报错如下:\n', e);
+            logger.error(this.alias, '择剧规则:', rule.alias, ',种子:', torrent.title, '/', torrent.subtitle, '推送至下载器:', global.runningClient[this.client].alias, '失败, 报错如下:\n', e);
             return await this.ntf.addRaceTorrentError(this.alias, global.runningClient[this.client].alias, torrent.title, rule.alias);
           }
-          logger.info(this.alias, '追剧规则:', rule.alias, ',种子:', torrent.title, '/', torrent.subtitle, '推送至下载器:', global.runningClient[this.client].alias, '成功');
+          logger.info(this.alias, '择剧规则:', rule.alias, ',种子:', torrent.title, '/', torrent.subtitle, '推送至下载器:', global.runningClient[this.client].alias, '成功');
           await this.ntf.addRaceTorrent(this.alias, global.runningClient[this.client].alias, torrent.title, rule.alias);
           return;
         };

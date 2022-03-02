@@ -613,7 +613,7 @@ class Site {
   // HaresClub
   async _searchHaresclub (keyword) {
     const torrentList = [];
-    const document = await this._getDocument(`https://club.hares.top/torrents.php?search_area=0&search=${encodeURIComponent(keyword)}&search_mode=0&incldead=0&spstate=0&check_state=0&can_claim=0&inclbookmarked=0`);
+    const document = await this._getDocument(`https://club.hares.top/torrents.php?search_area=${keyword.match(/tt\d+/) ? 4 : 1}&search=${encodeURIComponent(keyword)}&search_mode=0&incldead=0&spstate=0&check_state=0&can_claim=0&inclbookmarked=0`);
     const torrents = document.querySelectorAll('.torrents tbody tr');
     for (const _torrent of torrents) {
       const torrent = {};
@@ -677,7 +677,7 @@ class Site {
   // MTeam
   async _searchMTeam (keyword) {
     const torrentList = [];
-    const document = await this._getDocument(`https://kp.m-team.cc/torrents.php?incldead=1&spstate=0&inclbookmarked=0&search=${encodeURIComponent(keyword)}&search_area=0&search_mode=0`);
+    const document = await this._getDocument(`https://kp.m-team.cc/torrents.php?incldead=1&spstate=0&inclbookmarked=0&search=${encodeURIComponent(keyword)}&search_area=${keyword.match(/tt\d+/) ? 4 : 1}&search_mode=0`);
     const torrents = document.querySelectorAll('.torrents tbody tr:not(:first-child)');
     for (const _torrent of torrents) {
       const torrent = {};
@@ -709,7 +709,7 @@ class Site {
   // HDSky
   async _searchHDSky (keyword) {
     const torrentList = [];
-    const document = await this._getDocument(`https://hdsky.me/torrents.php?seeders=&incldead=1&spstate=0&inclbookmarked=0&search=${encodeURIComponent(keyword)}&search_area=0&search_mode=0`);
+    const document = await this._getDocument(`https://hdsky.me/torrents.php?seeders=&incldead=1&spstate=0&inclbookmarked=0&search=${encodeURIComponent(keyword)}&search_area=${keyword.match(/tt\d+/) ? 4 : 1}&search_mode=0`);
     const torrents = document.querySelectorAll('.torrents tbody tr:not(:first-child)');
     for (const _torrent of torrents) {
       const torrent = {};
@@ -746,7 +746,7 @@ class Site {
   // OurBits
   async _searchOurbits (keyword) {
     const torrentList = [];
-    const document = await this._getDocument(`https://ourbits.club/torrents.php?incldead=1&spstate=0&inclbookmarked=0&search=${encodeURIComponent(keyword)}&search_area=0&search_mode=0`);
+    const document = await this._getDocument(`https://ourbits.club/torrents.php?incldead=1&spstate=0&inclbookmarked=0&search=${encodeURIComponent(keyword)}&search_area=${keyword.match(/tt\d+/) ? 4 : 1}&search_mode=0`);
     const torrents = document.querySelectorAll('.torrents tbody tr:not(:first-child)');
     for (const _torrent of torrents) {
       const torrent = {};
@@ -783,7 +783,7 @@ class Site {
   // HDHome
   async _searchHDHome (keyword) {
     const torrentList = [];
-    const document = await this._getDocument(`https://hdhome.org/torrents.php?incldead=1&spstate=0&inclbookmarked=0&search=${encodeURIComponent(keyword)}&search_area=0&search_mode=0&tag=`);
+    const document = await this._getDocument(`https://hdhome.org/torrents.php?incldead=1&spstate=0&inclbookmarked=0&search=${encodeURIComponent(keyword)}&search_area=${keyword.match(/tt\d+/) ? 4 : 1}&search_mode=0&tag=`);
     const torrents = document.querySelectorAll('.torrents tbody tr:not(:first-child)');
     for (const _torrent of torrents) {
       const torrent = {};
@@ -815,7 +815,7 @@ class Site {
   // PTerClub
   async _searchPterclub (keyword) {
     const torrentList = [];
-    const document = await this._getDocument(`https://pterclub.com/torrents.php?tag_exclusive=&tag_internal=&tag_mandarin=&tag_cantonese=&tag_doityourself=&tag_master=&incldead=1&spstate=0&inclbookmarked=0&search=${encodeURIComponent(keyword)}&search_area=0&search_mode=0`);
+    const document = await this._getDocument(`https://pterclub.com/torrents.php?tag_exclusive=&tag_internal=&tag_mandarin=&tag_cantonese=&tag_doityourself=&tag_master=&incldead=1&spstate=0&inclbookmarked=0&search=${encodeURIComponent(keyword)}&search_area=${keyword.match(/tt\d+/) ? 4 : 1}&search_mode=0`);
     const torrents = document.querySelectorAll('.torrents tbody tr:not(:first-child)');
     for (const _torrent of torrents) {
       const torrent = {};
@@ -847,7 +847,7 @@ class Site {
   // BTSchool
   async _searchBTSchool (keyword) {
     const torrentList = [];
-    const document = await this._getDocument(`https://pt.btschool.club/torrents.php?incldead=1&spstate=0&inclbookmarked=0&search=${encodeURIComponent(keyword)}&search_area=0&search_mode=0`);
+    const document = await this._getDocument(`https://pt.btschool.club/torrents.php?incldead=1&spstate=0&inclbookmarked=0&search=${encodeURIComponent(keyword)}&search_area=${keyword.match(/tt\d+/) ? 4 : 1}&search_mode=0`);
     const torrents = document.querySelectorAll('.torrents tbody tr:not(:first-child)');
     for (const _torrent of torrents) {
       const torrent = {};
@@ -879,13 +879,14 @@ class Site {
   // TJUPT
   async _searchTJUPT (keyword) {
     const torrentList = [];
-    const document = await this._getDocument(`https://www.tjupt.org/torrents.php?incldead=0&spstate=0&picktype=0&inclbookmarked=0&keepseed=0&search=${encodeURIComponent(keyword)}&search_area=0&search_mode=0`);
+    const document = await this._getDocument(`https://www.tjupt.org/torrents.php?incldead=0&spstate=0&picktype=0&inclbookmarked=0&keepseed=0&search=${encodeURIComponent(keyword)}&search_area=${keyword.match(/tt\d+/) ? 4 : 1}&search_mode=0`);
     const torrents = document.querySelectorAll('.torrents > tbody > tr:not(:first-child)');
     for (const _torrent of torrents) {
       const torrent = {};
       torrent.site = this.site;
       torrent.title = _torrent.querySelector('td[class="embedded"] > a[href*="details"]').title.trim();
-      torrent.subtitle = (_torrent.querySelector('.torrentname > tbody > tr .embedded br')).nextSibling.nodeValue.trim();
+      const subtitle = _torrent.querySelector('.torrentname > tbody > tr .embedded br');
+      torrent.subtitle = subtitle ? subtitle.nextSibling.nodeValue.trim() : '';
       torrent.category = _torrent.querySelector('td a[href*=cat] img').title.trim();
       torrent.link = 'https://www.tjupt.org/' + _torrent.querySelector('a[href*=details]').href.trim();
       torrent.id = +torrent.link.match(/id=(\d*)/)[1];

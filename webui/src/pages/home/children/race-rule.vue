@@ -36,7 +36,7 @@
     </div>
     <div class="radius-div">
       <el-collapse  class="collapse" v-model="raceCollapse">
-        <el-collapse-item title="新增 | 编辑追剧规则" name="1">
+        <el-collapse-item title="新增 | 编辑择剧规则" name="1">
           <div style="width: fit-content; margin: 6px 0 12px 20px">
             <el-tag size="small">规则 ID: {{race.id || '新增'}}</el-tag>
           </div>

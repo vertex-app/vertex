@@ -35,6 +35,12 @@ else
   echo '/vertex/data/setting exists, continue'
 fi
 
+if [ ! -d '/vertex/data/douban' ]; then
+  mkdir /vertex/data/douban/set -p
+else
+  echo '/vertex/data/setting exists, continue'
+fi
+
 if [ ! -d '/vertex/db' ]; then
   mkdir /vertex/db
 else

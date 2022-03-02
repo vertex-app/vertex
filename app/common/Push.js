@@ -87,7 +87,7 @@ class Push {
       `下载器名: ${client.alias}\n` +
       `种子名称: ${torrent.name}\n` +
       `种子大小: ${util.formatSize(torrent.size)}\n` +
-      `追剧规则: ${rule.alias}`;
+      `择剧规则: ${rule.alias}`;
     if (this.markdown) {
       desp = '```\n' + desp + '\n```';
     }
@@ -97,13 +97,39 @@ class Push {
     await this._push(this.pushType.indexOf('race') !== -1, text, desp);
   };
 
+  async addDouban (alias, wishes) {
+    const text = `添加豆瓣账户: ${alias}`;
+    let desp = `豆瓣账户: ${alias}\n` +
+      `原有想看内容: \n${wishes.map(item => item.name).join('\n')}`;
+    if (this.markdown) {
+      desp = '```\n' + desp + '\n```';
+    }
+    if (this.type === 'telegram') {
+      desp = '\\#添加豆瓣账户\n' + desp;
+    }
+    await this._push(this.pushType.indexOf('douban') !== -1, text, desp);
+  };
+
+  async addDoubanWish (alias, wishes) {
+    const text = `添加想看: ${wishes.map(item => item.name).join(' | ')} || 豆瓣账户: ${alias}`;
+    let desp = `豆瓣账户: ${alias}\n` +
+      `添加想看: \n${wishes.map(item => item.name).join('\n')}`;
+    if (this.markdown) {
+      desp = '```\n' + desp + '\n```';
+    }
+    if (this.type === 'telegram') {
+      desp = '\\#添加想看\n' + desp;
+    }
+    await this._push(this.pushType.indexOf('douban') !== -1, text, desp);
+  };
+
   async addRaceTorrentError (raceAlias, client, torrent, rule) {
     const text = `添加追剧种子失败: ${torrent.title.substring(0, 10) + '...'} | ${raceAlias} | ${util.formatSize(torrent.size)} | ${client.alias}`;
     let desp = `追剧任务: ${raceAlias}\n` +
       `下载器名: ${client.alias}\n` +
       `种子名称: ${torrent.name}\n` +
       `种子大小: ${util.formatSize(torrent.size)}\n` +
-      `追剧规则: ${rule.alias}\n` +
+      `择剧规则: ${rule.alias}\n` +
       '详细信息前往 Vertex 日志页查看';
     if (this.markdown) {
       desp = '```\n' + desp + '\n```';

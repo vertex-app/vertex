@@ -61,7 +61,7 @@ class Client {
     }
     this.recordJob = new CronJob('*/1 * * * *', () => this.record());
     this.recordJob.start();
-    this.trackerSyncJob = new CronJob('*/1 * * * *', () => this.trackerSync());
+    this.trackerSyncJob = new CronJob('*/5 * * * *', () => this.trackerSync());
     this.trackerSyncJob.start();
     this.messageId = 0;
     this.errorCount = 0;

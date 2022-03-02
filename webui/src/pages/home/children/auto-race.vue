@@ -64,22 +64,22 @@
               <el-checkbox-group v-model="race.sites">
                 <el-checkbox v-for="site of siteList" :key="site.name" :disabled="!site.enable" :label="site.name">{{site.name}}</el-checkbox>
               </el-checkbox-group>
-              <div><el-tag type="info">选择站点, 仅可选择已经启用的下载器</el-tag></div>
+              <div><el-tag type="info">选择站点, 仅可选择已经启用的站点</el-tag></div>
             </el-form-item>
             <el-form-item required label="选择规则" prop="raceRules">
               <el-checkbox-group v-model="race.raceRules">
                 <el-checkbox v-for="rule of raceRuleList" :key="rule.id" :label="rule.id">{{rule.alias}}</el-checkbox>
               </el-checkbox-group>
-              <div><el-tag type="info">选择追剧规则, 追剧规则可前往追剧规则分页添加</el-tag></div>
+              <div><el-tag type="info">选择择剧规则, 择剧规则可前往择剧规则分页添加</el-tag></div>
             </el-form-item>
-            <el-form-item required label="推送通知" prop="pushNotify">
-              <el-checkbox v-model="race.pushNotify">推送通知</el-checkbox>
+            <el-form-item required label="推送通知" prop="push">
+              <el-checkbox v-model="race.push">推送通知</el-checkbox>
             </el-form-item>
-            <el-form-item v-if="race.pushNotify" required label="通知方式" prop="notify">
+            <el-form-item v-if="race.push" required label="通知方式" prop="notify">
               <el-select v-model="race.notify" placeholder="请选择 通知方式">
                 <el-option v-for="push of pushList" :key="push.id" :label="push.alias" :value="push.id"></el-option>
               </el-select>
-              <div><el-tag type="info">通知方式, 用于推送删种等信息, 在推送工具页面创建</el-tag></div>
+              <div><el-tag type="info">通知方式, 用于推送信息, 在推送工具页面创建</el-tag></div>
             </el-form-item>
             <el-form-item required label="触发时间">
               <el-input v-model="race.cron" style="width: 200px;"></el-input>

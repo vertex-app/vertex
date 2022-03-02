@@ -167,6 +167,11 @@ module.exports = function (app, express, router) {
   router.post('/race/modify', ctrl.Race.modify);
   router.post('/race/delete', ctrl.Race.delete);
 
+  router.get('/douban/list', ctrl.Douban.list);
+  router.post('/douban/add', ctrl.Douban.add);
+  router.post('/douban/modify', ctrl.Douban.modify);
+  router.post('/douban/delete', ctrl.Douban.delete);
+
   router.get('/deleteRule/list', ctrl.DeleteRule.list);
   router.post('/deleteRule/add', ctrl.DeleteRule.add);
   router.post('/deleteRule/modify', ctrl.DeleteRule.modify);

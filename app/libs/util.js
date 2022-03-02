@@ -254,6 +254,28 @@ exports.listRaceRule = function () {
   return raceRuleList;
 };
 
+exports.listDouban = function () {
+  const files = fs.readdirSync(path.join(__dirname, '../data/douban'));
+  const DoubanList = [];
+  for (const file of files) {
+    if (path.extname(file) === '.json') {
+      DoubanList.push(_importJson(path.join(__dirname, '../data/douban', file)));
+    }
+  }
+  return DoubanList;
+};
+
+exports.listDoubanSet = function () {
+  const files = fs.readdirSync(path.join(__dirname, '../data/douban/set'));
+  const doubanSetList = [];
+  for (const file of files) {
+    if (path.extname(file) === '.json') {
+      doubanSetList.push(_importJson(path.join(__dirname, '../data/douban/set', file)));
+    }
+  }
+  return doubanSetList;
+};
+
 exports.formatSize = function (size) {
   if (size < 1024) {
     return `${size.toFixed(2)} Byte`;

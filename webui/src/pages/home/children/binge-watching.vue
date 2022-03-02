@@ -5,7 +5,9 @@
       </el-tab-pane>
       <el-tab-pane label="自动追剧" name="auto-race">
       </el-tab-pane>
-      <el-tab-pane label="追剧规则" name="race-rule">
+      <el-tab-pane label="豆瓣账号" name="douban">
+      </el-tab-pane>
+      <el-tab-pane label="择剧规则" name="race-rule">
       </el-tab-pane>
     </el-tabs>
     <router-view style="height: calc(100vh - 156px); overflow: auto;"></router-view>
