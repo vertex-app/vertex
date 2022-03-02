@@ -2,11 +2,15 @@ const util = require('../util');
 const logger = require('../logger');
 const url = require('url');
 const fs = require('fs');
-const FormData = require('form-data');
 
 exports.login = async function (username, clientUrl, password) {
   const message = {
-    url: clientUrl + `/api/v2/auth/login?username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`
+    url: clientUrl + '/api/v2/auth/login',
+    method: 'POST',
+    form: {
+      username,
+      password
+    }
   };
   const res = await util.requestPromise(message);
   if (res.body.indexOf('Ok') !== -1) {
