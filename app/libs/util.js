@@ -109,29 +109,41 @@ exports.requestUsePuppeteer = async function (options) {
     logger.debug('unlocked');
   }
   const page = await browser.newPage();
-  await page.setViewport({ width: 800, height: 600 });
-  await page.setUserAgent(options.headers['User-Agent']);
-  const cookieList = options.headers.cookie.split(';').map(i => i.trim())
-    .filter(i => i !== '')
-    .map(i => {
-      return {
-        name: i.split('=')[0],
-        value: i.split('=')[1],
-        domain: new url.URL(options.url).hostname
-      };
-    });
-  if (cookieList.length !== 0) await page.setCookie(...cookieList);
-  await page.goto(options.url, {});
-  await page.waitFor(10000);
-  const body = await page.content();
-  await page.close();
-  if ((await browser.pages()).length === 1) {
-    logger.info('Close Browser!!!');
-    await browser.close();
+  try {
+    await page.setViewport({ width: 800, height: 600 });
+    await page.setUserAgent(options.headers['User-Agent']);
+    const cookieList = options.headers.cookie.split(';').map(i => i.trim())
+      .filter(i => i !== '')
+      .map(i => {
+        return {
+          name: i.split('=')[0],
+          value: i.split('=')[1],
+          domain: new url.URL(options.url).hostname
+        };
+      });
+    if (cookieList.length !== 0) await page.setCookie(...cookieList);
+    await page.goto(options.url, {});
+    await page.waitFor(10000);
+    const body = await page.content();
+    await page.close();
+    if ((await browser.pages()).length === 1) {
+      logger.info('Close Browser!!!');
+      await browser.close();
+    }
+    return {
+      body
+    };
+  } catch (e) {
+    logger.error('Puppeteer 报错:\n', e);
+    await page.close();
+    if ((await browser.pages()).length === 1) {
+      logger.info('Close Browser!!!');
+      await browser.close();
+    }
+    return {
+      body: ''
+    };
   }
-  return {
-    body
-  };
 };
 
 exports.exec = util.promisify(require('child_process').exec);

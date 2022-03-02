@@ -60,7 +60,9 @@
             Rss - Url
           </template>
           <template slot-scope="scope">
-            {{ urlDisplay ? scope.row.rssUrl : '**********' }}
+            <div v-for="rssUrl of scope.row.rssUrls" :key="rssUrl">
+              {{ urlDisplay ? rssUrl : '**********' }}
+            </div>
           </template>
         </el-table-column>
         <el-table-column
