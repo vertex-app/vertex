@@ -23,6 +23,7 @@
           width="100">
           <template slot-scope="scope">
             <el-switch
+              @change="switchClick(scope.row)"
               v-model="scope.row.enable">
             </el-switch>
           </template>
@@ -309,6 +310,18 @@ export default {
     async modifyRss (row) {
       this.rssCollapse = ['1'];
       this.rss = { ...row };
+    },
+    async switchClick (row) {
+      const url = '/api/rss/modify';
+      const _row = { ...row };
+      _row.enable = false;
+      const res = await this.$axiosPost(url, _row);
+      if (!res) {
+        return;
+      }
+      await this.$messageBox(res);
+      this.listRss();
+      this.clearRss();
     },
     async clearRss () {
       this.rss = { ...this.defaultRss };
