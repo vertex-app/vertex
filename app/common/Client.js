@@ -61,7 +61,7 @@ class Client {
     }
     this.recordJob = new CronJob('*/1 * * * *', () => this.record());
     this.recordJob.start();
-    this.trackerSyncJob = new CronJob('*/5 * * * *', () => this.trackerSync());
+    this.trackerSyncJob = new CronJob('*/1 * * * *', () => this.trackerSync());
     this.trackerSyncJob.start();
     this.messageId = 0;
     this.errorCount = 0;
@@ -420,7 +420,7 @@ class Client {
   flashFitTime (rule) {
     if (!this.maindata || !this.maindata.torrents || this.maindata.torrents.length === 0) return;
     try {
-      const torrents = this.maindata.torrents.sort((a, b) => a.completedTime - b.completedTime || a.addedTime - b.addedTime);
+      const torrents = this.maindata.torrents;
       for (const torrent of torrents) {
         if (this._fitDeleteRule(rule, torrent, true)) {
           this.fitTime[rule.id][torrent.hash] = this.fitTime[rule.id][torrent.hash] || moment().unix();
@@ -435,14 +435,13 @@ class Client {
 
   async trackerSync () {
     if (!this.maindata || !this.maindata.torrents || this.maindata.torrents.length === 0) return;
-    const torrents = this.maindata.torrents.sort((a, b) => a.completedTime - b.completedTime || a.addedTime - b.addedTime);
+    const torrents = this.maindata.torrents;
     for (const torrent of torrents) {
       try {
-        const sqlRes = await util.getRecord('SELECT * FROM torrents WHERE hash = ? and delete_time is not null', [torrent.hash]);
-        if (!sqlRes) continue;
+        const sqlRes = await util.getRecord('SELECT * FROM torrents WHERE hash = ?', [torrent.hash]);
+        if (!sqlRes || !!sqlRes.delete_time) continue;
         const { statusCode, body } = await this.client.getTrackerList(this.clientUrl, this.cookie, torrent.hash);
         if (statusCode !== 200) {
-          this.login();
           throw new Error('状态码: ' + statusCode);
         }
         const trackerList = JSON.parse(body);

@@ -22,8 +22,7 @@ class RaceMod {
 
   modify (options) {
     const raceSet = { ...options };
-    raceSet.deleteRules = raceSet.deleteRules || [];
-    raceSet.sameServerRaces = raceSet.sameServerRaces || [];
+    raceSet.raceRules = raceSet.raceRules || [];
     if (global.runningRace[options.id]) global.runningRace[options.id].destroy();
     if (raceSet.enable) global.runningRace[options.id] = new Race(raceSet);
     fs.writeFileSync(path.join(__dirname, '../data/race/', options.id + '.json'), JSON.stringify(raceSet, null, 2));
