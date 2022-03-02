@@ -257,9 +257,11 @@ class Client {
       }
       */
       logger.debug('下载器', this.alias, '获取种子信息成功');
+      this.status = true;
       this.errorCount = 0;
     } catch (error) {
       logger.error('下载器', this.alias, '获取种子信息失败\n', error);
+      this.status = false;
       this.errorCount += 1;
       if (this.errorCount > 10) {
         await this.ntf.getMaindataError(this._client);
@@ -333,7 +335,9 @@ class Client {
 
   async autoDelete () {
     if (!this.maindata || !this.maindata.torrents || this.maindata.torrents.length === 0) return;
-    const torrents = this.maindata.torrents.sort((a, b) => a.completedTime - b.completedTime || a.addedTime - b.addedTime);
+    const torrents = this.maindata.torrents.sort((a, b) =>
+      (a.completedTime <= 0 ? moment().unix() : a.completedTime) - (b.completedTime <= 0 ? moment().unix() : b.completedTime) ||
+        a.addedTime - b.addedTime);
     const deletedTorrentHash = [];
     for (const _rule of this.deleteRules) {
       const rule = { ..._rule };
@@ -434,7 +438,7 @@ class Client {
     const torrents = this.maindata.torrents.sort((a, b) => a.completedTime - b.completedTime || a.addedTime - b.addedTime);
     for (const torrent of torrents) {
       try {
-        const sqlRes = await util.getRecord('SELECT * FROM torrents WHERE hash = ?', [torrent.hash]);
+        const sqlRes = await util.getRecord('SELECT * FROM torrents WHERE hash = ? and delete_time is not null', [torrent.hash]);
         if (!sqlRes) continue;
         const { statusCode, body } = await this.client.getTrackerList(this.clientUrl, this.cookie, torrent.hash);
         if (statusCode !== 200) {
