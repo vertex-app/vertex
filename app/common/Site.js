@@ -33,7 +33,8 @@ class Site {
       HDFans: this._hdfans,
       DICMusic: this._dicmusic,
       GPW: this._gpw,
-      BTSchool: this._btschool
+      BTSchool: this._btschool,
+      TJUPT: this._tjupt
     };
     this.searchWrapper = {
       HaresClub: this._searchHaresclub,
@@ -43,7 +44,8 @@ class Site {
       OurBits: this._searchOurbits,
       HDHome: this._searchHDHome,
       PTerClub: this._searchPterclub,
-      BTSchool: this._searchBTSchool
+      BTSchool: this._searchBTSchool,
+      TJUPT: this._searchTJUPT,
     };
     this.torrentDownloadLinkMap = {
       HaresClub: 'https://club.hares.top/download.php?id={ID}',
@@ -53,7 +55,8 @@ class Site {
       OurBits: 'https://ourbits.club/download.php?id={ID}',
       HDHome: 'https://hdhome.org/download.php?id={ID}',
       PTerClub: 'https://pterclub.com/download.php?id={ID}',
-      BTSchool: 'https://pt.btschool.club/download.php?id={ID}'
+      BTSchool: 'https://pt.btschool.club/download.php?id={ID}',
+      TJUPT: 'https://www.tjupt.org/download.php?id={ID}'
     };
     this.siteUrlMap = {
       HaresClub: 'https://club.hares.top/',
@@ -63,7 +66,8 @@ class Site {
       OurBits: 'https://ourbits.club/',
       HDHome: 'https://hdhome.org/',
       PTerClub: 'https://pterclub.com/',
-      BTSchool: 'https://pt.btschool.club/'
+      BTSchool: 'https://pt.btschool.club/',
+      TJUPT: 'https://www.tjupt.org/'
     };
     this.cookie = site.cookie;
     this.site = site.name;
@@ -466,6 +470,24 @@ class Site {
     return info;
   };
 
+  // TJUPT
+  async _tjupt () {
+    const info = {};
+    const document = await this._getDocument('https://www.tjupt.org/');
+    // 用户名
+    info.username = document.querySelector('a[href^=userdetails] b span').innerHTML;
+    // 上传
+    info.upload = document.querySelector('font[class=color_uploaded]').nextSibling.nodeValue.trim();
+    info.upload = util.calSize(...info.upload.split(' '));
+    // 下载
+    info.download = 0;
+    // 做种
+    info.seeding = +document.querySelector('img[class=arrowup]').nextSibling.nodeValue.trim();
+    // 下载
+    info.leeching = +document.querySelector('img[class=arrowdown]').nextSibling.nodeValue.trim();
+    return info;
+  };
+
   // LemonHD
   async _lemonhd () {
     const info = {};
@@ -696,7 +718,7 @@ class Site {
       torrent.subtitle = _torrent.querySelector('.torrentname > tbody > tr .embedded').lastChild.nodeValue.trim();
       if (torrent.subtitle === ']') {
         torrent.subtitle = (_torrent.querySelector('.torrentname > tbody > tr .embedded span[class=optiontag]:last-of-type') ||
-          _torrent.querySelector('.torrentname > tbody > tr .embedded br')).nextSibling.nodeValue.trim().replace(/\[优惠剩余时间：/, '');
+          _torrent.querySelector('.torrentname > tbody > tr .embedded br')).nextSibling.nodeValue.trim().replace(/\[优惠剩余时间\uff1a/, '');
       }
       torrent.category = _torrent.querySelector('td a[href*=cat] img').title.trim();
       torrent.link = 'https://hdsky.me/' + _torrent.querySelector('a[href*=details]').href.trim();
@@ -843,6 +865,38 @@ class Site {
       torrent.size = util.calSize(...torrent.size.split(' '));
       torrent.tags = [];
       const tagsDom = _torrent.querySelectorAll('span[class*=label]');
+      for (const tag of tagsDom) {
+        torrent.tags.push(tag.innerHTML.trim());
+      }
+      torrentList.push(torrent);
+    }
+    return {
+      site: this.site,
+      torrentList
+    };
+  };
+
+  // TJUPT
+  async _searchTJUPT (keyword) {
+    const torrentList = [];
+    const document = await this._getDocument(`https://www.tjupt.org/torrents.php?incldead=0&spstate=0&picktype=0&inclbookmarked=0&keepseed=0&search=${encodeURIComponent(keyword)}&search_area=0&search_mode=0`);
+    const torrents = document.querySelectorAll('.torrents > tbody > tr:not(:first-child)');
+    for (const _torrent of torrents) {
+      const torrent = {};
+      torrent.site = this.site;
+      torrent.title = _torrent.querySelector('td[class="embedded"] > a[href*="details"]').title.trim();
+      torrent.subtitle = (_torrent.querySelector('.torrentname > tbody > tr .embedded br')).nextSibling.nodeValue.trim();
+      torrent.category = _torrent.querySelector('td a[href*=cat] img').title.trim();
+      torrent.link = 'https://www.tjupt.org/' + _torrent.querySelector('a[href*=details]').href.trim();
+      torrent.id = +torrent.link.match(/id=(\d*)/)[1];
+      torrent.seeders = +(_torrent.querySelector('a[href*=seeders]') || _torrent.querySelector('a[href*=seeders] font') || _torrent.querySelector('span[class=red]')).innerHTML.trim();
+      torrent.leechers = +(_torrent.querySelector('a[href*=leechers]') || _torrent.childNodes[9]).innerHTML.trim();
+      torrent.snatches = +(_torrent.querySelector('a[href*=snatches] b') || _torrent.childNodes[11]).innerHTML.trim();
+      torrent.size = _torrent.childNodes[6].innerHTML.trim().replace('<br>', ' ');
+      torrent.time = moment(_torrent.childNodes[5].querySelector('span') ? _torrent.childNodes[5].querySelector('span').title : _torrent.childNodes[5].innerHTML.replace(/<br>/, ' ')).unix();
+      torrent.size = util.calSize(...torrent.size.split(' '));
+      torrent.tags = [];
+      const tagsDom = _torrent.querySelectorAll('font[class*=tag]');
       for (const tag of tagsDom) {
         torrent.tags.push(tag.innerHTML.trim());
       }
