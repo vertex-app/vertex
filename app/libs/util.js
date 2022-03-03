@@ -232,6 +232,17 @@ exports.listDeleteRule = function () {
   return deleteRuleList;
 };
 
+exports.listLinkRule = function () {
+  const files = fs.readdirSync(path.join(__dirname, '../data/rule/link'));
+  const linkRuleList = [];
+  for (const file of files) {
+    if (path.extname(file) === '.json') {
+      linkRuleList.push(_importJson(path.join(__dirname, '../data/rule/link', file)));
+    }
+  }
+  return linkRuleList;
+};
+
 exports.listRssRule = function () {
   const files = fs.readdirSync(path.join(__dirname, '../data/rule/rss'));
   const rssRuleList = [];

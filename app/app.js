@@ -14,7 +14,7 @@ logger.use(app);
 
 require('./routes/router.js')(app, express, router);
 
-const init = function () {
+const initSitePush = function () {
   const sitePushSettng = JSON.parse(fs.readFileSync(path.join(__dirname, './data/setting/site-push-setting.json')));
   if (sitePushSettng.push) {
     global.sitePushJob = new CronJob(sitePushSettng.cron, () => {
@@ -25,6 +25,10 @@ const init = function () {
     });
     global.sitePushJob.start();
   }
+};
+
+const init = function () {
+  initSitePush();
   global.clearDatabase = new CronJob('0 0 * * *', async () => {
     await util.runRecord('delete from torrent_flow where time < ?', [moment().unix() - 1]);
   });
@@ -44,6 +48,7 @@ const init = function () {
     password: setting.password
   };
   global.telegramProxy = setting.telegramProxy || 'https://api.telegram.org';
+  global.checkFinishCron = setting.checkFinishCron || '* * * * *';
   global.userAgent = setting.userAgent;
   global.dataPath = setting.dataPath || '/';
   global.runningClient = {};

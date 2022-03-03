@@ -107,7 +107,7 @@ class Site {
           cookie: this.cookie
         }
       })).body;
-      await redis.setWithExpire(`vertex:document:body:${url}`, html, 30);
+      await redis.setWithExpire(`vertex:document:body:${url}`, html, 300);
       const dom = new JSDOM(html);
       return dom.window.document;
     } else {
@@ -127,7 +127,7 @@ class Site {
     });
     const buffer = Buffer.from(res.body, 'utf-8');
     const torrent = bencode.decode(buffer);
-    // const size = torrent.info.length || torrent.info.files.map(i => i.length).reduce(this._getSum, 0);
+    const size = torrent.info.length || torrent.info.files.map(i => i.length).reduce(this._getSum, 0);
     const fsHash = crypto.createHash('sha1');
     fsHash.update(bencode.encode(torrent.info));
     const md5 = fsHash.digest('md5');
@@ -139,7 +139,9 @@ class Site {
     fs.writeFileSync(filepath, buffer);
     return {
       filepath,
-      hash
+      hash,
+      size,
+      name: torrent.info.name.toString()
     };
   };
 
@@ -931,14 +933,18 @@ class Site {
     }
   };
 
-  async pushTorrentById (id, downloadLink, client, savePath, category, autoTMM) {
+  async pushTorrentById (id, downloadLink, client, savePath, category, autoTMM, recordType, recordNote) {
+    recordNote = recordNote || `搜索推送, 站点: ${this.id}`;
     if (!downloadLink) {
       const downloadLinkTemplate = this.torrentDownloadLinkMap[this.site];
       if (!downloadLinkTemplate) throw new Error(`站点 ${this.site} 暂时不支持推送种子!`);
       downloadLink = downloadLinkTemplate.replace(/{ID}/, id);
     }
-    const { filepath, hash } = await this._downloadTorrent(downloadLink);
+    const { filepath, hash, size, name } = await this._downloadTorrent(downloadLink);
     await global.runningClient[client].addTorrentByTorrentFile(filepath, hash, false, 0, 0, savePath, category, autoTMM);
+    // 1: 添加 2: 拒绝 3: 错误 4: 搜索推送 5: 追剧推送 6: 豆瓣推送 99: 4-6 完成
+    await util.runRecord('INSERT INTO torrents (hash, name, size, rss_id, link, record_time, add_time, record_type, record_note) values (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+      [hash, name, size, this.site, downloadLink, moment().unix(), moment().unix(), recordType, recordNote]);
     return '推送成功, 种子 hash: ' + hash;
   }
 

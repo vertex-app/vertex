@@ -111,6 +111,17 @@ exports.getTrackerList = async (clientUrl, cookie, hash) => {
   return res;
 };
 
+exports.getFiles = async (clientUrl, cookie, hash) => {
+  const message = {
+    url: clientUrl + `/api/v2/torrents/files?hash=${hash}`,
+    headers: {
+      cookie
+    }
+  };
+  const res = await util.requestPromise(message);
+  return JSON.parse(res.body);
+};
+
 exports.getMaindata = async function (clientUrl, cookie) {
   const option = {
     url: clientUrl + '/api/v2/sync/maindata',

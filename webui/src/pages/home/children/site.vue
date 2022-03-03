@@ -96,14 +96,10 @@
             <el-button @click="refreshAll(scope)" type="primary" size="mini">{{refreshState}}</el-button>
           </template>
           <template slot-scope="scope">
-            <div>
             <el-button @click="gotoSite(scope.row)" type="primary" size="small">打开</el-button>
             <el-button @click="refresh(scope.row)" type="primary" size="small">刷新</el-button>
-            </div>
-            <div style="padding-top:12px;">
             <el-button @click="modifySite(scope.row)" type="warning" size="small">编辑</el-button>
             <el-button @click="deleteSite(scope.row)" :disabled="scope.row.used" type="danger" size="small">删除</el-button>
-            </div>
           </template>
         </el-table-column>
       </el-table>

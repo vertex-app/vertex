@@ -54,6 +54,15 @@ library.add(solid);
 library.add(brands);
 Vue.component('fa', FontAwesomeIcon);
 
+Vue.prototype.$colors = [
+  '#00BFFF',
+  '#48D1CC',
+  '#FA8072',
+  '#F0FFFF',
+  '#DDA0DD',
+  '#FFC0CB'
+];
+
 Vue.prototype.$axiosGet = async (url) => {
   try {
     const res = await axios.get(url, {

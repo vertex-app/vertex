@@ -18,7 +18,7 @@ class Push {
     this.maxErrorCount = +this.maxErrorCount || 100;
     this.errorCount = 0;
     this.pushType = this.pushType || [];
-    this.markdown = ['telegram'].indexOf(this.type) !== -1;
+    this.markdown = ['telegram', 'iyuu'].indexOf(this.type) !== -1;
   };
 
   _clearErrorCount () {
@@ -114,18 +114,21 @@ class Push {
     await this._push(this.pushType.indexOf('raceError') !== -1, text, desp);
   };
 
-  async addDoubanTorrent (doubanAlias, client, torrent, rule) {
+  async addDoubanTorrent (doubanAlias, client, torrent, rule, wish) {
     const text = `添加豆瓣种子: ${torrent.title.substring(0, 10) + '...'} | ${doubanAlias} | ${util.formatSize(torrent.size)} | ${client.alias}`;
     let desp = `追剧任务: ${doubanAlias}\n` +
       `下载器名: ${client.alias}\n` +
-      `种子名称: ${torrent.name}\n` +
+      `种子名称: ${torrent.title || torrent.naem}\n` +
       `种子大小: ${util.formatSize(torrent.size)}\n` +
       `选种规则: ${rule.alias}`;
-    if (this.markdown) {
+    if (this.type === 'telegram') {
       desp = '```\n' + desp + '\n```';
     }
     if (this.type === 'telegram') {
-      desp = '\\#添加豆瓣种子\n' + desp;
+      desp = '\\#添加想看\n' + desp;
+    }
+    if (this.type === 'telegram') {
+      desp = desp + `\n[POSTER](${wish.poster})`;
     }
     await this._push(this.pushType.indexOf('douban') !== -1, text, desp);
   };
@@ -164,13 +167,28 @@ class Push {
     const text = `添加想看: ${wishes.map(item => item.name).join(' | ')} || 豆瓣账户: ${alias}`;
     let desp = `豆瓣账户: ${alias}\n` +
       `添加想看: \n${wishes.map(item => item.name).join('\n')}`;
-    if (this.markdown) {
+    if (this.type === 'telegram') {
       desp = '```\n' + desp + '\n```';
     }
     if (this.type === 'telegram') {
       desp = '\\#添加想看\n' + desp;
     }
+    if (this.type === 'telegram') {
+      desp = desp + `\n[POSTER](${wishes[0].poster})`;
+    }
     await this._push(this.pushType.indexOf('douban') !== -1, text, desp);
+  };
+
+  async torrentFinish (torrent, note) {
+    const text = `种子已完成: ${torrent.name} || ${note}`;
+    let desp = `种子已完成: ${torrent.name}\n${note}`;
+    if (this.markdown) {
+      desp = '```\n' + desp + '\n```';
+    }
+    if (this.type === 'telegram') {
+      desp = '\\#种子已完成\n' + desp;
+    }
+    await this._push(this.pushType.indexOf('finish') !== -1, text, desp);
   };
 
   async addTorrentError (rss, client, torrent) {

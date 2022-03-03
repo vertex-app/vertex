@@ -14,6 +14,7 @@ class Douban {
     this.alias = douban.alias;
     this.cookie = douban.cookie;
     this.raceRules = douban.raceRules;
+    this.linkRule = douban.linkRule;
     this.savePath = douban.savePath;
     this.category = douban.category;
     this.autoTMM = douban.autoTMM;
@@ -26,7 +27,9 @@ class Douban {
     this._notify.push = this.push;
     this.ntf = new Push(this._notify);
     this.refreshWishJob = new CronJob(douban.cron, () => this.refreshWish());
+    this.checkFinishJob = new CronJob(global.checkFinishCron, () => this.checkFinish());
     this.refreshWishJob.start();
+    this.checkFinishJob.start();
     logger.info('豆瓣账号', this.alias, '初始化完毕');
   };
 
@@ -62,6 +65,7 @@ class Douban {
       const wish = {};
       wish.name = item.querySelector('li[class=title] em').innerHTML;
       wish.link = item.querySelector('li[class=title] a').href;
+      wish.poster = item.querySelector('a[class=nbg] img').src.trim().replace(/img\d/, 'img9').replace('s_ratio', 'l_ratio').replace('webp', 'jpg');
       wish.id = wish.link.match(/\/(\d+)\//)[1];
       wishes.push(wish);
     }
@@ -85,7 +89,9 @@ class Douban {
           logger.info('豆瓣账户', this.alias, wish.name, '已添加入想看列表, 稍后将开始自动下载');
           const details = await this._getDocument(wish.link);
           const imdb = details.querySelector('#info').innerHTML.match(/(tt\d+)/);
+          const type = details.querySelector('.article .mr10').innerHTML.match(/我想看这部(.+)/)[1] === '电影' ? 'movie' : 'series';
           wish.imdb = imdb ? imdb[1] : null;
+          wish.type = type;
           doubanSet.wishes.push(wish);
           newWishes.push(wish);
         }
@@ -162,9 +168,43 @@ class Douban {
     return fit;
   };
 
+  async _linkTorrentFiles (torrent, client, wish) {
+    const linkRule = util.listLinkRule().filter(item => item.id === this.linkRule)[0];
+    let size = 1;
+    linkRule.minFileSize.split('*').forEach(i => { size *= +i; });
+    linkRule.minFileSize = size;
+    const files = await global.runningClient[client].getFiles(torrent.hash);
+    if (wish.type === 'series') {
+      for (const file of files) {
+        if (file.size < linkRule.minFileSize) continue;
+        const seriesName = wish.name.split('/')[0].trim();
+        const season = (file.name.match(/(S\d\d)/) || [0, 'S01'])[1];
+        const episode = (file.name.match(/(E\d\d)/) || [0, 'E01'])[1];
+        const fileExt = path.extname(file.name);
+        const linkFilePath = path.join(linkRule.linkFilePath, 'series', seriesName, season);
+        const linkFile = path.join(linkFilePath, season + episode + fileExt);
+        const targetFile = path.join(torrent.savePath.replace(linkRule.targetPath.split('##')[0], linkRule.targetPath.split('##')[1]), file.name);
+        const command = `mkdir -p '${linkFilePath}' && ln -s '${targetFile}' '${linkFile}'`;
+        await global.runningServer[linkRule.server].run(command);
+      }
+    } else if (wish.type === 'movie') {
+      for (const file of files) {
+        if (file.size < linkRule.minFileSize) continue;
+        const movieName = wish.name.split('/')[0].trim();
+        const fileExt = path.extname(file.name);
+        const linkFilePath = path.join(linkRule.linkFilePath, 'movie');
+        const linkFile = path.join(linkFilePath, movieName + fileExt);
+        const targetFile = path.join(torrent.savePath.replace(linkRule.targetPath.split('##')[0], linkRule.targetPath.split('##')[1]), file.name);
+        const command = `mkdir -p '${linkFilePath}' && ln -s '${targetFile}' '${linkFile}'`;
+        await global.runningServer[linkRule.server].run(command);
+      }
+    }
+  }
+
   async selectTorrent (wishes) {
     for (const _wish of wishes) {
-      const wish = _wish;
+      const wish = { ..._wish };
+      wish.doubanId = this.id;
       if (!wish.imdb) wish.imdb = wish.name.split('/')[0].trim();
       logger.info(this.alias, '启动豆瓣选剧, 影片:', wish.name, '豆瓣ID:', wish.id, 'imdb:', wish.imdb, '开始搜索以下站点:', this.sites.join(', '));
       const result = await Promise.all(this.sites.map(i => global.runningSite[i].search(wish.imdb)));
@@ -195,15 +235,15 @@ class Douban {
           if (this._fitRaceRule(rule, torrent)) {
             logger.info(this.alias, '选种规则:', rule.alias, ',种子:', torrent.title, '/', torrent.subtitle, '匹配成功, 准备推送至下载器:', global.runningClient[this.client].alias);
             try {
-              await global.runningSite[torrent.site].pushTorrentById(torrent.id, torrent.downloadLink, this.client, this.savePath, this.category, this.autoTMM);
+              await global.runningSite[torrent.site].pushTorrentById(torrent.id, torrent.downloadLink, this.client, this.savePath, this.category, this.autoTMM, 6, JSON.stringify(wish));
             } catch (e) {
               logger.error(this.alias, '选种规则:', rule.alias, ',种子:', torrent.title, '/', torrent.subtitle, '推送至下载器:', global.runningClient[this.client].alias, '失败, 报错如下:\n', e);
-              await this.ntf.addDoubanTorrentError(this.alias, global.runningClient[this.client], torrent, rule);
+              await this.ntf.addDoubanTorrentError(this.alias, global.runningClient[this.client], torrent, rule, wish);
               _break = true;
               break;
             }
             logger.info(this.alias, '选种规则:', rule.alias, ',种子:', torrent.title, '/', torrent.subtitle, '推送至下载器:', global.runningClient[this.client].alias, '成功');
-            await this.ntf.addDoubanTorrent(this.alias, global.runningClient[this.client], torrent, rule);
+            await this.ntf.addDoubanTorrent(this.alias, global.runningClient[this.client], torrent, rule, wish);
             _break = true;
             break;
           };
@@ -211,6 +251,26 @@ class Douban {
         if (_break) break;
       }
       if (!_break) logger.info(this.alias, '匹配完毕, 没有查找到满足规则的种子');
+    }
+  }
+
+  async checkFinish () {
+    const unfinishTorrents = await util.getRecords('select * from torrents where record_type = 6 and record_note like ?', [`%${this.id}%`]);
+    for (const torrent of unfinishTorrents) {
+      for (const _client of Object.keys(global.runningClient)) {
+        const client = global.runningClient[_client];
+        if (!client || !client.maindata || !client.maindata.torrents) continue;
+        for (const _torrent of client.maindata.torrents) {
+          if (torrent.hash !== _torrent.hash) continue;
+          if (_torrent.completed === _torrent.size) {
+            logger.info('种子', _torrent.name, '已完成, 稍后将进行软链接操作');
+            await this.ntf.torrentFinish(torrent, '');
+            const wish = JSON.parse(torrent.record_note);
+            await this._linkTorrentFiles(_torrent, _client, wish);
+            await util.runRecord('update torrents set record_type = 99 where hash = ? and rss_id = ?', [torrent.hash, torrent.rss_id]);
+          }
+        }
+      }
     }
   }
 }

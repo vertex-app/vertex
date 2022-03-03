@@ -43,9 +43,10 @@
           </div>
           <div style="width: fit-content; margin: 6px 0 12px 20px">
             <el-tag
+              :color="`${$colors[item.doubanId.charCodeAt(0) % 6]}`"
               closable
               v-for="item in wishList"
-              :key="item.id"
+              :key="item.id + item.doubanId"
               @close="deleteItem(item)"
               style="margin-left: 24px; margin-top: 16px">
               {{item.name}}
@@ -71,6 +72,12 @@
                 <el-checkbox v-for="rule of raceRuleList" :key="rule.id" :label="rule.id">{{rule.alias}}</el-checkbox>
               </el-checkbox-group>
               <div><el-tag type="info">选择选种规则, 选种规则可前往选种规则分页添加</el-tag></div>
+            </el-form-item>
+            <el-form-item required label="选择链接规则" prop="linkRule">
+              <el-select v-model="douban.linkRule" placeholder="选择选种规则">
+                <el-option v-for="rule of linkRuleList" :key="rule.id" :label="rule.alias" :value="rule.id">{{rule.alias}}</el-option>
+              </el-select>
+              <div><el-tag type="info">选择链接规则, 链接规则可前往链接规则分页添加</el-tag></div>
             </el-form-item>
             <el-form-item required label="Cookie" prop="cookie">
               <el-input v-model="douban.cookie" type="textarea" :row="3" style="width: 300px"></el-input>
@@ -138,6 +145,7 @@ export default {
       },
       doubanList: [],
       raceRuleList: [],
+      linkRuleList: [],
       siteList: [],
       clientList: [],
       wishList: [],
@@ -181,7 +189,6 @@ export default {
       this.douban.conditions = row.conditions.map(item => {
         return { ...item };
       });
-      this.listWishes();
     },
     async refreshWishes (row) {
       const url = '/api/douban/refreshWishes';
@@ -197,7 +204,7 @@ export default {
       const url = '/api/douban/deleteItem';
       const res = await this.$axiosPost(url, {
         doubanId: row.id,
-        id: this.douban.id
+        id: row.doubanId
       });
       if (!res) {
         return;
@@ -215,8 +222,12 @@ export default {
       this.doubanList = res ? res.data : [];
     },
     async listWishes () {
-      const res = await this.$axiosGet('/api/douban/listWishes?id=' + this.douban.id);
-      this.wishList = res ? res.data.wishes.sort((a, b) => a.name > b.name ? 1 : -1) : [];
+      const res = await this.$axiosGet('/api/douban/listWishes');
+      this.wishList = res ? res.data.sort((a, b) => a.name > b.name ? 1 : -1) : [];
+    },
+    async listLinkRule () {
+      const res = await this.$axiosGet('/api/linkRule/list');
+      this.linkRuleList = res ? res.data : [];
     },
     async listPush () {
       const res = await this.$axiosGet('/api/push/list');
@@ -263,6 +274,8 @@ export default {
     this.listClient();
     this.listPush();
     this.listRaceRule();
+    this.listLinkRule();
+    this.listWishes();
   }
 };
 </script>

@@ -66,11 +66,17 @@
               </el-checkbox-group>
               <div><el-tag type="info">选择站点, 仅可选择已经启用的站点</el-tag></div>
             </el-form-item>
-            <el-form-item required label="选择规则" prop="raceRules">
+            <el-form-item required label="选择选种规则" prop="raceRules">
               <el-checkbox-group v-model="race.raceRules">
                 <el-checkbox v-for="rule of raceRuleList" :key="rule.id" :label="rule.id">{{rule.alias}}</el-checkbox>
               </el-checkbox-group>
               <div><el-tag type="info">选择选种规则, 选种规则可前往选种规则分页添加</el-tag></div>
+            </el-form-item>
+            <el-form-item required label="选择链接规则" prop="linkRule">
+              <el-select v-model="race.linkRule" placeholder="选择选种规则">
+                <el-option v-for="rule of linkRuleList" :key="rule.id" :label="rule.alias" :value="rule.id">{{rule.alias}}</el-option>
+              </el-select>
+              <div><el-tag type="info">选择链接规则, 链接规则可前往链接规则分页添加</el-tag></div>
             </el-form-item>
             <el-form-item required label="推送通知" prop="push">
               <el-checkbox v-model="race.push">推送通知</el-checkbox>
@@ -129,6 +135,7 @@ export default {
         autoTMM: false,
         cron: '20 20 * * *'
       },
+      linkRuleList: [],
       raceList: [],
       raceRuleList: [],
       siteList: [],
@@ -187,6 +194,10 @@ export default {
       const res = await this.$axiosGet('/api/raceRule/list');
       this.raceRuleList = res ? res.data : [];
     },
+    async listLinkRule () {
+      const res = await this.$axiosGet('/api/linkRule/list');
+      this.linkRuleList = res ? res.data : [];
+    },
     async listClient () {
       const res = await this.$axiosGet('/api/client/list');
       this.clientList = res ? res.data : [];
@@ -228,6 +239,7 @@ export default {
     this.listClient();
     this.listPush();
     this.listRaceRule();
+    this.listLinkRule();
   }
 };
 </script>

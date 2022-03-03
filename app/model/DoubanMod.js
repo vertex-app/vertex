@@ -38,9 +38,9 @@ class DoubanMod {
     return doubanList;
   };
 
-  listWishes (options) {
-    const doubanSet = util.listDoubanSet().filter(item => item.id === options.id)[0];
-    return doubanSet || {};
+  listWishes () {
+    const doubanSet = util.listDoubanSet().map(item => item.wishes.map(i => { return { ...i, doubanId: item.id }; })).flat();
+    return doubanSet || [];
   };
 
   deleteItem (options) {

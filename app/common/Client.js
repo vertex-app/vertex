@@ -460,5 +460,9 @@ class Client {
       logger.error('下载器', this.alias, '\n', e);
     }
   }
+
+  async getFiles (hash) {
+    return await this.client.getFiles(this.clientUrl, this.cookie, hash);
+  }
 }
 module.exports = Client;

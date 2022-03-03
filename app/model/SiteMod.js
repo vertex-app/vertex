@@ -84,7 +84,7 @@ class SiteMod {
     if (!options.id || options.id === 'undefined') {
       throw new Error('种子 id 为空!!');
     }
-    const result = await global.runningSite[options.site].pushTorrentById(options.id, options.downloadLink, options.client, options.savePath, options.category);
+    const result = await global.runningSite[options.site].pushTorrentById(options.id, options.downloadLink, options.client, options.savePath, options.category, 4);
     return result;
   }
 }

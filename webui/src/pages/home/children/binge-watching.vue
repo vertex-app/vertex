@@ -3,11 +3,13 @@
     <el-tabs v-model="activeName" type="card" @tab-click="handleTabsClick">
       <el-tab-pane label="聚合搜索" name="search-mix">
       </el-tab-pane>
+      <el-tab-pane label="选种规则" name="race-rule">
+      </el-tab-pane>
+      <el-tab-pane label="链接规则" name="link-rule">
+      </el-tab-pane>
       <el-tab-pane label="自动追剧" name="auto-race">
       </el-tab-pane>
       <el-tab-pane label="豆瓣账号" name="douban">
-      </el-tab-pane>
-      <el-tab-pane label="选种规则" name="race-rule">
       </el-tab-pane>
     </el-tabs>
     <router-view style="height: calc(100vh - 156px); overflow: auto;"></router-view>

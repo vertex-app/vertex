@@ -190,6 +190,11 @@ module.exports = function (app, express, router) {
   router.post('/rssRule/modify', ctrl.RssRule.modify);
   router.post('/rssRule/delete', ctrl.RssRule.delete);
 
+  router.get('/linkRule/list', ctrl.LinkRule.list);
+  router.post('/linkRule/add', ctrl.LinkRule.add);
+  router.post('/linkRule/modify', ctrl.LinkRule.modify);
+  router.post('/linkRule/delete', ctrl.LinkRule.delete);
+
   router.get('/torrent/list', ctrl.Torrent.list);
   router.get('/torrent/listHistory', ctrl.Torrent.listHistory);
   router.get('/torrent/info', ctrl.Torrent.info);

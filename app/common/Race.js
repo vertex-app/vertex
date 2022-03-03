@@ -113,7 +113,7 @@ class Race {
         if (this._fitRaceRule(rule, torrent)) {
           logger.info(this.alias, '选种规则:', rule.alias, ',种子:', torrent.title, '/', torrent.subtitle, '匹配成功, 准备推送至下载器:', global.runningClient[this.client].alias);
           try {
-            await global.runningSite[torrent.site].pushTorrentById(torrent.id, torrent.downloadLink, this.client, this.savePath, this.category, this.autoTMM);
+            await global.runningSite[torrent.site].pushTorrentById(torrent.id, torrent.downloadLink, this.client, this.savePath, this.category, this.autoTMM, 5, `追剧推送: ${this.id} / ${this.alias}`);
           } catch (e) {
             logger.error(this.alias, '选种规则:', rule.alias, ',种子:', torrent.title, '/', torrent.subtitle, '推送至下载器:', global.runningClient[this.client].alias, '失败, 报错如下:\n', e);
             return await this.ntf.addRaceTorrentError(this.alias, global.runningClient[this.client].alias, torrent.title, rule.alias);
