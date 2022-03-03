@@ -72,7 +72,7 @@ export default {
       }, {
         icon: ['fas', 'server'],
         title: ' 下载服务',
-        path: '/point/server'
+        path: '/point/client'
       }, {
         icon: ['fas', 'magnet'],
         title: ' 种子聚合',

@@ -323,7 +323,7 @@ export default {
         ...res.data,
         showKeys: res.data.showKeys || ['clientAlias', 'name', 'size', 'flow', 'link', 'speed'],
         sort: {},
-        clients: res.data.clients || JSON.parse(this.$route.query.clients || '[]')
+        clients: JSON.parse(this.$route.query.clients || '[]') || res.data.clients
       };
     },
 

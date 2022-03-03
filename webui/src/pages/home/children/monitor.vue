@@ -677,7 +677,7 @@ export default {
       }
     },
     gotoTorrentList (row) {
-      this.$router.push('/torrent-mix?clients=' + JSON.stringify([row.id]));
+      this.$router.push('/torrent/torrent-mix?clients=' + JSON.stringify([row.id]));
     }
   },
   async mounted () {

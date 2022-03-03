@@ -27,7 +27,7 @@ class Douban {
     this.ntf = new Push(this._notify);
     this.refreshWishJob = new CronJob(douban.cron, () => this.refreshWish());
     this.refreshWishJob.start();
-    logger.info('豆瓣账号初始化完毕');
+    logger.info('豆瓣账号', this.alias, '初始化完毕');
   };
 
   async _getDocument (url) {

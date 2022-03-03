@@ -39,6 +39,9 @@
       <el-collapse  class="collapse" v-model="doubanCollapse">
         <el-collapse-item title="想看列表" name="0">
           <div style="width: fit-content; margin: 6px 0 12px 20px">
+            <el-tag type="info">可以点击标签后的 x 删除系统记录, 刷新后会尝试再一次选种推送</el-tag>
+          </div>
+          <div style="width: fit-content; margin: 6px 0 12px 20px">
             <el-tag
               closable
               v-for="item in wishList"
