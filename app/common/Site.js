@@ -601,6 +601,8 @@ class Site {
       logger.error(this.site, '站点数据抓取失败 (疑似是 Cookie 失效, 或绕过 CloudFlare 5s 盾失效),', '报错如下:\n', e);
       if (this.maxRetryCount && this.retryCount < this.maxRetryCount) {
         this.retryCount += 1;
+        logger.error(this.site, '站点数据抓取失败, 等待 40s 后重新获取');
+        Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 40000);
         return await this.refreshInfo();
       }
       this.retryCount = 0;

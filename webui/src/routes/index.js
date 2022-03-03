@@ -160,7 +160,7 @@ const bingeWatching = {
       path: 'race-rule',
       component: RaceRule,
       meta: {
-        title: '择剧规则'
+        title: '选种规则'
       }
     }, {
       path: 'douban',

@@ -36,7 +36,7 @@
     </div>
     <div class="radius-div">
       <el-collapse  class="collapse" v-model="doubanCollapse">
-        <el-collapse-item title="新增 | 编辑择剧规则" name="1">
+        <el-collapse-item title="新增 | 编辑选种规则" name="1">
           <div style="width: fit-content; margin: 6px 0 12px 20px">
             <el-tag size="small">规则 ID: {{douban.id || '新增'}}</el-tag>
           </div>
@@ -57,7 +57,7 @@
               <el-checkbox-group v-model="douban.raceRules">
                 <el-checkbox v-for="rule of raceRuleList" :key="rule.id" :label="rule.id">{{rule.alias}}</el-checkbox>
               </el-checkbox-group>
-              <div><el-tag type="info">选择择剧规则, 择剧规则可前往择剧规则分页添加</el-tag></div>
+              <div><el-tag type="info">选择选种规则, 选种规则可前往选种规则分页添加</el-tag></div>
             </el-form-item>
             <el-form-item required label="Cookie" prop="cookie">
               <el-input v-model="douban.cookie" type="textarea" :row="3" style="width: 300px"></el-input>

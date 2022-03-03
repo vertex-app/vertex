@@ -87,7 +87,7 @@ class Push {
       `下载器名: ${client.alias}\n` +
       `种子名称: ${torrent.name}\n` +
       `种子大小: ${util.formatSize(torrent.size)}\n` +
-      `择剧规则: ${rule.alias}`;
+      `选种规则: ${rule.alias}`;
     if (this.markdown) {
       desp = '```\n' + desp + '\n```';
     }
@@ -103,7 +103,7 @@ class Push {
       `下载器名: ${client.alias}\n` +
       `种子名称: ${torrent.name}\n` +
       `种子大小: ${util.formatSize(torrent.size)}\n` +
-      `择剧规则: ${rule.alias}\n` +
+      `选种规则: ${rule.alias}\n` +
       '详细信息前往 Vertex 日志页查看';
     if (this.markdown) {
       desp = '```\n' + desp + '\n```';
@@ -120,7 +120,7 @@ class Push {
       `下载器名: ${client.alias}\n` +
       `种子名称: ${torrent.name}\n` +
       `种子大小: ${util.formatSize(torrent.size)}\n` +
-      `择剧规则: ${rule.alias}`;
+      `选种规则: ${rule.alias}`;
     if (this.markdown) {
       desp = '```\n' + desp + '\n```';
     }
@@ -136,7 +136,7 @@ class Push {
       `下载器名: ${client.alias}\n` +
       `种子名称: ${torrent.name}\n` +
       `种子大小: ${util.formatSize(torrent.size)}\n` +
-      `择剧规则: ${rule.alias}\n` +
+      `选种规则: ${rule.alias}\n` +
       '详细信息前往 Vertex 日志页查看';
     if (this.markdown) {
       desp = '```\n' + desp + '\n```';

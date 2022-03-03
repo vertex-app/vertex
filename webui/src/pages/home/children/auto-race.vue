@@ -70,7 +70,7 @@
               <el-checkbox-group v-model="race.raceRules">
                 <el-checkbox v-for="rule of raceRuleList" :key="rule.id" :label="rule.id">{{rule.alias}}</el-checkbox>
               </el-checkbox-group>
-              <div><el-tag type="info">选择择剧规则, 择剧规则可前往择剧规则分页添加</el-tag></div>
+              <div><el-tag type="info">选择选种规则, 选种规则可前往选种规则分页添加</el-tag></div>
             </el-form-item>
             <el-form-item required label="推送通知" prop="push">
               <el-checkbox v-model="race.push">推送通知</el-checkbox>
