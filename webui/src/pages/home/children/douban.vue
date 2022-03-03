@@ -18,8 +18,9 @@
         </el-table-column>
         <el-table-column
           label="操作"
-          width="256">
+          width="330">
           <template slot-scope="scope">
+            <el-button @click="refreshWishes(scope.row)" type="primary" size="small">刷新想看</el-button>
             <el-button
               type="primary"
               size="small"
@@ -36,12 +37,21 @@
     </div>
     <div class="radius-div">
       <el-collapse  class="collapse" v-model="doubanCollapse">
-        <el-collapse-item title="新增 | 编辑选种规则" name="1">
+        <el-collapse-item title="想看列表" name="0">
           <div style="width: fit-content; margin: 6px 0 12px 20px">
-            <el-tag size="small">规则 ID: {{douban.id || '新增'}}</el-tag>
+            <el-tag
+              closable
+              v-for="item in wishList"
+              :key="item.id"
+              @close="deleteItem(item)"
+              style="margin-left: 24px; margin-top: 16px">
+              {{item.name}}
+            </el-tag>
           </div>
+        </el-collapse-item>
+        <el-collapse-item title="新增 | 编辑豆瓣账号" name="1">
           <div style="width: fit-content; margin: 6px 0 12px 20px">
-            <el-tag size="small" type="warning">以下条件必须全部符合, 才算符合本规则</el-tag>
+            <el-tag size="small">豆瓣账号 ID: {{douban.id || '新增'}}</el-tag>
           </div>
           <el-form ref="douban" class="douban-form" :model="douban" label-width="160px" size="mini">
             <el-form-item required label="别名" prop="alias">
@@ -127,7 +137,8 @@ export default {
       raceRuleList: [],
       siteList: [],
       clientList: [],
-      doubanCollapse: ['1'],
+      wishList: [],
+      doubanCollapse: ['0', '1'],
       importDoubanVisible: false,
       importDoubanText: ''
     };
@@ -162,11 +173,34 @@ export default {
       this.clearDouban();
     },
     async modifyDouban (row) {
-      this.doubanCollapse = ['1'];
+      this.doubanCollapse = ['0', '1'];
       this.douban = { ...row };
       this.douban.conditions = row.conditions.map(item => {
         return { ...item };
       });
+      this.listWishes();
+    },
+    async refreshWishes (row) {
+      const url = '/api/douban/refreshWishes';
+      const res = await this.$axiosPost(url, {
+        id: row.id
+      });
+      if (!res) {
+        return;
+      }
+      await this.$messageBox(res);
+    },
+    async deleteItem (row) {
+      const url = '/api/douban/deleteItem';
+      const res = await this.$axiosPost(url, {
+        doubanId: row.id,
+        id: this.douban.id
+      });
+      if (!res) {
+        return;
+      }
+      await this.$messageBox(res);
+      this.listWishes();
     },
     async clearDouban () {
       this.douban = { ...this.defaultDouban };
@@ -176,6 +210,10 @@ export default {
     async listDouban () {
       const res = await this.$axiosGet('/api/douban/list');
       this.doubanList = res ? res.data : [];
+    },
+    async listWishes () {
+      const res = await this.$axiosGet('/api/douban/listWishes?id=' + this.douban.id);
+      this.wishList = res ? res.data.wishes.sort((a, b) => a.name > b.name ? 1 : -1) : [];
     },
     async listPush () {
       const res = await this.$axiosGet('/api/push/list');

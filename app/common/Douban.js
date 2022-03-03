@@ -27,7 +27,6 @@ class Douban {
     this.ntf = new Push(this._notify);
     this.refreshWishJob = new CronJob(douban.cron, () => this.refreshWish());
     this.refreshWishJob.start();
-    this.refreshWish();
     logger.info('豆瓣账号初始化完毕');
   };
 
@@ -66,6 +65,7 @@ class Douban {
       wish.id = wish.link.match(/\/(\d+)\//)[1];
       wishes.push(wish);
     }
+    logger.info('豆瓣账号', this.alias, '想看列表:\n', wishes);
     const _doubanSet = util.listDoubanSet().filter(item => item.id === this.id)[0];
     if (!_doubanSet) {
       const doubanSet = {
@@ -176,6 +176,7 @@ class Douban {
         .filter(i => i)
         .sort((a, b) => +b.priority - +a.priority);
       logger.info(this.alias, '选种规则总计:', raceRules.length, ' 开始按照优先级查找');
+      let _break = false;
       for (const rule of raceRules) {
         logger.info(this.alias, '选种规则:', rule.alias, '开始匹配');
         const sortType = rule.sortType || 'desc';
@@ -197,16 +198,19 @@ class Douban {
               await global.runningSite[torrent.site].pushTorrentById(torrent.id, torrent.downloadLink, this.client, this.savePath, this.category, this.autoTMM);
             } catch (e) {
               logger.error(this.alias, '选种规则:', rule.alias, ',种子:', torrent.title, '/', torrent.subtitle, '推送至下载器:', global.runningClient[this.client].alias, '失败, 报错如下:\n', e);
-              await this.ntf.addDoubanTorrentError(this.alias, global.runningClient[this.client].alias, torrent, rule.alias);
+              await this.ntf.addDoubanTorrentError(this.alias, global.runningClient[this.client], torrent, rule);
+              _break = true;
               break;
             }
             logger.info(this.alias, '选种规则:', rule.alias, ',种子:', torrent.title, '/', torrent.subtitle, '推送至下载器:', global.runningClient[this.client].alias, '成功');
-            await this.ntf.addDoubanTorrent(this.alias, global.runningClient[this.client].alias, torrent, rule.alias);
+            await this.ntf.addDoubanTorrent(this.alias, global.runningClient[this.client], torrent, rule);
+            _break = true;
             break;
           };
         }
+        if (_break) break;
       }
-      logger.info(this.alias, '匹配完毕, 没有查找到满足规则的种子');
+      if (!_break) logger.info(this.alias, '匹配完毕, 没有查找到满足规则的种子');
     }
   }
 }

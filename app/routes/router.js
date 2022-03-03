@@ -171,6 +171,9 @@ module.exports = function (app, express, router) {
   router.post('/douban/add', ctrl.Douban.add);
   router.post('/douban/modify', ctrl.Douban.modify);
   router.post('/douban/delete', ctrl.Douban.delete);
+  router.get('/douban/listWishes', ctrl.Douban.listWishes);
+  router.post('/douban/deleteItem', ctrl.Douban.deleteItem);
+  router.post('/douban/refreshWishes', ctrl.Douban.refreshWishes);
 
   router.get('/deleteRule/list', ctrl.DeleteRule.list);
   router.post('/deleteRule/add', ctrl.DeleteRule.add);

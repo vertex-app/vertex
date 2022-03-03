@@ -114,9 +114,9 @@ class Push {
     await this._push(this.pushType.indexOf('raceError') !== -1, text, desp);
   };
 
-  async addDoubanTorrent (alias, client, torrent, rule) {
-    const text = `添加豆瓣种子: ${torrent.title.substring(0, 10) + '...'} | ${alias} | ${util.formatSize(torrent.size)} | ${client.alias}`;
-    let desp = `追剧任务: ${alias}\n` +
+  async addDoubanTorrent (doubanAlias, client, torrent, rule) {
+    const text = `添加豆瓣种子: ${torrent.title.substring(0, 10) + '...'} | ${doubanAlias} | ${util.formatSize(torrent.size)} | ${client.alias}`;
+    let desp = `追剧任务: ${doubanAlias}\n` +
       `下载器名: ${client.alias}\n` +
       `种子名称: ${torrent.name}\n` +
       `种子大小: ${util.formatSize(torrent.size)}\n` +
@@ -130,11 +130,11 @@ class Push {
     await this._push(this.pushType.indexOf('douban') !== -1, text, desp);
   };
 
-  async addDoubanTorrentError (raceAlias, client, torrent, rule) {
-    const text = `添加豆瓣种子失败: ${torrent.title.substring(0, 10) + '...'} | ${raceAlias} | ${util.formatSize(torrent.size)} | ${client.alias}`;
-    let desp = `追剧任务: ${raceAlias}\n` +
+  async addDoubanTorrentError (doubanAlias, client, torrent, rule) {
+    const text = `添加豆瓣种子失败: ${torrent.title.substring(0, 10) + '...'} | ${doubanAlias} | ${util.formatSize(torrent.size)} | ${client.alias}`;
+    let desp = `追剧任务: ${doubanAlias}\n` +
       `下载器名: ${client.alias}\n` +
-      `种子名称: ${torrent.name}\n` +
+      `种子名称: ${torrent.title}\n` +
       `种子大小: ${util.formatSize(torrent.size)}\n` +
       `选种规则: ${rule.alias}\n` +
       '详细信息前往 Vertex 日志页查看';
