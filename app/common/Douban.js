@@ -168,7 +168,7 @@ class Douban {
       if (!wish.imdb) wish.imdb = wish.name.split('/')[0].trim();
       logger.info(this.alias, '启动豆瓣选剧, 影片:', wish.name, '豆瓣ID:', wish.id, 'imdb:', wish.imdb, '开始搜索以下站点:', this.sites.join(', '));
       const result = await Promise.all(this.sites.map(i => global.runningSite[i].search(wish.imdb)));
-      const torrents = result.map(i => i.torrentList).flat();
+      let torrents = result.map(i => i.torrentList).flat();
       logger.info(this.alias, '种子搜索已完成, 共计查找到', torrents.length, '个种子');
       const raceRuleList = util.listRaceRule();
       const raceRules = this.raceRules
@@ -178,6 +178,18 @@ class Douban {
       logger.info(this.alias, '择剧规则总计:', raceRules.length, ' 开始按照优先级查找');
       for (const rule of raceRules) {
         logger.info(this.alias, '择剧规则:', rule.alias, '开始匹配');
+        const sortType = rule.sortType || 'desc';
+        const sortKey = rule.sortKey || 'time';
+        const numberSet = {
+          desc: [-1, 1],
+          asc: [1, -1]
+        };
+        torrents = torrents.sort((a, b) => {
+          if (typeof a[sortKey] === 'string') {
+            return (a[sortKey] < b[sortKey] ? numberSet[sortType][1] : numberSet[sortType][0]);
+          }
+          return sortType === 'asc' ? a[sortKey] - b[sortKey] : b[sortKey] - a[sortKey];
+        });
         for (const torrent of torrents) {
           if (this._fitRaceRule(rule, torrent)) {
             logger.info(this.alias, '择剧规则:', rule.alias, ',种子:', torrent.title, '/', torrent.subtitle, '匹配成功, 准备推送至下载器:', global.runningClient[this.client].alias);

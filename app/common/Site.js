@@ -45,7 +45,7 @@ class Site {
       HDHome: this._searchHDHome,
       PTerClub: this._searchPterclub,
       BTSchool: this._searchBTSchool,
-      TJUPT: this._searchTJUPT,
+      TJUPT: this._searchTJUPT
     };
     this.torrentDownloadLinkMap = {
       HaresClub: 'https://club.hares.top/download.php?id={ID}',

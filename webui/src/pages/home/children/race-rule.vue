@@ -51,6 +51,15 @@
               <el-input v-model="race.priority" type="input"></el-input>
               <div><el-tag size="small" type="info">按照优先级从大到小的顺序寻找, 推送首个符合规则的种子</el-tag></div>
             </el-form-item>
+            <el-form-item label="排序规则" prop="sortBy">
+              <el-select v-model="race.sortBy" style="width: 160px" placeholder="排序指标">
+                <el-option v-for="item of conditionKeys" :key="item.key" :label="item.name" :value="item.key"></el-option>
+              </el-select>
+              <el-select v-model="race.sortType" style="width: 160px" placeholder="升序降序">
+                <el-option v-for="item of [{name: '升序', key: 'asc'}, {name: '降序', key: 'desc'}]" :key="item.key" :label="item.name" :value="item.key"></el-option>
+              </el-select>
+              <div><el-tag size="small" type="info">在使用本规则匹配之前, 按照所选排序规则对种子进行排序, 排序指标默认为种子发布时间, 降序</el-tag></div>
+            </el-form-item>
             <el-form-item required label="类型" prop="type">
               <el-select v-model="race.type" style="width: 144px" placeholder="类型">
                   <el-option label="普通" value="normal"></el-option>
