@@ -72,7 +72,7 @@ class Douban {
         id: this.id,
         wishes: wishes.map(item => {
           logger.info('豆瓣账户', this.alias, '首次添加想看列表', item.name, '已设为已下载');
-          return { ...item, downloaded: true };
+          return { ...item };
         })
       };
       fs.writeFileSync(path.join(__dirname, '../data/douban/set', this.id + '.json'), JSON.stringify(doubanSet, null, 2));
@@ -175,7 +175,7 @@ class Douban {
         .map(i => raceRuleList.filter(ii => ii.id === i)[0])
         .filter(i => i)
         .sort((a, b) => +b.priority - +a.priority);
-      logger.info(this.alias, '择剧规则总计', raceRules.length, ', 开始按照优先级查找');
+      logger.info(this.alias, '择剧规则总计:', raceRules.length, ' 开始按照优先级查找');
       for (const rule of raceRules) {
         logger.info(this.alias, '择剧规则:', rule.alias, '开始匹配');
         for (const torrent of torrents) {
@@ -185,11 +185,12 @@ class Douban {
               await global.runningSite[torrent.site].pushTorrentById(torrent.id, torrent.downloadLink, this.client, this.savePath, this.category, this.autoTMM);
             } catch (e) {
               logger.error(this.alias, '择剧规则:', rule.alias, ',种子:', torrent.title, '/', torrent.subtitle, '推送至下载器:', global.runningClient[this.client].alias, '失败, 报错如下:\n', e);
-              return await this.ntf.addRaceTorrentError(this.alias, global.runningClient[this.client].alias, torrent, rule.alias);
+              await this.ntf.addDoubanTorrentError(this.alias, global.runningClient[this.client].alias, torrent, rule.alias);
+              break;
             }
             logger.info(this.alias, '择剧规则:', rule.alias, ',种子:', torrent.title, '/', torrent.subtitle, '推送至下载器:', global.runningClient[this.client].alias, '成功');
-            await this.ntf.addRaceTorrent(this.alias, global.runningClient[this.client].alias, torrent, rule.alias);
-            return;
+            await this.ntf.addDoubanTorrent(this.alias, global.runningClient[this.client].alias, torrent, rule.alias);
+            break;
           };
         }
       }
