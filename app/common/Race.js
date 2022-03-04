@@ -99,6 +99,9 @@ class Race {
   };
 
   async _linkTorrentFiles (torrent, client, race) {
+    if (!this.linkRule) {
+      logger.info(this.alias, '本实例不含链接规则, 跳过软链接操作');
+    }
     const linkRule = util.listLinkRule().filter(item => item.id === this.linkRule)[0];
     let size = 1;
     linkRule.minFileSize.split('*').forEach(i => { size *= +i; });

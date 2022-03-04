@@ -83,7 +83,7 @@
               </el-checkbox-group>
               <div><el-tag type="info">选择选种规则, 选种规则可前往选种规则分页添加</el-tag></div>
             </el-form-item>
-            <el-form-item required label="选择链接规则" prop="linkRule">
+            <el-form-item label="选择链接规则" prop="linkRule">
               <el-select v-model="race.linkRule" placeholder="选择选种规则">
                 <el-option v-for="rule of linkRuleList" :key="rule.id" :label="rule.alias" :value="rule.id">{{rule.alias}}</el-option>
               </el-select>
