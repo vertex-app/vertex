@@ -35,9 +35,10 @@ class LinkRuleMod {
 
   list () {
     const linkRuleList = util.listLinkRule();
-    const linkList = util.listRace();
+    const raceList = util.listRace();
+    const doubanList = util.listDouban();
     for (const linkRule of linkRuleList) {
-      linkRule.used = linkList.some(item => item.linkRules.indexOf(linkRule.id) !== -1);
+      linkRule.used = (!!raceList.some(item => item.linkRule === linkRule.id) || !!doubanList.some(item => item.linkRule === linkRule.id));
     }
     return linkRuleList;
   };

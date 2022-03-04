@@ -17,6 +17,16 @@
           label="别名">
         </el-table-column>
         <el-table-column
+          sortable
+          prop="category"
+          label="分类">
+        </el-table-column>
+        <el-table-column
+          sortable
+          prop="savePath"
+          label="保存路径">
+        </el-table-column>
+        <el-table-column
           label="操作"
           width="330">
           <template slot-scope="scope">
@@ -49,7 +59,7 @@
               :key="item.id + item.doubanId"
               @close="deleteItem(item)"
               style="margin-left: 24px; margin-top: 16px">
-              {{item.name}}
+              {{`${item.name}: ${item.downloaded ? '已下载' : '未下载'}`}}
             </el-tag>
           </div>
         </el-collapse-item>
@@ -62,6 +72,7 @@
               <el-input v-model="douban.alias" type="input"></el-input>
             </el-form-item>
             <el-form-item required label="选择站点" prop="sites">
+              <el-checkbox :indeterminate="isIndeterminate" v-model="checkAll" @change="handleCheckAllChange">全选</el-checkbox>
               <el-checkbox-group v-model="douban.sites">
                 <el-checkbox v-for="site of siteList" :key="site.name" :disabled="!site.enable" :label="site.name">{{site.name}}</el-checkbox>
               </el-checkbox-group>
@@ -149,6 +160,8 @@ export default {
       siteList: [],
       clientList: [],
       wishList: [],
+      isIndeterminate: false,
+      checkAll: false,
       doubanCollapse: ['0', '1'],
       importDoubanVisible: false,
       importDoubanText: ''
@@ -228,6 +241,10 @@ export default {
     async listLinkRule () {
       const res = await this.$axiosGet('/api/linkRule/list');
       this.linkRuleList = res ? res.data : [];
+    },
+    handleCheckAllChange (value) {
+      this.douban.sites = value ? this.siteList.map(i => i.name) : [];
+      this.isIndeterminate = false;
     },
     async listPush () {
       const res = await this.$axiosGet('/api/push/list');

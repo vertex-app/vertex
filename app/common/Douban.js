@@ -69,14 +69,13 @@ class Douban {
       wish.id = wish.link.match(/\/(\d+)\//)[1];
       wishes.push(wish);
     }
-    logger.info('豆瓣账号', this.alias, '想看列表:\n', wishes);
     const _doubanSet = util.listDoubanSet().filter(item => item.id === this.id)[0];
     if (!_doubanSet) {
       const doubanSet = {
         id: this.id,
         wishes: wishes.map(item => {
           logger.info('豆瓣账户', this.alias, '首次添加想看列表', item.name, '已设为已下载');
-          return { ...item };
+          return { ...item, downloaded: true };
         })
       };
       fs.writeFileSync(path.join(__dirname, '../data/douban/set', this.id + '.json'), JSON.stringify(doubanSet, null, 2));
@@ -84,6 +83,16 @@ class Douban {
     } else {
       const newWishes = [];
       const doubanSet = { ..._doubanSet };
+      for (const wish of doubanSet.wishes) {
+        if (wish.downloaded) continue;
+        logger.info('豆瓣账户:', this.alias, '想看:', wish.name, '上次未选种成功, 即将重新尝试选种');
+        try {
+          wish.downloaded = await this.selectTorrent(wish);
+        } catch (e) {
+          logger.error('豆瓣账户:', this.alias, '选种', wish.name, '失败:\n', e);
+          wish.downloaded = false;
+        }
+      }
       for (const wish of wishes) {
         if (!doubanSet.wishes.filter(item => item.id === wish.id)[0]) {
           logger.info('豆瓣账户', this.alias, wish.name, '已添加入想看列表, 稍后将开始自动下载');
@@ -92,6 +101,12 @@ class Douban {
           const type = details.querySelector('.article .mr10').innerHTML.match(/我想看这部(.+)/)[1] === '电影' ? 'movie' : 'series';
           wish.imdb = imdb ? imdb[1] : null;
           wish.type = type;
+          try {
+            wish.downloaded = await this.selectTorrent(wish);
+          } catch (e) {
+            logger.error('豆瓣账户:', this.alias, '选种', wish.name, '失败:\n', e);
+            wish.downloaded = false;
+          }
           doubanSet.wishes.push(wish);
           newWishes.push(wish);
         }
@@ -99,7 +114,6 @@ class Douban {
       fs.writeFileSync(path.join(__dirname, '../data/douban/set', this.id + '.json'), JSON.stringify(doubanSet, null, 2));
       if (newWishes.length !== 0) {
         await this.ntf.addDoubanWish(this.alias, newWishes);
-        await this.selectTorrent(newWishes);
       }
     }
   }
@@ -201,57 +215,51 @@ class Douban {
     }
   }
 
-  async selectTorrent (wishes) {
-    for (const _wish of wishes) {
-      const wish = { ..._wish };
-      wish.doubanId = this.id;
-      if (!wish.imdb) wish.imdb = wish.name.split('/')[0].trim();
-      logger.info(this.alias, '启动豆瓣选剧, 影片:', wish.name, '豆瓣ID:', wish.id, 'imdb:', wish.imdb, '开始搜索以下站点:', this.sites.join(', '));
-      const result = await Promise.all(this.sites.map(i => global.runningSite[i].search(wish.imdb)));
-      let torrents = result.map(i => i.torrentList).flat();
-      logger.info(this.alias, '种子搜索已完成, 共计查找到', torrents.length, '个种子');
-      const raceRuleList = util.listRaceRule();
-      const raceRules = this.raceRules
-        .map(i => raceRuleList.filter(ii => ii.id === i)[0])
-        .filter(i => i)
-        .sort((a, b) => +b.priority - +a.priority);
-      logger.info(this.alias, '选种规则总计:', raceRules.length, ' 开始按照优先级查找');
-      let _break = false;
-      for (const rule of raceRules) {
-        logger.info(this.alias, '选种规则:', rule.alias, '开始匹配');
-        const sortType = rule.sortType || 'desc';
-        const sortKey = rule.sortKey || 'time';
-        const numberSet = {
-          desc: [-1, 1],
-          asc: [1, -1]
-        };
-        torrents = torrents.sort((a, b) => {
-          if (typeof a[sortKey] === 'string') {
-            return (a[sortKey] < b[sortKey] ? numberSet[sortType][1] : numberSet[sortType][0]);
-          }
-          return sortType === 'asc' ? a[sortKey] - b[sortKey] : b[sortKey] - a[sortKey];
-        });
-        for (const torrent of torrents) {
-          if (this._fitRaceRule(rule, torrent)) {
-            logger.info(this.alias, '选种规则:', rule.alias, ',种子:', torrent.title, '/', torrent.subtitle, '匹配成功, 准备推送至下载器:', global.runningClient[this.client].alias);
-            try {
-              await global.runningSite[torrent.site].pushTorrentById(torrent.id, torrent.downloadLink, this.client, this.savePath, this.category, this.autoTMM, 6, JSON.stringify(wish));
-            } catch (e) {
-              logger.error(this.alias, '选种规则:', rule.alias, ',种子:', torrent.title, '/', torrent.subtitle, '推送至下载器:', global.runningClient[this.client].alias, '失败, 报错如下:\n', e);
-              await this.ntf.addDoubanTorrentError(this.alias, global.runningClient[this.client], torrent, rule, wish);
-              _break = true;
-              break;
-            }
-            logger.info(this.alias, '选种规则:', rule.alias, ',种子:', torrent.title, '/', torrent.subtitle, '推送至下载器:', global.runningClient[this.client].alias, '成功');
-            await this.ntf.addDoubanTorrent(this.alias, global.runningClient[this.client], torrent, rule, wish);
-            _break = true;
-            break;
-          };
+  async selectTorrent (_wish) {
+    const wish = { ..._wish };
+    wish.doubanId = this.id;
+    if (!wish.imdb) wish.imdb = wish.name.split('/')[0].trim();
+    logger.info(this.alias, '启动豆瓣选剧, 影片:', wish.name, '豆瓣ID:', wish.id, 'imdb:', wish.imdb, '开始搜索以下站点:', this.sites.join(', '));
+    const result = await Promise.all(this.sites.map(i => global.runningSite[i].search(wish.imdb)));
+    let torrents = result.map(i => i.torrentList).flat();
+    logger.info(this.alias, '种子搜索已完成, 共计查找到', torrents.length, '个种子');
+    const raceRuleList = util.listRaceRule();
+    const raceRules = this.raceRules
+      .map(i => raceRuleList.filter(ii => ii.id === i)[0])
+      .filter(i => i)
+      .sort((a, b) => +b.priority - +a.priority);
+    logger.info(this.alias, '选种规则总计:', raceRules.length, ' 开始按照优先级查找');
+    for (const rule of raceRules) {
+      logger.info(this.alias, '选种规则:', rule.alias, '开始匹配');
+      const sortType = rule.sortType || 'desc';
+      const sortKey = rule.sortKey || 'time';
+      const numberSet = {
+        desc: [-1, 1],
+        asc: [1, -1]
+      };
+      torrents = torrents.sort((a, b) => {
+        if (typeof a[sortKey] === 'string') {
+          return (a[sortKey] < b[sortKey] ? numberSet[sortType][1] : numberSet[sortType][0]);
         }
-        if (_break) break;
+        return sortType === 'asc' ? a[sortKey] - b[sortKey] : b[sortKey] - a[sortKey];
+      });
+      for (const torrent of torrents) {
+        if (this._fitRaceRule(rule, torrent)) {
+          logger.info(this.alias, '选种规则:', rule.alias, ',种子:', torrent.title, '/', torrent.subtitle, '匹配成功, 准备推送至下载器:', global.runningClient[this.client].alias);
+          try {
+            await global.runningSite[torrent.site].pushTorrentById(torrent.id, torrent.downloadLink, this.client, this.savePath, this.category, this.autoTMM, 6, JSON.stringify(wish));
+          } catch (e) {
+            logger.error(this.alias, '选种规则:', rule.alias, ',种子:', torrent.title, '/', torrent.subtitle, '推送至下载器:', global.runningClient[this.client].alias, '失败, 报错如下:\n', e);
+            await this.ntf.addDoubanTorrentError(this.alias, global.runningClient[this.client], torrent, rule, wish);
+            return true;
+          }
+          logger.info(this.alias, '选种规则:', rule.alias, ',种子:', torrent.title, '/', torrent.subtitle, '推送至下载器:', global.runningClient[this.client].alias, '成功');
+          await this.ntf.addDoubanTorrent(this.alias, global.runningClient[this.client], torrent, rule, wish);
+          return false;
+        };
       }
-      if (!_break) logger.info(this.alias, '匹配完毕, 没有查找到满足规则的种子');
     }
+    return false;
   }
 
   async checkFinish () {

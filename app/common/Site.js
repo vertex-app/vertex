@@ -107,7 +107,7 @@ class Site {
           cookie: this.cookie
         }
       })).body;
-      await redis.setWithExpire(`vertex:document:body:${url}`, html, 300);
+      await redis.setWithExpire(`vertex:document:body:${url}`, html, 30);
       const dom = new JSDOM(html);
       return dom.window.document;
     } else {

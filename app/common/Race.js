@@ -3,6 +3,7 @@ const moment = require('moment');
 const logger = require('../libs/logger');
 const CronJob = require('cron').CronJob;
 const Push = require('./Push');
+const path = require('path');
 
 class Race {
   constructor (race) {
@@ -12,6 +13,7 @@ class Race {
     this.enable = race.enable;
     this.keyword = race.keyword;
     this.raceRules = race.raceRules;
+    this.linkRule = race.linkRule;
     this.client = race.client;
     this.savePath = race.savePath;
     this.category = race.category;
@@ -96,6 +98,26 @@ class Race {
     return fit;
   };
 
+  async _linkTorrentFiles (torrent, client, race) {
+    const linkRule = util.listLinkRule().filter(item => item.id === this.linkRule)[0];
+    let size = 1;
+    linkRule.minFileSize.split('*').forEach(i => { size *= +i; });
+    linkRule.minFileSize = size;
+    const files = await global.runningClient[client].getFiles(torrent.hash);
+    for (const file of files) {
+      if (file.size < linkRule.minFileSize) continue;
+      const seriesName = race.raceAlias.split('-')[0].trim();
+      const season = (file.name.match(/(S\d\d)/) || [0, 'S01'])[1];
+      const episode = (file.name.match(/(E\d\d)/) || [0, 'E01'])[1];
+      const fileExt = path.extname(file.name);
+      const linkFilePath = path.join(linkRule.linkFilePath, 'series', seriesName, season);
+      const linkFile = path.join(linkFilePath, season + episode + fileExt);
+      const targetFile = path.join(torrent.savePath.replace(linkRule.targetPath.split('##')[0], linkRule.targetPath.split('##')[1]), file.name);
+      const command = `mkdir -p '${linkFilePath}' && ln -s '${targetFile}' '${linkFile}'`;
+      await global.runningServer[linkRule.server].run(command);
+    }
+  }
+
   async race () {
     logger.info(this.alias, '启动追剧任务, 开始搜索以下站点:', this.sites.join(', '));
     const result = await Promise.all(this.sites.map(i => global.runningSite[i].search(this.keyword)));
@@ -113,7 +135,11 @@ class Race {
         if (this._fitRaceRule(rule, torrent)) {
           logger.info(this.alias, '选种规则:', rule.alias, ',种子:', torrent.title, '/', torrent.subtitle, '匹配成功, 准备推送至下载器:', global.runningClient[this.client].alias);
           try {
-            await global.runningSite[torrent.site].pushTorrentById(torrent.id, torrent.downloadLink, this.client, this.savePath, this.category, this.autoTMM, 5, `追剧推送: ${this.id} / ${this.alias}`);
+            const noteJson = {
+              race: this.id,
+              raceAlias: this.alias
+            };
+            await global.runningSite[torrent.site].pushTorrentById(torrent.id, torrent.downloadLink, this.client, this.savePath, this.category, this.autoTMM, 5, JSON.stringify(noteJson));
           } catch (e) {
             logger.error(this.alias, '选种规则:', rule.alias, ',种子:', torrent.title, '/', torrent.subtitle, '推送至下载器:', global.runningClient[this.client].alias, '失败, 报错如下:\n', e);
             return await this.ntf.addRaceTorrentError(this.alias, global.runningClient[this.client].alias, torrent.title, rule.alias);

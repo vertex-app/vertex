@@ -17,6 +17,16 @@
           label="别名">
         </el-table-column>
         <el-table-column
+          sortable
+          prop="category"
+          label="分类">
+        </el-table-column>
+        <el-table-column
+          sortable
+          prop="savePath"
+          label="保存路径">
+        </el-table-column>
+        <el-table-column
           label="操作"
           width="256">
           <template slot-scope="scope">
@@ -61,6 +71,7 @@
               <div><el-tag type="info">选择下载器, 仅可选择已经启用的下载器</el-tag></div>
             </el-form-item>
             <el-form-item required label="选择站点" prop="sites">
+              <el-checkbox :indeterminate="isIndeterminate" v-model="checkAll" @change="handleCheckAllChange">全选</el-checkbox>
               <el-checkbox-group v-model="race.sites">
                 <el-checkbox v-for="site of siteList" :key="site.name" :disabled="!site.enable" :label="site.name">{{site.name}}</el-checkbox>
               </el-checkbox-group>
@@ -138,6 +149,8 @@ export default {
       linkRuleList: [],
       raceList: [],
       raceRuleList: [],
+      isIndeterminate: false,
+      checkAll: false,
       siteList: [],
       clientList: [],
       raceCollapse: ['1'],
@@ -173,6 +186,10 @@ export default {
       await this.$messageBox(res);
       this.listRace();
       this.clearRace();
+    },
+    handleCheckAllChange (value) {
+      this.race.sites = value ? this.siteList.map(i => i.name) : [];
+      this.isIndeterminate = false;
     },
     async modifyRace (row) {
       this.raceCollapse = ['1'];

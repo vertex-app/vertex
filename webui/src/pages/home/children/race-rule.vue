@@ -17,6 +17,20 @@
           label="别名">
         </el-table-column>
         <el-table-column
+          sortable
+          prop="priority"
+          label="优先级">
+        </el-table-column>
+        <el-table-column
+          sortable
+          prop="sortBy"
+          label="排序规则">
+          <template slot-scope="scope">
+            <el-tag v-if="scope.row.sortBy">{{scope.row.sortBy}}</el-tag>
+            <el-tag v-if="scope.row.sortType">{{scope.row.sortType}}</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column
           label="操作"
           width="256">
           <template slot-scope="scope">

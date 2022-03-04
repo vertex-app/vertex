@@ -59,7 +59,7 @@ Vue.prototype.$colors = [
   '#48D1CC',
   '#FA8072',
   '#F0FFFF',
-  '#DDA0DD',
+  '#FAFAD2',
   '#FFC0CB'
 ];
 
