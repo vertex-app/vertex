@@ -22,6 +22,12 @@ else
   echo '/vertex/data exists, continue'
 fi
 
+if [ ! -d '/vertex/data/rule/link' ]; then
+  mkdir /vertex/data/rule/link
+else
+  echo '/vertex/data/rule/link exists, continue'
+fi
+
 if [ ! -d '/vertex/data/site' ]; then
   mkdir /vertex/data/site
 else

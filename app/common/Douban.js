@@ -103,6 +103,7 @@ class Douban {
           wish.type = type;
           try {
             wish.downloaded = await this.selectTorrent(wish);
+            logger.info(this.alias, '未匹配种子', wish.name);
             if (!wish.downloaded) this.ntf.selectTorrentError(this.alias, `未匹配种子: ${wish.name}`);
           } catch (e) {
             logger.error('豆瓣账户:', this.alias, '选种', wish.name, '失败:\n', e);
@@ -194,16 +195,16 @@ class Douban {
       for (const file of files) {
         if (file.size < linkRule.minFileSize) continue;
         const seriesName = wish.name.split('/')[0].trim();
-        const season = +(file.name.match(/[. ]S(\d+)/) || [0, '01'])[1];
+        const season = (file.name.match(/[. ](S\d+)/) || [0, 'S01'])[1];
         let episode = +(file.name.match(/E(\d+)[. ]/) || [0, '01'])[1];
         const part = (file.name.match(/\.[Pp][Aa][Rr][Tt]\.*[A1][B2]/));
         if (part?.[1]) {
           episode = part?.[1] === 'A' || part?.[1] === '1' ? episode * 2 - 1 : episode * 2;
         }
-        episode = '0'.repeat(3 - ('' + episode).length) + episode;
+        episode = 'E' + '0'.repeat(3 - ('' + episode).length) + episode;
         const fileExt = path.extname(file.name);
-        const linkFilePath = path.join(linkRule.linkFilePath, 'series', seriesName, 'S' + season);
-        const linkFile = path.join(linkFilePath, season + 'E' + episode + fileExt);
+        const linkFilePath = path.join(linkRule.linkFilePath, 'series', seriesName, season);
+        const linkFile = path.join(linkFilePath, season + episode + fileExt);
         const targetFile = path.join(torrent.savePath.replace(linkRule.targetPath.split('##')[0], linkRule.targetPath.split('##')[1]), file.name);
         const command = `mkdir -p '${linkFilePath}' && ln -s '${targetFile}' '${linkFile}'`;
         await global.runningServer[linkRule.server].run(command);

@@ -28,10 +28,15 @@ class SettingMod {
       username: options.username,
       password: options.password
     };
+    global.webhookPushTo = options.webhookPushTo;
     global.userAgent = options.userAgent;
     global.apiKey = options.apiKey;
     global.dataPath = options.dataPath || '/';
     global.telegramProxy = options.telegramProxy || 'https://api.telegram.org';
+    const webhookPush = util.listPush().filter(item => item.id === global.webhookPushTo)[0];
+    if (webhookPush) {
+      global.webhookPush = new Push({ ...webhookPush, push: true });
+    }
     return '修改全局设置成功, 刷新页面后更新。';
   };
 

@@ -18,7 +18,7 @@ class Push {
     this.maxErrorCount = +this.maxErrorCount || 100;
     this.errorCount = 0;
     this.pushType = this.pushType || [];
-    this.markdown = ['telegram', 'iyuu'].indexOf(this.type) !== -1;
+    this.markdown = ['telegram'].indexOf(this.type) !== -1;
   };
 
   _clearErrorCount () {
