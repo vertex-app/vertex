@@ -1,5 +1,10 @@
 #! /bin/bash
 
+if [ -d '/tmp/vertex' ]; then
+  rm -rf /vertex/*
+  mv /tmp/vertex/* /vertex
+fi
+
 if [ ! -d '/vertex/data' ]; then
   mkdir /vertex/data/rss -p
   mkdir /vertex/data/client
@@ -105,4 +110,4 @@ cd /app/vertex
 export PORT=3000
 Xvfb -ac :99 -screen 0 1280x1024x16 &
 export DISPLAY=:99
-node app/app.js
+node app/app.js > /dev/null

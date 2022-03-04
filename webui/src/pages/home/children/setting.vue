@@ -18,6 +18,10 @@
           <el-input v-model="setting.dataPath" style="width: 500px;"></el-input>
           <div><el-tag type="warning">数据目录路径, Docker 安装无需修改</el-tag></div>
         </el-form-item>
+        <el-form-item label="ApiKey" prop="apiKey">
+          <el-input v-model="setting.apiKey" disabled style="width: 500px;"></el-input>
+          <div><el-tag type="warning">ApiKey 用于请求接口, 第一次保存全局设置后生成</el-tag></div>
+        </el-form-item>
         <el-form-item label="User-Agent" prop="userAgent">
           <el-input v-model="setting.userAgent" style="width: 500px;"></el-input>
           <div><el-tag type="info">所有网络请求所用的 User-Agent, 默认为 'Vertex'</el-tag></div>

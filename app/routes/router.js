@@ -33,7 +33,10 @@ const checkAuth = async function (req, res, next) {
   if (req.session.user && ['/', '/login'].includes(pathname)) {
     return res.redirect(302, '/home');
   }
-  if (excludePath.includes(pathname) || pathname.startsWith('/assets') || pathname === '/favicon.ico') {
+  if (excludePath.includes(pathname) ||
+    pathname.startsWith('/assets') ||
+    pathname.startsWith('/api/openapi') ||
+    pathname === '/favicon.ico') {
     return next();
   }
   if (!req.session.user && !pathname.startsWith('/api')) {
@@ -41,7 +44,10 @@ const checkAuth = async function (req, res, next) {
   }
   if (!req.session.user) {
     res.status(401);
-    return res.send('NEED_AUTH');
+    return res.send({
+      success: false,
+      message: '鉴权失效'
+    });
   }
   next();
 };
@@ -214,6 +220,8 @@ module.exports = function (app, express, router) {
   router.post('/setting/modifySitePushSetting', ctrl.Setting.modifySitePushSetting);
   router.get('/setting/backupVertex', ctrl.Setting.backupVertex);
   router.post('/setting/restoreVertex', ctrl.Setting.restoreVertex);
+
+  router.all('/openapi/:apiKey/plex', ctrl.Webhook.plex);
 
   app.use('/api', router);
   app.use('/proxy/client/:client', clientProxy);

@@ -22,12 +22,14 @@ class SettingMod {
   };
 
   modify (options) {
+    options.apiKey = options.apiKey || util.uuid.v4().replace(/-/g, '').toUpperCase();
     fs.writeFileSync(settingPath, JSON.stringify(options, null, 2));
     global.auth = {
       username: options.username,
       password: options.password
     };
     global.userAgent = options.userAgent;
+    global.apiKey = options.apiKey;
     global.dataPath = options.dataPath || '/';
     global.telegramProxy = options.telegramProxy || 'https://api.telegram.org';
     return '修改全局设置成功, 刷新页面后更新。';
@@ -133,7 +135,7 @@ class SettingMod {
     await util.tar.x({
       gzip: true,
       file: backupsFile,
-      C: global.dataPath
+      C: '/tmp'
     });
     return '数据导入成功, 重启容器后生效。';
   }

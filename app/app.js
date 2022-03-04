@@ -50,6 +50,7 @@ const init = function () {
   global.telegramProxy = setting.telegramProxy || 'https://api.telegram.org';
   global.checkFinishCron = setting.checkFinishCron || '* * * * *';
   global.userAgent = setting.userAgent;
+  global.apiKey = setting.apiKey;
   global.dataPath = setting.dataPath || '/';
   global.runningClient = {};
   global.runningRss = {};
