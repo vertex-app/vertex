@@ -148,6 +148,7 @@ export default {
       },
       linkRuleList: [],
       raceList: [],
+      pushList: [],
       raceRuleList: [],
       isIndeterminate: false,
       checkAll: false,

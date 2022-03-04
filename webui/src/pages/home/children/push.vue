@@ -134,6 +134,9 @@ export default {
           key: 'siteData',
           value: '站点数据推送'
         }, {
+          key: 'mediaServer',
+          value: '媒体服务器'
+        }, {
           key: 'race',
           value: '追剧相关'
         }, {

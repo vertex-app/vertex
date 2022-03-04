@@ -97,6 +97,35 @@ class Push {
     await this._push(this.pushType.indexOf('race') !== -1, text, desp);
   };
 
+  async selectTorrentError (alias, note) {
+    const text = `豆瓣选种失败: | ${alias}`;
+    let desp = `豆瓣账号: ${alias}\n` +
+      `相关信息: ${note}\n`;
+    if (this.markdown) {
+      desp = '```\n' + desp + '\n```';
+    }
+    if (this.type === 'telegram') {
+      desp = '\\#豆瓣选种失败\n' + desp;
+    }
+    await this._push(this.pushType.indexOf('douban') !== -1, text, desp);
+  };
+
+  async plexWebhook (event, note, poster) {
+    const text = `Plex消息通知: | ${event}`;
+    let desp = `Plex: ${event}\n` +
+      `相关信息:\n${note}\n`;
+    if (this.markdown) {
+      desp = '```\n' + desp + '\n```';
+    }
+    if (poster) {
+      desp = desp + `\n[POSTER](${poster})`;
+    }
+    if (this.type === 'telegram') {
+      desp = '\\#Plex消息通知\n' + desp;
+    }
+    await this._push(this.pushType.indexOf('mediaServer') !== -1, text, desp);
+  };
+
   async addRaceTorrentError (raceAlias, client, torrent, rule) {
     const text = `添加追剧种子失败: ${torrent.title.substring(0, 10) + '...'} | ${raceAlias} | ${util.formatSize(torrent.size)} | ${client.alias}`;
     let desp = `追剧任务: ${raceAlias}\n` +
@@ -116,7 +145,7 @@ class Push {
 
   async addDoubanTorrent (doubanAlias, client, torrent, rule, wish) {
     const text = `添加豆瓣种子: ${torrent.title.substring(0, 10) + '...'} | ${doubanAlias} | ${util.formatSize(torrent.size)} | ${client.alias}`;
-    let desp = `追剧任务: ${doubanAlias}\n` +
+    let desp = `豆瓣账号: ${doubanAlias}\n` +
       `下载器名: ${client.alias}\n` +
       `种子名称: ${torrent.title || torrent.naem}\n` +
       `种子大小: ${util.formatSize(torrent.size)}\n` +
@@ -125,7 +154,7 @@ class Push {
       desp = '```\n' + desp + '\n```';
     }
     if (this.type === 'telegram') {
-      desp = '\\#添加想看\n' + desp;
+      desp = '\\#添加豆瓣种子\n' + desp;
     }
     if (this.type === 'telegram') {
       desp = desp + `\n[POSTER](${wish.poster})`;
@@ -135,7 +164,7 @@ class Push {
 
   async addDoubanTorrentError (doubanAlias, client, torrent, rule) {
     const text = `添加豆瓣种子失败: ${torrent.title.substring(0, 10) + '...'} | ${doubanAlias} | ${util.formatSize(torrent.size)} | ${client.alias}`;
-    let desp = `追剧任务: ${doubanAlias}\n` +
+    let desp = `豆瓣账号: ${doubanAlias}\n` +
       `下载器名: ${client.alias}\n` +
       `种子名称: ${torrent.title}\n` +
       `种子大小: ${util.formatSize(torrent.size)}\n` +

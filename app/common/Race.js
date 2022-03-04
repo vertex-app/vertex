@@ -152,5 +152,25 @@ class Race {
     }
     logger.info(this.alias, '匹配完毕, 没有查找到满足规则的种子');
   }
+
+  async checkFinish () {
+    const unfinishTorrents = await util.getRecords('select * from torrents where record_type = 6 and record_note like ?', [`%${this.id}%`]);
+    for (const torrent of unfinishTorrents) {
+      for (const _client of Object.keys(global.runningClient)) {
+        const client = global.runningClient[_client];
+        if (!client || !client.maindata || !client.maindata.torrents) continue;
+        for (const _torrent of client.maindata.torrents) {
+          if (torrent.hash !== _torrent.hash) continue;
+          if (_torrent.completed === _torrent.size) {
+            logger.info('种子', _torrent.name, '已完成, 稍后将进行软链接操作');
+            await this.ntf.torrentFinish(torrent, '');
+            const wish = JSON.parse(torrent.record_note);
+            await this._linkTorrentFiles(_torrent, _client, wish);
+            await util.runRecord('update torrents set record_type = 99 where hash = ? and rss_id = ?', [torrent.hash, torrent.rss_id]);
+          }
+        }
+      }
+    }
+  }
 }
 module.exports = Race;

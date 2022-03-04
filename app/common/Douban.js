@@ -103,9 +103,11 @@ class Douban {
           wish.type = type;
           try {
             wish.downloaded = await this.selectTorrent(wish);
+            if (!wish.downloaded) this.ntf.selectTorrentError(this.alias, `未匹配种子: ${wish.name}`);
           } catch (e) {
             logger.error('豆瓣账户:', this.alias, '选种', wish.name, '失败:\n', e);
             wish.downloaded = false;
+            this.ntf.selectTorrentError(this.alias, `执行报错: ${e.message}`);
           }
           doubanSet.wishes.push(wish);
           newWishes.push(wish);
@@ -192,11 +194,16 @@ class Douban {
       for (const file of files) {
         if (file.size < linkRule.minFileSize) continue;
         const seriesName = wish.name.split('/')[0].trim();
-        const season = (file.name.match(/(S\d\d)/) || [0, 'S01'])[1];
-        const episode = (file.name.match(/(E\d\d)/) || [0, 'E01'])[1];
+        const season = +(file.name.match(/[. ]S(\d+)/) || [0, '01'])[1];
+        let episode = +(file.name.match(/E(\d+)[. ]/) || [0, '01'])[1];
+        const part = (file.name.match(/\.[Pp][Aa][Rr][Tt]\.*[A1][B2]/));
+        if (part?.[1]) {
+          episode = part?.[1] === 'A' || part?.[1] === '1' ? episode * 2 - 1 : episode * 2;
+        }
+        episode = '0'.repeat(3 - ('' + episode).length) + episode;
         const fileExt = path.extname(file.name);
-        const linkFilePath = path.join(linkRule.linkFilePath, 'series', seriesName, season);
-        const linkFile = path.join(linkFilePath, season + episode + fileExt);
+        const linkFilePath = path.join(linkRule.linkFilePath, 'series', seriesName, 'S' + season);
+        const linkFile = path.join(linkFilePath, season + 'E' + episode + fileExt);
         const targetFile = path.join(torrent.savePath.replace(linkRule.targetPath.split('##')[0], linkRule.targetPath.split('##')[1]), file.name);
         const command = `mkdir -p '${linkFilePath}' && ln -s '${targetFile}' '${linkFile}'`;
         await global.runningServer[linkRule.server].run(command);
@@ -205,9 +212,10 @@ class Douban {
       for (const file of files) {
         if (file.size < linkRule.minFileSize) continue;
         const movieName = wish.name.split('/')[0].trim();
+        const year = (file.name.match(/[. ](20\d\d)[. ]/) || file.name.match(/[. ](19\d\d)[. ]/) || ['', ''])[1];
         const fileExt = path.extname(file.name);
         const linkFilePath = path.join(linkRule.linkFilePath, 'movie');
-        const linkFile = path.join(linkFilePath, movieName + fileExt);
+        const linkFile = path.join(linkFilePath, `${movieName}.${year}${fileExt}`);
         const targetFile = path.join(torrent.savePath.replace(linkRule.targetPath.split('##')[0], linkRule.targetPath.split('##')[1]), file.name);
         const command = `mkdir -p '${linkFilePath}' && ln -s '${targetFile}' '${linkFile}'`;
         await global.runningServer[linkRule.server].run(command);
@@ -251,11 +259,11 @@ class Douban {
           } catch (e) {
             logger.error(this.alias, '选种规则:', rule.alias, ',种子:', torrent.title, '/', torrent.subtitle, '推送至下载器:', global.runningClient[this.client].alias, '失败, 报错如下:\n', e);
             await this.ntf.addDoubanTorrentError(this.alias, global.runningClient[this.client], torrent, rule, wish);
-            return true;
+            throw (e);
           }
           logger.info(this.alias, '选种规则:', rule.alias, ',种子:', torrent.title, '/', torrent.subtitle, '推送至下载器:', global.runningClient[this.client].alias, '成功');
           await this.ntf.addDoubanTorrent(this.alias, global.runningClient[this.client], torrent, rule, wish);
-          return false;
+          return true;
         };
       }
     }
@@ -274,7 +282,11 @@ class Douban {
             logger.info('种子', _torrent.name, '已完成, 稍后将进行软链接操作');
             await this.ntf.torrentFinish(torrent, '');
             const wish = JSON.parse(torrent.record_note);
-            await this._linkTorrentFiles(_torrent, _client, wish);
+            try {
+              await this._linkTorrentFiles(_torrent, _client, wish);
+            } catch (e) {
+              logger.error(e);
+            }
             await util.runRecord('update torrents set record_type = 99 where hash = ? and rss_id = ?', [torrent.hash, torrent.rss_id]);
           }
         }

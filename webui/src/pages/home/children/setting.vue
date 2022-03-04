@@ -22,6 +22,12 @@
           <el-input v-model="setting.apiKey" disabled style="width: 500px;"></el-input>
           <div><el-tag type="warning">ApiKey 用于请求接口, 第一次保存全局设置后生成</el-tag></div>
         </el-form-item>
+        <el-form-item label="媒体服务通知" prop="webhookPushTo">
+          <el-select v-model="setting.webhookPushTo" placeholder="请选择 通知方式">
+            <el-option v-for="push of pushList" :key="push.id" :label="push.alias" :value="push.id"></el-option>
+          </el-select>
+          <div><el-tag type="info">通知方式, 用于推送信息, 在推送工具页面创建</el-tag></div>
+        </el-form-item>
         <el-form-item label="User-Agent" prop="userAgent">
           <el-input v-model="setting.userAgent" style="width: 500px;"></el-input>
           <div><el-tag type="info">所有网络请求所用的 User-Agent, 默认为 'Vertex'</el-tag></div>
@@ -68,7 +74,8 @@ export default {
   data () {
     return {
       setting: {},
-      originSetting: {}
+      originSetting: {},
+      pushList: []
     };
   },
   methods: {
@@ -92,12 +99,17 @@ export default {
     async backupVertex () {
       window.open('/api/setting/backupVertex');
     },
+    async listPush () {
+      const res = await this.$axiosGet('/api/push/list');
+      this.pushList = res ? res.data : [];
+    },
     async handleSuccess (responce) {
       await this.$messageBox(responce);
     }
   },
   mounted () {
     this.getSetting();
+    this.listPush();
   }
 };
 </script>
