@@ -238,7 +238,7 @@ class Douban {
     wish.doubanId = this.id;
     if (!wish.imdb) wish.imdb = wish.name.split('/')[0].trim();
     logger.info(this.alias, '启动豆瓣选剧, 影片:', wish.name, '豆瓣ID:', wish.id, 'imdb:', wish.imdb, '开始搜索以下站点:', this.sites.join(', '));
-    const result = await Promise.all(this.sites.map(i => global.runningSite[i].search(wish.imdb)));
+    const result = await Promise.all(this.sites.map(i => global.runningSite[i].search(wish.name.split('/')[0].trim())));
     let torrents = result.map(i => i.torrentList).flat();
     logger.info(this.alias, '种子搜索已完成, 共计查找到', torrents.length, '个种子');
     const raceRuleList = util.listRaceRule();

@@ -107,7 +107,7 @@ class Push {
     if (this.type === 'telegram') {
       desp = '\\#豆瓣选种失败\n' + desp;
     }
-    await this._push(this.pushType.indexOf('douban') !== -1, text, desp);
+    await this._push(this.pushType.indexOf('doubanSelectError') !== -1, text, desp);
   };
 
   async plexWebhook (event, note, poster) {

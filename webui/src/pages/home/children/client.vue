@@ -280,7 +280,7 @@ export default {
     },
     async listDeleteRule () {
       const res = await this.$axiosGet('/api/deleteRule/list');
-      this.deleteRuleList = res ? res.data : [];
+      this.deleteRuleList = res ? res.data.sort((a, b) => a.alias > b.alias ? 1 : -1) : [];
     },
     gotoClient (row) {
       window.open(`/proxy/client/${row.id}/`);

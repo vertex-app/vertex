@@ -30,7 +30,7 @@
           label="操作"
           width="330">
           <template slot-scope="scope">
-            <el-button @click="refreshWishes(scope.row)" type="primary" size="small">刷新想看</el-button>
+            <el-button @click="refreshWishes(scope.row)" type="primary" size="small">{{refreshStatus}}</el-button>
             <el-button
               type="primary"
               size="small"
@@ -162,6 +162,7 @@ export default {
       wishList: [],
       isIndeterminate: false,
       checkAll: false,
+      refreshStatus: '刷新想看',
       doubanCollapse: ['0', '1'],
       importDoubanVisible: false,
       importDoubanText: ''
@@ -205,12 +206,14 @@ export default {
     },
     async refreshWishes (row) {
       const url = '/api/douban/refreshWishes';
+      this.refreshStatus = '正在刷新...';
       const res = await this.$axiosPost(url, {
         id: row.id
       });
       if (!res) {
         return;
       }
+      this.refreshStatus = '刷新想看';
       await this.$messageBox(res);
     },
     async deleteItem (row) {

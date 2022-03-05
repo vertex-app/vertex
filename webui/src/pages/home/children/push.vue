@@ -141,7 +141,10 @@ export default {
           value: '追剧相关'
         }, {
           key: 'douban',
-          value: '豆瓣相关'
+          value: '豆瓣'
+        }, {
+          key: 'doubanSelectError',
+          value: '豆瓣选种失败'
         }, {
           key: 'finish',
           value: '种子完成'
