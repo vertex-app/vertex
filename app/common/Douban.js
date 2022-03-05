@@ -88,6 +88,10 @@ class Douban {
         logger.info('豆瓣账户:', this.alias, '想看:', wish.name, '上次未选种成功, 即将重新尝试选种');
         try {
           wish.downloaded = await this.selectTorrent(wish);
+          if (!wish.downloaded) {
+            logger.info(this.alias, '未匹配种子', wish.name);
+            this.ntf.selectTorrentError(this.alias, `未匹配种子: ${wish.name}`);
+          }
         } catch (e) {
           logger.error('豆瓣账户:', this.alias, '选种', wish.name, '失败:\n', e);
           wish.downloaded = false;
@@ -103,8 +107,10 @@ class Douban {
           wish.type = type;
           try {
             wish.downloaded = await this.selectTorrent(wish);
-            logger.info(this.alias, '未匹配种子', wish.name);
-            if (!wish.downloaded) this.ntf.selectTorrentError(this.alias, `未匹配种子: ${wish.name}`);
+            if (!wish.downloaded) {
+              logger.info(this.alias, '未匹配种子', wish.name);
+              this.ntf.selectTorrentError(this.alias, `未匹配种子: ${wish.name}`);
+            }
           } catch (e) {
             logger.error('豆瓣账户:', this.alias, '选种', wish.name, '失败:\n', e);
             wish.downloaded = false;

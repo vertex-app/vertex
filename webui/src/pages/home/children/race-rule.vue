@@ -18,6 +18,7 @@
         </el-table-column>
         <el-table-column
           sortable
+          :sort-method="(a, b) => +a.priority - +b.priority"
           prop="priority"
           label="优先级">
         </el-table-column>
