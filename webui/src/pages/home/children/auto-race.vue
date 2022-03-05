@@ -77,6 +77,12 @@
               </el-checkbox-group>
               <div><el-tag type="info">选择站点, 仅可选择已经启用的站点</el-tag></div>
             </el-form-item>
+            <el-form-item label="排除规则" prop="rejectRules">
+              <el-checkbox-group v-model="race.rejectRules">
+                <el-checkbox v-for="rule of raceRuleList" :key="rule.id" :label="rule.id">{{rule.alias}}</el-checkbox>
+              </el-checkbox-group>
+              <div><el-tag type="info">选择排除规则, 符合这些规则的种子都会被拒绝, 可前往选种规则分页添加</el-tag></div>
+            </el-form-item>
             <el-form-item required label="选择选种规则" prop="raceRules">
               <el-checkbox-group v-model="race.raceRules">
                 <el-checkbox v-for="rule of raceRuleList" :key="rule.id" :label="rule.id">{{rule.alias}}</el-checkbox>
@@ -142,6 +148,7 @@ export default {
         enable: false,
         sites: [],
         raceRules: [],
+        rejectRules: [],
         client: '',
         autoTMM: false,
         cron: '20 20 * * *'

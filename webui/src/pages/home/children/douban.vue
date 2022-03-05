@@ -72,23 +72,102 @@
               <el-input v-model="douban.alias" type="input"></el-input>
             </el-form-item>
             <el-form-item required label="选择站点" prop="sites">
-              <el-checkbox :indeterminate="isIndeterminate" v-model="checkAll" @change="handleCheckAllChange">全选</el-checkbox>
+              <el-checkbox :indeterminate="siteIndeterminate" v-model="siteCheckAll" @change="handleSiteCheckAllChange">全选</el-checkbox>
               <el-checkbox-group v-model="douban.sites">
                 <el-checkbox v-for="site of siteList" :key="site.name" :disabled="!site.enable" :label="site.name">{{site.name}}</el-checkbox>
               </el-checkbox-group>
               <div><el-tag type="info">选择站点, 仅可选择已经启用的站点</el-tag></div>
             </el-form-item>
+            <el-form-item label="排除规则" prop="rejectRules">
+              <el-checkbox :indeterminate="rejectRuleIndeterminate" v-model="rejectRuleCheckAll" @change="handleRejectRuleCheckAllChange">全选</el-checkbox>
+              <el-checkbox-group v-model="douban.rejectRules">
+                <el-checkbox v-for="rule of raceRuleList" :key="rule.id" :label="rule.id">{{rule.alias}}</el-checkbox>
+              </el-checkbox-group>
+              <div><el-tag type="info">选择排除规则, 符合这些规则的种子都会被拒绝, 可前往选种规则分页添加</el-tag></div>
+            </el-form-item>
             <el-form-item required label="选择规则" prop="raceRules">
+              <el-checkbox :indeterminate="raceRuleIndeterminate" v-model="raceRuleCheckAll" @change="handleRaceRuleCheckAllChange">全选</el-checkbox>
               <el-checkbox-group v-model="douban.raceRules">
                 <el-checkbox v-for="rule of raceRuleList" :key="rule.id" :label="rule.id">{{rule.alias}}</el-checkbox>
               </el-checkbox-group>
-              <div><el-tag type="info">选择选种规则, 选种规则可前往选种规则分页添加</el-tag></div>
+              <div><el-tag type="info">选择选种规则, 符合这些规则的种子才会添加, 可前往选种规则分页添加</el-tag></div>
             </el-form-item>
             <el-form-item label="选择链接规则" prop="linkRule">
               <el-select v-model="douban.linkRule" placeholder="选择选种规则">
                 <el-option v-for="rule of linkRuleList" :key="rule.id" :label="rule.alias" :value="rule.id">{{rule.alias}}</el-option>
               </el-select>
               <div><el-tag type="info">选择链接规则, 链接规则可前往链接规则分页添加</el-tag></div>
+            </el-form-item>
+            <el-form-item required label="下载器" prop="client">
+              <el-select v-model="douban.client" placeholder="请选择下载器">
+                <el-option v-for="client of clientList" :key="client.id" :disabled="!client.enable" :label="client.alias" :value="client.id">{{client.alias}}</el-option>
+              </el-select>
+              <div><el-tag type="info">选择下载器, 仅可选择已经启用的下载器</el-tag></div>
+            </el-form-item>
+            <el-form-item label="分类" prop="categories">
+              <el-table
+                size="mini"
+                stripe
+                :data="douban.categories"
+                style="width: 960px">
+                <el-table-column
+                  label="豆瓣标签"
+                  width="144">
+                  <template slot-scope="scope">
+                    <el-input v-model="scope.row.doubanTag" placeholder="豆瓣标签"/>
+                  </template>
+                </el-table-column>
+                <el-table-column
+                  label="所属分类"
+                  width="120">
+                  <template slot-scope="scope">
+                    <el-select v-model="scope.row.compareType" style="width: 96px" placeholder="所属分类">
+                      <el-option label="电影" value="movie"></el-option>
+                      <el-option label="电视剧" value="series"></el-option>
+                    </el-select>
+                  </template>
+                </el-table-column>
+                <el-table-column
+                  label="下载器分类"
+                  width="144">
+                  <template slot-scope="scope">
+                    <el-input v-model="scope.row.category" placeholder="下载器分类"/>
+                  </template>
+                </el-table-column>
+                <el-table-column
+                  label="资料库路径"
+                  width="144">
+                  <template slot-scope="scope">
+                    <el-input v-model="scope.row.libraryPath" placeholder="资料库路径"/>
+                  </template>
+                </el-table-column>
+                <el-table-column
+                  label="保存路径"
+                  width="144">
+                  <template slot-scope="scope">
+                    <el-input v-model="scope.row.savePath" placeholder="保存路径"/>
+                  </template>
+                </el-table-column>
+                <el-table-column label="自动管理">
+                  <template slot-scope="scope">
+                    <el-checkbox v-model="scope.row.autoTMM">自动管理</el-checkbox>
+                  </template>
+                </el-table-column>
+                <el-table-column
+                  label="排除关键词">
+                  <template slot-scope="scope">
+                    <el-input v-model="scope.row.rejectKeys" placeholder="排除种子关键词"/>
+                  </template>
+                </el-table-column>
+                <el-table-column
+                  label="操作"
+                  width="96">
+                  <template slot-scope="scope">
+                    <el-button @click="douban.categories = douban.categories.filter(item => item !== scope.row)" type="danger" size="small">删除</el-button>
+                  </template>
+                </el-table-column>
+              </el-table>
+              <el-button @click="douban.categories.push({ ...defaultCategory })" type="primary" size="small">新增</el-button>
             </el-form-item>
             <el-form-item required label="Cookie" prop="cookie">
               <el-input v-model="douban.cookie" type="textarea" :row="3" style="width: 300px"></el-input>
@@ -106,21 +185,6 @@
                 <el-option v-for="push of pushList" :key="push.id" :label="push.alias" :value="push.id"></el-option>
               </el-select>
               <div><el-tag type="info">通知方式, 用于推送信息, 在推送工具页面创建</el-tag></div>
-            </el-form-item>
-            <el-form-item required label="下载器" prop="client">
-              <el-select v-model="douban.client" placeholder="请选择下载器">
-                <el-option v-for="client of clientList" :key="client.id" :disabled="!client.enable" :label="client.alias" :value="client.id">{{client.alias}}</el-option>
-              </el-select>
-              <div><el-tag type="info">选择下载器, 仅可选择已经启用的下载器</el-tag></div>
-            </el-form-item>
-            <el-form-item label="分类">
-              <el-input v-model="douban.category" style="width: 200px;"></el-input>
-            </el-form-item>
-            <el-form-item label="保存路径">
-              <el-input v-model="douban.savePath" style="width: 200px;"></el-input>
-            </el-form-item>
-            <el-form-item label="自动管理">
-              <el-checkbox v-model="douban.autoTMM">自动管理</el-checkbox>
             </el-form-item>
             <el-form-item size="small">
               <el-button type="primary" @click="handleDoubanClick">新增 | 编辑</el-button>
@@ -152,7 +216,17 @@ export default {
       defaultDouban: {
         cron: '35 * * * *',
         sites: [],
-        raceRules: []
+        raceRules: [],
+        rejectRules: [],
+        categories: []
+      },
+      defaultCategory: {
+        doubanTag: '',
+        type: '',
+        category: '',
+        savePath: '',
+        autoTMM: false,
+        rejectKeys: ''
       },
       doubanList: [],
       raceRuleList: [],
@@ -160,8 +234,12 @@ export default {
       siteList: [],
       clientList: [],
       wishList: [],
-      isIndeterminate: false,
-      checkAll: false,
+      siteIndeterminate: true,
+      rejectRuleIndeterminate: true,
+      raceRuleIndeterminate: true,
+      siteCheckAll: false,
+      rejectRuleCheckAll: false,
+      raceRuleCheckAll: false,
       refreshStatus: '刷新想看',
       doubanCollapse: ['0', '1'],
       importDoubanVisible: false,
@@ -200,7 +278,7 @@ export default {
     async modifyDouban (row) {
       this.doubanCollapse = ['0', '1'];
       this.douban = { ...row };
-      this.douban.conditions = row.conditions.map(item => {
+      this.douban.categories = row.categories.map(item => {
         return { ...item };
       });
     },
@@ -230,7 +308,7 @@ export default {
     },
     async clearDouban () {
       this.douban = { ...this.defaultDouban };
-      this.douban.conditions = [{ ...this.condition }];
+      this.douban.categories = [{ ...this.defaultCategory }];
       this.$refs.douban.resetFields();
     },
     async listDouban () {
@@ -243,11 +321,20 @@ export default {
     },
     async listLinkRule () {
       const res = await this.$axiosGet('/api/linkRule/list');
-      this.linkRuleList = res ? res.data : [];
+      this.linkRuleList = res ? res.data.sort((a, b) => a.alias > b.alias ? 1 : -1) : [];
     },
-    handleCheckAllChange (value) {
+    handleSiteCheckAllChange (value) {
       this.douban.sites = value ? this.siteList.map(i => i.name) : [];
-      this.isIndeterminate = false;
+      this.siteIndeterminate = false;
+    },
+    handleRejectRuleCheckAllChange (value) {
+      this.douban.rejectRules = value ? this.raceRuleList.map(i => i.id) : [];
+      this.rejectRuleIndeterminate = false;
+    },
+    handleRaceRuleCheckAllChange (value) {
+      this.douban.raceRules = value ? this.raceRuleList.map(i => i.id) : [];
+      console.log(this.douban.raceRules);
+      this.raceRuleIndeterminate = false;
     },
     async listPush () {
       const res = await this.$axiosGet('/api/push/list');
@@ -255,7 +342,7 @@ export default {
     },
     async listRaceRule () {
       const res = await this.$axiosGet('/api/raceRule/list');
-      this.raceRuleList = res ? res.data : [];
+      this.raceRuleList = res ? res.data.sort((a, b) => +b.priority > +a.priority ? 1 : -1) : [];
     },
     async listClient () {
       const res = await this.$axiosGet('/api/client/list');
@@ -287,7 +374,7 @@ export default {
   },
   async mounted () {
     this.douban = { ...this.defaultDouban };
-    this.douban.conditions = [{ ...this.condition }];
+    this.douban.categories = [{ ...this.defaultCategory }];
     this.$refs.douban.resetFields();
     this.listDouban();
     this.listSite();

@@ -14,10 +14,12 @@ class Douban {
     this.alias = douban.alias;
     this.cookie = douban.cookie;
     this.raceRules = douban.raceRules;
+    this.rejectRules = douban.rejectRules;
+    this.categories = {};
+    for (const category of douban.categories) {
+      this.categories[category.doubanTag] = { ...category };
+    }
     this.linkRule = douban.linkRule;
-    this.savePath = douban.savePath;
-    this.category = douban.category;
-    this.autoTMM = douban.autoTMM;
     this.sites = douban.sites;
     this.client = douban.client;
     this.cron = douban.cron;
@@ -87,6 +89,10 @@ class Douban {
         if (wish.downloaded) continue;
         logger.info('豆瓣账户:', this.alias, '想看:', wish.name, '上次未选种成功, 即将重新尝试选种');
         try {
+          if (!this.categories[wish.tag]) {
+            logger.info('豆瓣账户', this.alias, wish.name, '标签分类', wish.tag, '未定义, 跳过');
+            continue;
+          }
           wish.downloaded = await this.selectTorrent(wish);
           if (!wish.downloaded) {
             logger.info(this.alias, '未匹配种子', wish.name);
@@ -99,12 +105,26 @@ class Douban {
       }
       for (const wish of wishes) {
         if (!doubanSet.wishes.filter(item => item.id === wish.id)[0]) {
-          logger.info('豆瓣账户', this.alias, wish.name, '已添加入想看列表, 稍后将开始自动下载');
+          logger.info('豆瓣账户', this.alias, wish.name, '已添加入想看列表, 稍后将开始处理');
           const details = await this._getDocument(wish.link);
           const imdb = details.querySelector('#info').innerHTML.match(/(tt\d+)/);
-          const type = details.querySelector('.article .mr10').innerHTML.match(/我想看这部(.+)/)[1] === '电影' ? 'movie' : 'series';
+          const tag = details.querySelector('span.color_gray');
+          if (!tag) {
+            logger.info('豆瓣账户', this.alias, wish.name, '未添加标签, 跳过');
+            continue;
+          }
+          const type = tag.innerHTML.trim().replace('标签:', '');
           wish.imdb = imdb ? imdb[1] : null;
-          wish.type = type;
+          wish.tag = type.match(/#(.+?)#/);
+          if (!wish.tag) {
+            logger.info('豆瓣账户', this.alias, wish.name, '未识别到分类, 跳过');
+            continue;
+          }
+          wish.tag = wish.tag[1];
+          if (!this.categories[wish.tag]) {
+            logger.info('豆瓣账户', this.alias, wish.name, '标签分类', wish.tag, '未定义, 跳过');
+            continue;
+          }
           try {
             wish.downloaded = await this.selectTorrent(wish);
             if (!wish.downloaded) {
@@ -177,21 +197,21 @@ class Douban {
         // eslint-disable-next-line no-eval
         fit = (eval(rule.code))(torrent);
       } catch (e) {
-        logger.error('下载器, ', this.alias, '选种规则', rule.alias, '存在语法错误\n', e);
+        logger.error('下载器', this.alias, '选种规则', rule.alias, '存在语法错误\n', e);
         return false;
       }
     } else {
       try {
         fit = rule.conditions.length !== 0 && this._fitConditions(torrent, rule.conditions);
       } catch (e) {
-        logger.error('下载器, ', this.alias, '选种规则', rule.alias, '遇到错误\n', e);
+        logger.error('下载器', this.alias, '选种规则', rule.alias, '遇到错误\n', e);
         return false;
       }
     }
     return fit;
   };
 
-  async _linkTorrentFiles (torrent, client, wish) {
+  async _linkTorrentFiles (torrent, client, recordNoteJson) {
     if (!this.linkRule) {
       logger.info(this.alias, '本实例不含链接规则, 跳过软链接操作');
     }
@@ -200,7 +220,9 @@ class Douban {
     linkRule.minFileSize.split('*').forEach(i => { size *= +i; });
     linkRule.minFileSize = size;
     const files = await global.runningClient[client].getFiles(torrent.hash);
-    if (wish.type === 'series') {
+    const wish = recordNoteJson.wish;
+    const category = recordNoteJson.category;
+    if (category.type === 'series') {
       for (const file of files) {
         if (file.size < linkRule.minFileSize) continue;
         const seriesName = wish.name.split('/')[0].trim();
@@ -212,19 +234,19 @@ class Douban {
         }
         episode = 'E' + '0'.repeat(3 - ('' + episode).length) + episode;
         const fileExt = path.extname(file.name);
-        const linkFilePath = path.join(linkRule.linkFilePath, 'series', seriesName, season);
+        const linkFilePath = path.join(linkRule.linkFilePath, category.libraryPath, seriesName, season);
         const linkFile = path.join(linkFilePath, season + episode + fileExt);
         const targetFile = path.join(torrent.savePath.replace(linkRule.targetPath.split('##')[0], linkRule.targetPath.split('##')[1]), file.name);
         const command = `mkdir -p '${linkFilePath}' && ln -s '${targetFile}' '${linkFile}'`;
         await global.runningServer[linkRule.server].run(command);
       }
-    } else if (wish.type === 'movie') {
+    } else if (category.type === 'movie') {
       for (const file of files) {
         if (file.size < linkRule.minFileSize) continue;
         const movieName = wish.name.split('/')[0].trim();
         const year = (file.name.match(/[. ](20\d\d)[. ]/) || file.name.match(/[. ](19\d\d)[. ]/) || ['', ''])[1];
         const fileExt = path.extname(file.name);
-        const linkFilePath = path.join(linkRule.linkFilePath, 'movie');
+        const linkFilePath = path.join(linkRule.linkFilePath, category.libraryPath);
         const linkFile = path.join(linkFilePath, `${movieName}.${year}${fileExt}`);
         const targetFile = path.join(torrent.savePath.replace(linkRule.targetPath.split('##')[0], linkRule.targetPath.split('##')[1]), file.name);
         const command = `mkdir -p '${linkFilePath}' && ln -s '${targetFile}' '${linkFile}'`;
@@ -263,15 +285,39 @@ class Douban {
       });
       for (const torrent of torrents) {
         if (this._fitRaceRule(rule, torrent)) {
-          logger.info(this.alias, '选种规则:', rule.alias, ',种子:', torrent.title, '/', torrent.subtitle, '匹配成功, 准备推送至下载器:', global.runningClient[this.client].alias);
+          const rejectRules = this.rejectRules
+            .map(i => raceRuleList.filter(ii => ii.id === i)[0])
+            .filter(i => i);
+          let fitReject = false;
+          for (const rejectRule of rejectRules) {
+            if (this._fitRaceRule(rejectRules, torrent)) {
+              fitReject = true;
+              logger.info(this.alias, '选种规则:', rule.alias, '种子:', torrent.title, '/', torrent.subtitle, '匹配成功, 同时匹配拒绝规则成功:', rejectRule.alias, '跳过');
+              break;
+            }
+          }
+          if (fitReject) continue;
+          const fitRejectKeys = !!this.categories[wish.tag].rejectKeys
+            .split(',').some(item => (torrent.title.indexOf(item) !== -1 || torrent.subtitle.indexOf(item) !== -1));
+          if (fitRejectKeys) {
+            logger.info(this.alias, '选种规则:', rule.alias, '种子:', torrent.title, '/', torrent.subtitle, '匹配成功, 同时匹配排除关键词:', this.categories[wish.tag].rejectKeys, '跳过');
+            break;
+          }
+          logger.info(this.alias, '选种规则:', rule.alias, '种子:', torrent.title, '/', torrent.subtitle, '匹配成功, 准备推送至下载器:', global.runningClient[this.client].alias);
+          const category = this.categories[wish.tag];
+          const recordNoteJson = {
+            wish,
+            category,
+            torrent
+          };
           try {
-            await global.runningSite[torrent.site].pushTorrentById(torrent.id, torrent.downloadLink, this.client, this.savePath, this.category, this.autoTMM, 6, JSON.stringify(wish));
+            await global.runningSite[torrent.site].pushTorrentById(torrent.id, torrent.downloadLink, this.client, category.savePath, category.category, category.autoTMM, 6, JSON.stringify(recordNoteJson));
           } catch (e) {
-            logger.error(this.alias, '选种规则:', rule.alias, ',种子:', torrent.title, '/', torrent.subtitle, '推送至下载器:', global.runningClient[this.client].alias, '失败, 报错如下:\n', e);
+            logger.error(this.alias, '选种规则:', rule.alias, '种子:', torrent.title, '/', torrent.subtitle, '推送至下载器:', global.runningClient[this.client].alias, '失败, 报错如下:\n', e);
             await this.ntf.addDoubanTorrentError(this.alias, global.runningClient[this.client], torrent, rule, wish);
             throw (e);
           }
-          logger.info(this.alias, '选种规则:', rule.alias, ',种子:', torrent.title, '/', torrent.subtitle, '推送至下载器:', global.runningClient[this.client].alias, '成功');
+          logger.info(this.alias, '选种规则:', rule.alias, '种子:', torrent.title, '/', torrent.subtitle, '推送至下载器:', global.runningClient[this.client].alias, '成功');
           await this.ntf.addDoubanTorrent(this.alias, global.runningClient[this.client], torrent, rule, wish);
           return true;
         };
@@ -291,9 +337,9 @@ class Douban {
           if (_torrent.completed === _torrent.size) {
             logger.info('种子', _torrent.name, '已完成, 稍后将进行软链接操作');
             await this.ntf.torrentFinish(torrent, '');
-            const wish = JSON.parse(torrent.record_note);
+            const recordNoteJson = JSON.parse(torrent.record_note);
             try {
-              await this._linkTorrentFiles(_torrent, _client, wish);
+              await this._linkTorrentFiles(_torrent, _client, recordNoteJson);
             } catch (e) {
               logger.error(e);
             }

@@ -13,6 +13,7 @@ class Race {
     this.enable = race.enable;
     this.keyword = race.keyword;
     this.raceRules = race.raceRules;
+    this.rejectRules = race.rejectRules;
     this.linkRule = race.linkRule;
     this.client = race.client;
     this.savePath = race.savePath;
@@ -136,6 +137,17 @@ class Race {
       logger.info(this.alias, '选种规则:', rule.alias, '开始匹配');
       for (const torrent of torrents) {
         if (this._fitRaceRule(rule, torrent)) {
+          const rejectRules = this.rejectRules
+            .map(i => raceRuleList.filter(ii => ii.id === i)[0])
+            .filter(i => i);
+          let fitReject = false;
+          for (const rejectRule of rejectRules) {
+            if (this._fitRaceRule(rejectRules, torrent)) {
+              fitReject = true;
+              logger.info(this.alias, '选种规则:', rule.alias, ',种子:', torrent.title, '/', torrent.subtitle, '匹配成功, 同时匹配拒绝规则:', rejectRule.alias, '跳过');
+            }
+          }
+          if (fitReject) continue;
           logger.info(this.alias, '选种规则:', rule.alias, ',种子:', torrent.title, '/', torrent.subtitle, '匹配成功, 准备推送至下载器:', global.runningClient[this.client].alias);
           try {
             const noteJson = {
