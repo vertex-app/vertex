@@ -4,7 +4,6 @@
       <el-table
         :data="clientList"
         :default-sort="{prop: 'alias'}"
-        stripe
         style="margin: 20px">
         <el-table-column
           sortable
@@ -72,7 +71,6 @@
       <el-table
         :data="serverList"
         :default-sort="{prop: 'alias'}"
-        stripe
         style="margin: 20px">
         <el-table-column
           sortable
@@ -144,25 +142,12 @@
               align="top">
               <el-col :span="12" class="progress-div">
                 <v-chart style="height: 300px" :option="networkChart" autoresize />
-                <el-row
-                  class="row"
-                  type="flex"
-                  justify="space-between"
-                  align="top">
-                  <el-col :span="11" class="progress-div">
-                    <v-chart style="width: 300px; height: 300px" :option="memoryChart" autoresize />
-                  </el-col>
-                  <el-col :span="11" class="progress-div">
-                    <v-chart style="width: 300px; height: 300px" :option="diskChart" autoresize />
-                  </el-col>
-                </el-row>
               </el-col>
               <el-col :span="12" class="progress-div">
                 <div class="vnstat home-div">
                   <el-table
                     :data="vnstat[vnstatPeriod].interfaces[0].traffic[vnstatPeriod]"
-                    size="mini"
-                    stripe>
+                    size="mini">
                     <el-table-column
                       width="200">
                       <template slot="header" slot-scope="scope">
@@ -259,132 +244,6 @@ export default {
       ],
       chartSeries: [],
       xAxis: {},
-      memoryChart: {
-        textStyle: {
-          fontFamily: 'consolas'
-        },
-        series: [
-          {
-            type: 'gauge',
-            startAngle: 200,
-            endAngle: -20,
-            axisLine: {
-              lineStyle: {
-                width: 8,
-                color: [
-                  [0.3, '#67e0e3'],
-                  [0.7, '#37a2da'],
-                  [1, '#fd666d']
-                ]
-              }
-            },
-            pointer: {
-              itemStyle: {
-                color: 'auto'
-              }
-            },
-            axisTick: {
-              distance: -30,
-              length: 8,
-              lineStyle: {
-                color: '#fff',
-                width: 2
-              }
-            },
-            splitLine: {
-              distance: -30,
-              length: 30,
-              lineStyle: {
-                color: '#fff',
-                width: 4
-              }
-            },
-            axisLabel: {
-              color: 'auto',
-              distance: 20,
-              fontSize: 12
-            },
-            detail: {
-              valueAnimation: true,
-              formatter: '内存: {value}%',
-              fontSize: 16,
-              color: 'auto'
-            },
-            data: [
-              {
-                value: 0,
-                title: {
-                  show: true,
-                  fontSize: 12
-                }
-              }
-            ]
-          }
-        ]
-      },
-      diskChart: {
-        textStyle: {
-          fontFamily: 'consolas'
-        },
-        series: [
-          {
-            type: 'gauge',
-            startAngle: 200,
-            endAngle: -20,
-            axisLine: {
-              lineStyle: {
-                width: 8,
-                color: [
-                  [0.3, '#67e0e3'],
-                  [0.7, '#37a2da'],
-                  [1, '#fd666d']
-                ]
-              }
-            },
-            pointer: {
-              itemStyle: {
-                color: 'auto'
-              }
-            },
-            axisTick: {
-              distance: -30,
-              length: 8,
-              lineStyle: {
-                color: '#fff',
-                width: 2
-              }
-            },
-            splitLine: {
-              distance: -30,
-              length: 30,
-              lineStyle: {
-                color: '#fff',
-                width: 4
-              }
-            },
-            axisLabel: {
-              color: 'auto',
-              distance: 20,
-              fontSize: 12
-            },
-            detail: {
-              valueAnimation: true,
-              formatter: '磁盘: {value}%',
-              fontSize: 16,
-              color: 'auto'
-            },
-            data: [
-              {
-                value: 0,
-                title: {
-                  show: true,
-                  fontSize: 12
-                }
-              }
-            ]
-          }
-        ]
-      },
       chart: {
         title: {
           text: '流量曲线',
@@ -400,7 +259,8 @@ export default {
           top: '7%'
         },
         textStyle: {
-          fontFamily: 'consolas'
+          fontFamily: 'consolas',
+          color: '#000'
         },
         darkMode: true,
         tooltip: {
@@ -484,7 +344,8 @@ export default {
           top: '8%'
         },
         textStyle: {
-          fontFamily: 'consolas'
+          fontFamily: 'consolas',
+          color: '#000'
         },
         darkMode: true,
         tooltip: {
@@ -569,12 +430,6 @@ export default {
       this.networkChart.xAxis.data = [];
       this.networkChart.series[0].data = [];
       this.networkChart.series[1].data = [];
-      const maxSizePoint = this.diskUse[this.server.id].sort((a, b) => b.size - a.size)[0];
-      const memoryPoint = this.memoryUse[this.server.id];
-      this.diskChart.series[0].data[0].value = (maxSizePoint.used / maxSizePoint.size * 100).toFixed(2);
-      this.memoryChart.series[0].data[0].value = (memoryPoint.used / memoryPoint.total * 100).toFixed(2);
-      this.diskChart.series[0].data[0].name = `${this.$formatSize(maxSizePoint.used)} / ${this.$formatSize(maxSizePoint.size)}`;
-      this.memoryChart.series[0].data[0].name = `${this.$formatSize(memoryPoint.used)} / ${this.$formatSize(memoryPoint.total)}`;
       this.handlePeriod(this.vnstatPeriod);
       this.clientCollapse = ['1'];
     },
@@ -698,16 +553,12 @@ export default {
 </script>
 
 <style scoped>
-.radius-div {
-  border-radius: 8px;
-  background: #FFFFFF;
-}
-
 .collapse {
   margin: 20px;
 }
 
 .chart {
   height: 400px;
+  color: #000
 }
 </style>

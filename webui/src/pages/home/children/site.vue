@@ -27,7 +27,6 @@
       <el-table
         :data="siteList"
         :default-sort="{prop: 'alias'}"
-        stripe
         style="margin: 20px">
         <el-table-column
           sortable
@@ -88,7 +87,7 @@
           </template>
         </el-table-column>
         <el-table-column
-          width="180"
+          width="320"
           align="center"
           fixed="right">
           <template slot="header" slot-scope="scope">
@@ -172,7 +171,8 @@ export default {
           top: '7%'
         },
         textStyle: {
-          fontFamily: 'consolas'
+          fontFamily: 'consolas',
+          color: '#000'
         },
         darkMode: true,
         tooltip: {
@@ -355,11 +355,6 @@ export default {
 <style scoped>
 .site-div {
   margin: 20px 0;
-}
-
-.radius-div {
-  border-radius: 8px;
-  background: #FFFFFF;
 }
 
 .collapse {

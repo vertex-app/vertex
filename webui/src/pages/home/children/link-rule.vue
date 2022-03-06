@@ -4,7 +4,6 @@
       <el-table
         :data="ruleList"
         :default-sort="{prop: 'alias'}"
-        stripe
         style="margin: 20px">
         <el-table-column
           prop="id"
@@ -194,11 +193,6 @@ export default {
 <style scoped>
 .rule-div {
   margin: 20px 0;
-}
-
-.radius-div {
-  border-radius: 8px;
-  background: #FFFFFF;
 }
 
 .collapse {

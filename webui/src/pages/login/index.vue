@@ -54,6 +54,7 @@ export default {
 }
 
 .login-main {
+  backdrop-filter: blur(4px);
   background: rgba(44,62,80,0.2);
   padding: 12px 24px;
   width: 350px;

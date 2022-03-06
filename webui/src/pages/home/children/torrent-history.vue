@@ -1,5 +1,5 @@
 <template>
-  <div class="torrent-history">
+  <div class="radius-div">
     <div class="torrent-history-div">
       <el-form class="torrent-history-form" inline label-width="100px" size="mini">
         <el-form-item label="选择 Rss">
@@ -35,8 +35,6 @@
       </el-form>
       <el-table
         :data="torrentList"
-        size="small"
-        stripe
         style="width: 100%; font-size: 14px;">
         <el-table-column type="expand" width="72">
           <template slot-scope="props">
@@ -256,13 +254,8 @@ export default {
 </script>
 
 <style scoped>
-.torrent-history-div {
-  margin: 20px 0;
-  border-radius: 8px;
-  background: #FFF;
-}
-
 .torrent-history-form {
+  margin: 20px;
   padding-top: 24px;
   width: fit-content;
   text-align: left;

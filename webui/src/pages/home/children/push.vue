@@ -3,7 +3,6 @@
     <div class="radius-div">
       <el-table
         :data="pushList"
-        stripe
         :default-sort="{prop: 'alias'}"
         style="margin: 20px">
         <el-table-column
@@ -206,11 +205,6 @@ export default {
 <style scoped>
 .push-div {
   margin: 20px 0;
-}
-
-.radius-div {
-  border-radius: 8px;
-  background: #FFFFFF;
 }
 
 .collapse {

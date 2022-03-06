@@ -1,7 +1,7 @@
 <template>
   <div class="home">
     <div class="radius-div">
-      <el-descriptions style="padding: 24px" title="版本信息" :column="3" border>
+      <el-descriptions style="padding: 24px" title="版本信息" :column="3">
         <el-descriptions-item
           label="更新时间">
           {{this.version.updateTime}}
@@ -15,7 +15,7 @@
           {{this.version.commitInfo}}
         </el-descriptions-item>
       </el-descriptions>
-      <el-descriptions style="padding: 24px" title="使用帮助" :column="3" border>
+      <el-descriptions style="padding: 24px" title="使用帮助" :column="3">
         <el-descriptions-item
           label="文档">
           <el-link type="primary" @click="gotoDoc()">文档</el-link>
@@ -29,7 +29,7 @@
           852643057
         </el-descriptions-item>
       </el-descriptions>
-      <el-descriptions style="padding: 24px" title="任务信息" :column="3" border>
+      <el-descriptions style="padding: 24px" title="任务信息" :column="3">
         <el-descriptions-item
           label="运行时间">
           {{$moment(runInfo.startTime * 1000).format('YYYY-MM-DD HH:mm:ss')}}<br>{{$moment(runInfo.startTime * 1000).fromNow()}}
@@ -78,13 +78,11 @@
       </el-descriptions>
       <div style="padding: 24px;">
         <el-table
-          :data="runInfo.perTrackerToday"
-          border
-          size="mini">
+          :data="runInfo.perTrackerToday">
           <el-table-column
             prop="tracker"
             label="今日流量"
-            width="180px">
+            width="256px">
           </el-table-column>
           <el-table-column
             label="上传">
@@ -101,13 +99,11 @@
         </el-table>
         <el-divider/>
         <el-table
-          :data="runInfo.perTracker"
-          border
-          size="mini">
+          :data="runInfo.perTracker">
           <el-table-column
             prop="tracker"
             label="累计流量"
-            width="180px">
+            width="256px">
           </el-table-column>
           <el-table-column
             label="上传">
@@ -158,8 +154,4 @@ export default {
 </script>
 
 <style scoped>
-.radius-div {
-  border-radius: 8px;
-  background: rgb(255,255,255);
-}
 </style>

@@ -3,7 +3,6 @@
     <div class="radius-div">
       <el-table
         :data="doubanList"
-        stripe
         :default-sort="{prop: 'alias'}"
         style="margin: 20px">
         <el-table-column
@@ -107,7 +106,6 @@
             <el-form-item label="分类" prop="categories">
               <el-table
                 size="mini"
-                stripe
                 :data="douban.categories"
                 style="width: 960px">
                 <el-table-column
@@ -390,11 +388,6 @@ export default {
 <style scoped>
 .douban-div {
   margin: 20px 0;
-}
-
-.radius-div {
-  border-radius: 8px;
-  background: #FFFFFF;
 }
 
 .collapse {

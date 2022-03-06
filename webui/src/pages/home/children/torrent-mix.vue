@@ -1,5 +1,5 @@
 <template>
-  <div class="torrent-mix">
+  <div class="radius-div">
     <div class="torrent-mix-div">
       <el-form class="client-mix-form" label-width="100px" size="mini">
         <el-form-item label="选择下载器">
@@ -28,7 +28,6 @@
       <el-table
         :data="torrentList"
         size="small"
-        stripe
         style="width: 100%; font-size: 14px;">
         <el-table-column type="expand" width="72">
           <template slot-scope="props">
@@ -306,7 +305,7 @@ export default {
     async changePage (page) {
       this.torrents = [];
       this.page = page;
-      const url = `/torrent-mix?clientList=${encodeURIComponent(JSON.stringify(this.setting.clients))}&page=${page}&length=${this.length}`;
+      const url = `/torrent/torrent-mix?clientList=${encodeURIComponent(JSON.stringify(this.setting.clients))}&page=${page}&length=${this.length}`;
       this.$router.push(url);
       await this.listTorrent();
     },
@@ -353,13 +352,9 @@ export default {
 </script>
 
 <style scoped>
-.torrent-mix-div {
-  margin: 20px 0;
-  border-radius: 8px;
-  background: #FFF;
-}
 
 .client-mix-form {
+  margin: 20px;
   padding-top: 20px;
   width: fit-content;
   text-align: left;

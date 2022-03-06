@@ -1,6 +1,6 @@
 <template>
-  <div class="site-settings" style="margin: 20px 0;">
-    <div style="width: 100%; text-align: left; padding: 24px 0; background: #FFF; border-radius: 8px;">
+  <div class="radius-div" style="margin: 20px 0;">
+    <div style="width: 100%; text-align: left; padding: 24px 0; border-radius: 8px;">
       <a style="padding-left: 24px">选择日志级别:</a>
       <el-select size="small" v-model="type" @change="getLog" placeholder="日志级别">
         <el-option label="info" value="info"></el-option>

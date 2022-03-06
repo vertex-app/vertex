@@ -1,5 +1,5 @@
 <template>
-  <div class="search-mix">
+  <div class="radius-div" style="margin: 20px 0">
     <div class="search-mix-div" style="margin: 20px 0">
       <el-form class="search-mix-form" inline label-width="100px" size="mini" @submit.native.prevent>
         <el-form-item label="关键词">
@@ -39,7 +39,6 @@
         v-loading="tableLoading"
         :data="torrentList.slice((page - 1) * length, page * length)"
         size="small"
-        stripe
         @sort-change="sortList"
         style="width: 100%; font-size: 14px;">
         <!--
@@ -386,11 +385,6 @@ export default {
 </script>
 
 <style scoped>
-.search-mix-div {
-  padding: 8px;
-  border-radius: 8px;
-  background: #FFF;
-}
 
 .search-mix-form {
   padding-top: 24px;

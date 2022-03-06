@@ -3,7 +3,6 @@
     <div class="radius-div">
       <el-table
         :data="rssList"
-        stripe
         :default-sort="{prop: 'alias'}"
         style="margin: 20px">
         <el-table-column
@@ -344,11 +343,6 @@ export default {
 <style scoped>
 .rss-div {
   margin: 20px 0;
-}
-
-.radius-div {
-  border-radius: 8px;
-  background: #FFFFFF;
 }
 
 .collapse {

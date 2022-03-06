@@ -3,7 +3,6 @@
     <div class="radius-div">
       <el-table
         :data="raceList"
-        stripe
         :default-sort="{prop: 'alias'}"
         style="margin: 20px">
         <el-table-column
@@ -84,7 +83,6 @@
             <el-form-item v-if="race.type === 'normal'" label="条件" prop="conditions">
               <el-table
                 size="mini"
-                stripe
                 :data="race.conditions"
                 style="width: 720px">
                 <el-table-column
@@ -281,11 +279,6 @@ export default {
 <style scoped>
 .race-div {
   margin: 20px 0;
-}
-
-.radius-div {
-  border-radius: 8px;
-  background: #FFFFFF;
 }
 
 .collapse {

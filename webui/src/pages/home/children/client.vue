@@ -4,7 +4,6 @@
       <el-table
         :default-sort="{prop: 'alias'}"
         :data="clientList"
-        stripe
         style="margin: 20px">
         <el-table-column
           prop="id"
@@ -298,11 +297,6 @@ export default {
 <style scoped>
 .client-div {
   margin: 20px 0;
-}
-
-.radius-div {
-  border-radius: 8px;
-  background: #FFFFFF;
 }
 
 .collapse {

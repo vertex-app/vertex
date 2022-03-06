@@ -4,7 +4,6 @@
       <el-table
         :data="ruleList"
         :default-sort="{prop: 'alias'}"
-        stripe
         style="margin: 20px">
         <el-table-column
           prop="id"
@@ -84,7 +83,6 @@
             <el-form-item v-if="rule.type === 'normal'" label="限制条件">
               <el-table
                 size="mini"
-                stripe
                 :data="rule.conditions"
                 style="width: 720px">
                 <el-table-column
@@ -355,11 +353,6 @@ export default {
 <style scoped>
 .rule-div {
   margin: 20px 0;
-}
-
-.radius-div {
-  border-radius: 8px;
-  background: #FFFFFF;
 }
 
 .collapse {

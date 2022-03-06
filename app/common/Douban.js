@@ -109,12 +109,14 @@ class Douban {
           const details = await this._getDocument(wish.link);
           const imdb = details.querySelector('#info').innerHTML.match(/(tt\d+)/);
           const tag = details.querySelector('span.color_gray');
+          const year = details.querySelector('.year').innerHTML.match(/(\d+)/);
           if (!tag) {
             logger.info('豆瓣账户', this.alias, wish.name, '未添加标签, 跳过');
             continue;
           }
           const type = tag.innerHTML.trim().replace('标签:', '');
           wish.imdb = imdb ? imdb[1] : null;
+          wish.year = year ? year[1] : null;
           wish.tag = type.match(/#(.+?)#/);
           if (!wish.tag) {
             logger.info('豆瓣账户', this.alias, wish.name, '未识别到分类, 跳过');
@@ -261,7 +263,7 @@ class Douban {
     wish.doubanId = this.id;
     if (!wish.imdb) wish.imdb = wish.name.split('/')[0].trim();
     logger.info(this.alias, '启动豆瓣选剧, 影片:', wish.name, '豆瓣ID:', wish.id, 'imdb:', wish.imdb, '开始搜索以下站点:', this.sites.join(', '));
-    const result = await Promise.all(this.sites.map(i => global.runningSite[i].search(wish.name.split('/')[0].trim())));
+    const result = await Promise.all(this.sites.map(i => global.runningSite[i].search(wish.name.split('/')[0].trim() + ' ' + (wish.year || ''))));
     let torrents = result.map(i => i.torrentList).flat();
     logger.info(this.alias, '种子搜索已完成, 共计查找到', torrents.length, '个种子');
     const raceRuleList = util.listRaceRule();

@@ -2,7 +2,7 @@
   <div class="settings">
     <div class="radius-div">
       <el-form ref="setting" class="setting-form" :model="setting" label-width="160px" size="mini">
-        <div style="top: 24px; padding-left: 32px; font-size: 24px; color: #606266">全局设置</div>
+        <div style="top: 24px; padding-left: 32px; font-size: 24px;">全局设置</div>
         <el-divider></el-divider>
         <el-form-item label="用户名" prop="username">
           <el-input v-model="setting.username"></el-input>
@@ -50,7 +50,7 @@
       </el-form>
       <el-divider/>
       <el-form class="setting-form" label-width="160px" size="mini">
-        <div style="top: 24px; padding-left: 32px; font-size: 24px; color: #606266">备份与恢复</div>
+        <div style="top: 24px; padding-left: 32px; font-size: 24px;">备份与恢复</div>
         <el-divider></el-divider>
         <el-form-item size="small" label="备份">
           <el-button type="primary" @click="backupVertex">下载备份</el-button>
@@ -115,12 +115,6 @@ export default {
 </script>
 
 <style scoped>
-.radius-div {
-  text-align: left;
-  border-radius: 8px;
-  background: #FFFFFF;
-}
-
 .setting-form {
   padding: 20px;
   margin: 20px;
