@@ -86,8 +86,8 @@ class Douban {
       const newWishes = [];
       const doubanSet = { ..._doubanSet };
       for (const wish of doubanSet.wishes) {
-        if (wish.downloaded) continue;
-        logger.info('豆瓣账户:', this.alias, '想看:', wish.name, '上次未选种成功, 即将重新尝试选种');
+        if (wish.downloaded && (!wish.episodes || (wish.episodeNow === wish.episodes))) continue;
+        logger.info('豆瓣账户:', this.alias, '想看:', wish.name, '上次未选种成功或未更新完毕, 即将重新尝试选种');
         try {
           if (!this.categories[wish.tag]) {
             logger.info('豆瓣账户', this.alias, wish.name, '标签分类', wish.tag, '未定义, 跳过');
@@ -121,6 +121,11 @@ class Douban {
           if (!wish.tag) {
             logger.info('豆瓣账户', this.alias, wish.name, '未识别到分类, 跳过');
             continue;
+          }
+          const episodes = details.querySelectorAll('a[href*="episode"]');
+          if (episodes.length !== 0) {
+            wish.episodes = +episodes[episodes.length - 1].href.match(/episode\/(\d+)/)[1];
+            wish.episodeNow = 0;
           }
           wish.tag = wish.tag[1];
           if (!this.categories[wish.tag]) {
@@ -213,6 +218,16 @@ class Douban {
     return fit;
   };
 
+  _setEpisodeNow (id, episodeNow) {
+    const doubanSet = util.listDoubanSet().filter(item => item.id === this.id)[0];
+    for (const wish of doubanSet.wishes) {
+      if (wish.id === id) {
+        wish.episodeNow = episodeNow;
+        fs.writeFileSync(path.join(__dirname, '../data/douban/set', this.id + '.json'), JSON.stringify(doubanSet, null, 2));
+      }
+    }
+  }
+
   async _linkTorrentFiles (torrent, client, recordNoteJson) {
     if (!this.linkRule) {
       logger.info(this.alias, '本实例不含链接规则, 跳过软链接操作');
@@ -226,6 +241,7 @@ class Douban {
     const wish = recordNoteJson.wish;
     const category = recordNoteJson.category;
     if (category.type === 'series') {
+      let newEpisode = 0;
       for (const file of files) {
         if (file.size < linkRule.minFileSize) continue;
         const seriesName = wish.name.split('/')[0].trim();
@@ -235,13 +251,21 @@ class Douban {
         if (part?.[1]) {
           episode = part?.[1] === 'A' || part?.[1] === '1' ? episode * 2 - 1 : episode * 2;
         }
+        newEpisode = Math.max(episode, newEpisode);
         episode = 'E' + '0'.repeat(3 - ('' + episode).length) + episode;
         const fileExt = path.extname(file.name);
         const linkFilePath = path.join(linkRule.linkFilePath, category.libraryPath, seriesName, season);
         const linkFile = path.join(linkFilePath, season + episode + fileExt);
         const targetFile = path.join(torrent.savePath.replace(linkRule.targetPath.split('##')[0], linkRule.targetPath.split('##')[1]), file.name);
         const command = `mkdir -p '${linkFilePath}' && ln -s '${targetFile}' '${linkFile}'`;
-        await global.runningServer[linkRule.server].run(command);
+        try {
+          await global.runningServer[linkRule.server].run(command);
+        } catch (e) {
+          logger.error(e);
+        }
+      }
+      if (newEpisode) {
+        this._setEpisodeNow(wish.id, newEpisode);
       }
     } else if (category.type === 'movie') {
       for (const file of files) {
@@ -263,7 +287,7 @@ class Douban {
     wish.doubanId = this.id;
     if (!wish.imdb) wish.imdb = wish.name.split('/')[0].trim();
     logger.info(this.alias, '启动豆瓣选剧, 影片:', wish.name, '豆瓣ID:', wish.id, 'imdb:', wish.imdb, '开始搜索以下站点:', this.sites.join(', '));
-    const result = await Promise.all(this.sites.map(i => global.runningSite[i].search(wish.name.split('/')[0].trim() + ' ' + (wish.year || ''))));
+    const result = await Promise.all(this.sites.map(i => global.runningSite[i].search(wish.name.split('/')[0].trim())));
     let torrents = result.map(i => i.torrentList).flat();
     logger.info(this.alias, '种子搜索已完成, 共计查找到', torrents.length, '个种子');
     const raceRuleList = util.listRaceRule();
@@ -306,6 +330,30 @@ class Douban {
             logger.info(this.alias, '选种规则:', rule.alias, '种子:', torrent.title, '/', torrent.subtitle, '匹配成功, 同时匹配排除关键词:', this.categories[wish.tag].rejectKeys, '跳过');
             break;
           }
+          const torrentYear = (torrent.title.match(/19\d{2}/g) || []).concat(torrent.title.match(/20\d{2}/g) || []);
+          let fitYear = false || torrentYear.length === 0;
+          for (const year of torrentYear) {
+            fitYear = fitYear || +year === +wish.year;
+          }
+          if (!fitYear) {
+            logger.info(this.alias, '选种规则:', rule.alias, '种子:', torrent.title, '/', torrent.subtitle, '匹配成功, 未匹配首映年份:', wish.year, '跳过');
+            break;
+          }
+          if (wish.year > parseInt(torrent.time / 3600 * 24 * 365 + 1970)) {
+            logger.info(this.alias, '选种规则:', rule.alias, '种子:', torrent.title, '/', torrent.subtitle, '匹配成功, 发种时间小于首映年份:', wish.year, '跳过');
+            break;
+          }
+          if (wish.episodes) {
+            const episodeTypeA = (torrent.subtitle.match(/E?\d{2,3}-E?\d{2,3}/g) || []).map(item => item.replace('E', '').split('-'))[0] || [];
+            const episodeTypeB = (torrent.subtitle.match(/[^\d]E?\d{2,3}[^\d]/g) || []).map(item => item.match(/\d{2,3}/g))[0] || [];
+            const episodeTypeC = (torrent.subtitle.match(/[^\d]E?\d[^\d]/g) || []).map(item => item.match(/\d/g))[0] || [];
+            const episodes = episodeTypeA.concat(episodeTypeB).concat(episodeTypeC);
+            logger.debug(this.alias, '选种规则:', rule.alias, '种子:', torrent.title, '分集', wish.episodeNow, episodes);
+            if (episodes.some(item => +item <= wish.episodeNow)) {
+              logger.info(this.alias, '选种规则:', rule.alias, '种子:', torrent.title, '/', torrent.subtitle, '匹配成功, 已完成至:', wish.episodeNow, '判断结果为已下载, 跳过');
+              break;
+            }
+          }
           logger.info(this.alias, '选种规则:', rule.alias, '种子:', torrent.title, '/', torrent.subtitle, '匹配成功, 准备推送至下载器:', global.runningClient[this.client].alias);
           const category = this.categories[wish.tag];
           const recordNoteJson = {
@@ -338,6 +386,7 @@ class Douban {
         for (const _torrent of client.maindata.torrents) {
           if (torrent.hash !== _torrent.hash) continue;
           if (_torrent.completed === _torrent.size) {
+            logger.info(_torrent, torrent);
             logger.info('种子', _torrent.name, '已完成, 稍后将进行软链接操作');
             await this.ntf.torrentFinish(torrent, '');
             const recordNoteJson = JSON.parse(torrent.record_note);

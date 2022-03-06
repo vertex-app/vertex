@@ -210,17 +210,6 @@ exports.listRss = function () {
   return rssList;
 };
 
-exports.listRace = function () {
-  const files = fs.readdirSync(path.join(__dirname, '../data/race'));
-  const raceList = [];
-  for (const file of files) {
-    if (path.extname(file) === '.json') {
-      raceList.push(_importJson(path.join(__dirname, '../data/race', file)));
-    }
-  }
-  return raceList;
-};
-
 exports.listDeleteRule = function () {
   const files = fs.readdirSync(path.join(__dirname, '../data/rule/delete'));
   const deleteRuleList = [];

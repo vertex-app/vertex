@@ -88,12 +88,6 @@ const init = function () {
       global.runningSite[site.name] = new Site(site);
     }
   }
-  for (const race of util.listRace()) {
-    if (race.enable) {
-      const Race = require('./common/Race');
-      global.runningRace[race.id] = new Race(race);
-    }
-  }
   for (const douban of util.listDouban()) {
     const Douban = require('./common/Douban');
     global.runningDouban[douban.id] = new Douban(douban);

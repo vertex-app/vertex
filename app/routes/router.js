@@ -168,11 +168,6 @@ module.exports = function (app, express, router) {
   router.post('/rss/modify', ctrl.Rss.modify);
   router.post('/rss/delete', ctrl.Rss.delete);
 
-  router.get('/race/list', ctrl.Race.list);
-  router.post('/race/add', ctrl.Race.add);
-  router.post('/race/modify', ctrl.Race.modify);
-  router.post('/race/delete', ctrl.Race.delete);
-
   router.get('/douban/list', ctrl.Douban.list);
   router.post('/douban/add', ctrl.Douban.add);
   router.post('/douban/modify', ctrl.Douban.modify);

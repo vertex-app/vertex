@@ -12,7 +12,6 @@ import HitAndRun from '@/pages/home/children/hit-and-run';
 import Global from '@/pages/home/children/global';
 import Point from '@/pages/home/children/point';
 import BingeWatching from '@/pages/home/children/binge-watching';
-import AutoRace from '@/pages/home/children/auto-race';
 import RaceRule from '@/pages/home/children/race-rule';
 import LinkRule from '@/pages/home/children/link-rule';
 import Douban from '@/pages/home/children/douban';
@@ -146,12 +145,6 @@ const bingeWatching = {
   component: BingeWatching,
   children: [
     {
-      path: 'auto-race',
-      component: AutoRace,
-      meta: {
-        title: '自动追剧'
-      }
-    }, {
       path: 'search-mix',
       component: SearchMix,
       meta: {

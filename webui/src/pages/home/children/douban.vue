@@ -16,16 +16,6 @@
           label="别名">
         </el-table-column>
         <el-table-column
-          sortable
-          prop="category"
-          label="分类">
-        </el-table-column>
-        <el-table-column
-          sortable
-          prop="savePath"
-          label="保存路径">
-        </el-table-column>
-        <el-table-column
           label="操作"
           width="330">
           <template slot-scope="scope">
@@ -58,7 +48,7 @@
               :key="item.id + item.doubanId"
               @close="deleteItem(item)"
               style="margin-left: 24px; margin-top: 16px">
-              {{`${item.name}: ${item.downloaded ? '已下载' : '未下载'}`}}
+              {{`${item.name}: ${!item.episodes ? item.downloaded ? '已下载' : '未下载' : item.episodes === item.episodeNow ? '已追完' : item.episodeNow + ' / ' + item.episodes}`}}
             </el-tag>
           </div>
         </el-collapse-item>
@@ -107,7 +97,7 @@
               <el-table
                 size="mini"
                 :data="douban.categories"
-                style="width: 960px">
+                style="width: 1200px">
                 <el-table-column
                   label="豆瓣标签"
                   width="144">
@@ -117,9 +107,9 @@
                 </el-table-column>
                 <el-table-column
                   label="所属分类"
-                  width="120">
+                  width="144">
                   <template slot-scope="scope">
-                    <el-select v-model="scope.row.type" style="width: 96px" placeholder="所属分类">
+                    <el-select v-model="scope.row.type" style="width: 112px" placeholder="所属分类">
                       <el-option label="电影" value="movie"></el-option>
                       <el-option label="电视剧" value="series"></el-option>
                     </el-select>
@@ -146,13 +136,16 @@
                     <el-input v-model="scope.row.savePath" placeholder="保存路径"/>
                   </template>
                 </el-table-column>
-                <el-table-column label="自动管理">
+                <el-table-column
+                  label="自动管理"
+                  width="144">
                   <template slot-scope="scope">
                     <el-checkbox v-model="scope.row.autoTMM">自动管理</el-checkbox>
                   </template>
                 </el-table-column>
                 <el-table-column
-                  label="排除关键词">
+                  label="排除关键词"
+                  width="144">
                   <template slot-scope="scope">
                     <el-input v-model="scope.row.rejectKeys" placeholder="排除种子关键词"/>
                   </template>
@@ -168,7 +161,7 @@
               <el-button @click="douban.categories.push({ ...defaultCategory })" type="primary" size="small">新增</el-button>
             </el-form-item>
             <el-form-item required label="Cookie" prop="cookie">
-              <el-input v-model="douban.cookie" type="textarea" :row="3" style="width: 300px"></el-input>
+              <el-input v-model="douban.cookie" type="textarea" :rows="5" style="width: 500px"></el-input>
               <div><el-tag size="small" type="info">登录豆瓣账户后获取到的 Cookie</el-tag></div>
             </el-form-item>
             <el-form-item required label="刷新周期" prop="cron">
@@ -290,6 +283,7 @@ export default {
         return;
       }
       this.refreshStatus = '刷新想看';
+      this.listWishes();
       await this.$messageBox(res);
     },
     async deleteItem (row) {
