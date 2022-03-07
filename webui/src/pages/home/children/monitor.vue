@@ -194,11 +194,11 @@ export default {
       server: {},
       clientCollapse: [],
       vnstat: {
-        fiveminite: {
+        fiveminute: {
           interfaces: [
             {
               traffic: {
-                fiveminite: []
+                fiveminute: []
               }
             }
           ]
@@ -418,9 +418,10 @@ export default {
   },
   methods: {
     handlePeriod (vnstatPeriod) {
-      this.chart.xAxis.data = this.vnstat[this.vnstatPeriod].interfaces[0].traffic[this.vnstatPeriod].map(item => this.formatTime(item).slice(-5)).reverse();
-      this.chart.series[0].data = this.vnstat[this.vnstatPeriod].interfaces[0].traffic[this.vnstatPeriod].map(item => item.tx).reverse();
-      this.chart.series[1].data = this.vnstat[this.vnstatPeriod].interfaces[0].traffic[this.vnstatPeriod].map(item => item.rx).reverse();
+      const sortedArr = this.vnstat[this.vnstatPeriod].interfaces[0].traffic[this.vnstatPeriod];
+      this.chart.xAxis.data = sortedArr.map(item => this.formatTime(item).slice(-5));
+      this.chart.series[0].data = sortedArr.map(item => item.tx);
+      this.chart.series[1].data = sortedArr.map(item => item.rx);
     },
     async displayDetails (row) {
       this.server = row;
@@ -497,6 +498,14 @@ export default {
       for (const key of Object.keys(this.vnstat)) {
         this.vnstat[key].interfaces = this.vnstat[key].interfaces.sort((a, b) => b.traffic.total.rx - a.traffic.total.rx);
       }
+      this.vnstat.day.interfaces[0].traffic.day = this.vnstat.day.interfaces[0].traffic.day
+        .sort((a, b) => this.$moment(this.formatTime(b)).unix() - this.$moment(this.formatTime(a)).unix());
+      this.vnstat.month.interfaces[0].traffic.month = this.vnstat.month.interfaces[0].traffic.month
+        .sort((a, b) => this.$moment(this.formatTime(b)).unix() - this.$moment(this.formatTime(a)).unix());
+      this.vnstat.fiveminute.interfaces[0].traffic.fiveminute = this.vnstat.fiveminute.interfaces[0].traffic.fiveminute
+        .sort((a, b) => this.$moment(this.formatTime(b)).unix() - this.$moment(this.formatTime(a)).unix());
+      this.vnstat.hour.interfaces[0].traffic.hour = this.vnstat.hour.interfaces[0].traffic.hour
+        .sort((a, b) => this.$moment(this.formatTime(b)).unix() - this.$moment(this.formatTime(a)).unix());
       const today = this.vnstat.day.interfaces[0].traffic.day[0];
       if (today) {
         const estimated = { ...today };
