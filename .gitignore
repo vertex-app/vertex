@@ -6,3 +6,4 @@ app/data
 app/db/sql.db
 config.yaml
 torrents
+develop
