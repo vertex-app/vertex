@@ -35,7 +35,7 @@ class Site {
       GPW: this._gpw,
       BTSchool: this._btschool,
       TJUPT: this._tjupt,
-      KeppFriends: this._keepfriends,
+      KeepFriends: this._keepfriends,
       ToTheGlory: this._totheglory
     };
     this.searchWrapper = {
@@ -1028,7 +1028,7 @@ class Site {
   // ToTheGlory
   async _searchTotheglory (keyword) {
     const torrentList = [];
-    const document = await this._getDocument(`https://springsunday.net/torrents.php?incldead=0&spstate=0&pick=0&inclbookmarked=0&exclusive=0&search=${encodeURIComponent(keyword)}&search_area=${keyword.match(/tt\d+/) ? 4 : 0}&search_mode=0`);
+    const document = await this._getDocument(`https://totheglory.im/browse.php?search_field=${encodeURIComponent(keyword)}&c=M`);
     const torrents = document.querySelectorAll('#torrent_table tbody tr:not(:first-child)');
     for (const _torrent of torrents) {
       const torrent = {};
@@ -1054,7 +1054,6 @@ class Site {
       torrent.tags = [];
       torrentList.push(torrent);
     }
-    console.log(torrentList);
     return {
       site: this.site,
       torrentList

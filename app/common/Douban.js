@@ -326,7 +326,7 @@ class Douban {
         return sortType === 'asc' ? a[sortKey] - b[sortKey] : b[sortKey] - a[sortKey];
       });
       for (const torrent of torrents) {
-        if (this.rules.some(item => this._fitRaceRule(item, torrent))) {
+        if (rules.some(item => this._fitRaceRule(item, torrent))) {
           let fitReject = false;
           for (const rejectRule of rejectRules) {
             if (this._fitRaceRule(rejectRules, torrent)) {
