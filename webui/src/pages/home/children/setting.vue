@@ -14,6 +14,14 @@
           <el-input v-model="setting.background" style="width: 500px;"></el-input>
           <div><el-tag type="info">图片外链</el-tag></div>
         </el-form-item>
+        <el-form-item label="白色蒙版透明度" prop="transparent">
+          <el-input v-model="setting.transparent" style="width: 500px;"></el-input>
+          <div><el-tag type="info">白色蒙版透明度, 范围 0-1, 1 为不透明, 默认为 0.3</el-tag></div>
+        </el-form-item>
+        <el-form-item label="模糊块大小" prop="blurSize">
+          <el-input v-model="setting.blurSize" style="width: 500px;"></el-input>
+          <div><el-tag type="info">模糊块大小, 默认为 4, 值越大, 越模糊</el-tag></div>
+        </el-form-item>
         <el-form-item label="数据目录路径" prop="dataPath">
           <el-input v-model="setting.dataPath" style="width: 500px;"></el-input>
           <div><el-tag type="warning">数据目录路径, Docker 安装无需修改</el-tag></div>

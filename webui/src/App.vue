@@ -31,6 +31,8 @@ export default {
 </script>
 
 <style>
+@import '/api/setting/getCss.css';
+
 body {
   height: 100vh;
   background-position-x: center;
@@ -49,12 +51,6 @@ body {
   -webkit-text-size-adjust: 100%;
 }
 
-.radius-div {
-  border-radius: 8px;
-  background: rgba(255,255,255, 0.3);
-  backdrop-filter: blur(4px);
-}
-
 .el-tabs--card>.el-tabs__header {
   border-bottom: none;
 }
@@ -64,12 +60,13 @@ body {
   border-radius: 8px !important;
 }
 
-.el-tabs {
+/*
+.el-tabs, .radius-div {
   border-radius: 8px;
   background: rgba(255,255,255, 0.3);
   backdrop-filter: blur(4px);
 }
-
+*/
 .el-textarea__inner {
   font-family: 'consolas';
 }

@@ -32,12 +32,14 @@ class SettingMod {
     global.userAgent = options.userAgent;
     global.apiKey = options.apiKey;
     global.dataPath = options.dataPath || '/';
+    global.transparent = options.transparent;
+    global.blurSize = options.blurSize;
     global.telegramProxy = options.telegramProxy || 'https://api.telegram.org';
     const webhookPush = util.listPush().filter(item => item.id === global.webhookPushTo)[0];
     if (webhookPush) {
       global.webhookPush = new Push({ ...webhookPush, push: true });
     }
-    return '修改全局设置成功, 刷新页面后更新。';
+    return '修改全局设置成功, 部分设定需要刷新页面生效';
   };
 
   getTorrentHistorySetting () {

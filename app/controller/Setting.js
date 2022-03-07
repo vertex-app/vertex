@@ -196,5 +196,16 @@ class Setting {
       });
     }
   }
+
+  async getCss (req, res) {
+    const css =
+`.el-tabs, .radius-div {
+  border-radius: 8px;
+  background: rgba(255,255,255, ${global.transparent || 0.3});
+  backdrop-filter: blur(${global.blurSize || 4}px);
+}`;
+    res.set('content-type', 'text/css');
+    return res.send(css);
+  }
 }
 module.exports = Setting;

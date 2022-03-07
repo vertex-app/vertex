@@ -215,6 +215,7 @@ module.exports = function (app, express, router) {
   router.post('/setting/modifySitePushSetting', ctrl.Setting.modifySitePushSetting);
   router.get('/setting/backupVertex', ctrl.Setting.backupVertex);
   router.post('/setting/restoreVertex', ctrl.Setting.restoreVertex);
+  router.get('/setting/getCss.css', ctrl.Setting.getCss);
 
   router.all('/openapi/:apiKey/plex', ctrl.Webhook.plex);
 
