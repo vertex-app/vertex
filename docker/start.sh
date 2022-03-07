@@ -3,6 +3,7 @@
 if [ -d '/tmp/vertex' ]; then
   rm -rf /vertex/*
   mv /tmp/vertex/* /vertex
+  rm -rf /tmp/vertex
 fi
 
 if [ ! -d '/vertex/data' ]; then
