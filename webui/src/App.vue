@@ -107,7 +107,7 @@ body {
 }
 
 .el-menu-item {
-  color: #dde6f9;
+  color: #000;
 }
 
 .el-descriptions__body {
