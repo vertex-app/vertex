@@ -64,4 +64,4 @@ categories:
       - infoFilter
       - debugFilter
       - minError
-    level: all
+    level: info

@@ -223,6 +223,7 @@ class Douban {
     for (const wish of doubanSet.wishes) {
       if (wish.id === id) {
         wish.episodeNow = episodeNow;
+        logger.info(wish.name, '更新至', episodeNow);
         fs.writeFileSync(path.join(__dirname, '../data/douban/set', this.id + '.json'), JSON.stringify(doubanSet, null, 2));
       }
     }
@@ -343,11 +344,12 @@ class Douban {
             logger.info(this.alias, '选种规则:', rule.alias, '种子:', torrent.title, '/', torrent.subtitle, '匹配成功, 发种时间小于首映年份:', wish.year, '跳过');
             break;
           }
+          let episodes;
           if (wish.episodes) {
             const episodeTypeA = (torrent.subtitle.match(/E?\d{2,3}-E?\d{2,3}/g) || []).map(item => item.replace('E', '').split('-'))[0] || [];
             const episodeTypeB = (torrent.subtitle.match(/[^\d]E?\d{2,3}[^\d]/g) || []).map(item => item.match(/\d{2,3}/g))[0] || [];
             const episodeTypeC = (torrent.subtitle.match(/[^\d]E?\d[^\d]/g) || []).map(item => item.match(/\d/g))[0] || [];
-            const episodes = episodeTypeA.concat(episodeTypeB).concat(episodeTypeC);
+            episodes = episodeTypeA.concat(episodeTypeB).concat(episodeTypeC);
             logger.debug(this.alias, '选种规则:', rule.alias, '种子:', torrent.title, '分集', wish.episodeNow, episodes);
             if (episodes.some(item => +item <= wish.episodeNow)) {
               logger.info(this.alias, '选种规则:', rule.alias, '种子:', torrent.title, '/', torrent.subtitle, '匹配成功, 已完成至:', wish.episodeNow, '判断结果为已下载, 跳过');
@@ -363,6 +365,10 @@ class Douban {
           };
           try {
             await global.runningSite[torrent.site].pushTorrentById(torrent.id, torrent.downloadLink, this.client, category.savePath, category.category, category.autoTMM, 6, JSON.stringify(recordNoteJson));
+            if (episodes) {
+              const maxEpisode = Math.max(episodes.map(item => +item));
+              this._setEpisodeNow(wish.id, maxEpisode);
+            }
           } catch (e) {
             logger.error(this.alias, '选种规则:', rule.alias, '种子:', torrent.title, '/', torrent.subtitle, '推送至下载器:', global.runningClient[this.client].alias, '失败, 报错如下:\n', e);
             await this.ntf.addDoubanTorrentError(this.alias, global.runningClient[this.client], torrent, rule, wish);
