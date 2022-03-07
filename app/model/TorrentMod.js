@@ -53,7 +53,7 @@ class TorrentMod {
     const index = options.length * (options.page - 1);
     let where = 'where 1 = 1';
     if (options.rss && options.rss === 'deleted') {
-      where += ` and rss_id NOT IN (${util.listRss().map(item => item.id).join('\', \'')})`;
+      where += ` and rss_id NOT IN ('${util.listRss().map(item => item.id).join('\', \'')}')`;
     } else if (options.rss) {
       where += ` and rss_id = '${options.rss}'`;
     }

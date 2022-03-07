@@ -377,7 +377,7 @@ class Douban {
           try {
             await global.runningSite[torrent.site].pushTorrentById(torrent.id, torrent.downloadLink, this.client, category.savePath, category.category, category.autoTMM, 6, JSON.stringify(recordNoteJson));
             if (episodes) {
-              const maxEpisode = Math.max(episodes.map(item => +item));
+              const maxEpisode = Math.max(...episodes.map(item => +item));
               this._setEpisodeNow(wish.id, maxEpisode);
             }
           } catch (e) {

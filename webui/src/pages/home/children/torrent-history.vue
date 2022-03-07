@@ -64,6 +64,7 @@
                 <el-link type="primary" @click="gotoDetail(props.row)" style="line-height: 24px">{{ props.row.link }}</el-link>
               </el-form-item>
               <el-form-item label="记录备注">
+                <br v-if="props.row.recordNote.indexOf('wish') !== -1"/>
                 <span>{{ props.row.recordNote }}</span>
               </el-form-item>
             </el-form>
@@ -129,7 +130,7 @@
           label="种子状态"
           width="144">
           <template slot-scope="scope">
-            {{ scope.row.recordNote }}
+            {{ scope.row.recordNote.indexOf('wish') !== -1 ? '豆瓣' : scope.row.recordNote }}
           </template>
         </el-table-column>
         <el-table-column
