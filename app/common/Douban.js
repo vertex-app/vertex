@@ -32,6 +32,7 @@ class Douban {
     this.checkFinishJob = new CronJob(global.checkFinishCron, () => this.checkFinish());
     this.refreshWishJob.start();
     this.checkFinishJob.start();
+    this.wishes = (util.listDoubanSet().filter(item => item.id === this.id)[0] || {}).wishes || [];
     logger.info('豆瓣账号', this.alias, '初始化完毕');
   };
 
@@ -72,20 +73,16 @@ class Douban {
       wishes.push(wish);
     }
     const _doubanSet = util.listDoubanSet().filter(item => item.id === this.id)[0];
+    this.wishes = _doubanSet.wishes;
     if (!_doubanSet) {
-      const doubanSet = {
-        id: this.id,
-        wishes: wishes.map(item => {
-          logger.info('豆瓣账户', this.alias, '首次添加想看列表', item.name, '已设为已下载');
-          return { ...item, downloaded: true };
-        })
-      };
-      fs.writeFileSync(path.join(__dirname, '../data/douban/set', this.id + '.json'), JSON.stringify(doubanSet, null, 2));
+      this.wishes = wishes.map(item => {
+        logger.info('豆瓣账户', this.alias, '首次添加想看列表', item.name, '已设为已下载');
+        return { ...item, downloaded: true };
+      });
+      this._saveSet();
       await this.ntf.addDouban(this.alias, wishes);
     } else {
-      const newWishes = [];
-      const doubanSet = { ..._doubanSet };
-      for (const wish of doubanSet.wishes) {
+      for (const wish of this.wishes) {
         if (wish.downloaded && (!wish.episodes || (wish.episodeNow === wish.episodes))) continue;
         logger.info('豆瓣账户:', this.alias, '想看:', wish.name, '上次未选种成功或未更新完毕, 即将重新尝试选种');
         try {
@@ -104,7 +101,7 @@ class Douban {
         }
       }
       for (const wish of wishes) {
-        if (!doubanSet.wishes.filter(item => item.id === wish.id)[0]) {
+        if (!this.wishes.filter(item => item.id === wish.id)[0]) {
           logger.info('豆瓣账户', this.alias, wish.name, '已添加入想看列表, 稍后将开始处理');
           const details = await this._getDocument(wish.link);
           const imdb = details.querySelector('#info').innerHTML.match(/(tt\d+)/);
@@ -133,6 +130,8 @@ class Douban {
             continue;
           }
           try {
+            await this.ntf.addDoubanWish(this.alias, wish);
+            this.wishes.push(wish);
             wish.downloaded = await this.selectTorrent(wish);
             if (!wish.downloaded) {
               logger.info(this.alias, '未匹配种子', wish.name);
@@ -143,16 +142,20 @@ class Douban {
             wish.downloaded = false;
             this.ntf.selectTorrentError(this.alias, `执行报错: ${e.message}`);
           }
-          doubanSet.wishes.push(wish);
-          newWishes.push(wish);
+          this._saveSet();
         }
       };
-      fs.writeFileSync(path.join(__dirname, '../data/douban/set', this.id + '.json'), JSON.stringify(doubanSet, null, 2));
-      if (newWishes.length !== 0) {
-        await this.ntf.addDoubanWish(this.alias, newWishes);
-      }
+      this._saveSet();
     }
   }
+
+  _saveSet () {
+    const set = {
+      id: this.id,
+      wishes: this.wishes
+    };
+    fs.writeFileSync(path.join(__dirname, '../data/douban/set', this.id + '.json'), JSON.stringify(set, null, 2));
+  };
 
   _fitConditions (_torrent, conditions) {
     let fit = true;
@@ -219,12 +222,11 @@ class Douban {
   };
 
   _setEpisodeNow (id, episodeNow) {
-    const doubanSet = util.listDoubanSet().filter(item => item.id === this.id)[0];
-    for (const wish of doubanSet.wishes) {
+    for (const wish of this.wishes) {
       if (wish.id === id) {
         wish.episodeNow = episodeNow;
         logger.info(wish.name, '更新至', episodeNow);
-        fs.writeFileSync(path.join(__dirname, '../data/douban/set', this.id + '.json'), JSON.stringify(doubanSet, null, 2));
+        this._saveSet();
       }
     }
   }
@@ -340,7 +342,7 @@ class Douban {
             .split(',').some(item => (torrent.title.indexOf(item) !== -1 || torrent.subtitle.indexOf(item) !== -1));
           if (fitRejectKeys) {
             logger.info(this.alias, '选种规则:', rulesName, '种子:', torrent.title, '/', torrent.subtitle, '匹配成功, 同时匹配排除关键词:', this.categories[wish.tag].rejectKeys, '跳过');
-            break;
+            continue;
           }
           const torrentYear = (torrent.title.match(/19\d{2}/g) || []).concat(torrent.title.match(/20\d{2}/g) || []);
           let fitYear = false || torrentYear.length === 0;
@@ -349,22 +351,22 @@ class Douban {
           }
           if (!fitYear) {
             logger.info(this.alias, '选种规则:', rulesName, '种子:', torrent.title, '/', torrent.subtitle, '匹配成功, 未匹配首映年份:', wish.year, '跳过');
-            break;
+            continue;
           }
           if (wish.year > parseInt(torrent.time / 3600 * 24 * 365 + 1970)) {
             logger.info(this.alias, '选种规则:', rulesName, '种子:', torrent.title, '/', torrent.subtitle, '匹配成功, 发种时间小于首映年份:', wish.year, '跳过');
-            break;
+            continue;
           }
           let episodes;
           if (wish.episodes) {
-            const episodeTypeA = (torrent.subtitle.match(/E?\d{2,3}-E?\d{2,3}/g) || []).map(item => item.replace('E', '').split('-'))[0] || [];
+            const episodeTypeA = (torrent.subtitle.match(/E?\d{2,3}-E?\d{2,3}/g) || []).map(item => item.replace(/E/g, '').split('-'))[0] || [];
             const episodeTypeB = (torrent.subtitle.match(/[^\d]E?\d{2,3}[^\d]/g) || []).map(item => item.match(/\d{2,3}/g))[0] || [];
             const episodeTypeC = (torrent.subtitle.match(/[^\d]E?\d[^\d]/g) || []).map(item => item.match(/\d/g))[0] || [];
             episodes = episodeTypeA.concat(episodeTypeB).concat(episodeTypeC);
             logger.debug(this.alias, '选种规则:', rulesName, '种子:', torrent.title, '分集', wish.episodeNow, episodes);
             if (episodes.some(item => +item <= wish.episodeNow)) {
               logger.info(this.alias, '选种规则:', rulesName, '种子:', torrent.title, '/', torrent.subtitle, '匹配成功, 已完成至:', wish.episodeNow, '判断结果为已下载, 跳过');
-              break;
+              continue;
             }
           }
           logger.info(this.alias, '选种规则:', rulesName, '种子:', torrent.title, '/', torrent.subtitle, '匹配成功, 准备推送至下载器:', global.runningClient[this.client].alias);
@@ -377,7 +379,7 @@ class Douban {
           try {
             await global.runningSite[torrent.site].pushTorrentById(torrent.id, torrent.downloadLink, this.client, category.savePath, category.category, category.autoTMM, 6, JSON.stringify(recordNoteJson));
             if (episodes) {
-              const maxEpisode = Math.max(...episodes.map(item => +item));
+              const maxEpisode = Math.max(...episodes.map(item => +item || 0));
               this._setEpisodeNow(wish.id, maxEpisode);
             }
           } catch (e) {
@@ -403,7 +405,7 @@ class Douban {
         for (const _torrent of client.maindata.torrents) {
           if (torrent.hash !== _torrent.hash) continue;
           if (_torrent.completed === _torrent.size) {
-            logger.info(_torrent, torrent);
+            logger.debug(torrent, _torrent);
             logger.info('种子', _torrent.name, '已完成, 稍后将进行软链接操作');
             await this.ntf.torrentFinish(torrent, '');
             const recordNoteJson = JSON.parse(torrent.record_note);

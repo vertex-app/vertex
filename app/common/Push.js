@@ -192,10 +192,10 @@ class Push {
     await this._push(this.pushType.indexOf('douban') !== -1, text, desp);
   };
 
-  async addDoubanWish (alias, wishes) {
-    const text = `添加想看: ${wishes.map(item => item.name).join(' | ')} || 豆瓣账户: ${alias}`;
+  async addDoubanWish (alias, wish) {
+    const text = `添加想看: ${wish.name} || 豆瓣账户: ${alias}`;
     let desp = `豆瓣账户: ${alias}\n` +
-      `添加想看: \n${wishes.map(item => item.name).join('\n')}`;
+      `添加想看: \n${wish.name}`;
     if (this.type === 'telegram') {
       desp = '```\n' + desp + '\n```';
     }
@@ -203,7 +203,7 @@ class Push {
       desp = '\\#添加想看\n' + desp;
     }
     if (this.type === 'telegram') {
-      desp = desp + `\n[POSTER](${wishes[0].poster})`;
+      desp = desp + `\n[POSTER](${wish.poster})`;
     }
     await this._push(this.pushType.indexOf('douban') !== -1, text, desp);
   };
