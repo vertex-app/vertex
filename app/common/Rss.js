@@ -273,7 +273,7 @@ class Rss {
         } catch (error) {
           logger.error(this.alias, '下载器', _client.alias, '添加种子失败:', error.message);
           await util.runRecord('INSERT INTO torrents (hash, name, size, rss_id, link, record_time, record_type, record_note) values (?, ?, ?, ?, ?, ?, ?, ?)',
-            [torrent.hash, torrent.name, torrent.size, this.id, this.category, torrent.link, moment().unix(), 3, '添加种子失败']);
+            [torrent.hash, torrent.name, torrent.size, this.id, torrent.link, moment().unix(), 3, '添加种子失败']);
           await this.ntf.addTorrentError(this._rss, _client, torrent);
         }
       } else {
