@@ -292,13 +292,27 @@ class Douban {
     let torrents = result.map(i => i.torrentList).flat();
     logger.info(this.alias, '种子搜索已完成, 共计查找到', torrents.length, '个种子');
     const raceRuleList = util.listRaceRule();
+    const rejectRules = this.rejectRules
+      .map(i => raceRuleList.filter(ii => ii.id === i)[0])
+      .filter(i => i);
     const raceRules = this.raceRules
       .map(i => raceRuleList.filter(ii => ii.id === i)[0])
       .filter(i => i)
       .sort((a, b) => +b.priority - +a.priority);
+    const raceRuleArrs = {};
+    for (const raceRule of raceRules) {
+      if (!raceRuleArrs[raceRule.priority]) {
+        raceRuleArrs[raceRule.priority] = [raceRule];
+      } else {
+        raceRuleArrs[raceRule.priority].push(raceRule);
+      }
+    }
     logger.info(this.alias, '选种规则总计:', raceRules.length, ' 开始按照优先级查找');
-    for (const rule of raceRules) {
-      logger.info(this.alias, '选种规则:', rule.alias, '开始匹配');
+    for (const priority of Object.keys(raceRuleArrs).sort((a, b) => +b - +a)) {
+      const rules = raceRuleArrs[priority];
+      const rule = rules[0];
+      const rulesName = rules.map(item => item.alias).join('/');
+      logger.info(this.alias, '选种规则:', rulesName, '开始匹配');
       const sortType = rule.sortType || 'desc';
       const sortKey = rule.sortKey || 'time';
       const numberSet = {
@@ -312,15 +326,12 @@ class Douban {
         return sortType === 'asc' ? a[sortKey] - b[sortKey] : b[sortKey] - a[sortKey];
       });
       for (const torrent of torrents) {
-        if (this._fitRaceRule(rule, torrent)) {
-          const rejectRules = this.rejectRules
-            .map(i => raceRuleList.filter(ii => ii.id === i)[0])
-            .filter(i => i);
+        if (this.rules.some(item => this._fitRaceRule(item, torrent))) {
           let fitReject = false;
           for (const rejectRule of rejectRules) {
             if (this._fitRaceRule(rejectRules, torrent)) {
               fitReject = true;
-              logger.info(this.alias, '选种规则:', rule.alias, '种子:', torrent.title, '/', torrent.subtitle, '匹配成功, 同时匹配拒绝规则成功:', rejectRule.alias, '跳过');
+              logger.info(this.alias, '选种规则:', rulesName, '种子:', torrent.title, '/', torrent.subtitle, '匹配成功, 同时匹配拒绝规则成功:', rejectRule.alias, '跳过');
               break;
             }
           }
@@ -328,7 +339,7 @@ class Douban {
           const fitRejectKeys = !!this.categories[wish.tag].rejectKeys
             .split(',').some(item => (torrent.title.indexOf(item) !== -1 || torrent.subtitle.indexOf(item) !== -1));
           if (fitRejectKeys) {
-            logger.info(this.alias, '选种规则:', rule.alias, '种子:', torrent.title, '/', torrent.subtitle, '匹配成功, 同时匹配排除关键词:', this.categories[wish.tag].rejectKeys, '跳过');
+            logger.info(this.alias, '选种规则:', rulesName, '种子:', torrent.title, '/', torrent.subtitle, '匹配成功, 同时匹配排除关键词:', this.categories[wish.tag].rejectKeys, '跳过');
             break;
           }
           const torrentYear = (torrent.title.match(/19\d{2}/g) || []).concat(torrent.title.match(/20\d{2}/g) || []);
@@ -337,11 +348,11 @@ class Douban {
             fitYear = fitYear || +year === +wish.year;
           }
           if (!fitYear) {
-            logger.info(this.alias, '选种规则:', rule.alias, '种子:', torrent.title, '/', torrent.subtitle, '匹配成功, 未匹配首映年份:', wish.year, '跳过');
+            logger.info(this.alias, '选种规则:', rulesName, '种子:', torrent.title, '/', torrent.subtitle, '匹配成功, 未匹配首映年份:', wish.year, '跳过');
             break;
           }
           if (wish.year > parseInt(torrent.time / 3600 * 24 * 365 + 1970)) {
-            logger.info(this.alias, '选种规则:', rule.alias, '种子:', torrent.title, '/', torrent.subtitle, '匹配成功, 发种时间小于首映年份:', wish.year, '跳过');
+            logger.info(this.alias, '选种规则:', rulesName, '种子:', torrent.title, '/', torrent.subtitle, '匹配成功, 发种时间小于首映年份:', wish.year, '跳过');
             break;
           }
           let episodes;
@@ -350,13 +361,13 @@ class Douban {
             const episodeTypeB = (torrent.subtitle.match(/[^\d]E?\d{2,3}[^\d]/g) || []).map(item => item.match(/\d{2,3}/g))[0] || [];
             const episodeTypeC = (torrent.subtitle.match(/[^\d]E?\d[^\d]/g) || []).map(item => item.match(/\d/g))[0] || [];
             episodes = episodeTypeA.concat(episodeTypeB).concat(episodeTypeC);
-            logger.debug(this.alias, '选种规则:', rule.alias, '种子:', torrent.title, '分集', wish.episodeNow, episodes);
+            logger.debug(this.alias, '选种规则:', rulesName, '种子:', torrent.title, '分集', wish.episodeNow, episodes);
             if (episodes.some(item => +item <= wish.episodeNow)) {
-              logger.info(this.alias, '选种规则:', rule.alias, '种子:', torrent.title, '/', torrent.subtitle, '匹配成功, 已完成至:', wish.episodeNow, '判断结果为已下载, 跳过');
+              logger.info(this.alias, '选种规则:', rulesName, '种子:', torrent.title, '/', torrent.subtitle, '匹配成功, 已完成至:', wish.episodeNow, '判断结果为已下载, 跳过');
               break;
             }
           }
-          logger.info(this.alias, '选种规则:', rule.alias, '种子:', torrent.title, '/', torrent.subtitle, '匹配成功, 准备推送至下载器:', global.runningClient[this.client].alias);
+          logger.info(this.alias, '选种规则:', rulesName, '种子:', torrent.title, '/', torrent.subtitle, '匹配成功, 准备推送至下载器:', global.runningClient[this.client].alias);
           const category = this.categories[wish.tag];
           const recordNoteJson = {
             wish,
@@ -370,11 +381,11 @@ class Douban {
               this._setEpisodeNow(wish.id, maxEpisode);
             }
           } catch (e) {
-            logger.error(this.alias, '选种规则:', rule.alias, '种子:', torrent.title, '/', torrent.subtitle, '推送至下载器:', global.runningClient[this.client].alias, '失败, 报错如下:\n', e);
+            logger.error(this.alias, '选种规则:', rulesName, '种子:', torrent.title, '/', torrent.subtitle, '推送至下载器:', global.runningClient[this.client].alias, '失败, 报错如下:\n', e);
             await this.ntf.addDoubanTorrentError(this.alias, global.runningClient[this.client], torrent, rule, wish);
             throw (e);
           }
-          logger.info(this.alias, '选种规则:', rule.alias, '种子:', torrent.title, '/', torrent.subtitle, '推送至下载器:', global.runningClient[this.client].alias, '成功');
+          logger.info(this.alias, '选种规则:', rulesName, '种子:', torrent.title, '/', torrent.subtitle, '推送至下载器:', global.runningClient[this.client].alias, '成功');
           await this.ntf.addDoubanTorrent(this.alias, global.runningClient[this.client], torrent, rule, wish);
           return true;
         };
