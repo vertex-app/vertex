@@ -34,7 +34,8 @@ class Site {
       DICMusic: this._dicmusic,
       GPW: this._gpw,
       BTSchool: this._btschool,
-      TJUPT: this._tjupt
+      TJUPT: this._tjupt,
+      KeppFriends: this._keepfriends
     };
     this.searchWrapper = {
       HaresClub: this._searchHaresclub,
@@ -45,7 +46,9 @@ class Site {
       HDHome: this._searchHDHome,
       PTerClub: this._searchPterclub,
       BTSchool: this._searchBTSchool,
-      TJUPT: this._searchTJUPT
+      TJUPT: this._searchTJUPT,
+      KeepFriends: this._searchKeepfriends,
+      SpringSunDay: this._searchSpringsunday
     };
     this.torrentDownloadLinkMap = {
       HaresClub: 'https://club.hares.top/download.php?id={ID}',
@@ -56,7 +59,9 @@ class Site {
       HDHome: 'https://hdhome.org/download.php?id={ID}',
       PTerClub: 'https://pterclub.com/download.php?id={ID}',
       BTSchool: 'https://pt.btschool.club/download.php?id={ID}',
-      TJUPT: 'https://www.tjupt.org/download.php?id={ID}'
+      TJUPT: 'https://www.tjupt.org/download.php?id={ID}',
+      KeepFriends: 'https://pt.keepfrds.com/download.php?id={ID}',
+      SpringSunDay: 'https://springsunday.net/download.php?id={ID}'
     };
     this.siteUrlMap = {
       HaresClub: 'https://club.hares.top/',
@@ -67,7 +72,9 @@ class Site {
       HDHome: 'https://hdhome.org/',
       PTerClub: 'https://pterclub.com/',
       BTSchool: 'https://pt.btschool.club/',
-      TJUPT: 'https://www.tjupt.org/'
+      TJUPT: 'https://www.tjupt.org/',
+      KeepFriends: 'https://pt.keepfrds.com/',
+      SpringSunDay: 'https://springsunday.net/'
     };
     this.cookie = site.cookie;
     this.site = site.name;
@@ -509,6 +516,25 @@ class Site {
     return info;
   };
 
+  // KeepFriends
+  async _keepfriends () {
+    const info = {};
+    const document = await this._getDocument('https://pt.keepfrds.com/');
+    // 用户名
+    info.username = document.querySelector('a[href^=userdetails] b').innerHTML;
+    // 上传
+    info.upload = document.querySelector('font[class=color_uploaded]').nextSibling.nodeValue.trim().replace(/(\w)B/, '$1iB');
+    info.upload = util.calSize(...info.upload.split(' '));
+    // 下载
+    info.download = document.querySelector('font[class=color_downloaded]').nextSibling.nodeValue.trim().replace(/(\w)B/, '$1iB');
+    info.download = util.calSize(...info.download.split(' '));
+    // 做种
+    info.seeding = +document.querySelector('img[class=arrowup]').nextSibling.nodeValue.trim();
+    // 下载
+    info.leeching = +document.querySelector('img[class=arrowdown]').nextSibling.nodeValue.trim();
+    return info;
+  };
+
   // HDChina
   async _hdchina () {
     const info = {};
@@ -904,6 +930,67 @@ class Site {
       torrent.size = util.calSize(...torrent.size.split(' '));
       torrent.tags = [];
       const tagsDom = _torrent.querySelectorAll('font[class*=tag]');
+      for (const tag of tagsDom) {
+        torrent.tags.push(tag.innerHTML.trim());
+      }
+      torrentList.push(torrent);
+    }
+    return {
+      site: this.site,
+      torrentList
+    };
+  };
+
+  // KeepFriends
+  async _searchKeepfriends (keyword) {
+    const torrentList = [];
+    const document = await this._getDocument(`https://pt.keepfrds.com/torrents.php?incldead=1&spstate=0&inclbookmarked=0&option-torrents=0&search=${encodeURIComponent(keyword)}&search_area=${keyword.match(/tt\d+/) ? 4 : 0}&search_mode=0`);
+    const torrents = document.querySelectorAll('.torrents > tbody > tr:not(:first-child)');
+    for (const _torrent of torrents) {
+      const torrent = {};
+      torrent.site = this.site;
+      const title = _torrent.querySelector('.torrentname > tbody > tr .embedded br');
+      torrent.title = title ? title.nextSibling.nodeValue.trim() : '';
+      torrent.subtitle = _torrent.querySelector('td[class="embedded"] > a[href*="details"]').title.trim();
+      torrent.category = _torrent.querySelector('td a[href*=cat] img').title.trim();
+      torrent.link = 'https://pt.keepfrds.com/' + _torrent.querySelector('a[href*=details]').href.trim();
+      torrent.id = +torrent.link.match(/id=(\d*)/)[1];
+      torrent.seeders = +(_torrent.querySelector('a[href*=seeders]') || _torrent.querySelector('a[href*=seeders] font') || _torrent.querySelector('span[class=red]')).innerHTML.trim();
+      torrent.leechers = +(_torrent.querySelector('a[href*=leechers]') || _torrent.childNodes[7]).innerHTML.trim();
+      torrent.snatches = +(_torrent.querySelector('a[href*=snatches] b') || _torrent.childNodes[8]).innerHTML.trim();
+      torrent.size = _torrent.childNodes[5].innerHTML.trim().replace('<br>', ' ');
+      torrent.time = moment(_torrent.childNodes[4].querySelector('span') ? _torrent.childNodes[4].querySelector('span').title : _torrent.childNodes[4].innerHTML.replace(/<br>/, ' ')).unix();
+      torrent.size = util.calSize(...torrent.size.split(' '));
+      torrent.tags = [];
+      torrentList.push(torrent);
+    }
+    return {
+      site: this.site,
+      torrentList
+    };
+  };
+
+  // SpringSunDay
+  async _searchSpringsunday (keyword) {
+    const torrentList = [];
+    const document = await this._getDocument(`https://springsunday.net/torrents.php?incldead=0&spstate=0&pick=0&inclbookmarked=0&exclusive=0&search=${encodeURIComponent(keyword)}&search_area=${keyword.match(/tt\d+/) ? 4 : 0}&search_mode=0`);
+    const torrents = document.querySelectorAll('.torrents tbody tr:not(:first-child)');
+    for (const _torrent of torrents) {
+      const torrent = {};
+      torrent.site = this.site;
+      torrent.title = _torrent.querySelector('td[class="embedded"] > a[href*="details"]').title.trim();
+      torrent.subtitle = (_torrent.querySelector('.torrentname > tbody > tr .embedded a[href*=torrents]:last-of-type') || _torrent.querySelector('.torrentname > tbody > tr .embedded br')).nextSibling.nodeValue.trim();
+      torrent.category = _torrent.querySelector('td a[href*=cat] img').title.trim();
+      torrent.link = 'https://springsunday.net/' + _torrent.querySelector('a[href*=details]').href.trim();
+      torrent.id = +torrent.link.match(/id=(\d*)/)[1];
+      torrent.seeders = +(_torrent.querySelector('a[href*=seeders]') || _torrent.querySelector('a[href*=seeders] font') || _torrent.querySelector('span[class=red]')).innerHTML.trim();
+      torrent.leechers = +(_torrent.querySelector('a[href*=leechers]') || _torrent.childNodes[15]).innerHTML.trim();
+      torrent.snatches = +(_torrent.querySelector('a[href*=snatches] b') || _torrent.childNodes[17]).innerHTML.trim();
+      torrent.size = _torrent.childNodes[11].innerHTML.trim().replace('<br>', ' ').replace(/([KMGPT])B/, '$1iB');
+      torrent.time = moment(_torrent.childNodes[9].querySelector('span') ? _torrent.childNodes[9].querySelector('span').title : _torrent.childNodes[9].innerHTML.replace(/<br>/, ' ')).unix();
+      torrent.size = util.calSize(...torrent.size.split(' '));
+      torrent.tags = [];
+      const tagsDom = _torrent.querySelectorAll('a[href*=torrents] span');
       for (const tag of tagsDom) {
         torrent.tags.push(tag.innerHTML.trim());
       }
