@@ -42,7 +42,7 @@
           </div>
           <div style="width: fit-content; margin: 6px 0 12px 20px">
             <el-tag
-              :color="`${$colors[item.doubanId.charCodeAt(0) % 6]}`"
+              :color="`${$colors[item.doubanId.charCodeAt(0) % 9]}`"
               closable
               v-for="item in wishList"
               :key="item.id + item.doubanId"
@@ -63,7 +63,7 @@
             <el-form-item required label="选择站点" prop="sites">
               <el-checkbox :indeterminate="siteIndeterminate" v-model="siteCheckAll" @change="handleSiteCheckAllChange">全选</el-checkbox>
               <el-checkbox-group v-model="douban.sites">
-                <el-checkbox v-for="site of siteList" :key="site.name" :disabled="!site.enable" :label="site.name">{{site.name}}</el-checkbox>
+                <el-checkbox v-for="site of siteList" :key="site.name" :disabled="!site.enable" :label="site.name">{{site.name === 'SpringSunDay' ? '不可说' : site.name}}</el-checkbox>
               </el-checkbox-group>
               <div><el-tag type="info">选择站点, 仅可选择已经启用的站点</el-tag></div>
             </el-form-item>

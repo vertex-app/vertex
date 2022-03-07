@@ -33,12 +33,18 @@
           prop="name"
           label="站点"
           min-width="180">
+          <template slot="header" slot-scope="scope">
+            <el-switch
+              v-model="displayAll">
+            </el-switch>
+            站点
+          </template>
           <template slot-scope="scope">
             <el-switch
               v-model="scope.row.display"
               @change="loadSite">
             </el-switch>
-            {{ scope.row.display ? scope.row.name : '*******' }}
+            {{ scope.row.display && displayAll ? scope.row.name : '*******' }}
           </template>
         </el-table-column>
         <el-table-column
@@ -220,6 +226,7 @@ export default {
         series: []
       },
       setting: {},
+      displayAll: true,
       siteList: [],
       pushList: [],
       siteCollapse: ['1']

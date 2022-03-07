@@ -3,7 +3,7 @@
     <div class="radius-div">
       <el-table
         :data="raceList"
-        :default-sort="{prop: 'alias'}"
+        :default-sort="{prop: 'priority', order: 'descending'}"
         style="margin: 20px">
         <el-table-column
           prop="id"
