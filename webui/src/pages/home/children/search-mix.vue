@@ -19,7 +19,7 @@
         <el-form-item label="搜索结果">
           <el-checkbox :indeterminate="isIndeterminate" v-model="checkAll" @change="handleCheckAllChange">全选</el-checkbox>
           <el-checkbox-group v-model="checkList" @change="refreshList">
-            <el-checkbox v-for="item of resultCount" :key="item.site" :label="item.site">{{`${item.site}: ${item.count}`}}</el-checkbox>
+            <el-checkbox v-for="item of resultCount" :key="item.site" :label="item.site">{{`${item.site === 'SpringSunDay' ? '不可说' : item.site}: ${item.count}`}}</el-checkbox>
           </el-checkbox-group>
         </el-form-item>
       </el-form>

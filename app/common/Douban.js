@@ -338,7 +338,7 @@ class Douban {
             }
           }
           if (fitReject) continue;
-          const fitRejectKeys = !!this.categories[wish.tag].rejectKeys
+          const fitRejectKeys = this.categories[wish.tag].rejectKeys && !!this.categories[wish.tag].rejectKeys
             .split(',').some(item => (torrent.title.indexOf(item) !== -1 || torrent.subtitle.indexOf(item) !== -1));
           if (fitRejectKeys) {
             logger.info(this.alias, '选种规则:', rulesName, '种子:', torrent.title, '/', torrent.subtitle, '匹配成功, 同时匹配排除关键词:', this.categories[wish.tag].rejectKeys, '跳过');
@@ -360,8 +360,8 @@ class Douban {
           let episodes;
           if (wish.episodes) {
             const episodeTypeA = (torrent.subtitle.match(/E?\d{2,3}-E?\d{2,3}/g) || []).map(item => item.replace(/E/g, '').split('-'))[0] || [];
-            const episodeTypeB = (torrent.subtitle.match(/[^\d]E?\d{2,3}[^\d]/g) || []).map(item => item.match(/\d{2,3}/g))[0] || [];
-            const episodeTypeC = (torrent.subtitle.match(/[^\d]E?\d[^\d]/g) || []).map(item => item.match(/\d/g))[0] || [];
+            const episodeTypeB = (torrent.subtitle.match(/[^\d]E?\d{2,3}[^\d]/g) || []).map(item => item.match(/\d{2,3}/g)).flat() || [];
+            const episodeTypeC = (torrent.subtitle.match(/[^\d]E?\d[^\dKk]/g) || []).map(item => item.match(/\d/g)).flat() || [];
             episodes = episodeTypeA.concat(episodeTypeB).concat(episodeTypeC);
             logger.debug(this.alias, '选种规则:', rulesName, '种子:', torrent.title, '分集', wish.episodeNow, episodes);
             if (episodes.some(item => +item <= wish.episodeNow)) {
