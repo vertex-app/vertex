@@ -8,7 +8,8 @@ class Push {
     this.pushWrapper = {
       iyuu: this.pushIyuu,
       telegram: this.pushTelegram,
-      bark: this.pushBark
+      bark: this.pushBark,
+      wechat: this.pushWeChat
     };
     for (const key of Object.keys(push)) {
       this[key] = push[key];
@@ -17,12 +18,30 @@ class Push {
     this.clearCountJob = new CronJob(this.clearCountCron, () => this._clearErrorCount());
     this.maxErrorCount = +this.maxErrorCount || 100;
     this.errorCount = 0;
+    this.accessToken = {
+      token: '',
+      refreshTime: 0
+    };
     this.pushType = this.pushType || [];
-    this.markdown = ['telegram'].indexOf(this.type) !== -1;
+    this.markdown = ['telegram', 'wechat'].indexOf(this.type) !== -1;
   };
 
   _clearErrorCount () {
     this.errotCount = 0;
+  }
+
+  async _refreshWeChatAccessToken () {
+    const option = {
+      url: `https://qyapi.weixin.qq.com/cgi-bin/gettoken?corpid=${this.corpid}&corpsecret=${this.corpsecret}`
+    };
+    const res = await util.requestPromise(option);
+    const json = JSON.parse(res.body);
+    if (json.errmsg !== 'ok') {
+      logger.error(json);
+      throw new Error('获取 WeChat Access Token 报错');
+    }
+    this.accessToken.refreshTime = moment().unix();
+    this.accessToken.token = json.access_token;
   }
 
   async _push (_push, text, desp) {
@@ -449,6 +468,47 @@ class Push {
     const res = await util.requestPromise(option);
     const json = JSON.parse(res.body);
     if (json.code !== 200) {
+      logger.error('推送失败', this.alias, text, res.body);
+    }
+  }
+
+  async pushWeChat (text, desp, poster) {
+    if (moment().unix() - this.accessToken.refreshTime > 3600) {
+      await this._refreshWeChatAccessToken();
+    }
+    const _poster = poster || 'https://pic.lswl.in/images/2022/01/25/52c3764f3357e87f494c50f2d720e899.png';
+    const body = {
+      touser: '@all',
+      msgtype: 'news',
+      agentid: this.agentid,
+      enable_id_trans: 0,
+      enable_duplicate_check: 0,
+      duplicate_check_interval: 1800
+    };
+    if (desp.indexOf('```') === -1) {
+      body.news = {
+        articles: [
+          {
+            title: text,
+            description: desp,
+            url: 'https://vertex.icu',
+            picurl: _poster
+          }
+        ]
+      };
+    } else {
+      body.msgtype = 'text';
+      body.text = {
+        content: text + '\n' + desp.replace(/\n?```\n?/g, '')
+      };
+    }
+    const option = {
+      url: `https://qyapi.weixin.qq.com/cgi-bin/message/send?access_token=${this.accessToken.token}`,
+      method: 'POST',
+      json: body
+    };
+    const res = await util.requestPromise(option);
+    if (res.body.errcode !== 0) {
       logger.error('推送失败', this.alias, text, res.body);
     }
   }

@@ -53,7 +53,17 @@
                 <el-option label="IYUU" value="iyuu"></el-option>
                 <el-option label="Bark" value="bark"></el-option>
                 <el-option label="Telegram" value="telegram"></el-option>
+                <el-option label="WeChat" value="wechat"></el-option>
               </el-select>
+            </el-form-item>
+            <el-form-item v-if="this.set.type === 'wechat'" :required="this.set.type === 'wechat'" label="企业 ID" prop="corpid">
+              <el-input v-model="set.corpid" type="input"></el-input>
+            </el-form-item>
+            <el-form-item v-if="this.set.type === 'wechat'" :required="this.set.type === 'wechat'" label="Agent ID" prop="agentid">
+              <el-input v-model="set.agentid" type="input"></el-input>
+            </el-form-item>
+            <el-form-item v-if="this.set.type === 'wechat'" :required="this.set.type === 'wechat'" label="Secret" prop="corpsecret">
+              <el-input v-model="set.corpsecret" type="input"></el-input>
             </el-form-item>
             <el-form-item v-if="this.set.type === 'telegram'" :required="this.set.type === 'telegram'" label="机器人 Token" prop="telegramBotToken">
               <el-input v-model="set.telegramBotToken" type="input"></el-input>

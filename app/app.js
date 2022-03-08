@@ -57,6 +57,7 @@ const init = function () {
   global.apiKey = setting.apiKey;
   global.transparent = setting.transparent;
   global.blurSize = setting.blurSize;
+  global.wechatCover = setting.wechatCover;
   global.dataPath = setting.dataPath || '/';
   global.runningClient = {};
   global.runningRss = {};

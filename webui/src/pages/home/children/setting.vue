@@ -22,6 +22,10 @@
           <el-input v-model="setting.blurSize" style="width: 500px;"></el-input>
           <div><el-tag type="info">模糊块大小, 默认为 4, 值越大, 越模糊</el-tag></div>
         </el-form-item>
+        <el-form-item label="微信通知默认封面" prop="wechatCover">
+          <el-input v-model="setting.wechatCover" style="width: 500px;"></el-input>
+          <div><el-tag type="info">企业微信通知时使用的默认封面, 留空显示 Vertex Logo</el-tag></div>
+        </el-form-item>
         <el-form-item label="数据目录路径" prop="dataPath">
           <el-input v-model="setting.dataPath" style="width: 500px;"></el-input>
           <div><el-tag type="warning">数据目录路径, Docker 安装无需修改</el-tag></div>

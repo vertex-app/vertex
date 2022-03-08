@@ -34,6 +34,7 @@ class SettingMod {
     global.dataPath = options.dataPath || '/';
     global.transparent = options.transparent;
     global.blurSize = options.blurSize;
+    global.wechatCover = options.wechatCover;
     global.telegramProxy = options.telegramProxy || 'https://api.telegram.org';
     const webhookPush = util.listPush().filter(item => item.id === global.webhookPushTo)[0];
     if (webhookPush) {
