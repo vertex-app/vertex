@@ -123,7 +123,7 @@
                   <template slot-scope="scope">
                     <el-select v-model="scope.row.type" style="width: 112px" placeholder="所属分类">
                       <el-option label="电影" value="movie"></el-option>
-                      <el-option label="电视剧" value="series"></el-option>
+                      <el-option label="剧集" value="series"></el-option>
                     </el-select>
                   </template>
                 </el-table-column>

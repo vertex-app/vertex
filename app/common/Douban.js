@@ -97,11 +97,18 @@ class Douban {
     // tag
     info.tag = dom.querySelector('span.color_gray');
 
-    // rating
-    info.rating = {
-      result: dom.querySelector('strong[class="ll rating_num"]').innerHTML,
-      votes: dom.querySelector('a[class="rating_people"] > span').innerHTML
-    };
+    try {
+      // rating
+      info.rating = {
+        result: dom.querySelector('strong[class="ll rating_num"]').innerHTML,
+        votes: dom.querySelector('a[class="rating_people"] > span').innerHTML
+      };
+    } catch (e) {
+      info.rating = {
+        result: '暂无',
+        votes: '暂无'
+      };
+    }
 
     // length
     info.length = info.length || (dom.querySelector('span[property="v:runtime"]') || {}).innerHTML || '暂无';
