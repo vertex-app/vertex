@@ -164,7 +164,7 @@ export default {
       this.$message.error(e.message);
     },
     gotoDocument () {
-      window.open('https://lswl.in');
+      window.open('https://lswl.in/2022/03/04/vertex-binge-watching/');
     },
     importRule () {
       this.clearRule();
