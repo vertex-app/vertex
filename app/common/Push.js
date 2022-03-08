@@ -126,8 +126,9 @@ class Push {
 
   async addDoubanTorrent (client, torrent, rule, wish) {
     const text = '添加豆瓣种子';
+    const site = global.runningSite[torrent.site];
     let desp = `${wish.name} / ${client.alias} / ${rule.alias}\n`;
-    desp += `站点名称: ${torrent.site}\n`;
+    desp += `站点名称: ${torrent.site} / ${util.formatSize(site.info.uploaded)} / ${util.formatSize(site.info.download)}\n`;
     desp += `种子标题: ${torrent.title}\n`;
     desp += `副标题: ${torrent.subtitle}\n`;
     desp += `状态: ${torrent.seeders} / ${torrent.leechers} / ${torrent.snatches}`;
@@ -139,14 +140,14 @@ class Push {
     await this._push(this.pushType.indexOf('douban') !== -1, text, desp, wish.poster);
   };
 
-  async addDoubanTorrentError (doubanAlias, client, torrent, rule, wish) {
+  async addDoubanTorrentError (client, torrent, rule, wish) {
     const text = '添加豆瓣种子失败';
-    let desp = `${doubanAlias} / ${wish.name}\n` +
-      `下载器名: ${client.alias}\n` +
-      `种子名称: ${torrent.title}\n` +
-      `种子大小: ${util.formatSize(torrent.size)}\n` +
-      `选种规则: ${rule.alias}\n` +
-      '详细信息前往 Vertex 日志页查看';
+    let desp = `${wish.name} / ${client.alias} / ${rule.alias}\n`;
+    desp += `站点名称: ${torrent.site}\n`;
+    desp += `种子标题: ${torrent.title}\n`;
+    desp += `副标题: ${torrent.subtitle}\n`;
+    desp += `状态: ${torrent.seeders} / ${torrent.leechers} / ${torrent.snatches}`;
+    desp += wish.episodes ? ` / 已完成至 ${wish.episodeNow} 集 / 全 ${wish.episodes} 集` : '';
     if (this.type === 'telegram') {
       desp = '```\n' + desp + '\n```';
       desp = '\\#添加豆瓣种子失败\n' + desp;

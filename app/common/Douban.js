@@ -113,6 +113,13 @@ class Douban {
     return info;
   };
 
+  reloadPush () {
+    logger.info('豆瓣账号', this.alias, '重新载入推送方式');
+    this._notify = util.listPush().filter(item => item.id === this.notify)[0] || {};
+    this._notify.push = true;
+    this.ntf = new Push(this.notify);
+  }
+
   destroy () {
     logger.info('销毁豆瓣实例', this.alias);
     this.refreshWishJob.stop();
@@ -444,14 +451,16 @@ class Douban {
             torrent
           };
           try {
-            await global.runningSite[torrent.site].pushTorrentById(torrent.id, torrent.downloadLink, this.client, category.savePath, category.category, category.autoTMM, 6, JSON.stringify(recordNoteJson));
+            const _savePath = category.savePath.replace('{SITE}', torrent.site);
+            const _category = category.category.replace('{SITE}', torrent.site);
+            await global.runningSite[torrent.site].pushTorrentById(torrent.id, torrent.downloadLink, this.client, _savePath, _category, category.autoTMM, 6, JSON.stringify(recordNoteJson));
             if (episodes) {
               const maxEpisode = Math.max(...episodes.map(item => +item || 0));
               this._setEpisodeNow(wish.id, maxEpisode);
             }
           } catch (e) {
             logger.error(this.alias, '选种规则:', rulesName, '种子:', torrent.title, '/', torrent.subtitle, '推送至下载器:', global.runningClient[this.client].alias, '失败, 报错如下:\n', e);
-            await this.ntf.addDoubanTorrentError(this.alias, global.runningClient[this.client], torrent, rule, wish);
+            await this.ntf.addDoubanTorrentError(global.runningClient[this.client], torrent, rule, wish);
             throw (e);
           }
           logger.info(this.alias, '选种规则:', rulesName, '种子:', torrent.title, '/', torrent.subtitle, '推送至下载器:', global.runningClient[this.client].alias, '成功');

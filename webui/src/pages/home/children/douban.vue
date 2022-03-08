@@ -37,14 +37,26 @@
     <div class="radius-div">
       <el-collapse  class="collapse" v-model="doubanCollapse">
         <el-collapse-item title="想看列表" name="0">
-          <div style="width: fit-content; margin: 6px 0 12px 20px">
+          <div style="width: 100%; text-align: center; margin: 6px 0 12px 20px">
             <el-tag type="info">可以点击标签后的 x 删除系统记录, 刷新后会尝试再一次选种推送</el-tag>
           </div>
-          <div style="width: fit-content; margin: 6px 0 12px 20px">
+          <div style="width: 100%; text-align: center; margin: 6px 0 12px 20px">
             <el-tag
               :color="`${$colors[item.doubanId.charCodeAt(0) % 9]}`"
               closable
-              v-for="item in wishList"
+              v-for="item in wishList.filter(item => (!item.downloaded && !item.episodes) || (item.episodes && item.episodes !== item.episodeNow))"
+              :key="item.id + item.doubanId"
+              @close="deleteItem(item)"
+              style="margin-left: 24px; margin-top: 16px">
+              {{`${item.name}: ${!item.episodes ? item.downloaded ? '已下载' : '未下载' : item.episodes === item.episodeNow ? '已追完' : item.episodeNow + ' / ' + item.episodes}`}}
+            </el-tag>
+          </div>
+          <el-divider/>
+          <div style="width: 100%; margin: 6px 0 12px 20px">
+            <el-tag
+              :color="`${$colors[item.doubanId.charCodeAt(0) % 9]}`"
+              closable
+              v-for="item in wishList.filter(item => (!item.episodes && item.downloaded) || (item.episodes && item.episodes === item.episodeNow))"
               :key="item.id + item.doubanId"
               @close="deleteItem(item)"
               style="margin-left: 24px; margin-top: 16px">
@@ -232,7 +244,7 @@ export default {
       rejectRuleCheckAll: false,
       raceRuleCheckAll: false,
       refreshStatus: '刷新想看',
-      doubanCollapse: ['0', '1'],
+      doubanCollapse: ['0'],
       importDoubanVisible: false,
       importDoubanText: ''
     };
