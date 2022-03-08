@@ -250,7 +250,7 @@ class Douban {
         if (file.size < linkRule.minFileSize) continue;
         const seriesName = wish.name.split('/')[0].trim();
         const season = (file.name.match(/[. ](S\d+)/) || [0, 'S01'])[1];
-        let episode = +(file.name.match(/E(\d+)[. ]/) || [0, '01'])[1];
+        let episode = +(file.name.match(/E[Pp]?(\d+)[. ]/) || [0, '01'])[1];
         const part = (file.name.match(/\.[Pp][Aa][Rr][Tt]\.*[A1][B2]/));
         if (part?.[1]) {
           episode = part?.[1] === 'A' || part?.[1] === '1' ? episode * 2 - 1 : episode * 2;

@@ -50,8 +50,6 @@
             </el-form-item>
             <el-form-item required label="类型" prop="type">
               <el-select v-model="set.type" placeholder="推送类型">
-                <el-option label="IYUU" value="iyuu"></el-option>
-                <el-option label="Bark" value="bark"></el-option>
                 <el-option label="Telegram" value="telegram"></el-option>
                 <el-option label="WeChat" value="wechat"></el-option>
               </el-select>
@@ -70,12 +68,6 @@
             </el-form-item>
             <el-form-item v-if="this.set.type === 'telegram'" :required="this.set.type === 'telegram'" label="频道 ID" prop="telegramChannel">
               <el-input v-model="set.telegramChannel" type="input"></el-input>
-            </el-form-item>
-            <el-form-item v-if="this.set.type === 'iyuu'" :required="this.set.type === 'iyuu'" label="IYUU Token" prop="iyuuToken">
-              <el-input v-model="set.iyuuToken" type="input"></el-input>
-            </el-form-item>
-            <el-form-item v-if="this.set.type === 'bark'" :required="this.set.type === 'bark'" label="Bark Token" prop="barkToken">
-              <el-input v-model="set.barkToken" type="input"></el-input>
             </el-form-item>
             <el-form-item  label="推送类型" prop="pushType">
               <el-checkbox-group v-model="set.pushType">

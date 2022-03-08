@@ -6,9 +6,7 @@ const logger = require('../libs/logger');
 class Push {
   constructor (push) {
     this.pushWrapper = {
-      iyuu: this.pushIyuu,
       telegram: this.pushTelegram,
-      bark: this.pushBark,
       wechat: this.pushWeChat
     };
     for (const key of Object.keys(push)) {
@@ -44,9 +42,9 @@ class Push {
     this.accessToken.token = json.access_token;
   }
 
-  async _push (_push, text, desp) {
+  async _push (_push, text, desp, poster) {
     if (_push && this.push) {
-      return this.pushWrapper[this.type].call(this, text, desp);
+      return this.pushWrapper[this.type].call(this, text, desp, poster);
     }
   };
 
@@ -55,7 +53,7 @@ class Push {
       return logger.debug('周期内错误推送已达上限, 跳过本次推送');
     }
     this.errotCount += 1;
-    const text = 'Rss 失败: ' + rss.alias;
+    const text = 'Rss 失败:';
     let desp = `Rss 任务: ${rss.alias}` +
       '详细原因请前往 Vertex 日志页面查看';
     if (this.markdown) {
@@ -72,7 +70,7 @@ class Push {
       return logger.debug('周期内错误推送已达上限, 跳过本次推送');
     }
     this.errotCount += 1;
-    const text = '抓取失败: ' + rss.alias;
+    const text = '抓取失败:';
     let desp = `Rss 任务: ${rss.alias}` +
       `种子名称: ${torrent.name}` +
       '请确认 Rss 站点是否支持抓取免费或抓取 HR, 若确认无问题, 请前往 Vertex 日志页面查看详细原因';
@@ -86,7 +84,7 @@ class Push {
   }
 
   async addTorrent (rss, client, torrent) {
-    const text = `添加种子: ${torrent.name.substring(0, 10) + '...'} | ${rss.alias} | ${util.formatSize(torrent.size)} | ${client.alias}`;
+    const text = '添加种子:';
     let desp = `Rss 任务: ${rss.alias}\n` +
       `下载器名: ${client.alias}\n` +
       `种子名称: ${torrent.name}\n` +
@@ -100,70 +98,30 @@ class Push {
     await this._push(this.pushType.indexOf('add') !== -1, text, desp);
   };
 
-  async addRaceTorrent (race, client, torrent, rule) {
-    const text = `添加追剧种子: ${torrent.title.substring(0, 10) + '...'} | ${race.alias} | ${util.formatSize(torrent.size)} | ${client.alias}`;
-    let desp = `追剧任务: ${race.alias}\n` +
-      `下载器名: ${client.alias}\n` +
-      `种子名称: ${torrent.name}\n` +
-      `种子大小: ${util.formatSize(torrent.size)}\n` +
-      `选种规则: ${rule.alias}`;
-    if (this.markdown) {
-      desp = '```\n' + desp + '\n```';
-    }
-    if (this.type === 'telegram') {
-      desp = '\\#添加追剧种子\n' + desp;
-    }
-    await this._push(this.pushType.indexOf('race') !== -1, text, desp);
-  };
-
   async selectTorrentError (alias, note) {
-    const text = `豆瓣选种失败: | ${alias}`;
+    const text = '豆瓣选种失败';
     let desp = `豆瓣账号: ${alias}\n` +
       `相关信息: ${note}\n`;
-    if (this.markdown) {
-      desp = '```\n' + desp + '\n```';
-    }
     if (this.type === 'telegram') {
+      desp = '```\n' + desp + '\n```';
       desp = '\\#豆瓣选种失败\n' + desp;
     }
     await this._push(this.pushType.indexOf('doubanSelectError') !== -1, text, desp);
   };
 
   async plexWebhook (event, note, poster) {
-    const text = `Plex消息通知: | ${event}`;
+    const text = 'Plex 消息通知:';
     let desp = `Plex: ${event}\n` +
       `相关信息:\n${note}\n`;
-    if (this.markdown) {
-      desp = '```\n' + desp + '\n```';
-    }
-    if (poster) {
-      desp = desp + `\n[POSTER](${poster})`;
-    }
     if (this.type === 'telegram') {
+      desp = '```\n' + desp + '\n```';
       desp = '\\#Plex消息通知\n' + desp;
     }
-    await this._push(this.pushType.indexOf('mediaServer') !== -1, text, desp);
-  };
-
-  async addRaceTorrentError (raceAlias, client, torrent, rule) {
-    const text = `添加追剧种子失败: ${torrent.title.substring(0, 10) + '...'} | ${raceAlias} | ${util.formatSize(torrent.size)} | ${client.alias}`;
-    let desp = `追剧任务: ${raceAlias}\n` +
-      `下载器名: ${client.alias}\n` +
-      `种子名称: ${torrent.name}\n` +
-      `种子大小: ${util.formatSize(torrent.size)}\n` +
-      `选种规则: ${rule.alias}\n` +
-      '详细信息前往 Vertex 日志页查看';
-    if (this.markdown) {
-      desp = '```\n' + desp + '\n```';
-    }
-    if (this.type === 'telegram') {
-      desp = '\\#添加追剧种子失败\n' + desp;
-    }
-    await this._push(this.pushType.indexOf('raceError') !== -1, text, desp);
+    await this._push(this.pushType.indexOf('mediaServer') !== -1, text, desp, poster);
   };
 
   async addDoubanTorrent (doubanAlias, client, torrent, rule, wish) {
-    const text = `添加豆瓣种子: ${torrent.title.substring(0, 10) + '...'} | ${doubanAlias} | ${util.formatSize(torrent.size)} | ${client.alias}`;
+    const text = '添加豆瓣种子:';
     let desp = `豆瓣账号: ${doubanAlias}\n` +
       `下载器名: ${client.alias}\n` +
       `种子名称: ${torrent.title || torrent.naem}\n` +
@@ -171,69 +129,53 @@ class Push {
       `选种规则: ${rule.alias}`;
     if (this.type === 'telegram') {
       desp = '```\n' + desp + '\n```';
-    }
-    if (this.type === 'telegram') {
       desp = '\\#添加豆瓣种子\n' + desp;
     }
-    if (this.type === 'telegram') {
-      desp = desp + `\n[POSTER](${wish.poster})`;
-    }
-    await this._push(this.pushType.indexOf('douban') !== -1, text, desp);
+    await this._push(this.pushType.indexOf('douban') !== -1, text, desp, wish.poster);
   };
 
   async addDoubanTorrentError (doubanAlias, client, torrent, rule) {
-    const text = `添加豆瓣种子失败: ${torrent.title.substring(0, 10) + '...'} | ${doubanAlias} | ${util.formatSize(torrent.size)} | ${client.alias}`;
+    const text = '添加豆瓣种子失败:';
     let desp = `豆瓣账号: ${doubanAlias}\n` +
       `下载器名: ${client.alias}\n` +
       `种子名称: ${torrent.title}\n` +
       `种子大小: ${util.formatSize(torrent.size)}\n` +
       `选种规则: ${rule.alias}\n` +
       '详细信息前往 Vertex 日志页查看';
-    if (this.markdown) {
-      desp = '```\n' + desp + '\n```';
-    }
     if (this.type === 'telegram') {
+      desp = '```\n' + desp + '\n```';
       desp = '\\#添加豆瓣种子失败\n' + desp;
     }
     await this._push(this.pushType.indexOf('raceError') !== -1, text, desp);
   };
 
   async addDouban (alias, wishes) {
-    const text = `添加豆瓣账户: ${alias}`;
+    const text = '添加豆瓣账户:';
     let desp = `豆瓣账户: ${alias}\n` +
       `原有想看内容: \n${wishes.map(item => item.name).join('\n')}`;
-    if (this.markdown) {
-      desp = '```\n' + desp + '\n```';
-    }
     if (this.type === 'telegram') {
+      desp = '```\n' + desp + '\n```';
       desp = '\\#添加豆瓣账户\n' + desp;
     }
     await this._push(this.pushType.indexOf('douban') !== -1, text, desp);
   };
 
   async addDoubanWish (alias, wish) {
-    const text = `添加想看: ${wish.name} || 豆瓣账户: ${alias}`;
+    const text = '添加想看:';
     let desp = `豆瓣账户: ${alias}\n` +
       `添加想看: \n${wish.name}`;
     if (this.type === 'telegram') {
       desp = '```\n' + desp + '\n```';
-    }
-    if (this.type === 'telegram') {
       desp = '\\#添加想看\n' + desp;
     }
-    if (this.type === 'telegram') {
-      desp = desp + `\n[POSTER](${wish.poster})`;
-    }
-    await this._push(this.pushType.indexOf('douban') !== -1, text, desp);
+    await this._push(this.pushType.indexOf('douban') !== -1, text, desp, wish.poster);
   };
 
   async torrentFinish (torrent, note) {
-    const text = `种子已完成: ${torrent.name} || ${note}`;
+    const text = '种子已完成:';
     let desp = `种子已完成: ${torrent.name}\n${note}`;
-    if (this.markdown) {
-      desp = '```\n' + desp + '\n```';
-    }
     if (this.type === 'telegram') {
+      desp = '```\n' + desp + '\n```';
       desp = '\\#种子已完成\n' + desp;
     }
     await this._push(this.pushType.indexOf('finish') !== -1, text, desp);
@@ -244,7 +186,7 @@ class Push {
       return logger.debug('周期内错误推送已达上限, 跳过本次推送');
     }
     this.errotCount += 1;
-    const text = '添加种子失败: ' + torrent.name;
+    const text = '添加种子失败:';
     let desp = `Rss 任务: ${rss.alias}\n` +
       `下载器名: ${client.alias}\n` +
       `种子名称: ${torrent.name}\n` +
@@ -260,7 +202,7 @@ class Push {
   };
 
   async rejectTorrent (rss, client = {}, torrent, note) {
-    const text = `拒绝种子: ${torrent.name.substring(0, 10) + '...'} | ${rss.alias} | ${util.formatSize(torrent.size)} | ${client.alias || '未定义'} | ${note}`;
+    const text = '拒绝种子:';
     let desp = `Rss 任务: ${rss.alias}\n` +
       `下载器名: ${client.alias || '未定义'}\n` +
       `种子名称: ${torrent.name}\n` +
@@ -276,8 +218,7 @@ class Push {
   };
 
   async deleteTorrent (client, torrent, rule, deleteFile) {
-    const text = `删除种子: ${torrent.name.substring(0, 20) + '...'} | ${util.formatSize(torrent.size)} | ${client.alias} |` +
-      `${util.formatSize(torrent.uploaded)} / ${util.formatSize(torrent.downloaded)} | ${(+torrent.ratio).toFixed(2)} | ${rule.alias} | ${torrent.category} | ${torrent.tracker}`;
+    const text = '删除种子:';
     let desp = `下载器名: ${client.alias}\n` +
       `种子名称: ${torrent.name}\n` +
       `种子大小: ${util.formatSize(torrent.size)}\n` +
@@ -306,7 +247,7 @@ class Push {
       return logger.debug('周期内错误推送已达上限, 跳过本次推送');
     }
     this.errotCount += 1;
-    const text = '删除种子失败: ' + torrent.name;
+    const text = '删除种子失败: ';
     let desp = `下载器名: ${client.alias}\n` +
       `种子名称: ${torrent.name}\n` +
       `种子大小: ${util.formatSize(torrent.size)}\n` +
@@ -328,7 +269,7 @@ class Push {
   };
 
   async reannounceTorrent (client, torrent) {
-    const text = '重新汇报种子: ' + torrent.name;
+    const text = '重新汇报种子: ';
     let desp = `下载器名: ${client.alias}\n` +
       `种子名称: ${torrent.name}`;
     if (this.markdown) {
@@ -357,7 +298,7 @@ class Push {
       return logger.debug('周期内错误推送已达上限, 跳过本次推送');
     }
     this.errotCount += 1;
-    const text = '下载器登陆失败: ' + client.alias;
+    const text = '下载器登陆失败: ';
     let desp = `下载器名: ${client.alias}\n` +
       `附加信息: ${message}`;
     if (this.markdown) {
@@ -374,7 +315,7 @@ class Push {
       return logger.debug('周期内错误推送已达上限, 跳过本次推送');
     }
     this.errotCount += 1;
-    const text = '获取下载器信息失败: ' + client.alias;
+    const text = '获取下载器信息失败: ';
     let desp = `下载器名: ${client.alias}\n` +
       '详细原因请前往 Vertex 日志页面查看';
     if (this.markdown) {
@@ -387,7 +328,7 @@ class Push {
   }
 
   async spaceAlarm (client) {
-    const text = '剩余空间警告: ' + client.alias;
+    const text = '剩余空间警告: ';
     let desp = `下载器名: ${client.alias}\n` +
       `剩余空间已不足${util.formatSize(client.maindata.freeSpaceOnDisk)}`;
     if (this.markdown) {
@@ -424,23 +365,6 @@ class Push {
     await this._push(this.pushType.indexOf('siteData') !== -1, text, desp);
   }
 
-  async pushIyuu (text, desp) {
-    const option = {
-      url: `https://iyuu.cn/${this.iyuuToken}.send`,
-      method: 'POST',
-      strictSSL: false,
-      formData: {
-        text,
-        desp
-      }
-    };
-    const res = await util.requestPromise(option);
-    const json = JSON.parse(res.body);
-    if (json.errcode !== 0) {
-      logger.error('推送失败', this.alias, text, res.body);
-    }
-  };
-
   async pushTelegram (text, desp) {
     const option = {
       url: `${global.telegramProxy}/bot${this.telegramBotToken}/sendMessage`,
@@ -460,23 +384,11 @@ class Push {
     return json.result.message_id;
   };
 
-  async pushBark (text, desp) {
-    const option = {
-      url: `https://api.day.app/${this.barkToken}/${encodeURIComponent(text)}/${encodeURIComponent(desp)}?icon=${encodeURIComponent('https://pic.lswl.in/images/2022/01/26/3d128357f09b4d44c40d5596506d1d1f.th.png')}`,
-      method: 'GET'
-    };
-    const res = await util.requestPromise(option);
-    const json = JSON.parse(res.body);
-    if (json.code !== 200) {
-      logger.error('推送失败', this.alias, text, res.body);
-    }
-  }
-
   async pushWeChat (text, desp, poster) {
     if (moment().unix() - this.accessToken.refreshTime > 3600) {
       await this._refreshWeChatAccessToken();
     }
-    const _poster = poster || 'https://pic.lswl.in/images/2022/01/25/52c3764f3357e87f494c50f2d720e899.png';
+    const _poster = poster || global.wechatCover || 'https://pic.lswl.in/images/2022/01/25/52c3764f3357e87f494c50f2d720e899.png';
     const body = {
       touser: '@all',
       msgtype: 'news',
