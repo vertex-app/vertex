@@ -46,6 +46,7 @@ class DoubanMod {
   deleteItem (options) {
     const doubanSet = util.listDoubanSet().filter(item => item.id === options.id)[0];
     doubanSet.wishes = doubanSet.wishes.filter(item => item.id !== options.doubanId);
+    global.runningDouban[options.id].wishes = doubanSet.wishes;
     fs.writeFileSync(path.join(__dirname, '../data/douban/set', options.id + '.json'), JSON.stringify(doubanSet, null, 2));
     return '删除想看记录成功';
   }

@@ -26,6 +26,18 @@
           <el-input v-model="setting.wechatCover" style="width: 500px;"></el-input>
           <div><el-tag type="info">企业微信通知时使用的默认封面, 留空显示 Vertex Logo</el-tag></div>
         </el-form-item>
+        <el-form-item label="Emby 通知封面" prop="embyCover">
+          <el-input v-model="setting.embyCover" style="width: 500px;"></el-input>
+          <div><el-tag type="info">Emby 通知时使用的封面, 留空显示 Vertex Logo</el-tag></div>
+        </el-form-item>
+        <el-form-item label="Plex 通知封面" prop="plexCover">
+          <el-input v-model="setting.plexCover" style="width: 500px;"></el-input>
+          <div><el-tag type="info">Plex 通知时使用的封面, 留空显示 Vertex Logo</el-tag></div>
+        </el-form-item>
+        <el-form-item label="Jellyfin 通知封面" prop="jellyfinCover">
+          <el-input v-model="setting.jellyfinCover" style="width: 500px;"></el-input>
+          <div><el-tag type="info">Jellyfin 通知时使用的封面, 留空显示 Vertex Logo</el-tag></div>
+        </el-form-item>
         <el-form-item label="数据目录路径" prop="dataPath">
           <el-input v-model="setting.dataPath" style="width: 500px;"></el-input>
           <div><el-tag type="warning">数据目录路径, Docker 安装无需修改</el-tag></div>

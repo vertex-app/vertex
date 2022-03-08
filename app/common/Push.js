@@ -53,7 +53,7 @@ class Push {
       return logger.debug('周期内错误推送已达上限, 跳过本次推送');
     }
     this.errotCount += 1;
-    const text = 'Rss 失败:';
+    const text = 'Rss 失败';
     let desp = `Rss 任务: ${rss.alias}` +
       '详细原因请前往 Vertex 日志页面查看';
     if (this.markdown) {
@@ -70,7 +70,7 @@ class Push {
       return logger.debug('周期内错误推送已达上限, 跳过本次推送');
     }
     this.errotCount += 1;
-    const text = '抓取失败:';
+    const text = '抓取失败';
     let desp = `Rss 任务: ${rss.alias}` +
       `种子名称: ${torrent.name}` +
       '请确认 Rss 站点是否支持抓取免费或抓取 HR, 若确认无问题, 请前往 Vertex 日志页面查看详细原因';
@@ -84,7 +84,7 @@ class Push {
   }
 
   async addTorrent (rss, client, torrent) {
-    const text = '添加种子:';
+    const text = '添加种子';
     let desp = `Rss 任务: ${rss.alias}\n` +
       `下载器名: ${client.alias}\n` +
       `种子名称: ${torrent.name}\n` +
@@ -98,19 +98,23 @@ class Push {
     await this._push(this.pushType.indexOf('add') !== -1, text, desp);
   };
 
-  async selectTorrentError (alias, note) {
+  async selectTorrentError (alias, wish, note) {
     const text = '豆瓣选种失败';
-    let desp = `豆瓣账号: ${alias}\n` +
-      `相关信息: ${note}\n`;
+    let desp = `豆瓣账号: ${alias}\n${wish.name}\n`;
+    if (note) {
+      desp += note;
+    } else {
+      desp += wish.episodes ? `无匹配结果或暂未更新 / 已完成至 ${wish.episodeNow} 集 / 全 ${wish.episodes} 集` : '无匹配结果或暂未更新';
+    }
     if (this.type === 'telegram') {
       desp = '```\n' + desp + '\n```';
       desp = '\\#豆瓣选种失败\n' + desp;
     }
-    await this._push(this.pushType.indexOf('doubanSelectError') !== -1, text, desp);
+    await this._push(this.pushType.indexOf('doubanSelectError') !== -1, text, desp, wish.poster);
   };
 
   async plexWebhook (event, note, poster) {
-    const text = 'Plex 消息通知:';
+    const text = 'Plex 消息通知';
     let desp = `Plex: ${event}\n` +
       `相关信息:\n${note}\n`;
     if (this.type === 'telegram') {
@@ -120,13 +124,14 @@ class Push {
     await this._push(this.pushType.indexOf('mediaServer') !== -1, text, desp, poster);
   };
 
-  async addDoubanTorrent (doubanAlias, client, torrent, rule, wish) {
-    const text = '添加豆瓣种子:';
-    let desp = `豆瓣账号: ${doubanAlias}\n` +
-      `下载器名: ${client.alias}\n` +
-      `种子名称: ${torrent.title || torrent.naem}\n` +
-      `种子大小: ${util.formatSize(torrent.size)}\n` +
-      `选种规则: ${rule.alias}`;
+  async addDoubanTorrent (client, torrent, rule, wish) {
+    const text = '添加豆瓣种子';
+    let desp = `${wish.name} / ${client.alias} / ${rule.alias}\n`;
+    desp += `站点名称: ${torrent.site}\n`;
+    desp += `种子标题: ${torrent.title}\n`;
+    desp += `副标题: ${torrent.subtitle}\n`;
+    desp += `状态: ${torrent.seeders} / ${torrent.leechers} / ${torrent.snatches}`;
+    desp += wish.episodes ? ` / 已完成至 ${wish.episodeNow} 集 / 全 ${wish.episodes} 集` : '';
     if (this.type === 'telegram') {
       desp = '```\n' + desp + '\n```';
       desp = '\\#添加豆瓣种子\n' + desp;
@@ -134,9 +139,9 @@ class Push {
     await this._push(this.pushType.indexOf('douban') !== -1, text, desp, wish.poster);
   };
 
-  async addDoubanTorrentError (doubanAlias, client, torrent, rule) {
-    const text = '添加豆瓣种子失败:';
-    let desp = `豆瓣账号: ${doubanAlias}\n` +
+  async addDoubanTorrentError (doubanAlias, client, torrent, rule, wish) {
+    const text = '添加豆瓣种子失败';
+    let desp = `${doubanAlias} / ${wish.name}\n` +
       `下载器名: ${client.alias}\n` +
       `种子名称: ${torrent.title}\n` +
       `种子大小: ${util.formatSize(torrent.size)}\n` +
@@ -146,11 +151,11 @@ class Push {
       desp = '```\n' + desp + '\n```';
       desp = '\\#添加豆瓣种子失败\n' + desp;
     }
-    await this._push(this.pushType.indexOf('raceError') !== -1, text, desp);
+    await this._push(this.pushType.indexOf('raceError') !== -1, text, desp, wish.poster);
   };
 
   async addDouban (alias, wishes) {
-    const text = '添加豆瓣账户:';
+    const text = '添加豆瓣账户';
     let desp = `豆瓣账户: ${alias}\n` +
       `原有想看内容: \n${wishes.map(item => item.name).join('\n')}`;
     if (this.type === 'telegram') {
@@ -161,9 +166,9 @@ class Push {
   };
 
   async addDoubanWish (alias, wish) {
-    const text = '添加想看:';
+    const text = '添加想看';
     let desp = `豆瓣账户: ${alias}\n` +
-      `添加想看: \n${wish.name}`;
+      `${wish.name} / ${wish.year} / ${wish.area} / ${wish.mainCreator} / ${wish.language} / ${wish.length} / ${wish.category}\n${wish.desc}`;
     if (this.type === 'telegram') {
       desp = '```\n' + desp + '\n```';
       desp = '\\#添加想看\n' + desp;
@@ -171,14 +176,17 @@ class Push {
     await this._push(this.pushType.indexOf('douban') !== -1, text, desp, wish.poster);
   };
 
-  async torrentFinish (torrent, note) {
-    const text = '种子已完成:';
-    let desp = `种子已完成: ${torrent.name}\n${note}`;
+  async torrentFinish (note) {
+    const text = '种子已完成';
+    let desp = `${note.wish.name}\n`;
+    desp += `${note.torrent.site} / ${note.torrent.title} / `;
+    desp += note.wish.episodes ? `/ 已完成至 ${note.wish.episodeNow} 集 / 全 ${note.wish.episodes} 集\n` : '\n';
+    desp += `${note.wish.name} / ${note.wish.year} / ${note.wish.area} / ${note.wish.mainCreator} / ${note.wish.language} / ${note.wish.length} / ${note.wish.category}\n${note.wish.desc}`;
     if (this.type === 'telegram') {
       desp = '```\n' + desp + '\n```';
       desp = '\\#种子已完成\n' + desp;
     }
-    await this._push(this.pushType.indexOf('finish') !== -1, text, desp);
+    await this._push(this.pushType.indexOf('finish') !== -1, text, desp, note.wish.poster);
   };
 
   async addTorrentError (rss, client, torrent) {
@@ -186,7 +194,7 @@ class Push {
       return logger.debug('周期内错误推送已达上限, 跳过本次推送');
     }
     this.errotCount += 1;
-    const text = '添加种子失败:';
+    const text = '添加种子失败';
     let desp = `Rss 任务: ${rss.alias}\n` +
       `下载器名: ${client.alias}\n` +
       `种子名称: ${torrent.name}\n` +
@@ -202,7 +210,7 @@ class Push {
   };
 
   async rejectTorrent (rss, client = {}, torrent, note) {
-    const text = '拒绝种子:';
+    const text = '拒绝种子';
     let desp = `Rss 任务: ${rss.alias}\n` +
       `下载器名: ${client.alias || '未定义'}\n` +
       `种子名称: ${torrent.name}\n` +
@@ -218,7 +226,7 @@ class Push {
   };
 
   async deleteTorrent (client, torrent, rule, deleteFile) {
-    const text = '删除种子:';
+    const text = '删除种子';
     let desp = `下载器名: ${client.alias}\n` +
       `种子名称: ${torrent.name}\n` +
       `种子大小: ${util.formatSize(torrent.size)}\n` +
@@ -388,7 +396,17 @@ class Push {
     if (moment().unix() - this.accessToken.refreshTime > 3600) {
       await this._refreshWeChatAccessToken();
     }
-    const _poster = poster || global.wechatCover || 'https://pic.lswl.in/images/2022/01/25/52c3764f3357e87f494c50f2d720e899.png';
+    let _poster;
+    if (text.indexOf('Plex') !== -1) {
+      _poster = poster || global.plexCover;
+    }
+    if (text.indexOf('Emby') !== -1) {
+      _poster = poster || global.embyCover;
+    }
+    if (text.indexOf('Jellyfin') !== -1) {
+      _poster = poster || global.jellyfinCover;
+    }
+    _poster = _poster || poster || global.wechatCover || 'https://pic.lswl.in/images/2022/01/25/52c3764f3357e87f494c50f2d720e899.png';
     const body = {
       touser: '@all',
       msgtype: 'news',

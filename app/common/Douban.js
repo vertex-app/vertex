@@ -54,6 +54,65 @@ class Douban {
     }
   };
 
+  async _getDoubanInfo (url) {
+    const dom = await this._getDocument(url);
+    const info = {};
+    // poster
+    info.poster = dom.querySelector('img[title="点击看更多海报"]').getAttribute('src').replace(/img\d/, 'img9').replace('s_ratio', 'l_ratio').replace('webp', 'jpg');
+
+    // span info
+    const spans = dom.querySelectorAll('#info > span');
+    for (const span of spans) {
+      switch (span.innerHTML) {
+      case '又名:':
+        info.aka = span.nextSibling.nodeValue.trim();
+        break;
+      case '制片国家/地区:':
+        info.area = span.nextSibling.nodeValue.trim();
+        break;
+      case '语言:':
+        info.language = span.nextSibling.nodeValue.trim();
+        break;
+      case '单集片长:':
+        info.length = span.nextSibling.nodeValue.trim();
+        break;
+      case '首播:':
+        info.releaseAt = span.nextElementSibling.innerHTML;
+        break;
+      }
+    }
+
+    // year
+    info.year = dom.querySelector('.year').innerHTML.match(/(\d+)/);
+
+    // imdb
+    info.imdb = dom.querySelector('#info').innerHTML.match(/(tt\d+)/);
+
+    // desc
+    info.desc = dom.querySelector('span[property="v:summary"]').innerHTML.replace(/\n +/g, '').split('<br>')[0];
+
+    // category
+    info.category = [...dom.querySelectorAll('span[property="v:genre"]')].map(item => item.innerHTML).join(' / ');
+
+    // tag
+    info.tag = dom.querySelector('span.color_gray');
+
+    // rating
+    info.rating = {
+      result: dom.querySelector('strong[class="ll rating_num"]').innerHTML,
+      votes: dom.querySelector('a[class="rating_people"] > span').innerHTML
+    };
+
+    // length
+    info.length = info.length || (dom.querySelector('span[property="v:runtime"]') || {}).innerHTML || '暂无';
+
+    // episodes
+    info.episodes = dom.querySelectorAll('a[href*="episode"]');
+
+    info.mainCreator = [...dom.querySelectorAll('a[rel="v:directedBy"],a[rel="v:starring"]')].slice(0, 5).map(item => item.innerHTML).join(' / ');
+    return info;
+  };
+
   destroy () {
     logger.info('销毁豆瓣实例', this.alias);
     this.refreshWishJob.stop();
@@ -92,7 +151,7 @@ class Douban {
           wish.downloaded = await this.selectTorrent(wish);
           if (!wish.downloaded) {
             logger.info(this.alias, '未匹配种子', wish.name);
-            this.ntf.selectTorrentError(this.alias, `未匹配种子: ${wish.name}`);
+            this.ntf.selectTorrentError(this.alias, wish);
           }
         } catch (e) {
           logger.error('豆瓣账户:', this.alias, '选种', wish.name, '失败:\n', e);
@@ -102,10 +161,10 @@ class Douban {
       for (const wish of wishes) {
         if (!this.wishes.filter(item => item.id === wish.id)[0]) {
           logger.info('豆瓣账户', this.alias, wish.name, '已添加入想看列表, 稍后将开始处理');
-          const details = await this._getDocument(wish.link);
-          const imdb = details.querySelector('#info').innerHTML.match(/(tt\d+)/);
-          const tag = details.querySelector('span.color_gray');
-          const year = details.querySelector('.year').innerHTML.match(/(\d+)/);
+          const doubanInfo = await this._getDoubanInfo(wish.link);
+          const imdb = doubanInfo.imdb;
+          const tag = doubanInfo.tag;
+          const year = doubanInfo.year;
           if (!tag) {
             logger.info('豆瓣账户', this.alias, wish.name, '未添加标签, 跳过');
             continue;
@@ -113,17 +172,24 @@ class Douban {
           const type = tag.innerHTML.trim().replace('标签:', '');
           wish.imdb = imdb ? imdb[1] : null;
           wish.year = year ? year[1] : null;
+          wish.rating = doubanInfo.rating;
+          wish.length = doubanInfo.length;
+          wish.area = doubanInfo.area;
+          wish.language = doubanInfo.language;
+          wish.length = doubanInfo.length;
+          wish.category = doubanInfo.category;
+          wish.desc = doubanInfo.desc;
           wish.tag = type;
+          wish.mainCreator = doubanInfo.mainCreator;
           if (!wish.tag) {
             logger.info('豆瓣账户', this.alias, wish.name, '未识别到标签, 跳过');
             continue;
           }
-          const episodes = details.querySelectorAll('a[href*="episode"]');
+          const episodes = doubanInfo.episodes;
           if (episodes.length !== 0) {
             wish.episodes = +episodes[episodes.length - 1].href.match(/episode\/(\d+)/)[1];
             wish.episodeNow = 0;
           }
-          wish.tag = wish.tag[1];
           const fitTag = Object.keys(this.categories).filter(item => wish.tag.indexOf(item) !== -1);
           if (!fitTag[0]) {
             logger.info('豆瓣账户', this.alias, wish.name, '标签分类', wish.tag, '未检索到标签, 跳过');
@@ -136,12 +202,12 @@ class Douban {
             wish.downloaded = await this.selectTorrent(wish);
             if (!wish.downloaded) {
               logger.info(this.alias, '未匹配种子', wish.name);
-              this.ntf.selectTorrentError(this.alias, `未匹配种子: ${wish.name}`);
+              this.ntf.selectTorrentError(this.alias, wish);
             }
           } catch (e) {
             logger.error('豆瓣账户:', this.alias, '选种', wish.name, '失败:\n', e);
             wish.downloaded = false;
-            this.ntf.selectTorrentError(this.alias, `执行报错: ${e.message}`);
+            this.ntf.selectTorrentError(this.alias, wish, `执行报错: ${e.message}`);
           }
           this._saveSet();
         }
@@ -389,7 +455,7 @@ class Douban {
             throw (e);
           }
           logger.info(this.alias, '选种规则:', rulesName, '种子:', torrent.title, '/', torrent.subtitle, '推送至下载器:', global.runningClient[this.client].alias, '成功');
-          await this.ntf.addDoubanTorrent(this.alias, global.runningClient[this.client], torrent, rule, wish);
+          await this.ntf.addDoubanTorrent(global.runningClient[this.client], torrent, rule, wish);
           return true;
         };
       }
@@ -406,10 +472,9 @@ class Douban {
         for (const _torrent of client.maindata.torrents) {
           if (torrent.hash !== _torrent.hash) continue;
           if (_torrent.completed === _torrent.size) {
-            logger.debug(torrent, _torrent);
-            logger.info('种子', _torrent.name, '已完成, 稍后将进行软链接操作');
-            await this.ntf.torrentFinish(torrent, '');
             const recordNoteJson = JSON.parse(torrent.record_note);
+            logger.info('种子', _torrent.name, '已完成, 稍后将进行软链接操作');
+            await this.ntf.torrentFinish(recordNoteJson);
             try {
               await this._linkTorrentFiles(_torrent, _client, recordNoteJson);
             } catch (e) {
