@@ -73,7 +73,6 @@ class Douban {
       wishes.push(wish);
     }
     const _doubanSet = util.listDoubanSet().filter(item => item.id === this.id)[0];
-    this.wishes = _doubanSet.wishes;
     if (!_doubanSet) {
       this.wishes = wishes.map(item => {
         logger.info('豆瓣账户', this.alias, '首次添加想看列表', item.name, '已设为已下载');
@@ -114,9 +113,9 @@ class Douban {
           const type = tag.innerHTML.trim().replace('标签:', '');
           wish.imdb = imdb ? imdb[1] : null;
           wish.year = year ? year[1] : null;
-          wish.tag = type.match(/#(.+?)#/);
+          wish.tag = type;
           if (!wish.tag) {
-            logger.info('豆瓣账户', this.alias, wish.name, '未识别到分类, 跳过');
+            logger.info('豆瓣账户', this.alias, wish.name, '未识别到标签, 跳过');
             continue;
           }
           const episodes = details.querySelectorAll('a[href*="episode"]');
@@ -125,10 +124,12 @@ class Douban {
             wish.episodeNow = 0;
           }
           wish.tag = wish.tag[1];
-          if (!this.categories[wish.tag]) {
-            logger.info('豆瓣账户', this.alias, wish.name, '标签分类', wish.tag, '未定义, 跳过');
+          const fitTag = Object.keys(this.categories).filter(item => wish.tag.indexOf(item) !== -1);
+          if (!fitTag[0]) {
+            logger.info('豆瓣账户', this.alias, wish.name, '标签分类', wish.tag, '未检索到标签, 跳过');
             continue;
           }
+          wish.tag = fitTag[0];
           try {
             await this.ntf.addDoubanWish(this.alias, wish);
             this.wishes.push(wish);
@@ -331,7 +332,7 @@ class Douban {
         if (rules.some(item => this._fitRaceRule(item, torrent))) {
           let fitReject = false;
           for (const rejectRule of rejectRules) {
-            if (this._fitRaceRule(rejectRules, torrent)) {
+            if (this._fitRaceRule(rejectRule, torrent)) {
               fitReject = true;
               logger.info(this.alias, '选种规则:', rulesName, '种子:', torrent.title, '/', torrent.subtitle, '匹配成功, 同时匹配拒绝规则成功:', rejectRule.alias, '跳过');
               break;
