@@ -42,25 +42,25 @@
           </div>
           <div style="width: 100%; text-align: center; margin: 6px 0 12px 20px">
             <el-tag
-              :color="`${$colors[item.doubanId.charCodeAt(0) % 9]}`"
+              :color="`${$colors[item.doubanId.charCodeAt(0) % 9][0]}`"
               closable
               v-for="item in wishList.filter(item => (!item.downloaded && !item.episodes) || (item.episodes && item.episodes !== item.episodeNow))"
               :key="item.id + item.doubanId"
               @close="deleteItem(item)"
               style="margin-left: 24px; margin-top: 16px">
-              {{`${item.name}: ${!item.episodes ? item.downloaded ? '已下载' : '未下载' : item.episodes === item.episodeNow ? '已追完' : item.episodeNow + ' / ' + item.episodes}`}}
+              {{`${item.doubanAlias}: ${item.name} / ${!item.episodes ? item.downloaded ? '已下载' : '未下载' : item.episodes === item.episodeNow ? '已追完' : item.episodeNow + ' / ' + item.episodes}`}}
             </el-tag>
           </div>
           <el-divider/>
           <div style="width: 100%; margin: 6px 0 12px 20px">
             <el-tag
-              :color="`${$colors[item.doubanId.charCodeAt(0) % 9]}`"
+              :color="`${$colors[item.doubanId.charCodeAt(0) % 9][0]}`"
               closable
               v-for="item in wishList.filter(item => (!item.episodes && item.downloaded) || (item.episodes && item.episodes === item.episodeNow))"
               :key="item.id + item.doubanId"
               @close="deleteItem(item)"
               style="margin-left: 24px; margin-top: 16px">
-              {{`${item.name}: ${!item.episodes ? item.downloaded ? '已下载' : '未下载' : item.episodes === item.episodeNow ? '已追完' : item.episodeNow + ' / ' + item.episodes}`}}
+              {{`${item.doubanAlias}: ${item.name} / ${!item.episodes ? item.downloaded ? '已下载' : '未下载' : item.episodes === item.episodeNow ? '已追完' : item.episodeNow + ' / ' + item.episodes}`}}
             </el-tag>
           </div>
         </el-collapse-item>

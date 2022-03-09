@@ -208,6 +208,7 @@ class Client {
       logger.error('下载器', this.alias, '登陆失败\n', error);
       await this.ntf.clientLoginError(this._client, error.message);
       this.status = false;
+      return;
     }
     try {
       if (!this.messageId) {

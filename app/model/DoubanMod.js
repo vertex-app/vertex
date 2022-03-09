@@ -39,7 +39,10 @@ class DoubanMod {
   };
 
   listWishes () {
-    const doubanSet = util.listDoubanSet().map(item => item.wishes.map(i => { return { ...i, doubanId: item.id }; })).flat();
+    const doubanList = util.listDouban();
+    const doubanSet = util.listDoubanSet()
+      .map(item => item.wishes.map(i => { return { ...i, doubanId: item.id, doubanAlias: doubanList.filter(ii => ii.id === item.id)[0].alias }; }))
+      .flat();
     return doubanSet || [];
   };
 

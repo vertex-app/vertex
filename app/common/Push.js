@@ -53,7 +53,7 @@ class Push {
       return logger.debug('周期内错误推送已达上限, 跳过本次推送');
     }
     this.errotCount += 1;
-    const text = 'Rss 失败';
+    const text = 'Rss 失败 ' + moment().format('YYYY-MM-DD HH:mm:ss');
     let desp = `Rss 任务: ${rss.alias}` +
       '详细原因请前往 Vertex 日志页面查看';
     if (this.markdown) {
@@ -70,7 +70,7 @@ class Push {
       return logger.debug('周期内错误推送已达上限, 跳过本次推送');
     }
     this.errotCount += 1;
-    const text = '抓取失败';
+    const text = '抓取失败 ' + moment().format('YYYY-MM-DD HH:mm:ss');
     let desp = `Rss 任务: ${rss.alias}` +
       `种子名称: ${torrent.name}` +
       '请确认 Rss 站点是否支持抓取免费或抓取 HR, 若确认无问题, 请前往 Vertex 日志页面查看详细原因';
@@ -84,7 +84,7 @@ class Push {
   }
 
   async addTorrent (rss, client, torrent) {
-    const text = '添加种子';
+    const text = '添加种子 ' + moment().format('YYYY-MM-DD HH:mm:ss');
     let desp = `Rss 任务: ${rss.alias}\n` +
       `下载器名: ${client.alias}\n` +
       `种子名称: ${torrent.name}\n` +
@@ -99,7 +99,7 @@ class Push {
   };
 
   async selectTorrentError (alias, wish, note) {
-    const text = '豆瓣选种失败';
+    const text = '豆瓣选种失败 ' + moment().format('YYYY-MM-DD HH:mm:ss');
     let desp = `豆瓣账号: ${alias}\n${wish.name}\n`;
     if (note) {
       desp += note;
@@ -114,7 +114,7 @@ class Push {
   };
 
   async plexWebhook (event, note, poster) {
-    const text = 'Plex 消息通知';
+    const text = 'Plex 消息通知 ' + moment().format('YYYY-MM-DD HH:mm:ss');
     let desp = `Plex: ${event}\n` +
       `相关信息:\n${note}\n`;
     if (this.type === 'telegram') {
@@ -125,7 +125,7 @@ class Push {
   };
 
   async addDoubanTorrent (client, torrent, rule, wish) {
-    const text = '添加豆瓣种子';
+    const text = '添加豆瓣种子 ' + moment().format('YYYY-MM-DD HH:mm:ss');
     const site = global.runningSite[torrent.site];
     let desp = `${wish.name} / ${client.alias} / ${rule.alias}\n`;
     desp += `站点名称: ${torrent.site} / ${util.formatSize(site.info.uploaded)} / ${util.formatSize(site.info.download)}\n`;
@@ -141,7 +141,7 @@ class Push {
   };
 
   async addDoubanTorrentError (client, torrent, rule, wish) {
-    const text = '添加豆瓣种子失败';
+    const text = '添加豆瓣种子失败 ' + moment().format('YYYY-MM-DD HH:mm:ss');
     let desp = `${wish.name} / ${client.alias} / ${rule.alias}\n`;
     desp += `站点名称: ${torrent.site}\n`;
     desp += `种子标题: ${torrent.title}\n`;
@@ -156,7 +156,7 @@ class Push {
   };
 
   async addDouban (alias, wishes) {
-    const text = '添加豆瓣账户';
+    const text = '添加豆瓣账户 ' + moment().format('YYYY-MM-DD HH:mm:ss');
     let desp = `豆瓣账户: ${alias}\n` +
       `原有想看内容: \n${wishes.map(item => item.name).join('\n')}`;
     if (this.type === 'telegram') {
@@ -167,7 +167,7 @@ class Push {
   };
 
   async addDoubanWish (alias, wish) {
-    const text = '添加想看';
+    const text = '添加想看 ' + moment().format('YYYY-MM-DD HH:mm:ss');
     let desp = `豆瓣账户: ${alias}\n` +
       `${wish.name} / ${wish.year} / ${wish.area} / ${wish.mainCreator} / ${wish.language} / ${wish.length} / ${wish.category}\n${wish.desc}`;
     if (this.type === 'telegram') {
@@ -178,7 +178,7 @@ class Push {
   };
 
   async torrentFinish (note) {
-    const text = '种子已完成';
+    const text = '种子已完成 ' + moment().format('YYYY-MM-DD HH:mm:ss');
     let desp = `${note.wish.name}\n`;
     desp += `${note.torrent.site} / ${note.torrent.title} / `;
     desp += note.wish.episodes ? `/ 已完成至 ${note.wish.episodeNow} 集 / 全 ${note.wish.episodes} 集\n` : '\n';
@@ -195,7 +195,7 @@ class Push {
       return logger.debug('周期内错误推送已达上限, 跳过本次推送');
     }
     this.errotCount += 1;
-    const text = '添加种子失败';
+    const text = '添加种子失败 ' + moment().format('YYYY-MM-DD HH:mm:ss');
     let desp = `Rss 任务: ${rss.alias}\n` +
       `下载器名: ${client.alias}\n` +
       `种子名称: ${torrent.name}\n` +
@@ -211,7 +211,7 @@ class Push {
   };
 
   async rejectTorrent (rss, client = {}, torrent, note) {
-    const text = '拒绝种子';
+    const text = '拒绝种子 ' + moment().format('YYYY-MM-DD HH:mm:ss');
     let desp = `Rss 任务: ${rss.alias}\n` +
       `下载器名: ${client.alias || '未定义'}\n` +
       `种子名称: ${torrent.name}\n` +
@@ -227,7 +227,7 @@ class Push {
   };
 
   async deleteTorrent (client, torrent, rule, deleteFile) {
-    const text = '删除种子';
+    const text = '删除种子 ' + moment().format('YYYY-MM-DD HH:mm:ss');
     let desp = `下载器名: ${client.alias}\n` +
       `种子名称: ${torrent.name}\n` +
       `种子大小: ${util.formatSize(torrent.size)}\n` +
@@ -256,7 +256,7 @@ class Push {
       return logger.debug('周期内错误推送已达上限, 跳过本次推送');
     }
     this.errotCount += 1;
-    const text = '删除种子失败: ';
+    const text = '删除种子失败 ' + moment().format('YYYY-MM-DD HH:mm:ss');
     let desp = `下载器名: ${client.alias}\n` +
       `种子名称: ${torrent.name}\n` +
       `种子大小: ${util.formatSize(torrent.size)}\n` +
@@ -278,7 +278,7 @@ class Push {
   };
 
   async reannounceTorrent (client, torrent) {
-    const text = '重新汇报种子: ';
+    const text = '重新汇报种子 ' + moment().format('YYYY-MM-DD HH:mm:ss');
     let desp = `下载器名: ${client.alias}\n` +
       `种子名称: ${torrent.name}`;
     if (this.markdown) {
@@ -291,7 +291,7 @@ class Push {
   };
 
   async connectClient (client) {
-    const text = '下载器已连接: ' + client.alias;
+    const text = '下载器已连接 ' + moment().format('YYYY-MM-DD HH:mm:ss');
     let desp = `下载器: ${client.alias}`;
     if (this.markdown) {
       desp = '```\n' + desp + '\n```';
@@ -307,7 +307,7 @@ class Push {
       return logger.debug('周期内错误推送已达上限, 跳过本次推送');
     }
     this.errotCount += 1;
-    const text = '下载器登陆失败: ';
+    const text = '下载器登陆失败 ' + moment().format('YYYY-MM-DD HH:mm:ss');
     let desp = `下载器名: ${client.alias}\n` +
       `附加信息: ${message}`;
     if (this.markdown) {
@@ -324,7 +324,7 @@ class Push {
       return logger.debug('周期内错误推送已达上限, 跳过本次推送');
     }
     this.errotCount += 1;
-    const text = '获取下载器信息失败: ';
+    const text = '获取下载器信息失败 ' + moment().format('YYYY-MM-DD HH:mm:ss');
     let desp = `下载器名: ${client.alias}\n` +
       '详细原因请前往 Vertex 日志页面查看';
     if (this.markdown) {
@@ -337,7 +337,7 @@ class Push {
   }
 
   async spaceAlarm (client) {
-    const text = '剩余空间警告: ';
+    const text = '剩余空间警告 ' + moment().format('YYYY-MM-DD HH:mm:ss');
     let desp = `下载器名: ${client.alias}\n` +
       `剩余空间已不足${util.formatSize(client.maindata.freeSpaceOnDisk)}`;
     if (this.markdown) {

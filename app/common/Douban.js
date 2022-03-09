@@ -30,8 +30,10 @@ class Douban {
     this.ntf = new Push(this._notify);
     this.refreshWishJob = new CronJob(douban.cron, () => this.refreshWish());
     this.checkFinishJob = new CronJob(global.checkFinishCron, () => this.checkFinish());
+    this.clearSelectFailedJob = new CronJob('0 0 * * *', () => this.clearSelectFailed());
     this.refreshWishJob.start();
     this.checkFinishJob.start();
+    this.selectTorrentToday = {};
     this.wishes = (util.listDoubanSet().filter(item => item.id === this.id)[0] || {}).wishes || [];
     logger.info('豆瓣账号', this.alias, '初始化完毕');
   };
@@ -487,6 +489,7 @@ class Douban {
         if (!client || !client.maindata || !client.maindata.torrents) continue;
         for (const _torrent of client.maindata.torrents) {
           if (torrent.hash !== _torrent.hash) continue;
+          logger.debug(torrent, _torrent, client.alias);
           if (_torrent.completed === _torrent.size) {
             const recordNoteJson = JSON.parse(torrent.record_note);
             logger.info('种子', _torrent.name, '已完成, 稍后将进行软链接操作');
@@ -501,6 +504,10 @@ class Douban {
         }
       }
     }
+  }
+
+  clearSelectFailed () {
+    this.selectTorrentToday = {};
   }
 }
 module.exports = Douban;
