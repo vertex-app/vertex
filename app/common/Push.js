@@ -128,7 +128,7 @@ class Push {
     const text = '添加豆瓣种子 ' + moment().format('YYYY-MM-DD HH:mm:ss');
     const site = global.runningSite[torrent.site];
     let desp = `${wish.name} / ${client.alias} / ${rule.alias}\n`;
-    desp += `站点名称: ${torrent.site} / ${util.formatSize(site.info.uploaded)} / ${util.formatSize(site.info.download)}\n`;
+    desp += `站点名称: ${torrent.site} / ${util.formatSize(site.info.upload)} / ${util.formatSize(site.info.download)}\n`;
     desp += `种子标题: ${torrent.title}\n`;
     desp += `副标题: ${torrent.subtitle}\n`;
     desp += `状态: ${torrent.seeders} / ${torrent.leechers} / ${torrent.snatches}`;
