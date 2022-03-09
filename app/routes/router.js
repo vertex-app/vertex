@@ -99,6 +99,7 @@ const siteProxy = function (req, res, next) {
       if (proxyReqOpts.headers['content-type'] && proxyReqOpts.headers['content-type'].indexOf('application/x-www-form-urlencoded') !== -1) {
         proxyReqOpts.headers['content-type'] = 'application/x-www-form-urlencoded';
       }
+      proxyReqOpts.headers['accept-encoding'] = 'gzip, deflate';
       proxyReqOpts.rejectUnauthorized = false;
       return proxyReqOpts;
     },
