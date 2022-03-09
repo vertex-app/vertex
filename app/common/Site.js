@@ -1036,8 +1036,8 @@ class Site {
     for (const _torrent of torrents) {
       const torrent = {};
       torrent.site = this.site;
-      torrent.title = _torrent.querySelector('div[class="name_left"] a[href*="/t/"] b font').childNodes[0].nodeValue.trim();
-      const subtitle = _torrent.querySelector('div[class="name_left"] a[href*="/t/"] b font span');
+      torrent.title = _torrent.querySelector('div[class="name_left"] a[href*="/t/"] b font, div[class="name_left"] a[href*="/t/"] b').childNodes[0].nodeValue.trim();
+      const subtitle = _torrent.querySelector('div[class="name_left"] a[href*="/t/"] b font span, div[class="name_left"] a[href*="/t/"] b span');
       torrent.subtitle = subtitle ? subtitle.innerHTML.trim() : '';
       torrent.category = _torrent.querySelector('td a[href*=cat] img').alt.trim();
       torrent.link = 'https://totheglory.im/' + _torrent.querySelector('a[href*="/t/"]').href.trim();

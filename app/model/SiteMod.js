@@ -76,7 +76,14 @@ class SiteMod {
     if (!options.keyword) {
       throw new Error('请输入关键词后搜索!!');
     }
-    const result = await Promise.all(Object.keys(global.runningSite).map(i => global.runningSite[i].search(options.keyword)));
+    const sites = JSON.parse(options.sites || '[]');
+    let searchSites;
+    if (!sites) {
+      searchSites = Object.keys(global.runningSite);
+    } else {
+      searchSites = sites;
+    }
+    const result = await Promise.all(searchSites.map(i => global.runningSite[i].search(options.keyword)));
     return result;
   }
 

@@ -1,6 +1,14 @@
 <template>
   <div class="radius-div" style="margin: 20px 0">
     <div class="search-mix-div" style="margin: 20px 0">
+      <el-form class="search-mix-form" label-width="100px" size="mini">
+        <el-form-item label="选择站点">
+          <el-checkbox :indeterminate="isIndeterminateSites" v-model="checkAllSites" @change="handleCheckAllSitesChange">全选</el-checkbox>
+          <el-checkbox-group v-model="searchSiteList">
+            <el-checkbox v-for="item of siteList" :key="item.name" :label="item.name">{{`${item.name === 'SpringSunDay' ? '不可说' : item.name}`}}</el-checkbox>
+          </el-checkbox-group>
+        </el-form-item>
+      </el-form>
       <el-form class="search-mix-form" inline label-width="100px" size="mini" @submit.native.prevent>
         <el-form-item label="关键词">
           <el-input v-model="searchKey" placeholder="关键词" @keyup.enter.native="searchTorrent"/>
@@ -229,7 +237,11 @@ export default {
       category: '',
       savePath: '',
       checkList: [],
+      searchSiteList: [],
       checkAll: true,
+      checkAllSites: [],
+      siteList: [],
+      isIndeterminateSites: true,
       isIndeterminate: true,
       torrentList: [],
       clientList: [],
@@ -280,7 +292,7 @@ export default {
     async searchTorrent () {
       this.searchStatus = '搜索中...';
       this.tableLoading = true;
-      const url = `/api/site/search?keyword=${this.searchKey}`;
+      const url = `/api/site/search?keyword=${this.searchKey}&sites=${encodeURIComponent(JSON.stringify(this.searchSiteList))}`;
       const res = await this.$axiosGet(url);
       this.torrentAll = res.data;
       this.checkList = this.torrentAll.map(i => i.site);
@@ -318,8 +330,13 @@ export default {
     },
 
     handleCheckAllChange (value) {
-      this.checkList = value ? this.torrentAll.map(i => i.site) : [];
+      this.checkList = value ? (this.torrentAll || []).map(i => i.site) : [];
       this.isIndeterminate = false;
+    },
+
+    handleCheckAllSitesChange (value) {
+      this.searchSiteList = value ? this.siteList.map(i => i.name) : [];
+      this.isIndeterminateSites = false;
     },
 
     refreshList () {
@@ -359,6 +376,11 @@ export default {
       this.clientList = res ? res.data : [];
     },
 
+    async listSite () {
+      const res = await this.$axiosGet('/api/site/list');
+      this.siteList = res ? res.data.siteList : [];
+    },
+
     async gotoDetail (row) {
       if (!row.link) return await this.$message.error('链接不存在');
       window.open(row.link);
@@ -366,6 +388,7 @@ export default {
   },
   async mounted () {
     this.listClient();
+    this.listSite();
     const torrentList = sessionStorage.getItem('torrentList');
     if (torrentList) {
       const torrentListJson = JSON.parse(torrentList);
