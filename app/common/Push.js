@@ -180,8 +180,8 @@ class Push {
   async torrentFinish (note) {
     const text = '种子已完成 ' + moment().format('YYYY-MM-DD HH:mm:ss');
     let desp = `${note.wish.name}\n`;
-    desp += `${note.torrent.site} / ${note.torrent.title} / `;
-    desp += note.wish.episodes ? `/ 已完成至 ${note.wish.episodeNow} 集 / 全 ${note.wish.episodes} 集\n` : '\n';
+    desp += `${note.torrent.site} / ${note.torrent.title}`;
+    desp += note.wish.episodes ? ` / 已完成至 ${note.wish.episodeNow} 集 / 全 ${note.wish.episodes} 集\n` : '\n';
     desp += `${note.wish.name} / ${note.wish.year} / ${note.wish.area} / ${note.wish.mainCreator} / ${note.wish.language} / ${note.wish.length} / ${note.wish.category}\n${note.wish.desc}`;
     if (this.type === 'telegram') {
       desp = '```\n' + desp + '\n```';

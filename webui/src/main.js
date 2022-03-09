@@ -55,7 +55,7 @@ library.add(brands);
 Vue.component('fa', FontAwesomeIcon);
 
 Vue.prototype.$colors = [
-  ['#00BFFF', '#409EFF'],
+  ['#00BFFF', '#FFFFFF'],
   ['#FFCC00', '#009966'],
   ['#336699', '#FFFFFF'],
   ['#CC3366', '#FFFFFF'],
