@@ -44,6 +44,7 @@
             <el-tag
               :color="`${$colors[item.doubanId.charCodeAt(0) % 9][0]}`"
               closable
+              :style="`color: ${$colors[item.doubanId.charCodeAt(0) % 9][1]}`"
               v-for="item in wishList.filter(item => (!item.downloaded && !item.episodes) || (item.episodes && item.episodes !== item.episodeNow))"
               :key="item.id + item.doubanId"
               @close="deleteItem(item)"
@@ -56,6 +57,7 @@
             <el-tag
               :color="`${$colors[item.doubanId.charCodeAt(0) % 9][0]}`"
               closable
+              :style="`color: ${$colors[item.doubanId.charCodeAt(0) % 9][1]}`"
               v-for="item in wishList.filter(item => (!item.episodes && item.downloaded) || (item.episodes && item.episodes === item.episodeNow))"
               :key="item.id + item.doubanId"
               @close="deleteItem(item)"

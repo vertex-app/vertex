@@ -443,7 +443,7 @@ class Douban {
           }
           let episodes;
           if (wish.episodes) {
-            const episodeTypeA = (torrent.subtitle.match(/E?\d{2,3}-E?\d{2,3}/g) || []).map(item => item.replace(/E/g, '').split('-'))[0] || [];
+            const episodeTypeA = (torrent.subtitle.match(/E?\d{1,3}-E?\d{1,3}/g) || []).map(item => item.replace(/E/g, '').split('-'))[0] || [];
             const episodeTypeB = (torrent.subtitle.match(/[^\d]E?\d{2,3}[^\d]/g) || []).map(item => item.match(/\d{2,3}/g)).flat() || [];
             const episodeTypeC = (torrent.subtitle.match(/[^\d]E?\d[^\dKk]/g) || []).map(item => item.match(/\d/g)).flat() || [];
             episodes = episodeTypeA.concat(episodeTypeB).concat(episodeTypeC);

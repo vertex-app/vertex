@@ -60,7 +60,7 @@ Vue.prototype.$colors = [
   ['#336699', '#FFFFFF'],
   ['#CC3366', '#FFFFFF'],
   ['#009966', '#FFFFFF'],
-  ['#FA8072', '#409EFF'],
+  ['#FA8072', '#FFFFFF'],
   ['#F0FFFF', '#409EFF'],
   ['#FAFAD2', '#409EFF'],
   ['#FFC0CB', '#409EFF']
