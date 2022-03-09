@@ -50,7 +50,8 @@ class Site {
       TJUPT: this._searchTJUPT,
       KeepFriends: this._searchKeepfriends,
       SpringSunDay: this._searchSpringsunday,
-      ToTheGlory: this._searchTotheglory
+      ToTheGlory: this._searchTotheglory,
+      HDChina: this._searchHDChina
     };
     this.torrentDownloadLinkMap = {
       HaresClub: 'https://club.hares.top/download.php?id={ID}',
@@ -64,7 +65,8 @@ class Site {
       TJUPT: 'https://www.tjupt.org/download.php?id={ID}',
       KeepFriends: 'https://pt.keepfrds.com/download.php?id={ID}',
       SpringSunDay: 'https://springsunday.net/download.php?id={ID}',
-      ToTheGlory: 'https://totheglory.im/dl/{ID}/{NUMBER}'
+      ToTheGlory: 'https://totheglory.im/dl/{ID}/{NUMBER}',
+      HDChina: 'https://hdchina.org/download.php?hash={HASH}'
     };
     this.siteUrlMap = {
       HaresClub: 'https://club.hares.top/',
@@ -78,7 +80,8 @@ class Site {
       TJUPT: 'https://www.tjupt.org/',
       KeepFriends: 'https://pt.keepfrds.com/',
       SpringSunDay: 'https://springsunday.net/',
-      ToTheGlory: 'https://totheglory.im/'
+      ToTheGlory: 'https://totheglory.im/',
+      HDChina: 'https://hdchina.org/'
     };
     this.cookie = site.cookie;
     this.site = site.name;
@@ -710,7 +713,7 @@ class Site {
       torrent.category = _torrent.querySelector('td img[class*=cat]').getAttribute('class').trim();
       torrent.link = 'https://lemonhd.org/' + _torrent.querySelector('a[href*=details]').href.trim();
       torrent.id = +torrent.link.match(/id=(\d*)/)[1];
-      torrent.seeders = +(_torrent.querySelector('a[href*=seeders]') || _torrent.querySelector('a[href*=seeders] font') || _torrent.querySelector('a[href*=seeders] span') || _torrent.querySelector('td span[class="red"]')).innerHTML.trim();
+      torrent.seeders = +(_torrent.querySelector('a[href*=seeders] font') || _torrent.querySelector('a[href*=seeders]') || _torrent.querySelector('a[href*=seeders] span') || _torrent.querySelector('td span[class="red"]')).innerHTML.trim();
       torrent.leechers = +(_torrent.querySelector('a[href*=leechers]') || _torrent.children[7]).innerHTML.trim();
       torrent.snatches = +(_torrent.querySelector('a[href*=snatches] b') || _torrent.children[8]).innerHTML.trim();
       torrent.size = _torrent.children[5].innerHTML.trim().replace('<br>', ' ').replace(/([KMGPT])B/, '$1iB');
@@ -742,7 +745,7 @@ class Site {
       torrent.category = _torrent.querySelector('td a[href*=cat] img').title.trim();
       torrent.link = 'https://kp.m-team.cc/' + _torrent.querySelector('a[href*=details]').href.trim();
       torrent.id = +torrent.link.match(/id=(\d*)/)[1];
-      torrent.seeders = +(_torrent.querySelector('a[href*=seeders]') || _torrent.querySelector('a[href*=seeders] font') || _torrent.querySelector('span[class=red]')).innerHTML.trim();
+      torrent.seeders = +(_torrent.querySelector('a[href*=seeders] font') || _torrent.querySelector('a[href*=seeders]') || _torrent.querySelector('span[class=red]')).innerHTML.trim();
       torrent.leechers = +(_torrent.querySelector('a[href*=leechers]') || _torrent.childNodes[9]).innerHTML.trim();
       torrent.snatches = +(_torrent.querySelector('a[href*=snatches] b') || _torrent.childNodes[11]).innerHTML.trim();
       torrent.size = _torrent.childNodes[6].innerHTML.trim().replace('<br>', ' ').replace(/([KMGPT])B/, '$1iB');
@@ -779,7 +782,7 @@ class Site {
       torrent.link = 'https://hdsky.me/' + _torrent.querySelector('a[href*=details]').href.trim();
       torrent.downloadLink = _torrent.querySelector('form[action*="download"]').action;
       torrent.id = +torrent.link.match(/id=(\d*)/)[1];
-      torrent.seeders = +(_torrent.querySelector('a[href*=seeders]') || _torrent.querySelector('a[href*=seeders] font') || _torrent.querySelector('span[class=red]')).innerHTML.trim();
+      torrent.seeders = +(_torrent.querySelector('a[href*=seeders] font') || _torrent.querySelector('a[href*=seeders]') || _torrent.querySelector('span[class=red]')).innerHTML.trim();
       torrent.leechers = +(_torrent.querySelector('a[href*=leechers]') || _torrent.childNodes[9]).innerHTML.trim();
       torrent.snatches = +(_torrent.querySelector('a[href*=snatches] b') || _torrent.childNodes[11]).innerHTML.trim();
       torrent.size = _torrent.childNodes[6].innerHTML.trim().replace('<br>', ' ').replace(/([KMGPT])B/, '$1iB');
@@ -816,7 +819,7 @@ class Site {
       torrent.category = _torrent.querySelector('td a[href*=cat] img').title.trim();
       torrent.link = 'https://ourbits.club/' + _torrent.querySelector('a[href*=details]').href.trim();
       torrent.id = +torrent.link.match(/id=(\d*)/)[1];
-      torrent.seeders = +(_torrent.querySelector('a[href*=seeders]') || _torrent.querySelector('a[href*=seeders] font') || _torrent.querySelector('span[class=red]')).innerHTML.trim();
+      torrent.seeders = +(_torrent.querySelector('a[href*=seeders] font') || _torrent.querySelector('a[href*=seeders]') || _torrent.querySelector('span[class=red]')).innerHTML.trim();
       torrent.leechers = +(_torrent.querySelector('a[href*=leechers]') || _torrent.childNodes[9]).innerHTML.trim();
       torrent.snatches = +(_torrent.querySelector('a[href*=snatches] b') || _torrent.childNodes[11]).innerHTML.trim();
       torrent.size = _torrent.childNodes[6].innerHTML.trim().replace('<br>', ' ').replace(/([KMGPT])B/, '$1iB');
@@ -848,7 +851,7 @@ class Site {
       torrent.category = _torrent.querySelector('td a[href*=cat] img').title.trim();
       torrent.link = 'https://hdhome.org/' + _torrent.querySelector('a[href*=details]').href.trim();
       torrent.id = +torrent.link.match(/id=(\d*)/)[1];
-      torrent.seeders = +(_torrent.querySelector('a[href*=seeders]') || _torrent.querySelector('a[href*=seeders] font') || _torrent.querySelector('span[class=red]')).innerHTML.trim();
+      torrent.seeders = +(_torrent.querySelector('a[href*=seeders] font') || _torrent.querySelector('a[href*=seeders]') || _torrent.querySelector('span[class=red]')).innerHTML.trim();
       torrent.leechers = +(_torrent.querySelector('a[href*=leechers]') || _torrent.childNodes[9]).innerHTML.trim();
       torrent.snatches = +(_torrent.querySelector('a[href*=snatches] b') || _torrent.childNodes[11]).innerHTML.trim();
       torrent.size = _torrent.childNodes[6].innerHTML.trim().replace('<br>', ' ').replace(/([KMGPT])B/, '$1iB');
@@ -880,7 +883,7 @@ class Site {
       torrent.category = _torrent.querySelector('td a[href*=cat] img').title.trim();
       torrent.link = 'https://pterclub.com/' + _torrent.querySelector('a[href*=details]').href.trim();
       torrent.id = +torrent.link.match(/id=(\d*)/)[1];
-      torrent.seeders = +(_torrent.querySelector('a[href*=seeders]') || _torrent.querySelector('a[href*=seeders] font') || _torrent.querySelector('span[class=red]')).innerHTML.trim();
+      torrent.seeders = +(_torrent.querySelector('a[href*=seeders] font') || _torrent.querySelector('a[href*=seeders]') || _torrent.querySelector('span[class=red]')).innerHTML.trim();
       torrent.leechers = +(_torrent.querySelector('a[href*=leechers]') || _torrent.childNodes[9]).innerHTML.trim();
       torrent.snatches = +(_torrent.querySelector('a[href*=snatches] b') || _torrent.childNodes[11]).innerHTML.trim();
       torrent.size = _torrent.childNodes[6].innerHTML.trim().replace('<br>', ' ').replace(/([KMGPT])B/, '$1iB');
@@ -912,7 +915,7 @@ class Site {
       torrent.category = _torrent.querySelector('td a[href*=cat] img').title.trim();
       torrent.link = 'https://pt.btschool.club/' + _torrent.querySelector('a[href*=details]').href.trim();
       torrent.id = +torrent.link.match(/id=(\d*)/)[1];
-      torrent.seeders = +(_torrent.querySelector('a[href*=seeders]') || _torrent.querySelector('a[href*=seeders] font') || _torrent.querySelector('span[class=red]')).innerHTML.trim();
+      torrent.seeders = +(_torrent.querySelector('a[href*=seeders] font') || _torrent.querySelector('a[href*=seeders]') || _torrent.querySelector('span[class=red]')).innerHTML.trim();
       torrent.leechers = +(_torrent.querySelector('a[href*=leechers]') || _torrent.childNodes[9]).innerHTML.trim();
       torrent.snatches = +(_torrent.querySelector('a[href*=snatches] b') || _torrent.childNodes[11]).innerHTML.trim();
       torrent.size = _torrent.childNodes[6].innerHTML.trim().replace('<br>', ' ').replace(/([KMGPT])B/, '$1iB');
@@ -945,7 +948,7 @@ class Site {
       torrent.category = _torrent.querySelector('td a[href*=cat] img').title.trim();
       torrent.link = 'https://www.tjupt.org/' + _torrent.querySelector('a[href*=details]').href.trim();
       torrent.id = +torrent.link.match(/id=(\d*)/)[1];
-      torrent.seeders = +(_torrent.querySelector('a[href*=seeders]') || _torrent.querySelector('a[href*=seeders] font') || _torrent.querySelector('span[class=red]')).innerHTML.trim();
+      torrent.seeders = +(_torrent.querySelector('a[href*=seeders] font') || _torrent.querySelector('a[href*=seeders]') || _torrent.querySelector('span[class=red]')).innerHTML.trim();
       torrent.leechers = +(_torrent.querySelector('a[href*=leechers]') || _torrent.childNodes[9]).innerHTML.trim();
       torrent.snatches = +(_torrent.querySelector('a[href*=snatches] b') || _torrent.childNodes[11]).innerHTML.trim();
       torrent.size = _torrent.childNodes[6].innerHTML.trim().replace('<br>', ' ');
@@ -978,7 +981,7 @@ class Site {
       torrent.category = _torrent.querySelector('td a[href*=cat] img').title.trim();
       torrent.link = 'https://pt.keepfrds.com/' + _torrent.querySelector('a[href*=details]').href.trim();
       torrent.id = +torrent.link.match(/id=(\d*)/)[1];
-      torrent.seeders = +(_torrent.querySelector('a[href*=seeders]') || _torrent.querySelector('a[href*=seeders] font') || _torrent.querySelector('span[class=red]')).innerHTML.trim();
+      torrent.seeders = +(_torrent.querySelector('a[href*=seeders] font') || _torrent.querySelector('a[href*=seeders]') || _torrent.querySelector('span[class=red]')).innerHTML.trim();
       torrent.leechers = +(_torrent.querySelector('a[href*=leechers]') || _torrent.childNodes[7]).innerHTML.trim();
       torrent.snatches = +(_torrent.querySelector('a[href*=snatches] b') || _torrent.childNodes[8]).innerHTML.trim();
       torrent.size = _torrent.childNodes[5].innerHTML.trim().replace('<br>', ' ');
@@ -1006,7 +1009,7 @@ class Site {
       torrent.category = _torrent.querySelector('td a[href*=cat] img').title.trim();
       torrent.link = 'https://springsunday.net/' + _torrent.querySelector('a[href*=details]').href.trim();
       torrent.id = +torrent.link.match(/id=(\d*)/)[1];
-      torrent.seeders = +(_torrent.querySelector('a[href*=seeders]') || _torrent.querySelector('a[href*=seeders] font') || _torrent.querySelector('span[class=red]')).innerHTML.trim();
+      torrent.seeders = +(_torrent.querySelector('a[href*=seeders] font') || _torrent.querySelector('a[href*=seeders]') || _torrent.querySelector('span[class=red]')).innerHTML.trim();
       torrent.leechers = +(_torrent.querySelector('a[href*=leechers]') || _torrent.childNodes[15]).innerHTML.trim();
       torrent.snatches = +(_torrent.querySelector('a[href*=snatches] b') || _torrent.childNodes[17]).innerHTML.trim();
       torrent.size = _torrent.childNodes[11].innerHTML.trim().replace('<br>', ' ').replace(/([KMGPT])B/, '$1iB');
@@ -1050,6 +1053,35 @@ class Site {
       torrent.snatches = +_torrent.innerHTML.match(/(\d+)<br>次/)[1];
       torrent.size = _torrent.innerHTML.match(/\d+\.*\d+<br>[PTGMK]B/)[0].replace('<br>', ' ');
       torrent.time = moment(_torrent.innerHTML.match(/\d{4}-\d{2}-\d{2}<br>\d{2}:\d{2}:\d{2}/)[0].replace('<br>', ' ')).unix();
+      torrent.size = util.calSize(...torrent.size.split(' '));
+      torrent.tags = [];
+      torrentList.push(torrent);
+    }
+    return {
+      site: this.site,
+      torrentList
+    };
+  };
+
+  // HDChina
+  async _searchHDChina (keyword) {
+    const torrentList = [];
+    const document = await this._getDocument(`https://hdchina.org/torrents.php?incldead=1&spstate=0&inclbookmarked=0&seeders=&search=${encodeURIComponent(keyword)}&search_area=${keyword.match(/tt\d+/) ? 4 : 0}&search_mode=0`);
+    const torrents = document.querySelectorAll('.torrent_list tbody tr:not(:first-child)');
+    for (const _torrent of torrents) {
+      const torrent = {};
+      torrent.site = this.site;
+      torrent.title = _torrent.querySelector('td[class="t_name"] a[href*="details"]').title.trim();
+      torrent.subtitle = _torrent.querySelector('td[class="t_name"] h4').innerHTML.trim();
+      torrent.category = _torrent.querySelector('td a[href*=cat] img').title.trim();
+      torrent.link = 'https://hdchina.org/' + _torrent.querySelector('a[href*=details]').href.trim();
+      torrent.downloadLink = 'https://hdchina.org/' + _torrent.querySelector('a[href*="download.php"]').href;
+      torrent.id = +torrent.link.match(/id=(\d*)/)[1];
+      torrent.seeders = +(_torrent.querySelector('a[href*=seeders] font') || _torrent.querySelector('a[href*=seeders]') || _torrent.querySelector('span[class=red]')).innerHTML.trim();
+      torrent.leechers = +(_torrent.querySelector('a[href*=leechers]') || _torrent.childNodes[9]).innerHTML.trim();
+      torrent.snatches = +(_torrent.querySelector('a[href*=snatches]') || _torrent.childNodes[11]).innerHTML.trim();
+      torrent.size = _torrent.childNodes[6].innerHTML.trim().replace('&nbsp;', ' ').replace(/([KMGPT])B/, '$1iB');
+      torrent.time = moment(_torrent.childNodes[5].querySelector('span') ? _torrent.childNodes[5].querySelector('span').title : _torrent.childNodes[5].innerHTML.replace(/<br>/, ' ')).unix();
       torrent.size = util.calSize(...torrent.size.split(' '));
       torrent.tags = [];
       torrentList.push(torrent);
