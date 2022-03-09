@@ -33,6 +33,7 @@ class Douban {
     this.clearSelectFailedJob = new CronJob('0 0 * * *', () => this.clearSelectFailed());
     this.refreshWishJob.start();
     this.checkFinishJob.start();
+    this.clearSelectFailedJob.start();
     this.selectTorrentToday = {};
     this.wishes = (util.listDoubanSet().filter(item => item.id === this.id)[0] || {}).wishes || [];
     logger.info('豆瓣账号', this.alias, '初始化完毕');
@@ -132,6 +133,8 @@ class Douban {
   destroy () {
     logger.info('销毁豆瓣实例', this.alias);
     this.refreshWishJob.stop();
+    this.checkFinishJob.stop();
+    this.clearSelectFailedJob.stop();
     delete global.runningClient[this.id];
   };
 
