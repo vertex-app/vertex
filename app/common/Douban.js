@@ -165,9 +165,10 @@ class Douban {
             continue;
           }
           wish.downloaded = await this.selectTorrent(wish);
-          if (!wish.downloaded) {
+          if (!wish.downloaded && !this.selectTorrent[wish.id]) {
             logger.info(this.alias, '未匹配种子', wish.name);
             this.ntf.selectTorrentError(this.alias, wish);
+            this.selectTorrent[wish.id] = 1;
           }
         } catch (e) {
           logger.error('豆瓣账户:', this.alias, '选种', wish.name, '失败:\n', e);
