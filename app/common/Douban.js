@@ -452,6 +452,7 @@ class Douban {
               logger.info(this.alias, '选种规则:', rulesName, '种子:', torrent.title, '/', torrent.subtitle, '匹配成功, 已完成至:', wish.episodeNow, '判断结果为已下载, 跳过');
               continue;
             }
+            wish.episodeNow = Math.max(...episodes.map(i => +i));
           }
           logger.info(this.alias, '选种规则:', rulesName, '种子:', torrent.title, '/', torrent.subtitle, '匹配成功, 准备推送至下载器:', global.runningClient[this.client].alias);
           const category = this.categories[wish.tag];
