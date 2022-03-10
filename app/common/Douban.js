@@ -169,6 +169,7 @@ class Douban {
             continue;
           }
           wish.downloaded = await this.selectTorrent(wish);
+          this._saveSet();
           if (!wish.downloaded && !this.selectTorrent[wish.id]) {
             logger.info(this.alias, '未匹配种子', wish.name);
             this.ntf.selectTorrentError(this.alias, wish);
@@ -221,6 +222,7 @@ class Douban {
             await this.ntf.addDoubanWish(this.alias, wish);
             this.wishes.push(wish);
             wish.downloaded = await this.selectTorrent(wish);
+            this._saveSet();
             if (!wish.downloaded) {
               logger.info(this.alias, '未匹配种子', wish.name);
               this.ntf.selectTorrentError(this.alias, wish);
@@ -518,6 +520,7 @@ class Douban {
       refresh: '刷新想看列表'
     };
     logger.info('豆瓣账号', this.alias, '接收微信消息', typeMap[type], '即将开始执行');
+    this.ntf.startRefreshJob(this.alias);
     this.refreshWish();
   }
 

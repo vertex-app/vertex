@@ -164,6 +164,16 @@ class Push {
     await this._push(this.pushType.indexOf('douban') !== -1, text, desp);
   };
 
+  async startRefreshJob (alias) {
+    const text = '刷新想看任务 ' + moment().format('YYYY-MM-DD HH:mm:ss');
+    let desp = `豆瓣账户: ${alias}\n`;
+    if (this.type === 'telegram') {
+      desp = '```\n' + desp + '\n```';
+      desp = '\\#刷新想看任务\n' + desp;
+    }
+    await this._push(this.pushType.indexOf('douban') !== -1, text, desp);
+  };
+
   async addDoubanWish (alias, wish) {
     const text = '添加想看 ' + moment().format('YYYY-MM-DD HH:mm:ss');
     let desp = `豆瓣账户: ${alias}\n` +

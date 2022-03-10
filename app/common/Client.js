@@ -162,6 +162,7 @@ class Client {
     this.maindataJob.stop();
     if (this.reannounceJob) this.reannounceJob.stop();
     if (this.autoDeleteJob) this.autoDeleteJob.stop();
+    if (this.spaceAlarmJob) this.spaceAlarmJob.stop();
     for (const rule of this.deleteRules) {
       if (rule.fitTimeJob) {
         rule.fitTimeJob.stop();

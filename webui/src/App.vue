@@ -124,8 +124,15 @@ body {
   background-color: transparent !important;
 }
 
-.el-input__inner, .el-checkbox__inner, .el-textarea__inner, .el-input-group__append, .el-input-group__prepend {
+.el-input__inner, .el-checkbox__inner, .el-textarea__inner,
+.el-input-group__append, .el-input-group__prepend {
   color: #000;
+}
+
+.el-checkbox__inner::after {
+  border: 1px solid #000;
+  border-left: 0;
+  border-top: 0;
 }
 
 .el-tag.el-tag--info {

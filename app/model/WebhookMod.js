@@ -48,19 +48,21 @@ class WebhookMod {
 
   async wechat (req) {
     let body;
+    const query = req.query;
     if (!req.body || !req.query.timestamp || !req.query.nonce) {
       return '请求格式错误!!';
     }
-    try {
-      body = await parseXml(await req.body);
-    } catch (e) {
-      logger.error(e);
-      return '请求格式错误!!';
+    if (!query.echostr) {
+      try {
+        body = await parseXml(await req.body);
+      } catch (e) {
+        logger.error(e);
+        return '请求格式错误!!';
+      }
     }
-    const query = req.query;
     const aesKey = Buffer.from(global.wechatAesKey, 'base64').toString('hex');
     const token = global.wechatToken;
-    const encryptStr = body.xml.Encrypt[0];
+    const encryptStr = query.echostr || body.xml.Encrypt[0];
     const encodingStr = [token, query.timestamp, query.nonce, encryptStr].sort().join('');
     const sign = crypto.createHash('sha1').update(encodingStr).digest('hex').toLowerCase();
     if (sign !== query.msg_signature) return '签名错误!!';
@@ -71,6 +73,7 @@ class WebhookMod {
     let content = decodeBuffer.slice(16);
     const length = content.slice(0, 4).readUInt32BE(0);
     content = content.slice(4, length + 4).toString();
+    if (query.echostr) return content;
     content = await parseXml(content);
     console.log(content);
     if (content.xml.Content[0].trim() === '刷新豆瓣') {
@@ -80,7 +83,7 @@ class WebhookMod {
         global.runningDouban[douban].wechatLink('refresh');
       }
     }
-    return 'ok';
+    return content;
   }
 }
 module.exports = WebhookMod;
