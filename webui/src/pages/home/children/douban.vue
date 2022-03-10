@@ -1,5 +1,5 @@
 <template>
-  <div class="douban">
+  <div>
     <div class="radius-div">
       <el-table
         :data="doubanList"
@@ -96,7 +96,7 @@
               <div><el-tag type="info">选择选种规则, 符合这些规则的种子才会添加, 可前往选种规则分页添加</el-tag></div>
             </el-form-item>
             <el-form-item label="选择链接规则" prop="linkRule">
-              <el-select v-model="douban.linkRule" placeholder="选择选种规则">
+              <el-select v-model="douban.linkRule" placeholder="选择链接规则">
                 <el-option v-for="rule of linkRuleList" :key="rule.id" :label="rule.alias" :value="rule.id">{{rule.alias}}</el-option>
               </el-select>
               <div><el-tag type="info">选择链接规则, 链接规则可前往链接规则分页添加</el-tag></div>

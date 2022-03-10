@@ -1,7 +1,7 @@
 <template>
-  <div class="radius-div" style="margin: 20px 0">
-    <div class="search-mix-div" style="margin: 20px 0">
-      <el-form class="search-mix-form" label-width="100px" size="mini">
+  <div>
+    <div class="radius-div" >
+      <el-form class="search-mix-form" style="margin: 20px 0" label-width="100px" size="mini">
         <el-form-item label="选择站点">
           <el-checkbox :indeterminate="isIndeterminateSites" v-model="checkAllSites" @change="handleCheckAllSitesChange">全选</el-checkbox>
           <el-checkbox-group v-model="searchSiteList">
@@ -203,28 +203,28 @@
           :total="total">
         </el-pagination>
       </div>
-      <el-dialog title="推送种子" :visible.sync="pushTorrentVisible" width="50%">
-        <el-form label-width="144px" size="mini" style="width: 80%;">
-          <el-form-item required label="下载器">
-            <el-select v-model="client" placeholder="选择下载器" style="width: 200px;">
-              <el-option v-for="client of clientList" :disabled="!client.status" :key="client.id" :label="client.alias" :value="client.id"></el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item label="分类">
-            <el-input v-model="category" style="width: 200px;"></el-input>
-          </el-form-item>
-          <el-form-item label="保存路径">
-            <el-input v-model="savePath" style="width: 200px;"></el-input>
-          </el-form-item>
-          <el-form-item label="自动管理">
-            <el-checkbox v-model="autoTMM">自动管理</el-checkbox>
-          </el-form-item>
-          <el-form-item size="mini">
-            <el-button type="primary" @click="pushTorrent">推送种子</el-button>
-          </el-form-item>
-        </el-form>
-      </el-dialog>
     </div>
+    <el-dialog :modal-append-to-body='false' style="z-index: 999" title="推送种子" :visible.sync="pushTorrentVisible" width="50%">
+      <el-form label-width="144px" size="mini" style="width: 80%;">
+        <el-form-item required label="下载器">
+          <el-select v-model="client" placeholder="选择下载器" style="width: 200px;">
+            <el-option v-for="client of clientList" :disabled="!client.status" :key="client.id" :label="client.alias" :value="client.id"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="分类">
+          <el-input v-model="category" style="width: 200px;"></el-input>
+        </el-form-item>
+        <el-form-item label="保存路径">
+          <el-input v-model="savePath" style="width: 200px;"></el-input>
+        </el-form-item>
+        <el-form-item label="自动管理">
+          <el-checkbox v-model="autoTMM">自动管理</el-checkbox>
+        </el-form-item>
+        <el-form-item size="mini">
+          <el-button type="primary" @click="pushTorrent">推送种子</el-button>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
   </div>
 </template>
 

@@ -135,17 +135,17 @@
           </el-form>
         </el-collapse-item>
       </el-collapse>
-      <el-dialog title="导入规则" :visible.sync="importRaceRuleVisible" width="80%">
-        <el-form label-width="144px" size="mini" style="width: 80%;">
-          <el-form-item label="规则">
-            <el-input v-model="importRaceRuleText" type="textarea" :rows="20" style="width: 500px;"></el-input>
-          </el-form-item>
-          <el-form-item size="mini">
-            <el-button type="primary" @click="importRaceRule">导入</el-button>
-          </el-form-item>
-        </el-form>
-      </el-dialog>
     </div>
+    <el-dialog title="导入规则" :visible.sync="importRaceRuleVisible" width="80%">
+      <el-form label-width="144px" size="mini" style="width: 80%;">
+        <el-form-item label="规则">
+          <el-input v-model="importRaceRuleText" type="textarea" :rows="20" style="width: 500px;"></el-input>
+        </el-form-item>
+        <el-form-item size="mini">
+          <el-button type="primary" @click="importRaceRule">导入</el-button>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
   </div>
 </template>
 
