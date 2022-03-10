@@ -6,8 +6,6 @@ const webhookMod = new WebhookMod();
 class Webhook {
   async plex (req, res) {
     try {
-      console.log(req.params);
-      console.log(global.apiKey);
       if (!global.apiKey || req.params.apiKey !== global.apiKey) {
         throw new Error('鉴权失效');
       }
@@ -16,6 +14,21 @@ class Webhook {
         success: true,
         message: r
       });
+    } catch (e) {
+      logger.error(e);
+      res.send({
+        success: false,
+        message: e.message
+      });
+    }
+  };
+
+  async wechat (req, res) {
+    try {
+      if (!global.apiKey || req.params.apiKey !== global.apiKey) {
+        throw new Error('鉴权失效');
+      }
+      res.send(await webhookMod.wechat(req));
     } catch (e) {
       logger.error(e);
       res.send({

@@ -125,6 +125,7 @@ module.exports = function (app, express, router) {
       maxAge: 1000 * 60 * 60 * 24 * 30
     }
   }));
+  app.use('/api', express.text({ type: 'text/xml' }));
   app.use('/api', express.json());
   app.use('/api', express.urlencoded({ extended: false }));
   app.use('/api', multipartMiddleware);
@@ -219,6 +220,7 @@ module.exports = function (app, express, router) {
   router.get('/setting/getCss.css', ctrl.Setting.getCss);
 
   router.all('/openapi/:apiKey/plex', ctrl.Webhook.plex);
+  router.all('/openapi/:apiKey/wechat', ctrl.Webhook.wechat);
 
   app.use('/api', router);
   app.use('/proxy/client/:client', clientProxy);
