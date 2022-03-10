@@ -182,6 +182,10 @@
               <el-input v-model="douban.cron" type="input"></el-input>
               <div><el-tag size="small" type="info">刷新 想看 列表的周期, 默认为 一小时 一次</el-tag></div>
             </el-form-item>
+            <el-form-item label="接收微信消息" prop="enableWechatLink">
+              <el-checkbox v-model="douban.enableWechatLink">接收微信消息</el-checkbox>
+              <div><el-tag type="info">接收微信消息, 需要在全局设置内设置对应的微信 Token 以及 AesKey</el-tag></div>
+            </el-form-item>
             <el-form-item required label="推送通知" prop="push">
               <el-checkbox v-model="douban.push">推送通知</el-checkbox>
             </el-form-item>

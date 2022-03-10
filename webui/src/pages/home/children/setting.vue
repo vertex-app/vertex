@@ -46,6 +46,14 @@
           <el-input v-model="setting.apiKey" disabled style="width: 500px;"></el-input>
           <div><el-tag type="warning">ApiKey 用于请求接口, 第一次保存全局设置后生成</el-tag></div>
         </el-form-item>
+        <el-form-item label="微信 AesKey" prop="wechatAesKey">
+          <el-input v-model="setting.wechatAesKey" style="width: 500px;"></el-input>
+          <div><el-tag type="warning">微信 AesKey, 在企业微信接收消息设置内获取</el-tag></div>
+        </el-form-item>
+        <el-form-item label="微信 Token" prop="wechatToken">
+          <el-input v-model="setting.wechatToken" style="width: 500px;"></el-input>
+          <div><el-tag type="warning">微信 Token, 在企业微信接收消息设置内获取</el-tag></div>
+        </el-form-item>
         <el-form-item label="媒体服务通知" prop="webhookPushTo">
           <el-select v-model="setting.webhookPushTo" placeholder="请选择 通知方式">
             <el-option v-for="push of pushList" :key="push.id" :label="push.alias" :value="push.id"></el-option>

@@ -48,7 +48,7 @@ class WebhookMod {
 
   async wechat (req) {
     let body;
-    if (!req.body || !req.query.token || !req.query.timestamp || !req.query.nonce) {
+    if (!req.body || !req.query.timestamp || !req.query.nonce) {
       return '请求格式错误!!';
     }
     try {
@@ -73,7 +73,14 @@ class WebhookMod {
     content = content.slice(4, length + 4).toString();
     content = await parseXml(content);
     console.log(content);
-    return content;
+    if (content.xml.Content[0].trim() === '刷新豆瓣') {
+      logger.debug(content);
+      for (const douban of Object.keys(global.runningDouban)) {
+        if (global.runningDouban[douban] && global.runningDouban[douban].enableWechatLink);
+        global.runningDouban[douban].wechatLink('refresh');
+      }
+    }
+    return 'ok';
   }
 }
 module.exports = WebhookMod;

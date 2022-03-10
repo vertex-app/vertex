@@ -35,6 +35,10 @@ class SettingMod {
     global.transparent = options.transparent;
     global.blurSize = options.blurSize;
     global.wechatCover = options.wechatCover;
+    global.embyCover = options.embyCover;
+    global.plexCover = options.plexCover;
+    global.wechatToken = options.wechatToken;
+    global.wechatAesKey = options.wechatAesKey;
     global.telegramProxy = options.telegramProxy || 'https://api.telegram.org';
     const webhookPush = util.listPush().filter(item => item.id === global.webhookPushTo)[0];
     if (webhookPush) {

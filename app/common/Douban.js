@@ -23,6 +23,7 @@ class Douban {
     this.sites = douban.sites;
     this.client = douban.client;
     this.cron = douban.cron;
+    this.enableWechatLink = douban.enableWechatLink;
     this.notify = douban.notify;
     this._notify = util.listPush().filter(i => i.id === this.notify)[0];
     this.push = douban.push;
@@ -510,6 +511,14 @@ class Douban {
       }
     }
     return false;
+  }
+
+  async wechatLink (type) {
+    const typeMap = {
+      refresh: '刷新想看列表'
+    };
+    logger.info('豆瓣账号', this.alias, '接收微信消息', typeMap[type], '即将开始执行');
+    this.refreshWish();
   }
 
   async checkFinish () {
