@@ -329,20 +329,46 @@ class Douban {
     linkRule.minFileSize = size;
     const files = await global.runningClient[client].getFiles(torrent.hash);
     const wish = recordNoteJson.wish;
+    const _torrent = recordNoteJson.torrent;
     const category = recordNoteJson.category;
     if (category.type === 'series') {
       let newEpisode = 0;
       for (const file of files) {
         if (file.size < linkRule.minFileSize) continue;
         const seriesName = wish.name.split('/')[0].trim();
-        const season = (file.name.match(/[. ](S\d+)/) || [0, 'S01'])[1];
+        let season = (file.name.match(/[. ](S\d+)/) || [0, null])[1];
         let episode = +(file.name.match(/E[Pp]?(\d+)[. ]/) || [0, '01'])[1];
         const part = (file.name.match(/\.[Pp][Aa][Rr][Tt]\.*[A1][B2]/));
         if (part?.[1]) {
           episode = part?.[1] === 'A' || part?.[1] === '1' ? episode * 2 - 1 : episode * 2;
         }
+        if (season === null) {
+          const seasonSubtitle = _torrent.subtitle.replace(/ /g, '').match(/第([一二三四五六七八九十])[季部]/);
+          if (seasonSubtitle) {
+            season = {
+              一: 1,
+              二: 2,
+              三: 3,
+              四: 4,
+              五: 5,
+              六: 6,
+              七: 7,
+              八: 8,
+              九: 9,
+              十: 10
+            }[seasonSubtitle];
+          }
+        }
+        if (season === null) {
+          const seasonSubtitle = _torrent.subtitle.replace(/ /g, '').match(/第(\d+)[季部]/);
+          if (seasonSubtitle) {
+            season = +seasonSubtitle[1];
+          }
+        }
+        season = season || 1;
         newEpisode = Math.max(episode, newEpisode);
         episode = 'E' + '0'.repeat(3 - ('' + episode).length) + episode;
+        season = 'S' + '0'.repeat(2 - ('' + season).length) + season;
         const fileExt = path.extname(file.name);
         const linkFilePath = path.join(linkRule.linkFilePath, category.libraryPath, seriesName, season);
         const linkFile = path.join(linkFilePath, season + episode + fileExt);
@@ -432,7 +458,7 @@ class Douban {
             continue;
           }
           const torrentYear = (torrent.title.match(/19\d{2}/g) || []).concat(torrent.title.match(/20\d{2}/g) || []);
-          let fitYear = false || torrentYear.length === 0;
+          let fitYear = false;
           for (const year of torrentYear) {
             fitYear = fitYear || +year === +wish.year;
           }
