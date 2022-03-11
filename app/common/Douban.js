@@ -491,7 +491,10 @@ class Douban {
           const recordNoteJson = {
             wish,
             category,
-            torrent
+            torrent: {
+              ...torrent,
+              client: this.client.alias
+            }
           };
           try {
             const _savePath = category.savePath.replace('{SITE}', torrent.site);

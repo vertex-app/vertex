@@ -32,7 +32,9 @@ class ServerMod {
 
   list () {
     const serverList = util.listServer();
+    const linkRuleList = util.listLinkRule();
     for (const server of serverList) {
+      server.used = linkRuleList.filter(item => item.server === server.id).length !== 0;
       server.status = global.runningServer[server.id] && global.runningServer[server.id].ssh && global.runningServer[server.id].connected;
     }
     return serverList;

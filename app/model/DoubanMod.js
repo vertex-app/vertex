@@ -46,6 +46,15 @@ class DoubanMod {
     return doubanSet || [];
   };
 
+  async listHistory () {
+    const history = await util.getRecords('select record_note from torrents where record_type in (6, 99) order by id desc');
+    const total = (await util.getRecord('select count(*) as total from torrents where record_type in (6, 99)')).total;
+    return {
+      history: history.map(item => JSON.parse(item.record_note)),
+      total
+    };
+  };
+
   deleteItem (options) {
     const doubanSet = util.listDoubanSet().filter(item => item.id === options.id)[0];
     doubanSet.wishes = doubanSet.wishes.filter(item => item.id !== options.doubanId);

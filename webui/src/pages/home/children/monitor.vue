@@ -419,9 +419,9 @@ export default {
   methods: {
     handlePeriod (vnstatPeriod) {
       const sortedArr = this.vnstat[this.vnstatPeriod].interfaces[0].traffic[this.vnstatPeriod];
-      this.chart.xAxis.data = sortedArr.map(item => this.formatTime(item).slice(-5));
-      this.chart.series[0].data = sortedArr.map(item => item.tx);
-      this.chart.series[1].data = sortedArr.map(item => item.rx);
+      this.chart.xAxis.data = sortedArr.map(item => this.formatTime(item).slice(-5)).reverse();
+      this.chart.series[0].data = sortedArr.map(item => item.tx).reverse();
+      this.chart.series[1].data = sortedArr.map(item => item.rx).reverse();
     },
     async displayDetails (row) {
       this.server = row;

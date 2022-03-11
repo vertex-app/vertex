@@ -15,6 +15,7 @@ import BingeWatching from '@/pages/home/children/binge-watching';
 import RaceRule from '@/pages/home/children/race-rule';
 import LinkRule from '@/pages/home/children/link-rule';
 import Douban from '@/pages/home/children/douban';
+import Wishes from '@/pages/home/children/wishes';
 import Server from '@/pages/home/children/server';
 import Client from '@/pages/home/children/client';
 import SearchMix from '@/pages/home/children/search-mix';
@@ -167,6 +168,12 @@ const bingeWatching = {
       component: Douban,
       meta: {
         title: '豆瓣账号'
+      }
+    }, {
+      path: 'wishes',
+      component: Wishes,
+      meta: {
+        title: '任务历史'
       }
     }
   ]

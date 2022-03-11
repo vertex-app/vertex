@@ -32,7 +32,9 @@ class SiteMod {
   };
 
   async list () {
-    const siteList = util.listSite().filter(i => !!global.runningSite[i.name]);
+    const doubanList = util.listDouban();
+    const siteList = util.listSite().filter(i => !!global.runningSite[i.name])
+      .map(item => { return { ...item, used: doubanList.filter(i => i.sites.indexOf(item.name) !== -1).length !== 0 }; });
     for (let site of siteList) {
       site = Object.assign(site, global.runningSite[site.name].info);
     }

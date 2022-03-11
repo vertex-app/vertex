@@ -107,6 +107,7 @@
           label="种子">
           <template slot-scope="scope">
             <el-link style="font-size: 16px" @click="gotoDetail(scope.row)">{{scope.row.title}}</el-link>
+            <el-link style="font-size: 12px" @click="gotoDetail(scope.row, true)">[代理登入]</el-link>
             <br>
             <span style="font-size: 12px">{{scope.row.subtitle}}</span>
             <br>
@@ -381,9 +382,9 @@ export default {
       this.siteList = res ? res.data.siteList : [];
     },
 
-    async gotoDetail (row) {
+    async gotoDetail (row, proxy) {
       if (!row.link) return await this.$message.error('链接不存在');
-      window.open(row.link);
+      window.open(proxy ? row.link.replace(/https:\/\/.*?\//, `/proxy/site/${row.site}/`) : '');
     }
   },
   async mounted () {

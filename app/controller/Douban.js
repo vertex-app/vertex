@@ -71,6 +71,22 @@ class Douban {
     }
   };
 
+  async listHistory (req, res) {
+    try {
+      const r = await doubanMod.listHistory(req.query);
+      res.send({
+        success: true,
+        data: r
+      });
+    } catch (e) {
+      logger.error(e);
+      res.send({
+        success: false,
+        message: e.message
+      });
+    }
+  };
+
   async listWishes (req, res) {
     try {
       const r = doubanMod.listWishes(req.query);

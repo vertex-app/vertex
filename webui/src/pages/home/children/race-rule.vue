@@ -167,7 +167,7 @@ export default {
         name: '种子大小',
         key: 'size'
       }, {
-        name: '种子分类',
+        name: '资源分类',
         key: 'category'
       }, {
         name: '做种人数',

@@ -67,6 +67,23 @@ body {
   backdrop-filter: blur(4px);
 }
 */
+.el-table__body td.el-table__cell .el-row :hover{
+    background-color: rgba(255,255,255, 0.1) !important;
+    backdrop-filter: blur(4px);
+}
+
+tr.hover-row>td.el-table__cell {
+  background-color: rgba(255,255,255, 0.2) !important;
+}
+
+.el-table__body .el-table__row :hover {
+    background-color: transparent !important;
+}
+
+.el-table__body td.el-table__cell .cell :hover{
+    background-color: rgba(255,255,255, 0.1) !important;;
+}
+
 .el-textarea__inner {
   font-family: 'consolas';
 }
