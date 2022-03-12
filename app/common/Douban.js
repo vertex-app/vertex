@@ -475,10 +475,24 @@ class Douban {
           }
           let episodes;
           if (wish.episodes) {
-            const episodeTypeA = (torrent.subtitle.replace(/ /g, '').match(/E?\d{1,3}-E?\d{1,3}/g) || []).map(item => item.replace(/E/g, '').split('-'))[0] || [];
-            const episodeTypeB = (torrent.subtitle.replace(/ /g, '').match(/[^\d]E?\d{2,3}[^\d帧Ff]/g) || []).map(item => item.match(/\d{2,3}/g)).flat() || [];
-            const episodeTypeC = (torrent.subtitle.replace(/ /g, '').match(/[^\d]E?\d[^\dKk]/g) || []).map(item => item.match(/\d/g)).flat() || [];
-            episodes = episodeTypeA.concat(episodeTypeB).concat(episodeTypeC);
+            const episodeTypeA = (torrent.subtitle.replace(/ /g, '').replace(/[Hh][Dd][Rr]10/g, '').match(/E?\d{1,3}-E?\d{1,3}/g) || []).map(item => item.replace(/E/g, '').split('-'))[0] || [];
+            const episodeTypeB = (torrent.subtitle.replace(/ /g, '').replace(/[Hh][Dd][Rr]10/g, '').match(/[^\d]E?\d{2,3}[^\d帧Ff]/g) || []).map(item => item.match(/\d{2,3}/g)).flat() || [];
+            const episodeTypeC = (torrent.subtitle.replace(/ /g, '').replace(/[Hh][Dd][Rr]10/g, '').match(/[^\d]E?\d[^\dKk]/g) || []).map(item => item.match(/\d/g)).flat() || [];
+            let episodeTypeD = (torrent.subtitle.replace(/ /g, '').replace(/[Hh][Dd][Rr]10/g, '').match(/全[一二三四五六七八九十]集/g) || []).map(item => item.match(/[一二三四五六七八九十]/g)).flat() || [];
+            const episodeMap = {
+              一: 1,
+              二: 2,
+              三: 3,
+              四: 4,
+              五: 5,
+              六: 6,
+              七: 7,
+              八: 8,
+              九: 9,
+              十: 10
+            };
+            episodeTypeD = episodeTypeD.map(item => episodeMap[item]);
+            episodes = episodeTypeA.concat(episodeTypeB).concat(episodeTypeC).concat(episodeTypeD);
             logger.debug(this.alias, '选种规则:', rulesName, '种子:', torrent.title, '分集', wish.episodeNow, episodes);
             if (episodes.some(item => +item <= wish.episodeNow) || episodes.length === 0) {
               logger.info(this.alias, '选种规则:', rulesName, '种子:', torrent.title, '/', torrent.subtitle, '匹配成功, 已完成至:', wish.episodeNow, '判断结果为已下载, 跳过');
