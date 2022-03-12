@@ -681,7 +681,7 @@ class Site {
       torrent.category = _torrent.querySelector('a[href*="cat"] img').title;
       torrent.link = 'https://club.hares.top/' + _torrent.querySelector('.layui-torrents-title-width a').href.trim();
       torrent.id = +torrent.link.match(/id=(\d*)/)[1];
-      torrent.seeders = +(_torrent.querySelector('a[href*=seeders] font') || _torrent.querySelector('a[href*=seeders]') || _torrent.childNodes[6]).innerHTML.trim();
+      torrent.seeders = +(_torrent.querySelector('a[href*=seeders] font') || _torrent.querySelector('a[href*=seeders]') || _torrent.childNodes[6].querySelector('span')).innerHTML.trim() || 0;
       torrent.leechers = +(_torrent.querySelector('a[href*=leechers]') || _torrent.childNodes[7]).innerHTML.trim();
       torrent.snatches = +(_torrent.querySelector('a[href*=snatches] b') || _torrent.childNodes[8]).innerHTML.trim();
       torrent.size = _torrent.childNodes[5].innerHTML.trim().replace('<br>', ' ').replace(/([KMGPT])B/, '$1iB');
@@ -773,7 +773,7 @@ class Site {
       const torrent = {};
       torrent.site = this.site;
       torrent.title = _torrent.querySelector('td[class="embedded"] > a[href*="details"]').title.trim();
-      torrent.subtitle = _torrent.querySelector('.torrentname > tbody > tr .embedded').lastChild.nodeValue.trim();
+      torrent.subtitle = (_torrent.querySelector('.torrentname > tbody > tr .embedded').lastChild.nodeValue || '').trim();
       if (torrent.subtitle === ']') {
         torrent.subtitle = (_torrent.querySelector('.torrentname > tbody > tr .embedded span[class=optiontag]:last-of-type') ||
           _torrent.querySelector('.torrentname > tbody > tr .embedded br')).nextSibling.nodeValue.trim().replace(/\[优惠剩余时间\uff1a/, '');
