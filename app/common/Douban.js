@@ -475,10 +475,7 @@ class Douban {
           }
           let episodes;
           if (wish.episodes) {
-            const episodeTypeA = (torrent.subtitle.replace(/ /g, '').replace(/[Hh][Dd][Rr]10/g, '').match(/E?\d{1,3}-E?\d{1,3}/g) || []).map(item => item.replace(/E/g, '').split('-'))[0] || [];
-            const episodeTypeB = (torrent.subtitle.replace(/ /g, '').replace(/[Hh][Dd][Rr]10/g, '').match(/[^\d]E?\d{2,3}[^\d帧Ff]/g) || []).map(item => item.match(/\d{2,3}/g)).flat() || [];
-            const episodeTypeC = (torrent.subtitle.replace(/ /g, '').replace(/[Hh][Dd][Rr]10/g, '').match(/[^\d]E?\d[^\dKk]/g) || []).map(item => item.match(/\d/g)).flat() || [];
-            let episodeTypeD = (torrent.subtitle.replace(/ /g, '').replace(/[Hh][Dd][Rr]10/g, '').match(/全[一二三四五六七八九十]集/g) || []).map(item => item.match(/[一二三四五六七八九十]/g)).flat() || [];
+            const subtitle = torrent.subtitle.replace(/ /g, '').replace(/[Hh][Dd][Rr]10/g, '').replace(/\d{4}-\d{1,2}-\d{1,2}/g, '');
             const episodeMap = {
               一: 1,
               二: 2,
@@ -491,7 +488,10 @@ class Douban {
               九: 9,
               十: 10
             };
-            episodeTypeD = episodeTypeD.map(item => episodeMap[item]);
+            const episodeTypeA = (subtitle.match(/E?\d{1,3}-E?\d{1,3}/g) || []).map(item => item.replace(/E/g, '').split('-'))[0] || [];
+            const episodeTypeB = (subtitle.replace(/[Hh][Dd][Rr]10/g, '').match(/[^\d][第]E?\d{2,3}[^\d帧Ff]/g) || []).map(item => item.match(/\d{2,3}/g)).flat() || [];
+            const episodeTypeC = (subtitle.replace(/[Hh][Dd][Rr]10/g, '').match(/[^\d][第]E?\d[^\dKk]/g) || []).map(item => item.match(/\d/g)).flat() || [];
+            const episodeTypeD = ((subtitle.match(/全[一二三四五六七八九十]集/g) || []).map(item => item.match(/[一二三四五六七八九十]/g)).flat() || []).map(item => episodeMap[item]);
             episodes = episodeTypeA.concat(episodeTypeB).concat(episodeTypeC).concat(episodeTypeD);
             logger.debug(this.alias, '选种规则:', rulesName, '种子:', torrent.title, '分集', wish.episodeNow, episodes);
             if (episodes.some(item => +item <= wish.episodeNow) || episodes.length === 0) {
