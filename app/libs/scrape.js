@@ -136,6 +136,7 @@ const _hrToCHDBits = async function (url, cookie) {
 const hrWrapper = {
   'www.hddolby.com': _hr,
   'hdhome.org': _hr,
+  'ourbits.club': _hr,
   'totheglory.im': _hrToTheGlory,
   'chdbits.co': _hrToCHDBits
 };
