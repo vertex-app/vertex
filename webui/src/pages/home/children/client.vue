@@ -104,6 +104,7 @@
             </el-form-item>
             <el-form-item required label="WebUI - Url" prop="clientUrl">
               <el-input v-model="client.clientUrl" style="width: 500px;"></el-input>
+              <div><el-tag type="info">下载器的链接, 最后的 / 需要删除</el-tag></div>
             </el-form-item>
             <el-form-item required label="推送通知" prop="pushNotify">
               <el-checkbox v-model="client.pushNotify">推送通知</el-checkbox>

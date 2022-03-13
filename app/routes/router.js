@@ -177,6 +177,7 @@ module.exports = function (app, express, router) {
   router.get('/douban/listHistory', ctrl.Douban.listHistory);
   router.get('/douban/listWishes', ctrl.Douban.listWishes);
   router.post('/douban/deleteItem', ctrl.Douban.deleteItem);
+  router.get('/douban/deleteRecord', ctrl.Douban.deleteRecord);
   router.post('/douban/refreshWishes', ctrl.Douban.refreshWishes);
 
   router.get('/deleteRule/list', ctrl.DeleteRule.list);

@@ -43,7 +43,7 @@ class Push {
   }
 
   async _push (_push, text, desp, poster) {
-    if (this.errorCount > this.maxErrorCount) {
+    if (this.errorCount > this.maxErrorCount && text.indexOf('失败') !== -1) {
       return logger.debug('周期内错误推送已达上限, 跳过本次推送');
     }
     if (_push && this.push) {

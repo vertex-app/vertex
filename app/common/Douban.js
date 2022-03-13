@@ -494,7 +494,7 @@ class Douban {
             const episodeTypeD = ((subtitle.match(/全[一二三四五六七八九十]集/g) || []).map(item => item.match(/[一二三四五六七八九十]/g)).flat() || []).map(item => episodeMap[item]);
             episodes = episodeTypeA.concat(episodeTypeB).concat(episodeTypeC).concat(episodeTypeD);
             logger.debug(this.alias, '选种规则:', rulesName, '种子:', torrent.title, '分集', wish.episodeNow, episodes);
-            if (episodes.some(item => +item <= wish.episodeNow) || episodes.length === 0) {
+            if (episodes.some(item => +item < wish.episodeNow - 2) || !episodes.some(item => +item > wish.episodeNow) || episodes.length === 0) {
               logger.info(this.alias, '选种规则:', rulesName, '种子:', torrent.title, '/', torrent.subtitle, '匹配成功, 已完成至:', wish.episodeNow, '判断结果为已下载, 跳过');
               continue;
             }

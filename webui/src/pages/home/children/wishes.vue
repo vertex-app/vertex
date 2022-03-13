@@ -1,27 +1,36 @@
 <template>
-  <div class="radius-div">
-    <div class="wishes-div">
+  <div>
+    <div class="radius-div">
       <el-table
         :data="wishesList"
-        style="width: 100%; font-size: 14px;">
+        style="font-size: 14px; margin: 20px">
         <el-table-column
           >
           <template slot-scope="scope">
             <el-row>
-              <el-col :span="8"  style="width: 220px; margin: 10px 0;">
+              <el-col :span="8"  style="width: 220px; margin: 10px 0; line-height: 0">
                 <el-card :body-style="{ padding: '10px' }" class="radius-div">
                   <img :src="scope.row.poster || scope.row.wish.poster" style="width: 200px">
-                  <div style="padding-top: 14px;">
-                    <el-link @click="gotoDetail(scope.row.link || scope.row.wish.link)">{{scope.row.name || scope.row.wish.name}}</el-link>
-                    <br>
-                    <el-link @click="gotoDetail((scope.row.torrent || {}).link)" style="">种子链接</el-link>
-                  </div>
                 </el-card>
               </el-col>
-              <el-col :span="16"  style="margin: 10px 0; padding-left: 20px;" class="radius-div">
-                <span font-size="18" style="">{{(scope.row.torrent || {}).subtitle || ''}}</span>
+              <el-col :span="16"  style="width: calc(100% - 220px); margin: 20px 0; padding-left: 20px;">
+                <el-link style="font-size: 18px; color: #000;" @click="gotoDetail(scope.row.link || scope.row.wish.link)">{{scope.row.name || scope.row.wish.name}}</el-link>
+                <span style="font-size: 13px">[推送时间: {{$moment(scope.row.recordTime).format('YYYY-MM-DD HH:mm:ss')}}]</span>
+                <el-link style="font-size: 13px; color: red;" @click="deleteRecord(scope.row)">[删除记录]</el-link>
                 <br>
-                <span font-size="13" style="">{{(scope.row.torrent || {}).title || ''}}</span>
+                <el-link style="font-size: 15px; color: #000;" @click="gotoDetail((scope.row.torrent || {}).link)">{{(scope.row.torrent || {}).subtitle || ''}}[{{(scope.row.torrent || {}).site || ''}}]</el-link>
+                <br>
+                <span style="font-size: 13px">{{(scope.row.torrent || {}).title || ''}}[{{$formatSize((scope.row.torrent || {}).size || 0)}}]</span>
+                <br>
+                <span style="font-size: 13px">主创: {{(scope.row.wish || {}).mainCreator || ''}}</span>
+                <br>
+                <span v-if="scope.row.wish && scope.row.wish.rating" style="font-size: 13px">评分: {{scope.row.wish.rating.result || ''}} / {{scope.row.wish.rating.votes || ''}}</span>
+                <br>
+                <span font-size="13" style="font-size: 13px">分类: {{(scope.row.wish || {}).category || ''}}</span>
+                <br>
+                <span font-size="13" style="font-size: 13px">地区: {{(scope.row.wish || {}).area || ''}}</span>
+                <br>
+                <span font-size="13" style="font-size: 13px">简介: <br>{{(scope.row.wish || {}).desc || ''}}</span>
               </el-col>
             </el-row>
           </template>
@@ -69,6 +78,16 @@ export default {
     async changePage (page) {
       this.page = page;
       await this.listWishesHistory();
+    },
+
+    async deleteRecord (row) {
+      const url = `/api/douban/deleteRecord?id=${row.id}`;
+      const res = await this.$axiosGet(url);
+      if (!res) {
+        return;
+      }
+      await this.$messageBox(res);
+      this.listWishesHistory();
     },
 
     async gotoDetail (link) {

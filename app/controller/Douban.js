@@ -119,6 +119,22 @@ class Douban {
     }
   };
 
+  async deleteRecord (req, res) {
+    try {
+      const r = await doubanMod.deleteRecord(req.query);
+      res.send({
+        success: true,
+        message: r
+      });
+    } catch (e) {
+      logger.error(e);
+      res.send({
+        success: false,
+        message: e.message
+      });
+    }
+  };
+
   async refreshWishes (req, res) {
     try {
       const r = await doubanMod.refreshWishes(req.body);

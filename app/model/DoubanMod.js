@@ -46,13 +46,23 @@ class DoubanMod {
     return doubanSet || [];
   };
 
-  async listHistory () {
-    const history = await util.getRecords('select record_note from torrents where record_type in (6, 99) order by id desc');
+  async listHistory (options) {
+    const index = options.length * (options.page - 1);
+    const params = [options.length, index];
+    const history = await util.getRecords('select record_note, id, record_type, record_time from torrents where record_type in (6, 99) order by id desc limit ? offset ?', params);
     const total = (await util.getRecord('select count(*) as total from torrents where record_type in (6, 99)')).total;
     return {
-      history: history.map(item => JSON.parse(item.record_note)),
+      history: history.map(item => { return { ...JSON.parse(item.record_note), id: item.id, recordTime: item.recordTime }; }),
       total
     };
+  };
+
+  async deleteRecord (options) {
+    if (!options.id) {
+      throw new Error('非法请求');
+    }
+    await util.runRecord('delete from torrents where id = ?', [options.id]);
+    return '删除成功';
   };
 
   deleteItem (options) {
