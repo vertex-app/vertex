@@ -376,7 +376,7 @@ class Douban {
         const linkFilePath = path.join(linkRule.linkFilePath, category.libraryPath, seriesName, season).replace(/'/g, '\\\'');
         const linkFile = path.join(linkFilePath, season + episode + fileExt).replace(/'/g, '\\\'');
         const targetFile = path.join(torrent.savePath.replace(linkRule.targetPath.split('##')[0], linkRule.targetPath.split('##')[1]), file.name).replace(/'/g, '\\\'');
-        const command = `mkdir -p $'${linkFilePath}' && ln -s $'${targetFile}' $'${linkFile}'`;
+        const command = `mkdir -p $'${linkFilePath}' && ln -sf $'${targetFile}' $'${linkFile}'`;
         try {
           await global.runningServer[linkRule.server].run(command);
         } catch (e) {
@@ -395,7 +395,7 @@ class Douban {
         const linkFilePath = path.join(linkRule.linkFilePath, category.libraryPath).replace(/'/g, '\\\'');
         const linkFile = path.join(linkFilePath, `${movieName}.${year}${fileExt}`).replace(/'/g, '\\\'');
         const targetFile = path.join(torrent.savePath.replace(linkRule.targetPath.split('##')[0], linkRule.targetPath.split('##')[1]), file.name).replace(/'/g, '\\\'');
-        const command = `mkdir -p $'${linkFilePath}' && ln -s $'${targetFile}' $'${linkFile}'`;
+        const command = `mkdir -p $'${linkFilePath}' && ln -sf $'${targetFile}' $'${linkFile}'`;
         await global.runningServer[linkRule.server].run(command);
       }
     }
@@ -568,6 +568,14 @@ class Douban {
 
   clearSelectFailed () {
     this.selectTorrentToday = {};
+  }
+
+  async relink (id) {
+    if (!this.linkRule) {
+      logger.info(this.alias, '本实例不含链接规则, 跳过软链接操作');
+      return;
+    }
+    await util.runRecord('update torrents set record_type = 6 where id = ?', [id]);
   }
 }
 module.exports = Douban;

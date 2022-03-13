@@ -150,5 +150,21 @@ class Douban {
       });
     }
   };
+
+  async relink (req, res) {
+    try {
+      const r = await doubanMod.relink(req.query);
+      res.send({
+        success: true,
+        message: r
+      });
+    } catch (e) {
+      logger.error(e);
+      res.send({
+        success: false,
+        message: e.message
+      });
+    }
+  };
 }
 module.exports = Douban;

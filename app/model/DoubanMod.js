@@ -52,7 +52,7 @@ class DoubanMod {
     const history = await util.getRecords('select record_note, id, record_type, record_time from torrents where record_type in (6, 99) order by id desc limit ? offset ?', params);
     const total = (await util.getRecord('select count(*) as total from torrents where record_type in (6, 99)')).total;
     return {
-      history: history.map(item => { return { ...JSON.parse(item.record_note), id: item.id, recordTime: item.recordTime }; }),
+      history: history.map(item => { return { ...JSON.parse(item.record_note), id: item.id, recordTime: item.record_time, recordType: item.recordType }; }),
       total
     };
   };
@@ -76,6 +76,14 @@ class DoubanMod {
   async refreshWishes (options) {
     await global.runningDouban[options.id].refreshWish();
     return '刷新想看列表成功';
+  }
+
+  async relink (options) {
+    if (!global.runningDouban[options.doubanId]) {
+      throw new Error('豆瓣账号已不存在, 无法重新软链接');
+    }
+    global.runningDouban[options.doubanId].relink(options.id);
+    return '重新连接操作已执行';
   }
 }
 

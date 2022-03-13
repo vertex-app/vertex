@@ -15,8 +15,9 @@
               </el-col>
               <el-col :span="16"  style="width: calc(100% - 220px); margin: 20px 0; padding-left: 20px;">
                 <el-link style="font-size: 18px; color: #000;" @click="gotoDetail(scope.row.link || scope.row.wish.link)">{{scope.row.name || scope.row.wish.name}}</el-link>
-                <span style="font-size: 13px">[推送时间: {{$moment(scope.row.recordTime).format('YYYY-MM-DD HH:mm:ss')}}]</span>
+                <span style="font-size: 13px">[推送时间: {{$moment(scope.row.recordTime * 1000).format('YYYY-MM-DD HH:mm:ss')}}]</span>
                 <el-link style="font-size: 13px; color: red;" @click="deleteRecord(scope.row)">[删除记录]</el-link>
+                <el-link style="font-size: 13px; color: red;" @click="() => { relinkVisible = true; relinkRow = scope.row }">[重新软链接]</el-link>
                 <br>
                 <el-link style="font-size: 15px; color: #000;" @click="gotoDetail((scope.row.torrent || {}).link)">{{(scope.row.torrent || {}).subtitle || ''}}[{{(scope.row.torrent || {}).site || ''}}]</el-link>
                 <br>
@@ -51,6 +52,9 @@
         </el-pagination>
       </div>
     </div>
+    <el-dialog title="确认重新软链接" :visible.sync="relinkVisible" width="400px">
+      <el-button type="primary" @click="relink">确认</el-button>
+    </el-dialog>
   </div>
 </template>
 
@@ -60,6 +64,8 @@ export default {
     return {
       wishesList: [],
       clientList: [],
+      relinkVisible: false,
+      relinkId: -1,
       total: 0,
       totalPage: 0,
       page: 1,
@@ -82,6 +88,16 @@ export default {
 
     async deleteRecord (row) {
       const url = `/api/douban/deleteRecord?id=${row.id}`;
+      const res = await this.$axiosGet(url);
+      if (!res) {
+        return;
+      }
+      await this.$messageBox(res);
+      this.listWishesHistory();
+    },
+
+    async relink () {
+      const url = `/api/douban/relink?id=${this.relinkRow.id}&doubanId=${this.relinkRow.wish.doubanId}`;
       const res = await this.$axiosGet(url);
       if (!res) {
         return;
