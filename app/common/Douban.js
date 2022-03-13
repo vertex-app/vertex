@@ -432,16 +432,16 @@ class Douban {
       const rulesName = rules.map(item => item.alias).join('/');
       logger.info(this.alias, '选种规则:', rulesName, '开始匹配');
       const sortType = rule.sortType || 'desc';
-      const sortKey = rule.sortKey || 'time';
+      const sortBy = rule.sortBy || 'time';
       const numberSet = {
         desc: [-1, 1],
         asc: [1, -1]
       };
       torrents = torrents.sort((a, b) => {
-        if (typeof a[sortKey] === 'string') {
-          return (a[sortKey] < b[sortKey] ? numberSet[sortType][1] : numberSet[sortType][0]);
+        if (typeof a[sortBy] === 'string') {
+          return (a[sortBy] < b[sortBy] ? numberSet[sortType][1] : numberSet[sortType][0]);
         }
-        return sortType === 'asc' ? a[sortKey] - b[sortKey] : b[sortKey] - a[sortKey];
+        return sortType === 'asc' ? a[sortBy] - b[sortBy] : b[sortBy] - a[sortBy];
       });
       for (const torrent of torrents) {
         if (rules.some(item => this._fitRaceRule(item, torrent))) {
