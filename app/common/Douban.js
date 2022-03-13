@@ -373,10 +373,10 @@ class Douban {
         episode = 'E' + '0'.repeat(3 - ('' + episode).length) + episode;
         season = 'S' + '0'.repeat(2 - ('' + season).length) + season;
         const fileExt = path.extname(file.name);
-        const linkFilePath = path.join(linkRule.linkFilePath, category.libraryPath, seriesName, season);
-        const linkFile = path.join(linkFilePath, season + episode + fileExt);
-        const targetFile = path.join(torrent.savePath.replace(linkRule.targetPath.split('##')[0], linkRule.targetPath.split('##')[1]), file.name);
-        const command = `mkdir -p '${linkFilePath}' && ln -s '${targetFile}' '${linkFile}'`;
+        const linkFilePath = path.join(linkRule.linkFilePath, category.libraryPath, seriesName, season).replace(/'/g, '\\\'');
+        const linkFile = path.join(linkFilePath, season + episode + fileExt).replace(/'/g, '\\\'');
+        const targetFile = path.join(torrent.savePath.replace(linkRule.targetPath.split('##')[0], linkRule.targetPath.split('##')[1]), file.name).replace(/'/g, '\\\'');
+        const command = `mkdir -p $'${linkFilePath}' && ln -s $'${targetFile}' $'${linkFile}'`;
         try {
           await global.runningServer[linkRule.server].run(command);
         } catch (e) {
@@ -392,10 +392,10 @@ class Douban {
         const movieName = wish.name.split('/')[0].trim();
         const year = (file.name.match(/[. ](20\d\d)[. ]/) || file.name.match(/[. ](19\d\d)[. ]/) || ['', ''])[1];
         const fileExt = path.extname(file.name);
-        const linkFilePath = path.join(linkRule.linkFilePath, category.libraryPath);
-        const linkFile = path.join(linkFilePath, `${movieName}.${year}${fileExt}`);
-        const targetFile = path.join(torrent.savePath.replace(linkRule.targetPath.split('##')[0], linkRule.targetPath.split('##')[1]), file.name);
-        const command = `mkdir -p '${linkFilePath}' && ln -s '${targetFile}' '${linkFile}'`;
+        const linkFilePath = path.join(linkRule.linkFilePath, category.libraryPath).replace(/'/g, '\\\'');
+        const linkFile = path.join(linkFilePath, `${movieName}.${year}${fileExt}`).replace(/'/g, '\\\'');
+        const targetFile = path.join(torrent.savePath.replace(linkRule.targetPath.split('##')[0], linkRule.targetPath.split('##')[1]), file.name).replace(/'/g, '\\\'');
+        const command = `mkdir -p $'${linkFilePath}' && ln -s $'${targetFile}' $'${linkFile}'`;
         await global.runningServer[linkRule.server].run(command);
       }
     }
