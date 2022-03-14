@@ -443,6 +443,10 @@ class Client {
         const sqlRes = await util.getRecord('SELECT * FROM torrents WHERE hash = ?', [torrent.hash]);
         if (!sqlRes || !!sqlRes.delete_time) continue;
         const { statusCode, body } = await this.client.getTrackerList(this.clientUrl, this.cookie, torrent.hash);
+        if (statusCode === 404) {
+          logger.debug('下载器', this.alias, '种子', torrent.name, 'tracker 状态同步 404');
+          continue;
+        }
         if (statusCode !== 200) {
           throw new Error('状态码: ' + statusCode);
         }
