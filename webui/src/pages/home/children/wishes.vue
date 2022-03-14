@@ -65,7 +65,7 @@ export default {
       wishesList: [],
       clientList: [],
       relinkVisible: false,
-      relinkId: -1,
+      relinkRow: {},
       total: 0,
       totalPage: 0,
       page: 1,
@@ -99,6 +99,8 @@ export default {
     async relink () {
       const url = `/api/douban/relink?id=${this.relinkRow.id}&doubanId=${this.relinkRow.wish.doubanId}`;
       const res = await this.$axiosGet(url);
+      this.relinkRow = {};
+      this.relinkVisible = false;
       if (!res) {
         return;
       }

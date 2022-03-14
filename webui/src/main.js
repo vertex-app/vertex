@@ -116,6 +116,9 @@ Vue.prototype.$formatSize = (size) => {
   if (size < 1024 * 1024 * 1024 * 1024 * 1024) {
     return `${(size / 1024 / 1024 / 1024 / 1024).toFixed(2)} TiB`;
   }
+  if (size < 1024 * 1024 * 1024 * 1024 * 1024 * 1024) {
+    return `${(size / 1024 / 1024 / 1024 / 1024 / 1024).toFixed(3)} PiB`;
+  }
   return 0;
 };
 

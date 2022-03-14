@@ -292,6 +292,9 @@ exports.formatSize = function (size) {
   if (size < 1024 * 1024 * 1024 * 1024 * 1024) {
     return `${(size / 1024 / 1024 / 1024 / 1024).toFixed(3)} TiB`;
   }
+  if (size < 1024 * 1024 * 1024 * 1024 * 1024 * 1024) {
+    return `${(size / 1024 / 1024 / 1024 / 1024 / 1024).toFixed(3)} PiB`;
+  }
 };
 
 exports.calSize = function (size, unit) {
