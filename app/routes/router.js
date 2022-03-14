@@ -224,6 +224,7 @@ module.exports = function (app, express, router) {
 
   router.all('/openapi/:apiKey/plex', ctrl.Webhook.plex);
   router.all('/openapi/:apiKey/emby', ctrl.Webhook.emby);
+  router.all('/openapi/:apiKey/jellyfin', ctrl.Webhook.jellyfin);
   router.all('/openapi/:apiKey/wechat', ctrl.Webhook.wechat);
 
   app.use('/api', router);

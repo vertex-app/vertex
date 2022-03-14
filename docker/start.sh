@@ -113,6 +113,8 @@ if [ -f '/tmp/.X99-lock' ]; then
   rm /tmp/.X99-lock
 fi
 
+cp /app/vertex/app/config_backup/logger.yaml /vertex/config/logger.yaml
+
 cd /app/vertex
 export PORT=3000
 Xvfb -ac :99 -screen 0 1280x1024x16 &

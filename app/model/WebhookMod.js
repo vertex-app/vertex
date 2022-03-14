@@ -65,6 +65,24 @@ class WebhookMod {
     return '';
   }
 
+  async jellyfin (req) {
+    const payload = req.body;
+    const eventMap = {
+      ItemAdded: '媒体已添加',
+      PlaybackStart: '播放已开始',
+      PlaybackStop: '播放已停止'
+    };
+    const event = eventMap[payload.NotificationType] + ': ' + payload.Name + ' / ' + (payload.SeriesName || '');
+    const server = payload.serverName;
+    const note = `用户: ${payload.NotificationUsername}\n` +
+      `媒体: ${payload.Name} / ${payload.SeriesName || ''}\n` +
+      `服务器: ${payload.ServerName}\n`;
+    if (global.webhookPush) {
+      await global.webhookPush.jellyfinWebhook(event, note);
+    }
+    return '';
+  }
+
   async wechat (req) {
     let body;
     const query = req.query;
