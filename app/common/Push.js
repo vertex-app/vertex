@@ -121,6 +121,17 @@ class Push {
     await this._push(this.pushType.indexOf('mediaServer') !== -1, text, desp, poster);
   };
 
+  async embyWebhook (event, note, poster) {
+    const text = 'Emby 消息通知 ' + moment().format('YYYY-MM-DD HH:mm:ss');
+    let desp = `Emby: ${event}\n` +
+      `相关信息:\n${note}\n`;
+    if (this.type === 'telegram') {
+      desp = '```\n' + desp + '\n```';
+      desp = '\\#Emby消息通知\n' + desp;
+    }
+    await this._push(this.pushType.indexOf('mediaServer') !== -1, text, desp, poster);
+  };
+
   async addDoubanTorrent (client, torrent, rule, wish) {
     const text = '添加豆瓣种子 ' + moment().format('YYYY-MM-DD HH:mm:ss');
     const site = global.runningSite[torrent.site];

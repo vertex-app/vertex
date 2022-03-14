@@ -23,6 +23,25 @@ class Webhook {
     }
   };
 
+  async emby (req, res) {
+    try {
+      if (!global.apiKey || req.params.apiKey !== global.apiKey) {
+        throw new Error('鉴权失效');
+      }
+      const r = await webhookMod.emby(req);
+      res.send({
+        success: true,
+        message: r
+      });
+    } catch (e) {
+      logger.error(e);
+      res.send({
+        success: false,
+        message: e.message
+      });
+    }
+  };
+
   async wechat (req, res) {
     try {
       if (!global.apiKey || req.params.apiKey !== global.apiKey) {

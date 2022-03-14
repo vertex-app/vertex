@@ -71,7 +71,7 @@ const clientProxy = function (req, res, next) {
   }
   proxy(client.clientUrl, {
     proxyReqOptDecorator (proxyReqOpts, srcReq) {
-      proxyReqOpts.headers.cookie = global.runningClient[clientId] ? global.runningClient[clientId].cookie : '';
+      proxyReqOpts.headers.cookie = global.runningClient[clientId] ? global.runningClient[clientId].cookie || '' : '';
       if (proxyReqOpts.headers['content-type'] && proxyReqOpts.headers['content-type'].indexOf('application/x-www-form-urlencoded') !== -1) {
         proxyReqOpts.headers['content-type'] = 'application/x-www-form-urlencoded';
       }
@@ -223,6 +223,7 @@ module.exports = function (app, express, router) {
   router.get('/setting/getCss.css', ctrl.Setting.getCss);
 
   router.all('/openapi/:apiKey/plex', ctrl.Webhook.plex);
+  router.all('/openapi/:apiKey/emby', ctrl.Webhook.emby);
   router.all('/openapi/:apiKey/wechat', ctrl.Webhook.wechat);
 
   app.use('/api', router);

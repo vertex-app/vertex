@@ -46,6 +46,25 @@ class WebhookMod {
     return '';
   }
 
+  async emby (req) {
+    const payload = JSON.parse(req.body.data);
+    const eventMap = {
+      newItemAdded: '媒体已添加',
+      playbackStart: '播放已开始',
+      playbackStop: '播放已停止'
+    };
+    const event = eventMap[payload.event] + ': ' + payload.itemName + ' / ' + (payload.originalName || '');
+    const server = payload.serverName;
+    const note = `用户: ${payload.userName}\n` +
+      `媒体: ${payload.itemName} / ${payload.originalName || ''}\n` +
+      `服务器: ${payload.serverName}\n` +
+      `媒体库: ${payload.libraryName}\n`;
+    if (global.webhookPush) {
+      await global.webhookPush.embyWebhook(event, note);
+    }
+    return '';
+  }
+
   async wechat (req) {
     let body;
     const query = req.query;
