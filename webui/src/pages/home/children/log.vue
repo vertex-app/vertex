@@ -3,12 +3,14 @@
     <div style="width: 100%; text-align: left; padding: 24px 0; border-radius: 8px;">
       <a style="padding-left: 24px">选择日志级别:</a>
       <el-select size="small" v-model="type" @change="getLog" placeholder="日志级别">
-        <el-option label="info" value="info"></el-option>
-        <el-option label="error" value="error"></el-option>
-        <el-option label="debug" value="debug"></el-option>
-        <el-option label="trace" value="access"></el-option>
+        <el-option label="信息" value="info"></el-option>
+        <el-option label="豆瓣" value="binge"></el-option>
+        <el-option label="错误" value="error"></el-option>
+        <el-option label="调试" value="debug"></el-option>
+        <el-option label="跟踪" value="access"></el-option>
       </el-select>
       <el-button type="primary" size="small" @click="clearLogFiles">清空历史日志文件</el-button>
+      <el-button type="primary" size="small" @click="getLog">刷新</el-button>
     </div>
     <el-input type="textarea" autosize v-model="log">
     </el-input>
