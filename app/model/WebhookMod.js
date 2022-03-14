@@ -75,12 +75,22 @@ class WebhookMod {
     content = content.slice(4, length + 4).toString();
     if (query.echostr) return content;
     content = await parseXml(content);
-    console.log(content);
-    if (content.xml.Content[0].trim() === '刷新豆瓣') {
-      logger.debug(content);
-      for (const douban of Object.keys(global.runningDouban)) {
-        if (global.runningDouban[douban] && global.runningDouban[douban].enableWechatLink);
-        global.runningDouban[douban].wechatLink('refresh');
+    logger.debug(content);
+    const text = content.xml.Content[0].trim();
+    if (text === '刷新豆瓣') {
+      for (const _douban of Object.keys(global.runningDouban)) {
+        const douban = global.runningDouban[_douban];
+        if (douban && douban.enableWechatLink) {
+          douban.wechatLink('refresh');
+        }
+      }
+    }
+    if (text.indexOf('刷新') === 0) {
+      for (const _douban of Object.keys(global.runningDouban)) {
+        const douban = global.runningDouban[_douban];
+        if (douban && douban.enableWechatLink && text.indexOf(douban.alias) !== -1) {
+          douban.wechatLink('refresh');
+        }
       }
     }
     return content;

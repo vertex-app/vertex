@@ -293,14 +293,12 @@ export default {
     },
     async refreshWishes (row) {
       const url = '/api/douban/refreshWishes';
-      this.refreshStatus = '正在刷新...';
       const res = await this.$axiosPost(url, {
         id: row.id
       });
       if (!res) {
         return;
       }
-      this.refreshStatus = '刷新想看';
       this.listWishes();
       await this.$messageBox(res);
     },

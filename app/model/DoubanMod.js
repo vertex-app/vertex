@@ -74,8 +74,8 @@ class DoubanMod {
   }
 
   async refreshWishes (options) {
-    await global.runningDouban[options.id].refreshWish();
-    return '刷新想看列表成功';
+    global.runningDouban[options.id].refreshWish();
+    return '已启动刷新豆瓣任务, 稍后将接收到通知';
   }
 
   async relink (options) {
