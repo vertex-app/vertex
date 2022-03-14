@@ -93,7 +93,7 @@ const _getTorrentsFileList = async function (rssUrl) {
   return torrents;
 };
 
-const _getTorrentsBluTopia = async function (rssUrl) {
+const _getTorrentsUnit3D = async function (rssUrl) {
   const rss = await parseXml(await _getRssContent(rssUrl));
   const torrents = [];
   const items = rss.rss.channel[0].item;
@@ -298,7 +298,8 @@ const _getTorrentsHDBits = async function (rssUrl) {
 
 const _getTorrentsWrapper = {
   'filelist.io': _getTorrentsFileList,
-  'blutopia.xyz': _getTorrentsBluTopia,
+  'blutopia.xyz': _getTorrentsUnit3D,
+  'jptv.club': _getTorrentsUnit3D,
   'torrentdb.net': _getTorrentsTorrentDB,
   'uhdbits.org': _getTorrentsUHDBits,
   'www.empornium.is': _getTorrentsEmpornium,
