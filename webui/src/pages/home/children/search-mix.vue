@@ -384,7 +384,7 @@ export default {
 
     async gotoDetail (row, proxy) {
       if (!row.link) return await this.$message.error('链接不存在');
-      window.open(proxy ? row.link.replace(/https:\/\/.*?\//, `/proxy/site/${row.site}/`) : '');
+      window.open(proxy ? row.link.replace(/https:\/\/.*?\//, `/proxy/site/${row.site}/`) : row.link);
     }
   },
   async mounted () {
