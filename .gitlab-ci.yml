@@ -11,6 +11,8 @@ generate_static:
   tags:
     - compile
   script:
+    - CI_COMMIT_BRANCH=`[ $CI_COMMIT_TAG ] && echo $CI_COMMIT_TAG || echo $CI_COMMIT_BRANCH`
+    - echo $CI_COMMIT_BRANCH
     - PUSH_TIME=$(TZ=Asia/Shanghai date -d $CI_COMMIT_TIMESTAMP "+%Y-%m-%d %H:%M:%S")
     - COMMIT_MESSAGE=`echo $CI_COMMIT_MESSAGE | sed 's/\n//g'`
     - |
@@ -35,13 +37,14 @@ build_docker_image_and_push:
     DOCKER_DRIVER: overlay2
     IMAGE_TAG_SHA: lswl/vertex:$CI_COMMIT_SHA
     IMAGE_TAG_LATEST: lswl/vertex:latest
-    IMAGE_TAG_BRANCH: lswl/vertex:$CI_COMMIT_BRANCH
   services:
     - docker:20.10-dind
   before_script:
     - apk update
     - apk add tzdata curl coreutils
     - docker info
+    - CI_COMMIT_BRANCH=`[ $CI_COMMIT_TAG ] && echo $CI_COMMIT_TAG || echo $CI_COMMIT_BRANCH`
+    - IMAGE_TAG_BRANCH=lswl/vertex:$CI_COMMIT_BRANCH
     - echo $IMAGE_TAG_SHA
     - echo $IMAGE_TAG_LATEST
     - echo $IMAGE_TAG_BRANCH

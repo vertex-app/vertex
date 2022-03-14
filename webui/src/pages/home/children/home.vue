@@ -1,14 +1,26 @@
 <template>
   <div class="home">
     <div class="radius-div">
-      <el-descriptions style="padding: 24px" title="版本信息" :column="3">
+      <el-descriptions style="padding: 24px" title="版本信息" :column="4">
+        <el-descriptions-item
+          label="主版本">
+          <el-link
+            style="color: blue"
+            @click="gotoVersion">
+            {{this.version.version}}
+          </el-link>
+        </el-descriptions-item>
+        <el-descriptions-item
+          label="次版本">
+          <el-link
+            style="color: blue"
+            @click="gotoVersion">
+            {{this.version.head}}
+          </el-link>
+        </el-descriptions-item>
         <el-descriptions-item
           label="更新时间">
           {{this.version.updateTime}}
-        </el-descriptions-item>
-        <el-descriptions-item
-          label="版本编码">
-          {{this.version.head}}
         </el-descriptions-item>
         <el-descriptions-item
           label="更新信息">
@@ -18,11 +30,11 @@
       <el-descriptions style="padding: 24px" title="使用帮助" :column="3">
         <el-descriptions-item
           label="文档">
-          <el-link type="primary" @click="gotoDoc()">文档</el-link>
+          <el-link style="color: blue" @click="gotoDoc()">文档</el-link>
         </el-descriptions-item>
         <el-descriptions-item
           label="更新推送频道">
-          <el-link type="primary" @click="gotoChannel()">Telegram</el-link>
+          <el-link style="color: blue" @click="gotoChannel()">Telegram</el-link>
         </el-descriptions-item>
         <el-descriptions-item
           label="QQ 交流群组">
@@ -144,6 +156,9 @@ export default {
     },
     async gotoDoc () {
       window.open('https://vertex.icu');
+    },
+    async gotoVersion () {
+      window.open('https://lswl.in/2022/01/14/vertex-changelog');
     }
   },
   mounted () {
