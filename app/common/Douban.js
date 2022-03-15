@@ -344,9 +344,10 @@ class Douban {
         const seriesName = wish.name.split('/')[0].trim();
         let season = (file.name.match(/[. ]S(\d+)/) || [0, null])[1];
         let episode = +(file.name.match(/E[Pp]?(\d+)[. ]/) || [0, '01'])[1];
+        let fakeEpisode = 0;
         const part = (file.name.match(/\.[Pp][Aa][Rr][Tt]\.*[A1][B2]/));
         if (part?.[1]) {
-          episode = part?.[1] === 'A' || part?.[1] === '1' ? episode * 2 - 1 : episode * 2;
+          fakeEpisode = part?.[1] === 'A' || part?.[1] === '1' ? episode * 2 - 1 : episode * 2;
         }
         if (season === null) {
           const seasonSubtitle = _torrent.subtitle.replace(/ /g, '').match(/第([一二三四五六七八九十])[季部]/);
@@ -373,7 +374,7 @@ class Douban {
         }
         season = season || 1;
         newEpisode = Math.max(episode, newEpisode);
-        episode = 'E' + '0'.repeat(3 - ('' + episode).length) + episode;
+        episode = 'E' + '0'.repeat(3 - ('' + fakeEpisode || episode).length) + fakeEpisode || episode;
         season = 'S' + '0'.repeat(2 - ('' + season).length) + season;
         const fileExt = path.extname(file.name);
         const linkFilePath = path.join(linkRule.linkFilePath, category.libraryPath, seriesName, season).replace(/'/g, '\\\'');
@@ -497,8 +498,16 @@ class Douban {
             const episodeTypeD = ((subtitle.match(/全[一二三四五六七八九十]集/g) || []).map(item => item.match(/[一二三四五六七八九十]/g)).flat() || []).map(item => episodeMap[item]);
             episodes = episodeTypeA.concat(episodeTypeB).concat(episodeTypeC).concat(episodeTypeD);
             logger.debug(this.alias, '选种规则:', rulesName, '种子:', torrent.title, '分集', wish.episodeNow, episodes);
-            if (episodes.some(item => +item < wish.episodeNow - 2) || !episodes.some(item => +item > wish.episodeNow) || episodes.length === 0) {
+            if (episodes
+              .some(item => +item < wish.episodeNow - 2) ||
+              !episodes.some(item => +item > wish.episodeNow) ||
+              episodes.length === 0
+            ) {
               logger.binge(this.alias, '选种规则:', rulesName, '种子:', torrent.title, '/', torrent.subtitle, '匹配成功, 已完成至:', wish.episodeNow, '判断结果为已下载, 跳过');
+              continue;
+            }
+            if (episodes.every(item => +item > wish.episodeNow + 1) && !(episodes.length === 1 && +episodes[0] === wish.episodes)) {
+              logger.binge(this.alias, '选种规则:', rulesName, '种子:', torrent.title, '/', torrent.subtitle, '匹配成功, 已完成至:', wish.episodeNow, '剧集跨度过大, 跳过');
               continue;
             }
             wish.episodeNow = Math.max(...episodes.map(i => +i));
