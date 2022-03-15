@@ -17,7 +17,7 @@ const _getRssContent = async function (rssUrl) {
   if (cache) {
     body = cache;
   } else {
-    const res = await util.requestPromise(rssUrl + '&____=' + Math.random());
+    const res = await util.requestPromise(rssUrl + (rssUrl.indexOf('?') === -1 ? '?' : '&') + '____=' + Math.random());
     body = res.body;
     await redis.setWithExpire(`vertex:rss:${rssUrl}`, body, 60);
   }
@@ -347,3 +347,7 @@ exports.getTorrentNameByBencode = async function (url) {
     name: torrent.info.name.toString()
   };
 };
+
+(async () => {
+  console.log(await exports.getTorrents('https://jptv.club/rss/782.e219d9cdf8f3cb564adf1a54595c0d2c'));
+})();
