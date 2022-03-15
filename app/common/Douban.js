@@ -316,7 +316,7 @@ class Douban {
   _setEpisodeNow (id, episodeNow) {
     for (const wish of this.wishes) {
       if (wish.id === id) {
-        wish.episodeNow = episodeNow;
+        wish.episodeNow = Math.max(wish.episodeNow, episodeNow);
         logger.binge(wish.name, '更新至', episodeNow);
         this._saveSet();
       }
