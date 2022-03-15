@@ -341,7 +341,7 @@ class Douban {
       for (const file of files) {
         if (file.size < linkRule.minFileSize) continue;
         if (linkRule.excludeKeys && linkRule.excludeKeys.split(',').some(item => file.name.indexOf(item) !== -1)) continue;
-        const seriesName = wish.name.split('/')[0].trim();
+        const seriesName = wish.name.split('/')[0].trim().replace(/ /g, '.').replace(/\.[第].*[季部]/, '');
         let season = (file.name.match(/[. ]S(\d+)/) || [0, null])[1];
         let episode = +(file.name.match(/E[Pp]?(\d+)[. ]/) || [0, '01'])[1];
         let fakeEpisode = 0;
@@ -374,7 +374,7 @@ class Douban {
         }
         season = season || 1;
         newEpisode = Math.max(episode, newEpisode);
-        episode = 'E' + '0'.repeat(3 - ('' + fakeEpisode || episode).length) + fakeEpisode || episode;
+        episode = 'E' + '0'.repeat(3 - ('' + fakeEpisode || episode).length) + (fakeEpisode || episode);
         season = 'S' + '0'.repeat(2 - ('' + season).length) + season;
         const fileExt = path.extname(file.name);
         const linkFilePath = path.join(linkRule.linkFilePath, category.libraryPath, seriesName, season).replace(/'/g, '\\\'');
@@ -493,10 +493,11 @@ class Douban {
               十: 10
             };
             const episodeTypeA = (subtitle.match(/E?\d{1,3}-E?\d{1,3}/g) || []).map(item => item.replace(/E/g, '').split('-'))[0] || [];
-            const episodeTypeB = (subtitle.replace(/[Hh][Dd][Rr]10/g, '').match(/[^\d][第全]E?\d{2,3}[^\d帧Ff]/g) || []).map(item => item.match(/\d{2,3}/g)).flat() || [];
-            const episodeTypeC = (subtitle.replace(/[Hh][Dd][Rr]10/g, '').match(/[^\d][第全]E?\d[^\dKk]/g) || []).map(item => item.match(/\d/g)).flat() || [];
+            const episodeTypeB = (subtitle.match(/[^\d][第全]E?\d{2,3}[^\d帧Ff]/g) || []).map(item => item.match(/\d{2,3}/g)).flat() || [];
+            const episodeTypeC = (subtitle.match(/[^\d][第全]E?\d[^\dKk]/g) || []).map(item => item.match(/\d/g)).flat() || [];
             const episodeTypeD = ((subtitle.match(/全[一二三四五六七八九十]集/g) || []).map(item => item.match(/[一二三四五六七八九十]/g)).flat() || []).map(item => episodeMap[item]);
-            episodes = episodeTypeA.concat(episodeTypeB).concat(episodeTypeC).concat(episodeTypeD);
+            const episodeTypeE = ((subtitle.match(/[^\d][第全][一二三四五六七八九十][集期话]/g) || []).map(item => item.match(/[一二三四五六七八九十]/g)).flat() || []).map(item => episodeMap[item]);
+            episodes = episodeTypeA.concat(episodeTypeB).concat(episodeTypeC).concat(episodeTypeD).concat(episodeTypeE);
             logger.debug(this.alias, '选种规则:', rulesName, '种子:', torrent.title, '分集', wish.episodeNow, episodes);
             if (episodes
               .some(item => +item < wish.episodeNow - 2) ||
