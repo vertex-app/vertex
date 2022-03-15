@@ -199,7 +199,7 @@ class Push {
   async addDoubanWish (alias, wish) {
     const text = '添加想看 ' + moment().format('YYYY-MM-DD HH:mm:ss');
     let desp = `豆瓣账户: ${alias}\n` +
-      `${wish.name} / ${wish.year} / ${wish.area} / ${wish.mainCreator} / ${wish.language} / ${wish.length} / ${wish.category}\n${wish.desc}`;
+      `${wish.name} / ${wish.year} / ${wish.area} / ${wish.mainCreator} / ${wish.language} / ${wish.length} / ${wish.category}\n${wish.desc.split('\n')[0]}`;
     if (this.type === 'telegram') {
       desp = '```\n' + desp + '\n```';
       desp = '\\#添加想看\n' + desp;
@@ -212,7 +212,7 @@ class Push {
     let desp = `${note.wish.name}\n`;
     desp += `${note.torrent.site} / ${note.torrent.title}`;
     desp += note.wish.episodes ? ` / 已完成至 ${note.wish.episodeNow} 集 / 全 ${note.wish.episodes} 集\n` : '\n';
-    desp += `${note.wish.name} / ${note.wish.year} / ${note.wish.area} / ${note.wish.mainCreator} / ${note.wish.language} / ${note.wish.length} / ${note.wish.category}\n${note.wish.desc}`;
+    desp += `${note.wish.name} / ${note.wish.year} / ${note.wish.area} / ${note.wish.mainCreator} / ${note.wish.language} / ${note.wish.length} / ${note.wish.category}\n${note.wish.desc.split('\n')[0]}`;
     if (this.type === 'telegram') {
       desp = '```\n' + desp + '\n```';
       desp = '\\#种子已完成\n' + desp;

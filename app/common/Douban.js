@@ -93,7 +93,7 @@ class Douban {
     info.imdb = dom.querySelector('#info').innerHTML.match(/(tt\d+)/);
 
     // desc
-    info.desc = dom.querySelector('span[property="v:summary"]').innerHTML.replace(/\n +/g, '').split('<br>')[0];
+    info.desc = dom.querySelector('span[property="v:summary"]').innerHTML.replace(/\n +/g, '').replace('<br>', '\n');
 
     // category
     info.category = [...dom.querySelectorAll('span[property="v:genre"]')].map(item => item.innerHTML).join(' / ');
@@ -345,7 +345,7 @@ class Douban {
         let season = (file.name.match(/[. ]S(\d+)/) || [0, null])[1];
         let episode = +(file.name.match(/E[Pp]?(\d+)[. ]/) || [0, '01'])[1];
         let fakeEpisode = 0;
-        const part = (file.name.match(/\.[Pp][Aa][Rr][Tt]\.*[A1][B2]/));
+        const part = (file.name.match(/[ .][Pp][Aa][Rr][Tt][ .]?([abAB12])/));
         if (part?.[1]) {
           fakeEpisode = part?.[1] === 'A' || part?.[1] === '1' ? episode * 2 - 1 : episode * 2;
         }
@@ -492,9 +492,9 @@ class Douban {
               九: 9,
               十: 10
             };
-            const episodeTypeA = (subtitle.match(/E?\d{1,3}-E?\d{1,3}/g) || []).map(item => item.replace(/E/g, '').split('-'))[0] || [];
-            const episodeTypeB = (subtitle.match(/[第全]E?\d{2,3}[^\d帧Ff]/g) || []).map(item => item.match(/\d{2,3}/g)).flat() || [];
-            const episodeTypeC = (subtitle.match(/[第全]E?\d[^\dKk]/g) || []).map(item => item.match(/\d/g)).flat() || [];
+            const episodeTypeA = (subtitle.match(/[第]E?\d{1,3}-E?\d{1,3}[集期]/g) || []).map(item => item.replace(/[E第集期]/g, '').split('-'))[0] || [];
+            const episodeTypeB = (subtitle.match(/[第全]E?\d{2,3}[^\d帧部季Ff]/g) || []).map(item => item.match(/\d{2,3}/g)).flat() || [];
+            const episodeTypeC = (subtitle.match(/[第全]E?\d[^\d帧部季Kk]/g) || []).map(item => item.match(/\d/g)).flat() || [];
             const episodeTypeD = ((subtitle.match(/全[一二三四五六七八九十]集/g) || []).map(item => item.match(/[一二三四五六七八九十]/g)).flat() || []).map(item => episodeMap[item]);
             const episodeTypeE = ((subtitle.match(/[^\d][第全][一二三四五六七八九十][集期话]/g) || []).map(item => item.match(/[一二三四五六七八九十]/g)).flat() || []).map(item => episodeMap[item]);
             episodes = episodeTypeA.concat(episodeTypeB).concat(episodeTypeC).concat(episodeTypeD).concat(episodeTypeE);
