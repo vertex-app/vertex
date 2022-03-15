@@ -121,6 +121,7 @@ class WebhookMod {
           douban.wechatLink('refresh');
         }
       }
+      return content;
     }
     if (text.indexOf('刷新') === 0) {
       for (const _douban of Object.keys(global.runningDouban)) {
