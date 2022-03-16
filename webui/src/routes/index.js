@@ -8,6 +8,7 @@ import Monitor from '@/pages/home/children/monitor';
 import Site from '@/pages/home/children/site';
 import SiteMix from '@/pages/home/children/site-mix';
 import Setting from '@/pages/home/children/setting';
+import About from '@/pages/home/children/about';
 import HitAndRun from '@/pages/home/children/hit-and-run';
 import Global from '@/pages/home/children/global';
 import Point from '@/pages/home/children/point';
@@ -113,6 +114,12 @@ const _global = {
       component: Push,
       meta: {
         title: '通知工具'
+      }
+    }, {
+      path: 'about',
+      component: About,
+      meta: {
+        title: '关于'
       }
     }
   ]

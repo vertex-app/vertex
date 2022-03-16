@@ -347,7 +347,3 @@ exports.getTorrentNameByBencode = async function (url) {
     name: torrent.info.name.toString()
   };
 };
-
-(async () => {
-  console.log(await exports.getTorrents('https://jptv.club/rss/782.e219d9cdf8f3cb564adf1a54595c0d2c'));
-})();

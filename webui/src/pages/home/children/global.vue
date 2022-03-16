@@ -5,6 +5,8 @@
       </el-tab-pane>
       <el-tab-pane label="通知工具" name="push">
       </el-tab-pane>
+      <el-tab-pane label="关于" name="about">
+      </el-tab-pane>
     </el-tabs>
     <router-view style="height: calc(100vh - 156px); overflow: auto;"></router-view>
   </div>
