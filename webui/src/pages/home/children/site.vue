@@ -80,7 +80,7 @@
           label="做种/体积"
           min-width="144">
           <template slot-scope="scope">
-            {{scope.row.seeding + ' / ' + scope.row.seedingSize}}
+            {{scope.row.seeding + ' / ' + $formatSize(scope.row.seedingSize || 0)}}
           </template>
         </el-table-column>
         <el-table-column

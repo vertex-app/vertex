@@ -112,7 +112,7 @@ class Site {
     };
   }
 
-  async _getDocument (url) {
+  async _getDocument (url, origin = false) {
     const cache = await redis.get(`vertex:document:body:${url}`);
     if (!cache) {
       const html = (await util.requestPromise({
@@ -121,10 +121,12 @@ class Site {
           cookie: this.cookie
         }
       })).body;
+      if (origin) return html;
       await redis.setWithExpire(`vertex:document:body:${url}`, html, 30);
       const dom = new JSDOM(html);
       return dom.window.document;
     } else {
+      if (origin) return cache;
       const dom = new JSDOM(cache);
       return dom.window.document;
     }
@@ -165,6 +167,8 @@ class Site {
     const document = await this._getDocument('https://club.hares.top/');
     // 用户名
     info.username = document.querySelector('a[href^=userdetails] b,a[href^=userdetails] em').innerHTML;
+    // uid
+    info.uid = +document.querySelector('a[href^=userdetails]').href.match(/id=(\d+)/)[1];
     // 上传
     info.upload = document.querySelector('i[class="fa fa-arrow-up text-success fa-fw"]').nextElementSibling.innerHTML.trim().replace(/(\w)B/, '$1iB');
     info.upload = util.calSize(...info.upload.split(' '));
@@ -175,6 +179,10 @@ class Site {
     info.seeding = +document.querySelector('i[class="fas fa-upload text-success fa-fw"]').nextElementSibling.innerHTML.trim();
     // 下载
     info.leeching = +document.querySelector('i[class="fas fa-download layui-font-red fa-fw"]').nextElementSibling.innerHTML.trim();
+    // 做种体积
+    const seedingDocument = await this._getDocument(`https://club.hares.top/getusertorrentlistajax.php?userid=${info.uid}&type=seeding`, true);
+    const seedingSize = (seedingDocument.match(/总大小\uff1a(\d+\.\d+ [KMGTP]B)/) || [0, '0 B'])[1].replace(/([KMGTP])B/, '$1iB');
+    info.seedingSize = util.calSize(...seedingSize.split(' '));
     return info;
   };
 

@@ -50,7 +50,6 @@ class Douban {
         }
       })).body;
       await redis.setWithExpire(`vertex:document:body:${url}`, html, 30);
-      fs.writeFileSync('/home/code/a.html', html);
       const dom = new JSDOM(html);
       return dom.window.document;
     } else {
