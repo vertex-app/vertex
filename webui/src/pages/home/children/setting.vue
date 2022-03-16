@@ -54,6 +54,12 @@
           <el-input v-model="setting.wechatToken" style="width: 500px;"></el-input>
           <div><el-tag type="warning">微信 Token, 在企业微信接收消息设置内获取</el-tag></div>
         </el-form-item>
+        <el-form-item label="豆瓣交互" prop="doubanPush">
+          <el-select v-model="setting.doubanPush" placeholder="请选择 豆瓣交互">
+            <el-option v-for="push of pushList" :key="push.id" :label="push.alias" :value="push.id"></el-option>
+          </el-select>
+          <div><el-tag type="info">豆瓣交互所用的通知方式, 在推送工具页面创建</el-tag></div>
+        </el-form-item>
         <el-form-item label="媒体服务通知" prop="webhookPushTo">
           <el-select v-model="setting.webhookPushTo" placeholder="请选择 通知方式">
             <el-option v-for="push of pushList" :key="push.id" :label="push.alias" :value="push.id"></el-option>

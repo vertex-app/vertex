@@ -5,6 +5,7 @@ module.exports = {
   devServer: {
     port: '8080',
     host: '0.0.0.0',
+    public: 'vertex-test.x64.icu',
     https: false,
     open: true,
     proxy: {

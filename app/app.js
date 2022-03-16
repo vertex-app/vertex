@@ -29,6 +29,10 @@ const initPush = function () {
   if (webhookPush) {
     global.webhookPush = new Push({ ...webhookPush, push: true });
   }
+  const doubanPush = util.listPush().filter(item => item.id === global.doubanPush)[0];
+  if (doubanPush) {
+    global.doubanPush = new Push({ ...doubanPush, push: true });
+  }
 };
 
 const init = function () {
@@ -54,6 +58,7 @@ const init = function () {
   global.checkFinishCron = setting.checkFinishCron || '* * * * *';
   global.userAgent = setting.userAgent;
   global.webhookPushTo = setting.webhookPushTo;
+  global.doubanPush = setting.doubanPush;
   global.apiKey = setting.apiKey;
   global.transparent = setting.transparent;
   global.blurSize = setting.blurSize;

@@ -50,11 +50,46 @@ class Douban {
         }
       })).body;
       await redis.setWithExpire(`vertex:document:body:${url}`, html, 30);
+      fs.writeFileSync('/home/code/a.html', html);
       const dom = new JSDOM(html);
       return dom.window.document;
     } else {
       const dom = new JSDOM(cache);
       return dom.window.document;
+    }
+  };
+
+  async _getJson (url) {
+    const cache = await redis.get(`vertex:douban:json:${url}`);
+    if (!cache) {
+      const body = (await util.requestPromise({
+        url: url,
+        headers: {
+          cookie: this.cookie
+        }
+      })).body;
+      await redis.setWithExpire(`vertex:douban:json:${url}`, body, 30);
+      return JSON.parse(body);
+    } else {
+      return JSON.parse(cache);
+    }
+  };
+
+  async _post (url, form) {
+    const cache = await redis.get(`vertex:douban:post:${url}`);
+    if (!cache) {
+      const body = (await util.requestPromise({
+        url: url,
+        method: 'post',
+        headers: {
+          cookie: this.cookie
+        },
+        form
+      })).body;
+      await redis.setWithExpire(`vertex:douban:post:${url}`, body, 30);
+      return JSON.parse(body);
+    } else {
+      return JSON.parse(cache);
     }
   };
 
@@ -588,6 +623,39 @@ class Douban {
       return;
     }
     await util.runRecord('update torrents set record_type = 6 where id = ?', [id]);
+  }
+
+  async search (key) {
+    const json = await this._getJson('https://movie.douban.com/j/subject_suggest?q=' + encodeURIComponent(key));
+    const result = [];
+    for (const detail of json) {
+      const item = {};
+      item.doubanId = this.id;
+      item.title = detail.title;
+      item.subtitle = detail.sub_title;
+      item.link = detail.url;
+      item.id = detail.id;
+      result.push(item);
+    }
+    return result;
+  }
+
+  async addWish (id, tag) {
+    const ck = (this.cookie.split(';').map(item => item.trim().split('=')).filter(item => item[0] === 'ck')[0] || [])[1];
+    if (!ck) {
+      throw new Error('Cookie 内未包含 ck 信息');
+    }
+    const res = await this._post(`https://movie.douban.com/j/subject/${id}/interest`, {
+      ck,
+      interest: 'wish',
+      foldcollect: 'F',
+      tags: tag,
+      comment: ''
+    });
+    if (res.r !== 0) {
+      logger.error(res);
+      throw new Error('失败详情请查看日志');
+    }
   }
 }
 module.exports = Douban;

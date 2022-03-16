@@ -132,6 +132,16 @@ class Push {
     await this._push(this.pushType.indexOf('mediaServer') !== -1, text, desp, poster);
   };
 
+  async selectWish (note) {
+    const text = '选择想看 ' + moment().format('YYYY-MM-DD HH:mm:ss');
+    let desp = note;
+    if (this.type === 'telegram') {
+      desp = '```\n' + desp + '\n```';
+      desp = '\\#选择想看\n' + desp;
+    }
+    await this._push(true, text, desp);
+  };
+
   async jellyfinWebhook (event, note, poster) {
     const text = 'Jellyfin 消息通知 ' + moment().format('YYYY-MM-DD HH:mm:ss');
     let desp = `Jellyfin: ${event}\n` +

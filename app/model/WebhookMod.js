@@ -1,5 +1,6 @@
 const crypto = require('crypto');
 const util = require('util');
+const redis = require('../libs/redis');
 const logger = require('../libs/logger');
 const parser = require('xml2js').parseString;
 
@@ -114,6 +115,56 @@ class WebhookMod {
     content = await parseXml(content);
     logger.debug(content);
     const text = content.xml.Content[0].trim();
+    const moviesCache = await redis.get('vertex:select:movies');
+    if (moviesCache) {
+      const movies = JSON.parse(moviesCache);
+      const num = text.split('/')[0];
+      const movie = movies[num];
+      await redis.del('vertex:select:movies');
+      if (+num + '' !== num || !movie) {
+        await global.doubanPush.selectWish('输入非法, 本次任务已取消');
+        return '';
+      }
+      try {
+        await global.runningDouban[movie.doubanId].addWish(movie.id, text.split('/')[1] || '');
+      } catch (e) {
+        logger.error(e);
+        await global.doubanPush.selectWish('添加失败: ' + e.message);
+        return '';
+      }
+      await global.doubanPush.selectWish('添加成功: ' + movie.title);
+      return '';
+    }
+    const doubanCache = await redis.get('vertex:select:douban');
+    if (doubanCache) {
+      const douban = doubanCache;
+      const result = await global.runningDouban[douban].search(text);
+      if (result.length === 0) {
+        await global.doubanPush.selectWish('无搜索结果');
+        return '';
+      }
+      await redis.del('vertex:select:douban');
+      let note = result.map(item => `${result.indexOf(item)}: ${item.title} / ${item.subtitle}`).join('\n');
+      note += '\n输入剧集前的序号以及标签, 格式为 序号/标签, 5 分钟内输入有效';
+      await redis.setWithExpire('vertex:select:movies', JSON.stringify(result), 300);
+      await global.doubanPush.selectWish(note);
+      return '';
+    }
+    const doubansCache = await redis.get('vertex:select:doubans');
+    if (doubansCache) {
+      const doubans = JSON.parse(doubansCache);
+      const douban = doubans[text];
+      await redis.del('vertex:select:doubans');
+      if (+text + '' !== text || !douban) {
+        await global.doubanPush.selectWish('输入非法, 本次任务已取消');
+        return '';
+      }
+      await redis.setWithExpire('vertex:select:douban', douban, 300);
+      const note = '已选择豆瓣账户: ' + global.runningDouban[douban].alias + '\n' +
+        '请输入希望搜索的剧名, 5 分钟内输入有效';
+      await global.doubanPush.selectWish(note);
+      return '';
+    }
     if (text === '刷新豆瓣') {
       for (const _douban of Object.keys(global.runningDouban)) {
         const douban = global.runningDouban[_douban];
@@ -130,6 +181,16 @@ class WebhookMod {
           douban.wechatLink('refresh');
         }
       }
+    }
+    if (text.indexOf('想看') === 0) {
+      let note = '';
+      const doubans = Object.keys(global.runningDouban);
+      for (const _douban of doubans) {
+        note += doubans.indexOf(_douban) + ': ' + global.runningDouban[_douban].alias + '\n';
+      }
+      note += '输入豆瓣账户前的序号, 5 分钟内输入有效';
+      await global.doubanPush.selectWish(note);
+      await redis.setWithExpire('vertex:select:doubans', JSON.stringify(doubans), 300);
     }
     return content;
   }

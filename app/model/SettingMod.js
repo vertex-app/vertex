@@ -39,10 +39,15 @@ class SettingMod {
     global.plexCover = options.plexCover;
     global.wechatToken = options.wechatToken;
     global.wechatAesKey = options.wechatAesKey;
+    global.doubanPush = options.doubanPush;
     global.telegramProxy = options.telegramProxy || 'https://api.telegram.org';
     const webhookPush = util.listPush().filter(item => item.id === global.webhookPushTo)[0];
     if (webhookPush) {
       global.webhookPush = new Push({ ...webhookPush, push: true });
+    }
+    const doubanPush = util.listPush().filter(item => item.id === global.doubanPush)[0];
+    if (doubanPush) {
+      global.doubanPush = new Push({ ...doubanPush, push: true });
     }
     return '修改全局设置成功, 部分设定需要刷新页面生效';
   };
