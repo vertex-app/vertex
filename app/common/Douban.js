@@ -444,7 +444,8 @@ class Douban {
     wish.doubanId = this.id;
     if (!wish.imdb) wish.imdb = wish.name.split('/')[0].trim();
     logger.binge(this.alias, '启动豆瓣选剧, 影片:', wish.name, '豆瓣ID:', wish.id, 'imdb:', wish.imdb, '开始搜索以下站点:', this.sites.join(', '));
-    const result = await Promise.all(this.sites.map(i => global.runningSite[i].search(wish.name.split('/')[0].trim())));
+    const searchKey = wish.name.split('/')[0].replace(/[!\uff01.。?？]/g, ' ').replace(/([^\d]?)([\d一二三四五六七八九十]+)([^\d])/g, '$1 $2 $3').replace(/([^\d])([\d一二三四五六七八九十]+)([^\d]?)/g, '$1 $2 $3').replace(/ +/g, ' ').trim();
+    const result = await Promise.all(this.sites.map(i => global.runningSite[i].search(searchKey)));
     let torrents = result.map(i => i.torrentList).flat();
     logger.binge(this.alias, '种子搜索已完成, 共计查找到', torrents.length, '个种子');
     const raceRuleList = util.listRaceRule();
