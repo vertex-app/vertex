@@ -1014,7 +1014,7 @@ class Site {
       const torrent = {};
       torrent.site = this.site;
       const title = _torrent.querySelector('.torrentname > tbody > tr .embedded br');
-      torrent.title = title ? title.nextSibling.nodeValue.trim() : '';
+      torrent.title = title ? (title.nextSibling.nodeValue || title.nextSibling.childNodes[0].nodeValue).trim() : '';
       torrent.subtitle = _torrent.querySelector('td[class="embedded"] > a[href*="details"]').title.trim();
       torrent.category = _torrent.querySelector('td a[href*=cat] img').title.trim();
       torrent.link = 'https://pt.keepfrds.com/' + _torrent.querySelector('a[href*=details]').href.trim();
