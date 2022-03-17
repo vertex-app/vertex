@@ -51,7 +51,8 @@ class Site {
       KeepFriends: this._searchKeepfriends,
       SpringSunDay: this._searchSpringsunday,
       ToTheGlory: this._searchTotheglory,
-      HDChina: this._searchHDChina
+      HDChina: this._searchHDChina,
+      Audiences: this._searchAudiences
     };
     this.torrentDownloadLinkMap = {
       HaresClub: 'https://club.hares.top/download.php?id={ID}',
@@ -66,7 +67,8 @@ class Site {
       KeepFriends: 'https://pt.keepfrds.com/download.php?id={ID}',
       SpringSunDay: 'https://springsunday.net/download.php?id={ID}',
       ToTheGlory: 'https://totheglory.im/dl/{ID}/{NUMBER}',
-      HDChina: 'https://hdchina.org/download.php?hash={HASH}'
+      HDChina: 'https://hdchina.org/download.php?hash={HASH}',
+      Audiences: 'https://audiences.me/download.php?id={ID}'
     };
     this.siteUrlMap = {
       HaresClub: 'https://club.hares.top/',
@@ -81,7 +83,8 @@ class Site {
       KeepFriends: 'https://pt.keepfrds.com/',
       SpringSunDay: 'https://springsunday.net/',
       ToTheGlory: 'https://totheglory.im/',
-      HDChina: 'https://hdchina.org/'
+      HDChina: 'https://hdchina.org/',
+      Audiences: 'https://audiences.me/'
     };
     this.cookie = site.cookie;
     this.site = site.name;
@@ -890,6 +893,7 @@ class Site {
       torrent.subtitle = _torrent.querySelector('.torrentname > tbody > tr .embedded > div > div:nth-child(2) span').innerHTML.trim();
       torrent.category = _torrent.querySelector('td a[href*=cat] img').title.trim();
       torrent.link = 'https://pterclub.com/' + _torrent.querySelector('a[href*=details]').href.trim();
+      torrent.downloadLink = 'https://pterclub.com/' + _torrent.querySelector('a[href*="download.php"]').href;
       torrent.id = +torrent.link.match(/id=(\d*)/)[1];
       torrent.seeders = +(_torrent.querySelector('a[href*=seeders] font') || _torrent.querySelector('a[href*=seeders]') || _torrent.querySelector('span[class=red]')).innerHTML.trim();
       torrent.leechers = +(_torrent.querySelector('a[href*=leechers]') || _torrent.childNodes[9]).innerHTML.trim();
@@ -1092,6 +1096,38 @@ class Site {
       torrent.time = moment(_torrent.childNodes[5].querySelector('span') ? _torrent.childNodes[5].querySelector('span').title : _torrent.childNodes[5].innerHTML.replace(/<br>/, ' ')).unix();
       torrent.size = util.calSize(...torrent.size.split(' '));
       torrent.tags = [];
+      torrentList.push(torrent);
+    }
+    return {
+      site: this.site,
+      torrentList
+    };
+  };
+
+  // Audiences
+  async _searchAudiences (keyword) {
+    const torrentList = [];
+    const document = await this._getDocument(`https://audiences.me/torrents.php?incldead=0&spstate=0&inclbookmarked=0&search=${encodeURIComponent(keyword)}&search_area=${keyword.match(/tt\d+/) ? 4 : 0}&search_mode=0&tag=`);
+    const torrents = document.querySelectorAll('.torrents tbody tr:not(:first-child)');
+    for (const _torrent of torrents) {
+      const torrent = {};
+      torrent.site = this.site;
+      torrent.title = _torrent.querySelector('td[class="embedded"] > a[href*="details"]').title.trim();
+      torrent.subtitle = _torrent.querySelector('.torrentname > tbody > tr .embedded').lastChild.innerHTML.trim();
+      torrent.category = _torrent.querySelector('td a[href*=cat] img').title.trim();
+      torrent.link = 'https://audiences.me/' + _torrent.querySelector('a[href*=details]').href.trim();
+      torrent.id = +torrent.link.match(/id=(\d*)/)[1];
+      torrent.seeders = +(_torrent.querySelector('a[href*=seeders] font') || _torrent.querySelector('a[href*=seeders]') || _torrent.querySelector('span[class=red]')).innerHTML.trim();
+      torrent.leechers = +(_torrent.querySelector('a[href*=leechers]') || _torrent.childNodes[9]).innerHTML.trim();
+      torrent.snatches = +(_torrent.querySelector('a[href*=snatches] b') || _torrent.childNodes[11]).innerHTML.trim();
+      torrent.size = _torrent.childNodes[6].innerHTML.trim().replace('<br>', ' ').replace(/([KMGPT])B/, '$1iB');
+      torrent.time = moment(_torrent.childNodes[5].querySelector('span') ? _torrent.childNodes[5].querySelector('span').title : _torrent.childNodes[5].innerHTML.replace(/<br>/, ' ')).unix();
+      torrent.size = util.calSize(...torrent.size.split(' '));
+      torrent.tags = [];
+      const tagsDom = _torrent.querySelectorAll('span[class*=tags]');
+      for (const tag of tagsDom) {
+        torrent.tags.push(tag.innerHTML.trim());
+      }
       torrentList.push(torrent);
     }
     return {
