@@ -179,6 +179,14 @@ class WebhookMod {
         const douban = global.runningDouban[_douban];
         if (douban && douban.enableWechatLink && text.indexOf(douban.alias) !== -1) {
           douban.wechatLink('refresh');
+          return content;
+        }
+      }
+      const key = text.replace('刷新', '');
+      for (const _douban of Object.keys(global.runningDouban)) {
+        const douban = global.runningDouban[_douban];
+        if (douban && douban.enableWechatLink) {
+          douban.wechatLink('refreshWish', { key });
         }
       }
     }

@@ -173,7 +173,7 @@ class Douban {
     delete global.runningClient[this.id];
   };
 
-  async refreshWish () {
+  async refreshWish (key) {
     const document = await this._getDocument('https://movie.douban.com/mine?status=wish');
     const items = document.querySelectorAll('.article .grid-view .item');
     const wishes = [];
@@ -183,6 +183,7 @@ class Douban {
       wish.link = item.querySelector('li[class=title] a').href;
       wish.poster = item.querySelector('a[class=nbg] img').src.trim().replace(/img\d/, 'img9').replace('s_ratio', 'l_ratio').replace('webp', 'jpg');
       wish.id = wish.link.match(/\/(\d+)\//)[1];
+      wish.tag = (item.querySelector('span.tags')?.innerHTML)?.replace('标签: ', '');
       wishes.push(wish);
     }
     const _doubanSet = util.listDoubanSet().filter(item => item.id === this.id)[0];
@@ -195,6 +196,7 @@ class Douban {
       await this.ntf.addDouban(this.alias, wishes);
     } else {
       for (const wish of this.wishes) {
+        if (key && wish.name.indexOf(key) === -1) continue;
         if (wish.downloaded && (!wish.episodes || (wish.episodeNow === wish.episodes))) continue;
         logger.binge('豆瓣账户:', this.alias, '想看:', wish.name, '上次未选种成功或未更新完毕, 即将重新尝试选种');
         try {
@@ -219,15 +221,19 @@ class Douban {
       for (const wish of wishes) {
         if (!this.wishes.filter(item => item.id === wish.id)[0]) {
           logger.binge('豆瓣账户', this.alias, wish.name, '已添加入想看列表, 稍后将开始处理');
-          const doubanInfo = await this._getDoubanInfo(wish.link);
-          const imdb = doubanInfo.imdb;
-          const tag = doubanInfo.tag;
-          const year = doubanInfo.year;
-          if (!tag) {
-            logger.binge('豆瓣账户', this.alias, wish.name, '未添加标签, 跳过');
+          if (!wish.tag) {
+            logger.binge('豆瓣账户', this.alias, wish.name, '未识别到标签, 跳过');
             continue;
           }
-          const type = tag.innerHTML.trim().replace('标签:', '');
+          const fitTag = Object.keys(this.categories).filter(item => wish.tag.indexOf(item) !== -1);
+          if (!fitTag[0]) {
+            logger.binge('豆瓣账户', this.alias, wish.name, '标签分类', wish.tag, '未检索到标签, 跳过');
+            continue;
+          }
+          wish.tag = fitTag[0];
+          const doubanInfo = await this._getDoubanInfo(wish.link);
+          const imdb = doubanInfo.imdb;
+          const year = doubanInfo.year;
           wish.imdb = imdb ? imdb[1] : null;
           wish.year = year ? year[1] : null;
           wish.rating = doubanInfo.rating;
@@ -237,29 +243,22 @@ class Douban {
           wish.length = doubanInfo.length;
           wish.category = doubanInfo.category;
           wish.desc = doubanInfo.desc;
-          wish.tag = type;
           wish.mainCreator = doubanInfo.mainCreator;
-          if (!wish.tag) {
-            logger.binge('豆瓣账户', this.alias, wish.name, '未识别到标签, 跳过');
-            continue;
-          }
           const episodes = doubanInfo.episodes;
           if (episodes.length !== 0) {
             wish.episodes = +episodes[episodes.length - 1].href.match(/episode\/(\d+)/)[1];
             wish.episodeNow = 0;
           }
-          const fitTag = Object.keys(this.categories).filter(item => wish.tag.indexOf(item) !== -1);
-          if (!fitTag[0]) {
-            logger.binge('豆瓣账户', this.alias, wish.name, '标签分类', wish.tag, '未检索到标签, 跳过');
-            continue;
-          }
-          wish.tag = fitTag[0];
           try {
             await this.ntf.addDoubanWish(this.alias, wish);
             this.wishes.push(wish);
-            wish.downloaded = await this.selectTorrent(wish);
+            if (!key) {
+              wish.downloaded = await this.selectTorrent(wish);
+            } else {
+              wish.downloaded = false;
+            }
             this._saveSet();
-            if (!wish.downloaded) {
+            if (!wish.downloaded && !key) {
               logger.binge(this.alias, '未匹配种子', wish.name);
               this.ntf.selectTorrentError(this.alias, wish);
             }
@@ -580,13 +579,22 @@ class Douban {
     return false;
   }
 
-  async wechatLink (type) {
+  async wechatLink (type, options) {
     const typeMap = {
-      refresh: '刷新想看列表'
+      refresh: '刷新想看列表',
+      refreshWish: '刷新: ' + options.key
     };
     logger.binge('豆瓣账号', this.alias, '接收微信消息', typeMap[type], '即将开始执行');
-    this.ntf.startRefreshJob(this.alias);
-    this.refreshWish();
+    switch (type) {
+    case 'refresh':
+      this.ntf.startRefreshJob(this.alias);
+      this.refreshWish();
+      break;
+    case 'refreshWish':
+      this.ntf.startRefreshWish(`${this.alias} / ${options.key}`);
+      this.refreshWish(options.key);
+      break;
+    }
   }
 
   async checkFinish () {
