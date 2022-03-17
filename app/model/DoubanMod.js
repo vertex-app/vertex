@@ -52,7 +52,7 @@ class DoubanMod {
     const history = await util.getRecords('select record_note, id, record_type, record_time from torrents where record_type in (6, 99) order by id desc limit ? offset ?', params);
     const total = (await util.getRecord('select count(*) as total from torrents where record_type in (6, 99)')).total;
     return {
-      history: history.map(item => { return { ...JSON.parse(item.record_note), id: item.id, recordTime: item.record_time, recordType: item.recordType }; }),
+      history: history.map(item => { return { ...JSON.parse(item.record_note), id: item.id, recordTime: item.record_time, recordType: item.record_type }; }),
       total
     };
   };
