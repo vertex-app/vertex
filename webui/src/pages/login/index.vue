@@ -37,7 +37,7 @@ export default {
           if (!res) {
             return;
           }
-          window.location.href = '/home';
+          window.location.href = '/global/about';
         } else {
           return false;
         }
