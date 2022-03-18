@@ -25,6 +25,7 @@ export default {
     }
   },
   async mounted () {
+    this.activeName = this.$route.path.split('/').pop();
   }
 };
 </script>

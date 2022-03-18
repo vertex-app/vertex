@@ -2,7 +2,7 @@
   <div>
     <div class="radius-div">
       <div  style="margin: 20px auto; width: fit-content">
-        <div style="padding: 144px 0; color: #000; text-align: left;">
+        <div style="padding: 144px 64px; color: #000; text-align: left;">
           <div>非常感谢您使用 Vertex, 当你看到这条消息时, Vertex 本身仍然是一款<span style="color: blue">免费</span>的软件。</div>
           <div>为了 Vertex 的稳定发展, 以及能够与各站点间保持友好关系, 请在使用 Vertex 考虑站点的服务压力, 请做到包括但不限于以下几点:</div>
           <div> 1. 在 Rss 时, 如果 Rss 的内容本身是全部免费或者无 HR 的, 请不要开启抓取免费或排除 HR 功能</div>

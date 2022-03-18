@@ -90,11 +90,14 @@
       </el-descriptions>
       <div style="padding: 24px;">
         <el-table
-          :data="runInfo.perTrackerToday">
+          :data="runInfo.perTrackerToday">>
           <el-table-column
             prop="tracker"
             label="今日流量"
             width="256px">
+            <template slot-scope="scope">
+              {{scope.row.tracker || '已删除'}}
+            </template>
           </el-table-column>
           <el-table-column
             label="上传">
@@ -116,6 +119,9 @@
             prop="tracker"
             label="累计流量"
             width="256px">
+            <template slot-scope="scope">
+              {{scope.row.tracker || '已删除'}}
+            </template>
           </el-table-column>
           <el-table-column
             label="上传">
