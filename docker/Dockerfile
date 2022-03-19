@@ -3,7 +3,7 @@ RUN \
   apk add cmake redis bash git nodejs npm python3 make gcc libc-dev g++ tzdata && \
   git clone https://gitlab.lswl.in/lswl/vertex.git /app/vertex && \
   cd /app/vertex && \
-  git checkout BRANCH && \
+  git checkout COMMIT_ID && \
   rm .git webui -rf && \
   PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true npm i --save && \
   mkdir /vertex && \

@@ -35,8 +35,8 @@ build_docker_image_and_push:
   variables:
     DOCKER_TLS_CERTDIR: "/certs"
     DOCKER_DRIVER: overlay2
-    IMAGE_TAG_SHA: lswl/vertex:$CI_COMMIT_SHA
     IMAGE_TAG_LATEST: lswl/vertex:latest
+    DOCKER_BUILDKIT: 1
   services:
     - docker:20.10-dind
   before_script:
@@ -67,16 +67,14 @@ build_docker_image_and_push:
     - mkdir docker/src
     - tar -xzvf static.tar.gz -C docker/src/
     - cd docker
-    - sed -i 's/BRANCH/'$CI_COMMIT_BRANCH'/' Dockerfile
+    - sed -i 's/COMMIT_ID/'$CI_COMMIT_SHA'/' Dockerfile
     - ls src/static
+    - docker pull --platform linux/arm64 lswl/vertex:latest
+    - docker pull --platform linux/amd64 lswl/vertex:latest
     - |
-      docker buildx build --platform linux/amd64,linux/arm64 --cache-from lswl/vertex --tag $IMAGE_TAG_SHA . --push
+      docker buildx build --platform linux/amd64,linux/arm64 --cache-from lswl/vertex --tag $IMAGE_TAG_LATEST --build-arg BUILDKIT_INLINE_CACHE=1 . --push
     - |
-      docker buildx build --platform linux/amd64,linux/arm64 --cache-from lswl/vertex --tag lswl/vertex:$TIME . --push
-    - |
-      docker buildx build --platform linux/amd64,linux/arm64 --cache-from lswl/vertex --tag $IMAGE_TAG_LATEST . --push
-    - |
-      docker buildx build --platform linux/amd64,linux/arm64 --cache-from lswl/vertex --tag $IMAGE_TAG_BRANCH . --push
+      docker buildx build --platform linux/amd64,linux/arm64 --cache-from lswl/vertex --tag $IMAGE_TAG_BRANCH --build-arg BUILDKIT_INLINE_CACHE=1 . --push
     - |
       curl --location --request POST 'https://vertex-push.lswl.workers.dev' \
       --header 'Content-Type: application/json' \
