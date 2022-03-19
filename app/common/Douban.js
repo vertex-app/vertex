@@ -25,7 +25,7 @@ class Douban {
     this.cron = douban.cron;
     this.enableWechatLink = douban.enableWechatLink;
     this.notify = douban.notify;
-    this._notify = util.listPush().filter(i => i.id === this.notify)[0];
+    this._notify = util.listPush().filter(i => i.id === this.notify)[0] || {};
     this.push = douban.push;
     this._notify.push = this.push;
     this.ntf = new Push(this._notify);
