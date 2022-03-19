@@ -124,7 +124,7 @@
                 </el-table-column>
               </el-table>
               <el-button @click="rule.conditions.push({ ...condition })" type="primary" size="small">新增</el-button>
-              <el-card style="margin: 12px 0; max-width: 640px" >
+              <el-card style="margin: 12px 24px 12px 0; max-width: 640px" >
                 说明: <br>
                 01. 分享率一: 上传 / 种子大小 的结果<br>
                 02. 分享率二: 上传 / 下载 的结果<br>
