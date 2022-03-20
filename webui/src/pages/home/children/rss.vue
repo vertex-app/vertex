@@ -326,7 +326,7 @@ export default {
     },
     async listRssRule () {
       const res = await this.$axiosGet('/api/rssRule/list');
-      this.rssRuleList = res ? res.data : [];
+      this.rssRuleList = res ? res.data.sort((a, b) => a.alias > b.alias ? 1 : -1) : [];
     }
   },
   async mounted () {

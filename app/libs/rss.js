@@ -4,6 +4,7 @@ const moment = require('moment');
 const bencode = require('bencode');
 const util = require('./util');
 const redis = require('./redis');
+const logger = require('./logger');
 
 const parseXml = util.promisify(parser);
 
@@ -309,10 +310,15 @@ const _getTorrentsWrapper = {
 
 exports.getTorrents = async function (rssUrl) {
   const host = new URL(rssUrl).host;
-  if (_getTorrentsWrapper[host]) {
-    return await _getTorrentsWrapper[host](rssUrl);
+  try {
+    if (_getTorrentsWrapper[host]) {
+      return await _getTorrentsWrapper[host](rssUrl);
+    }
+    return await _getTorrents(rssUrl);
+  } catch (e) {
+    logger.error('获取 Rss 报错', e);
+    return [];
   }
-  return await _getTorrents(rssUrl);
 };
 
 exports.getTorrentName = async function (url) {

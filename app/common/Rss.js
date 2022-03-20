@@ -285,16 +285,7 @@ class Rss {
   }
 
   async rss () {
-    let torrents = [];
-    try {
-      for (const url of this.urls) {
-        torrents = torrents.concat(await rss.getTorrents(url));
-      }
-    } catch (error) {
-      logger.error(this.alias, '获取 Rss 列表失败\n', error);
-      await this.ntf.rssError(this._rss);
-      return;
-    }
+    const torrents = await Promise.all(this.urls.map(url => rss.getTorrents(url)));
     const availableClients = this.clientArr
       .map(item => global.runningClient[item])
       .filter(item => {

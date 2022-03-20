@@ -1,7 +1,7 @@
 <template>
   <div class="hit-and-run" style="color: #dde6f9">
     <el-tabs v-model="activeName" type="card" @tab-click="handleTabsClick">
-      <el-tab-pane label="Rss" name="rss">
+      <el-tab-pane label="Rss 任务" name="rss">
       </el-tab-pane>
       <el-tab-pane label="Rss 规则" name="rss-rule">
       </el-tab-pane>

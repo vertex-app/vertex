@@ -149,6 +149,7 @@ tr.hover-row>td.el-table__cell {
 
 .el-input__inner, .el-checkbox__inner, .el-textarea__inner,
 .el-input-group__append, .el-input-group__prepend {
+  border: 1px solid #409EFF;
   color: #000;
 }
 
@@ -161,7 +162,9 @@ tr.hover-row>td.el-table__cell {
 .el-tag.el-tag--info {
   color: #000;
 }
-
+.el-input__inner::placeholder {
+  color: #409EFF;
+}
 .el-tag {
   border: none;
 }
