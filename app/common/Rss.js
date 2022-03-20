@@ -285,7 +285,7 @@ class Rss {
   }
 
   async rss () {
-    const torrents = await Promise.all(this.urls.map(url => rss.getTorrents(url)));
+    const torrents = (await Promise.all(this.urls.map(url => rss.getTorrents(url)))).flat();
     const availableClients = this.clientArr
       .map(item => global.runningClient[item])
       .filter(item => {
