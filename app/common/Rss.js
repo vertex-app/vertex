@@ -37,7 +37,7 @@ class Rss {
     this.uploadLimit = util.calSize(rss.uploadLimit, rss.uploadLimitUnit);
     this.maxClientUploadSpeed = util.calSize(rss.maxClientUploadSpeed, rss.maxClientUploadSpeedUnit);
     this.maxClientDownloadSpeed = util.calSize(rss.maxClientDownloadSpeed, rss.maxClientDownloadSpeedUnit);
-    this.rssJob = new CronJob(rss.cron, () => this.rss());
+    this.rssJob = new CronJob(rss.cron, async () => { try { await this.rss(); } catch (e) { logger.error(e); } });
     this.rssJob.start();
   }
 

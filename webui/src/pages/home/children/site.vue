@@ -160,7 +160,7 @@ export default {
       defaultSite: {
         name: '',
         cookie: '',
-        cron: '0 */4 * * *',
+        cron: '55 11,23 * * *',
         enable: true
       },
       chart: {

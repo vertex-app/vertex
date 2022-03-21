@@ -29,10 +29,10 @@
           width="144px">
         </el-table-column>
         <el-table-column
-          label="做种 / 下载"
-          min-width="144px">
+          label="上传速度 / 下载速度"
+          min-width="256px">
           <template slot-scope="scope">
-            {{scope.row.status ? `${scope.row.seedingCount} / ${scope.row.leechingCount}` : null}}
+            {{scope.row.status ? `${$formatSize(scope.row.uploadSpeed)}/s / ${$formatSize(scope.row.downloadSpeed)}/s` : null}}
           </template>
         </el-table-column>
         <el-table-column
@@ -43,10 +43,10 @@
           </template>
         </el-table-column>
         <el-table-column
-          label="上传速度 / 下载速度"
-          min-width="256px">
+          label="做种 / 下载"
+          min-width="144px">
           <template slot-scope="scope">
-            {{scope.row.status ? `${$formatSize(scope.row.uploadSpeed)}/s / ${$formatSize(scope.row.downloadSpeed)}/s` : null}}
+            {{scope.row.status ? `${scope.row.seedingCount} / ${scope.row.leechingCount}` : null}}
           </template>
         </el-table-column>
         <el-table-column
