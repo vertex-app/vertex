@@ -175,6 +175,10 @@
               <el-checkbox v-model="rss.scrapeHr"></el-checkbox>
               <div><el-tag type="info">仅添加非 HR 种子, 仅会在 rss 时判断 1 次, 不支持的站点不要勾!</el-tag></div>
             </el-form-item>
+            <el-form-item label="每小时上限" prop="addCountPerHour">
+              <el-input v-model="rss.addCountPerHour" style="width: 500px;"></el-input>
+              <div><el-tag type="info">每小时向客户端推送种子数量上限, 留空为 20, 编辑 Rss 或重启后重置计数</el-tag></div>
+            </el-form-item>
             <el-form-item label="等待时间" prop="sleepTime">
               <el-input v-model="rss.sleepTime" style="width: 500px;"></el-input>
               <div><el-tag type="info">若在 Rss 时种子是非免费状态, 将在种子发布后的一段时间内重复抓取免费状态, 建议等待时间略小于 Rss 周期</el-tag></div>
@@ -250,6 +254,7 @@ export default {
         maxSleepTime: 600,
         skipSameTorrent: true,
         cron: '* * * * *',
+        addCountPerHour: '',
         pushNotify: false,
         acceptRules: [],
         rejectRules: [],
