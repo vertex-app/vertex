@@ -169,7 +169,7 @@ export default {
           left: 'center'
         },
         grid: {
-          top: 40,
+          top: 120,
           left: 90,
           right: 20,
           bottom: 40
@@ -299,6 +299,22 @@ export default {
         siteLine.data = Object.keys(siteRecord).map(i => siteRecord[i].upload);
         siteLine.name = site;
         this.chart.series.push(siteLine);
+      }
+      if (this.chart.series[0]) {
+        const total = [];
+        this.chart.series[0].data.forEach((v, i) => {
+          for (const series of this.chart.series) {
+            if (total[i]) {
+              total[i] += series.data[i];
+            } else {
+              total[i] = series.data[i];
+            }
+          }
+        });
+        const t = { ...template };
+        t.name = 'Total';
+        t.data = total;
+        this.chart.series.push(t);
       }
       this.chart.xAxis.data = dateSet.map(i => this.$moment(i * 1000).format('YYYY-MM-DD HH:mm'));
       for (const site of siteList) {

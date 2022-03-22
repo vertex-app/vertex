@@ -1,3 +1,4 @@
+
 <template>
   <div class="point" style="color: #dde6f9">
     <el-tabs v-model="activeName" type="card" @tab-click="handleTabsClick">

@@ -50,7 +50,7 @@ class SiteMod {
       const site = sites[_site];
       for (const [index, time] of timeGroup.entries()) {
         if (!site[time]) {
-          site[time] = site[timeGroup[index - 1]] || 0;
+          site[time] = site[timeGroup[index - 1]] || { bonus: 0, download: 0, upload: 0, id: 0, level: '', seeding_num: 0, seeding_size: 0};
         }
       }
     }
