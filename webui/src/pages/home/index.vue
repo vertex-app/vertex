@@ -64,7 +64,7 @@ export default {
       }, {
         icon: ['fab', 'searchengin'],
         title: ' 站点聚合',
-        path: '/site-mix/site-database'
+        path: '/site-mix/site-list'
       }, {
         icon: ['fas', 'rss'],
         title: ' 刷流工具',

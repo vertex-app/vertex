@@ -210,6 +210,7 @@ module.exports = function (app, express, router) {
 
   router.get('/setting/get', ctrl.Setting.get);
   router.get('/setting/getRunInfo', ctrl.Setting.getRunInfo);
+  router.get('/setting/getTrackerFlowHistory', ctrl.Setting.getTrackerFlowHistory);
   router.get('/setting/getTorrentHistorySetting', ctrl.Setting.getTorrentHistorySetting);
   router.get('/setting/getTorrentMixSetting', ctrl.Setting.getTorrentMixSetting);
   router.get('/setting/getSitePushSetting', ctrl.Setting.getSitePushSetting);

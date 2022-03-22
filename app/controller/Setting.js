@@ -207,5 +207,21 @@ class Setting {
     res.set('content-type', 'text/css');
     return res.send(css);
   }
+
+  async getTrackerFlowHistory (req, res) {
+    try {
+      const r = await settingMod.getTrackerFlowHistory();
+      res.send({
+        success: false,
+        date: r
+      });
+    } catch (e) {
+      logger.error(e);
+      res.send({
+        success: false,
+        message: e.message
+      });
+    }
+  }
 }
 module.exports = Setting;

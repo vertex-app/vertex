@@ -38,7 +38,9 @@ const initPush = function () {
 const init = function () {
   global.clearDatabase = new CronJob('0 0 * * *', async () => {
     await util.runRecord('delete from torrent_flow where time < ?', [moment().unix() - 1]);
+    await util.runRecord('delete from tracker_flow where time < ?', [moment().unix() - 24 * 3600]);
   });
+  global.clearDatabase.start();
   global.clearDatabase.start();
   global.CONFIG = config;
   global.LOGGER = logger;

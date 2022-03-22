@@ -4,6 +4,7 @@ const moment = require('moment');
 const util = require('../libs/util');
 const CronJob = require('cron').CronJob;
 const Push = require('../common/Push');
+const logger = require('../libs/logger');
 
 const settingPath = path.join(__dirname, '../data/setting.json');
 const torrentHistorySettingPath = path.join(__dirname, '../data/setting/torrent-history-setting.json');
@@ -155,6 +156,28 @@ class SettingMod {
       C: '/tmp'
     });
     return '数据导入成功, 重启容器后生效。';
+  }
+
+  async getTrackerFlowHistory () {
+    const _timeGroup = await util.getRecords('select time from tracker_flow where time > ? group by time', [moment().unix() - 24 * 3600]);
+    const timeGroup = _timeGroup.map(i => i.time);
+    const res = await util.getRecords('select * from tracker_flow where time > ?', [moment().unix() - 24 * 3600]);
+    const trackers = {};
+    for (const item of res) {
+      if (!trackers[item.tracker]) trackers[item.tracker] = {};
+      trackers[item.tracker][item.time] = item;
+    }
+    for (const _tracker of Object.keys(trackers)) {
+      const tracker = trackers[_tracker];
+      for (const [index, time] of timeGroup.entries()) {
+        const _t = tracker[time] || tracker[timeGroup[index - 1]] || { download: 0, upload: 0 };
+        tracker[time] = { download: _t.download, upload: _t.upload };
+      }
+    }
+    return {
+      trackers,
+      timeGroup
+    };
   }
 }
 
