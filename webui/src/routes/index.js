@@ -6,6 +6,7 @@ import Index from '@/pages/home/index';
 import Home from '@/pages/home/children/home';
 import Monitor from '@/pages/home/children/monitor';
 import Site from '@/pages/home/children/site';
+import SiteData from '@/pages/home/children/site-data';
 import SiteMix from '@/pages/home/children/site-mix';
 import Setting from '@/pages/home/children/setting';
 import About from '@/pages/home/children/about';
@@ -70,8 +71,14 @@ const siteMix = {
   component: SiteMix,
   children: [
     {
-      path: 'site-database',
+      path: 'site-list',
       component: Site,
+      meta: {
+        title: '站点列表'
+      }
+    }, {
+      path: 'site-data',
+      component: SiteData,
       meta: {
         title: '站点数据'
       }

@@ -1,7 +1,9 @@
 <template>
   <div class="site-mix" style="color: #dde6f9">
     <el-tabs v-model="activeName" type="card" @tab-click="handleTabsClick">
-      <el-tab-pane label="站点数据" name="site-database">
+      <el-tab-pane label="站点列表" name="site-list">
+      </el-tab-pane>
+      <el-tab-pane label="站点数据" name="site-data">
       </el-tab-pane>
     </el-tabs>
     <router-view style="height: calc(100vh - 156px); overflow: auto;"></router-view>
@@ -12,7 +14,7 @@
 export default {
   data () {
     return {
-      activeName: 'site-database'
+      activeName: 'site-list'
     };
   },
   methods: {

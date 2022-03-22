@@ -1,13 +1,6 @@
 <template>
   <div class="site">
     <div class="radius-div">
-      <el-collapse  class="collapse" v-model="siteCollapse">
-        <el-collapse-item title="流量历史" name="1">
-          <v-chart class="chart" :option="chart" autoresize />
-        </el-collapse-item>
-      </el-collapse>
-    </div>
-    <div class="radius-div">
       <el-form class="site-push-setting-form" inline label-width="100px" size="mini">
         <el-form-item label="推送通知" prop="push">
           <el-checkbox v-model="setting.push">推送通知</el-checkbox>
@@ -163,68 +156,6 @@ export default {
         cron: '55 11,23 * * *',
         enable: true
       },
-      chart: {
-        title: {
-          text: '历史记录',
-          left: 'center'
-        },
-        grid: {
-          top: 120,
-          left: 90,
-          right: 20,
-          bottom: 40
-        },
-        legend: {
-          top: '7%'
-        },
-        textStyle: {
-          fontFamily: 'consolas',
-          color: '#000'
-        },
-        darkMode: true,
-        tooltip: {
-          trigger: 'axis',
-          formatter: (params) => {
-            let str = params[0].axisValue + '</br>';
-            params = params.sort((a, b) => b.value - a.value);
-            for (const param of params) {
-              const size = this.$formatSize(param.value);
-              const increase = this.$formatSize(this.chart.series[param.seriesIndex].data[param.dataIndex] - (this.chart.series[param.seriesIndex].data[param.dataIndex - 1] || 0));
-              str += `${param.seriesName}: ${'&nbsp;'.repeat(25 - size.length - param.seriesName.length || 1)}${size}` +
-                `, ↑ ${'&nbsp;'.repeat(12 - increase.length || 1)}${increase}</br>`;
-            }
-            return str;
-          }
-        },
-        xAxis: {
-          type: 'category',
-          data: []
-        },
-        yAxis: {
-          type: 'value',
-          axisLabel: {
-            formatter: this.$formatSize
-          }
-        },
-        graphic: [
-          {
-            type: 'image',
-            id: 'logo',
-            right: 20,
-            top: 40,
-            z: 999,
-            bounding: 'raw',
-            origin: [125, 125],
-            style: {
-              image: '/assets/images/Vertex.svg',
-              width: 64,
-              height: 64,
-              opacity: 0.8
-            }
-          }
-        ],
-        series: []
-      },
       setting: {},
       displayAll: true,
       siteList: [],
@@ -276,47 +207,7 @@ export default {
       this.loadSite();
     },
     loadSite () {
-      const recordList = this.siteInfo.data.sites;
       const siteList = this.siteInfo.data.siteList;
-      const template = {
-        name: '',
-        type: 'line',
-        data: [],
-        symbol: 'none',
-        areaStyle: {
-          opacity: 0.1
-        },
-        smooth: true
-      };
-      this.chart.series = [];
-      const dateSet = this.siteInfo.data.timeGroup;
-      for (const site of Object.keys(recordList)) {
-        if (siteList.filter(item => item.name === site)[0].display === false) {
-          continue;
-        }
-        const siteRecord = recordList[site];
-        const siteLine = { ...template };
-        siteLine.data = Object.keys(siteRecord).map(i => siteRecord[i].upload);
-        siteLine.name = site;
-        this.chart.series.push(siteLine);
-      }
-      if (this.chart.series[0]) {
-        const total = [];
-        this.chart.series[0].data.forEach((v, i) => {
-          for (const series of this.chart.series) {
-            if (total[i]) {
-              total[i] += series.data[i];
-            } else {
-              total[i] = series.data[i];
-            }
-          }
-        });
-        const t = { ...template };
-        t.name = 'Total';
-        t.data = total;
-        this.chart.series.push(t);
-      }
-      this.chart.xAxis.data = dateSet.map(i => this.$moment(i * 1000).format('YYYY-MM-DD HH:mm'));
       for (const site of siteList) {
         site.display = site.display === undefined ? true : site.display;
       }
@@ -377,10 +268,6 @@ export default {
 </script>
 
 <style scoped>
-.site-div {
-  margin: 20px 0;
-}
-
 .collapse {
   margin: 20px;
 }
