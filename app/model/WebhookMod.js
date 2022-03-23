@@ -33,7 +33,8 @@ class WebhookMod {
       'media-play': '播放已开始',
       'media-pause': '播放已暂停',
       'media-resume': '播放已恢复',
-      'media-stop': '播放已停止'
+      'media-stop': '播放已停止',
+      'media-scrobble': '播放超过 90%'
     };
     const event = eventMap[payload.event.replace('.', '-')] + ': ' + payload.Metadata.title + ' / ' + (payload.Metadata.originalTitle || '');
     const server = payload.Server.title;

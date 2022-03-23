@@ -580,7 +580,7 @@ class Douban {
     return false;
   }
 
-  async wechatLink (type, options) {
+  async wechatLink (type, options = {}) {
     const typeMap = {
       refresh: '刷新想看列表',
       refreshWish: '刷新: ' + options.key
