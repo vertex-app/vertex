@@ -159,11 +159,12 @@ class SettingMod {
   }
 
   async getTrackerFlowHistory () {
-    const _timeGroup = await util.getRecords('select time from tracker_flow where time > ? group by time', [moment().unix() - 24 * 3600]);
+    const _timeGroup = await util.getRecords('select time from tracker_flow where time >= ? group by time', [moment().unix() - 24 * 3600]);
     const timeGroup = _timeGroup.map(i => i.time);
-    const res = await util.getRecords('select * from tracker_flow where time > ?', [moment().unix() - 24 * 3600]);
+    const res = await util.getRecords('select * from tracker_flow where time >= ?', [moment().unix() - 24 * 3600]);
     const trackers = {};
     for (const item of res) {
+      if (!item.tracker) continue;
       if (!trackers[item.tracker]) trackers[item.tracker] = {};
       trackers[item.tracker][item.time] = item;
     }
@@ -171,7 +172,7 @@ class SettingMod {
       const tracker = trackers[_tracker];
       for (const [index, time] of timeGroup.entries()) {
         const _t = tracker[time] || tracker[timeGroup[index - 1]] || { download: 0, upload: 0 };
-        tracker[time] = { download: _t.download, upload: _t.upload };
+        tracker[time] = { download: +(_t.download / 300).toFixed(2), upload: +(_t.upload / 300).toFixed(2) };
       }
     }
     return {

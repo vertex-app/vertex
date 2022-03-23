@@ -39,7 +39,7 @@ class Rss {
     this.uploadLimit = util.calSize(rss.uploadLimit, rss.uploadLimitUnit);
     this.maxClientUploadSpeed = util.calSize(rss.maxClientUploadSpeed, rss.maxClientUploadSpeedUnit);
     this.maxClientDownloadSpeed = util.calSize(rss.maxClientDownloadSpeed, rss.maxClientDownloadSpeedUnit);
-    this.rssJob = new CronJob(rss.cron, async () => { try { await this.rss(); } catch (e) { logger.error(e); } });
+    this.rssJob = new CronJob(rss.cron, async () => { try { await this.rss(); } catch (e) { logger.error(this.alias, e); } });
     this.clearCount = new CronJob('0 * * * *', () => { this.addCount = 0; });
     this.rssJob.start();
   }

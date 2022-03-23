@@ -175,7 +175,7 @@ class Setting {
     } catch (e) {
       logger.error(e);
       res.send({
-        success: false,
+        success: true,
         message: e.message
       });
     }
@@ -185,7 +185,7 @@ class Setting {
     try {
       const r = await settingMod.restoreVertex(req.files);
       res.send({
-        success: false,
+        success: true,
         message: r
       });
     } catch (e) {
@@ -212,8 +212,8 @@ class Setting {
     try {
       const r = await settingMod.getTrackerFlowHistory();
       res.send({
-        success: false,
-        date: r
+        success: true,
+        data: r
       });
     } catch (e) {
       logger.error(e);

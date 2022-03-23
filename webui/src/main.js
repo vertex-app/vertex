@@ -100,26 +100,28 @@ Vue.prototype.$axiosPost = async (url, json, lang = 'zh-cn') => {
   return undefined;
 };
 
-Vue.prototype.$formatSize = (size) => {
+Vue.prototype.$formatSize = (_size) => {
+  const tag = _size < 0;
+  const size = Math.abs(_size);
   if (size < 1024) {
-    return `${size.toFixed(2)} Byte`;
+    return (tag ? '-' : '') + `${size.toFixed(2)} Byte`;
   }
   if (size < 1024 * 1024) {
-    return `${(size / 1024).toFixed(2)} KiB`;
+    return (tag ? '-' : '') + `${(size / 1024).toFixed(2)} KiB`;
   }
   if (size < 1024 * 1024 * 1024) {
-    return `${(size / 1024 / 1024).toFixed(2)} MiB`;
+    return (tag ? '-' : '') + `${(size / 1024 / 1024).toFixed(2)} MiB`;
   }
   if (size < 1024 * 1024 * 1024 * 1024) {
-    return `${(size / 1024 / 1024 / 1024).toFixed(2)} GiB`;
+    return (tag ? '-' : '') + `${(size / 1024 / 1024 / 1024).toFixed(2)} GiB`;
   }
   if (size < 1024 * 1024 * 1024 * 1024 * 1024) {
-    return `${(size / 1024 / 1024 / 1024 / 1024).toFixed(2)} TiB`;
+    return (tag ? '-' : '') + `${(size / 1024 / 1024 / 1024 / 1024).toFixed(2)} TiB`;
   }
   if (size < 1024 * 1024 * 1024 * 1024 * 1024 * 1024) {
-    return `${(size / 1024 / 1024 / 1024 / 1024 / 1024).toFixed(3)} PiB`;
+    return (tag ? '-' : '') + `${(size / 1024 / 1024 / 1024 / 1024 / 1024).toFixed(3)} PiB`;
   }
-  return 0;
+  return '0 Byte';
 };
 
 const formatTime = (s) => s === 0 ? '00' : s < 10 ? '0' + s : s;

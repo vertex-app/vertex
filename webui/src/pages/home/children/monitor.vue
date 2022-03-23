@@ -178,6 +178,11 @@
         </el-collapse-item>
       </el-collapse>
     </div>
+    <div class="radius-div">
+      <div style="margin: 20px; padding: 20px 0;">
+        <v-chart class="chart" :option="tracker" autoresize />
+      </div>
+    </div>
   </div>
 </template>
 
@@ -242,6 +247,66 @@ export default {
         { color: '#DC143C', percentage: 80 },
         { color: '#FF00FF', percentage: 100 }
       ],
+      tracker: {
+        title: {
+          text: 'Tracker 速度',
+          left: 'center'
+        },
+        grid: {
+          top: 120,
+          left: 90,
+          right: 20,
+          bottom: 40
+        },
+        legend: {
+          top: '7%'
+        },
+        textStyle: {
+          fontFamily: 'consolas',
+          color: '#000'
+        },
+        darkMode: true,
+        tooltip: {
+          trigger: 'axis',
+          formatter: (params) => {
+            let str = params[0].axisValue + '</br>';
+            params = params.sort((a, b) => b.value - a.value);
+            for (const param of params) {
+              const size = this.$formatSize(param.value) + '/s';
+              str += `${param.seriesName}: ${'&nbsp;'.repeat(40 - size.length - param.seriesName.length || 1)}${size}<br>`;
+            }
+            return str;
+          }
+        },
+        xAxis: {
+          type: 'category',
+          data: []
+        },
+        yAxis: {
+          type: 'value',
+          axisLabel: {
+            formatter: item => this.$formatSize(item) + '/s'
+          }
+        },
+        graphic: [
+          {
+            type: 'image',
+            id: 'logo',
+            right: 20,
+            top: 40,
+            z: 999,
+            bounding: 'raw',
+            origin: [125, 125],
+            style: {
+              image: '/assets/images/Vertex.svg',
+              width: 64,
+              height: 64,
+              opacity: 0.8
+            }
+          }
+        ],
+        series: []
+      },
       chartSeries: [],
       xAxis: {},
       chart: {
@@ -532,6 +597,51 @@ export default {
       const res = await this.$axiosGet('/api/client/list?_=' + Math.random());
       this.clientList = res ? res.data : [];
     },
+    async listTrackerHistory () {
+      const res = await this.$axiosGet('/api/setting/getTrackerFlowHistory');
+      if (!res) return;
+      this.trackerInfo = res;
+      this.loadTracker();
+    },
+    loadTracker () {
+      const recordList = this.trackerInfo.data.trackers;
+      const template = {
+        name: '',
+        type: 'line',
+        data: [],
+        symbol: 'none',
+        areaStyle: {
+          opacity: 0.2
+        },
+        smooth: true
+      };
+      this.tracker.series = [];
+      const dateSet = this.trackerInfo.data.timeGroup;
+      for (const _tracker of Object.keys(recordList)) {
+        const trackerRecord = recordList[_tracker];
+        const tracker = { ...template };
+        tracker.data = Object.keys(trackerRecord).map(i => trackerRecord[i].upload);
+        tracker.name = _tracker;
+        this.tracker.series.push(tracker);
+      }
+      if (this.tracker.series[0]) {
+        const total = [];
+        for (const [i, v] of this.tracker.series[0].data.entries()) {
+          for (const series of this.tracker.series) {
+            if (total[i]) {
+              total[i] += series.data[i];
+            } else {
+              total[i] = series.data[i];
+            }
+          }
+        }
+        const t = { ...template };
+        t.name = 'Total';
+        t.data = total;
+        this.tracker.series.push(t);
+      }
+      this.tracker.xAxis.data = dateSet.map(i => this.$moment(i * 1000).format('YYYY-MM-DD HH:mm'));
+    },
     gotoClient (row) {
       if (row.clientUrl) {
         window.open(`/proxy/client/${row.id}/`);
@@ -545,10 +655,9 @@ export default {
     }
   },
   async mounted () {
-    await this.getNetSpeed();
-    await this.getCpuUse();
-    await this.getServerList();
+    await Promise.all([this.getNetSpeed(), this.getCpuUse(), this.getServerList()]);
     await this.listClient();
+    await this.listTrackerHistory();
     this.freshData = setInterval(() => {
       this.getNetSpeed();
       this.getCpuUse();
