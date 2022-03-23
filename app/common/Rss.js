@@ -176,8 +176,8 @@ class Rss {
       let speed;
       if (_client.sameServerClients) {
         speed = {
-          uploadSpeed: this._sum(_client.sameServerClients.map(index => global.runningClient[index].maindata.uploadSpeed)),
-          downloadSpeed: this._sum(_client.sameServerClients.map(index => global.runningClient[index].maindata.downloadSpeed))
+          uploadSpeed: this._sum(_client.sameServerClients.map(index => global.runningClient[index]?.maindata?.uploadSpeed || 0)),
+          downloadSpeed: this._sum(_client.sameServerClients.map(index => global.runningClient[index]?.maindata?.downloadSpeed || 0))
         };
       } else {
         speed = {
