@@ -259,7 +259,9 @@ export default {
           bottom: 40
         },
         legend: {
-          top: '7%'
+          top: 64,
+          left: '10%',
+          width: '80%'
         },
         textStyle: {
           fontFamily: 'consolas',
@@ -293,8 +295,8 @@ export default {
             type: 'image',
             id: 'logo',
             right: 20,
-            top: 40,
-            z: 999,
+            top: 20,
+            z: -1,
             bounding: 'raw',
             origin: [125, 125],
             style: {
