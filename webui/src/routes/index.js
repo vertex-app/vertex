@@ -21,7 +21,6 @@ import Wishes from '@/pages/home/children/wishes';
 import Server from '@/pages/home/children/server';
 import Client from '@/pages/home/children/client';
 import SearchMix from '@/pages/home/children/search-mix';
-import Torrent from '@/pages/home/children/torrent';
 import TorrentMix from '@/pages/home/children/torrent-mix';
 import TorrentHistory from '@/pages/home/children/torrent-history';
 import DeleteRule from '@/pages/home/children/delete-rule';
@@ -57,10 +56,28 @@ const hitAndRun = {
         title: 'Rss 规则'
       }
     }, {
+      path: 'client',
+      component: Client,
+      meta: {
+        title: '下载器'
+      }
+    }, {
       path: 'delete-rule',
       component: DeleteRule,
       meta: {
         title: '删种规则'
+      }
+    }, {
+      path: 'torrent-mix',
+      component: TorrentMix,
+      meta: {
+        title: '种子聚合'
+      }
+    }, {
+      path: 'torrent-history',
+      component: TorrentHistory,
+      meta: {
+        title: '种子历史'
       }
     }
   ]
@@ -127,29 +144,6 @@ const _global = {
       component: About,
       meta: {
         title: '关于'
-      }
-    }
-  ]
-};
-
-const torrent = {
-  path: 'torrent',
-  component: Torrent,
-  meta: {
-    title: '种子聚合'
-  },
-  children: [
-    {
-      path: 'torrent-mix',
-      component: TorrentMix,
-      meta: {
-        title: '种子聚合'
-      }
-    }, {
-      path: 'torrent-history',
-      component: TorrentHistory,
-      meta: {
-        title: '种子历史'
       }
     }
   ]
@@ -233,8 +227,7 @@ export default new Router({
         _global,
         siteMix,
         point,
-        bingeWatching,
-        torrent
+        bingeWatching
       ]
     }
   ]

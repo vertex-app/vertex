@@ -5,7 +5,13 @@
       </el-tab-pane>
       <el-tab-pane label="Rss 规则" name="rss-rule">
       </el-tab-pane>
+      <el-tab-pane label="下载器" name="client">
+      </el-tab-pane>
       <el-tab-pane label="删种规则" name="delete-rule">
+      </el-tab-pane>
+      <el-tab-pane label="种子聚合" name="torrent-mix">
+      </el-tab-pane>
+      <el-tab-pane label="种子历史" name="torrent-history">
       </el-tab-pane>
     </el-tabs>
     <router-view style="height: calc(100vh - 156px); overflow: auto;"></router-view>

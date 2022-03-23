@@ -74,10 +74,6 @@ export default {
         title: ' 下载服务',
         path: '/point/client'
       }, {
-        icon: ['fas', 'magnet'],
-        title: ' 种子聚合',
-        path: '/torrent/torrent-mix'
-      }, {
         icon: ['fas', 'tv'],
         title: ' 追光迷影',
         path: '/binge-watching/search-mix'
