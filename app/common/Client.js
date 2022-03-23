@@ -160,6 +160,7 @@ class Client {
   destroy () {
     logger.info('销毁下载器实例', this.alias);
     this.maindataJob.stop();
+    this.trackerSyncJob.stop();
     if (this.reannounceJob) this.reannounceJob.stop();
     if (this.autoDeleteJob) this.autoDeleteJob.stop();
     if (this.spaceAlarmJob) this.spaceAlarmJob.stop();

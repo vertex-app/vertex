@@ -311,6 +311,7 @@ class Rss {
     for (const torrent of torrents) {
       const sqlRes = await util.getRecord('SELECT * FROM torrents WHERE hash = ? AND rss_id = ?', [torrent.hash, this.id]);
       if (sqlRes && sqlRes.id) continue;
+      if (torrent.name.indexOf('[FROZEN]') !== -1) continue;
       if (this.addCount >= this.addCountPerHour) {
         await util.runRecord('INSERT INTO torrents (hash, name, size, rss_id, link, record_time, record_type, record_note) values (?, ?, ?, ?, ?, ?, ?, ?)',
           [torrent.hash, torrent.name, torrent.size, this.id, torrent.link, moment().unix(), 2, `拒绝原因: 达到单小时推送上限: ${this.addCount} / ${this.addCountPerHour}`]);
