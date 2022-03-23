@@ -207,7 +207,7 @@
             </el-form-item>
             <el-form-item required label="最长休眠时间" prop="maxSleepTime">
               <el-input v-model="rss.maxSleepTime"></el-input>
-              <div><el-tag type="info">最长休眠时间, 若上次成功 RSS 在 N 秒以前, 则本次 RSS 拒绝所有种子, 单位为秒</el-tag></div>
+              <div><el-tag type="info">最长休眠时间, 若上次成功 RSS 在 N 秒以前, 则本次 RSS 拒绝所有种子, 建议为 3-5 倍于 Rss 周期, 单位为秒</el-tag></div>
             </el-form-item>
             <el-form-item label="跳过大小相同种子" prop="skipSameTorrent">
               <el-checkbox v-model="rss.skipSameTorrent">跳过大小相同种子</el-checkbox>

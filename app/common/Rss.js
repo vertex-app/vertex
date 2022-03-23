@@ -41,6 +41,7 @@ class Rss {
     this.maxClientDownloadSpeed = util.calSize(rss.maxClientDownloadSpeed, rss.maxClientDownloadSpeedUnit);
     this.rssJob = new CronJob(rss.cron, async () => { try { await this.rss(); } catch (e) { logger.error(this.alias, e); } });
     this.clearCount = new CronJob('0 * * * *', () => { this.addCount = 0; });
+    this.clearCount.start();
     this.rssJob.start();
   }
 
@@ -124,6 +125,7 @@ class Rss {
   destroy () {
     logger.info('销毁 Rss 实例:', this.alias);
     this.rssJob.stop();
+    this.clearCount.stop();
     delete global.runningRss[this.id];
   }
 

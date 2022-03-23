@@ -316,7 +316,7 @@ exports.getTorrents = async function (rssUrl) {
     }
     return await _getTorrents(rssUrl);
   } catch (e) {
-    logger.error('获取 Rss 报错', e);
+    logger.error(host, '获取 Rss 报错', e);
     return [];
   }
 };
