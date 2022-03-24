@@ -153,6 +153,7 @@ module.exports = function (app, express, router) {
 
   router.post('/site/add', ctrl.Site.add);
   router.get('/site/list', ctrl.Site.list);
+  router.get('/site/listRecord', ctrl.Site.listRecord);
   router.post('/site/modify', ctrl.Site.modify);
   router.post('/site/delete', ctrl.Site.delete);
   router.get('/site/refresh', ctrl.Site.refresh);

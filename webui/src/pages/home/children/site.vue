@@ -1,6 +1,14 @@
 <template>
   <div class="site">
     <div class="radius-div">
+      <div style="margin: 20px 32px; padding-top:20px;">
+        <el-descriptions title="数据统计" :column="4">
+          <el-descriptions-item label="今日">{{$formatSize(siteInfo.data ? siteInfo.data.increase.today.total.upload : 0)}}</el-descriptions-item>
+          <el-descriptions-item label="本周">{{$formatSize(siteInfo.data ? siteInfo.data.increase.week.total.upload : 0)}}</el-descriptions-item>
+          <el-descriptions-item label="本月">{{$formatSize(siteInfo.data ? siteInfo.data.increase.month.total.upload : 0)}}</el-descriptions-item>
+          <el-descriptions-item label="累计">{{$formatSize(siteInfo.data ? siteInfo.data.siteList.reduce((a, b) => (a.upload || a) + b.upload) : 0)}}</el-descriptions-item>
+        </el-descriptions>
+      </div>
       <el-form class="site-push-setting-form" inline label-width="100px" size="mini">
         <el-form-item label="推送通知" prop="push">
           <el-checkbox v-model="setting.push">推送通知</el-checkbox>
@@ -157,6 +165,7 @@ export default {
         enable: true
       },
       setting: {},
+      siteInfo: {},
       displayAll: true,
       siteList: [],
       pushList: [],

@@ -149,7 +149,7 @@ export default {
   },
   methods: {
     async listSite () {
-      const res = await this.$axiosGet('/api/site/list');
+      const res = await this.$axiosGet('/api/site/listRecord');
       if (!res) return;
       this.siteInfo = res;
       this.loadSite();

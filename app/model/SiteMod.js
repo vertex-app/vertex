@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const Site = require('../common/Site');
 const logger = require('../libs/logger');
+const moment = require('moment');
 const util = require('../libs/util');
 
 class SiteMod {
@@ -31,7 +32,7 @@ class SiteMod {
     return '编辑站点成功';
   };
 
-  async list () {
+  async listRecord () {
     const doubanList = util.listDouban();
     const siteList = util.listSite().filter(i => !!global.runningSite[i.name])
       .map(item => { return { ...item, used: doubanList.filter(i => i.sites.indexOf(item.name) !== -1).length !== 0 }; });
@@ -50,7 +51,7 @@ class SiteMod {
       const site = sites[_site];
       for (const [index, time] of timeGroup.entries()) {
         if (!site[time]) {
-          site[time] = site[timeGroup[index - 1]] || { bonus: 0, download: 0, upload: 0, id: 0, level: '', seeding_num: 0, seeding_size: 0};
+          site[time] = site[timeGroup[index - 1]] || { bonus: 0, download: 0, upload: 0, id: 0, level: '', seeding_num: 0, seeding_size: 0 };
         }
       }
     }
@@ -58,6 +59,54 @@ class SiteMod {
       siteList,
       sites,
       timeGroup
+    };
+  };
+
+  async list () {
+    const doubanList = util.listDouban();
+    const siteList = util.listSite().filter(i => !!global.runningSite[i.name])
+      .map(item => { return { ...item, used: doubanList.filter(i => i.sites.indexOf(item.name) !== -1).length !== 0 }; });
+    for (let site of siteList) {
+      site = Object.assign(site, global.runningSite[site.name].info);
+    }
+    const increase = {
+      today: {
+        total: {
+          upload: 0,
+          download: 0
+        }
+      },
+      week: {
+        total: {
+          upload: 0,
+          download: 0
+        }
+      },
+      month: {
+        total: {
+          upload: 0,
+          download: 0
+        }
+      }
+    };
+    for (const site of siteList) {
+      const sql = 'select * from sites where site = ? and update_time < ? order by update_time desc limit 1';
+      const today = (await util.getRecord(sql, [site.name, moment().startOf('day').unix()])) || {};
+      const week = (await util.getRecord(sql, [site.name, moment().startOf('week').unix()])) || {};
+      const month = (await util.getRecord(sql, [site.name, moment().startOf('month').unix()])) || {};
+      increase.today[site.name] = { upload: site.upload - today.upload || 0, download: site.download - today.download || 0 };
+      increase.week[site.name] = { upload: site.upload - week.upload || 0, download: site.download - week.download || 0 };
+      increase.month[site.name] = { upload: site.upload - month.upload || 0, download: site.download - month.download || 0 };
+      increase.today.total.upload += site.upload - today.upload || 0;
+      increase.today.total.download += site.download - today.download || 0;
+      increase.week.total.upload += site.upload - week.upload || 0;
+      increase.week.total.download += site.download - week.download || 0;
+      increase.month.total.upload += site.upload - month.upload || 0;
+      increase.month.total.download += site.download - month.download || 0;
+    }
+    return {
+      increase,
+      siteList
     };
   };
 

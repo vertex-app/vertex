@@ -151,12 +151,17 @@ tr.hover-row>td.el-table__cell {
 .el-input-group__append, .el-input-group__prepend {
   border: 1px solid #409EFF;
   color: #000;
+  font-family: consolas;
 }
 
 .el-checkbox__inner::after {
   border: 1px solid #000;
   border-left: 0;
   border-top: 0;
+}
+
+.el-select-dropdown__item {
+  font-family: consolas;
 }
 
 .el-tag.el-tag--info {

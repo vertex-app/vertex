@@ -72,6 +72,23 @@ class Site {
     }
   };
 
+  async listRecord (req, res) {
+    const options = req.body;
+    try {
+      const r = await siteMod.listRecord(options);
+      res.send({
+        success: true,
+        data: r
+      });
+    } catch (e) {
+      logger.error(e);
+      res.send({
+        success: false,
+        message: e.message
+      });
+    }
+  };
+
   async refresh (req, res) {
     const options = req.query;
     try {
