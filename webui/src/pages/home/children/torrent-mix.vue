@@ -8,12 +8,13 @@
           </el-checkbox-group>
         </el-form-item>
         <el-form-item label="排序规则">
-          <el-select @change="listTorrent"  v-model="setting.sort.key" placeholder="排序字段">
+          <el-select style="width: 160px;" @change="listTorrent"  v-model="setting.sort.key" placeholder="排序字段">
             <el-option v-for="sortKey of sortKeys" :key="sortKey.key" :label="sortKey.value" :value="sortKey.key"></el-option>
           </el-select>
-          <el-select @change="listTorrent"  v-model="setting.sort.type" placeholder="升降序">
+          <el-select style="width: 144px; padding-left: 20px;" @change="listTorrent"  v-model="setting.sort.type" placeholder="升降序">
             <el-option v-for="sortType of sortTypes" :key="sortType.key" :label="sortType.value" :value="sortType.key"></el-option>
           </el-select>
+          <el-input style="width: 288px; padding-left: 20px;" v-model="setting.searchKey" type="input" placeholder="关键词" @change="listTorrent"></el-input>
         </el-form-item>
         <el-form-item label="展示内容">
           <el-checkbox-group v-model="setting.showKeys">
@@ -174,6 +175,15 @@
             <el-link type="primary" @click="gotoDetail(scope.row)" style="line-height: 24px">种子链接</el-link>
           </template>
         </el-table-column>
+        <el-table-column
+          align="center"
+          label="操作"
+          fixed="right"
+          width="144">
+          <template slot-scope="scope">
+            <el-button type="primary" size="mini" @click="link(scope.row.hash)">软连接</el-button>
+          </template>
+        </el-table-column>
       </el-table>
       <div style="margin: 0 auto; width: fit-content">
         <el-pagination
@@ -208,6 +218,7 @@ export default {
       page: 1,
       length: 20,
       setting: {
+        searchKey: '',
         showKeys: ['clientAlias', 'name', 'size', 'flow', 'link', 'speed'],
         sort: {
         },
@@ -287,6 +298,9 @@ export default {
       if (this.setting.sort.type) {
         url += `&sortType=${this.setting.sort.type}`;
       }
+      if (this.setting.searchKey) {
+        url += `&searchKey=${this.setting.searchKey}`;
+      }
       const res = await this.$axiosGet(url);
       this.total = res ? res.data.total : 0;
       this.torrentList = res ? res.data.torrents : [];
@@ -302,10 +316,14 @@ export default {
       window.open(row.link);
     },
 
+    async link (hash) {
+      window.open('/tools/link?hash=' + hash);
+    },
+
     async changePage (page) {
       this.torrents = [];
       this.page = page;
-      const url = `/torrent/torrent-mix?clientList=${encodeURIComponent(JSON.stringify(this.setting.clients))}&page=${page}&length=${this.length}`;
+      const url = `/hit-and-run/torrent-mix?clientList=${encodeURIComponent(JSON.stringify(this.setting.clients))}&page=${page}&length=${this.length}`;
       this.$router.push(url);
       await this.listTorrent();
     },

@@ -28,6 +28,8 @@ import RssRule from '@/pages/home/children/rss-rule';
 import Push from '@/pages/home/children/push';
 import Rss from '@/pages/home/children/rss';
 import Log from '@/pages/home/children/log';
+import Tools from '@/pages/home/children/tools';
+import Link from '@/pages/home/children/link';
 
 Vue.use(Router);
 
@@ -97,7 +99,7 @@ const siteMix = {
       path: 'site-data',
       component: SiteData,
       meta: {
-        title: '站点数据'
+        title: '增长记录'
       }
     }
   ]
@@ -118,6 +120,20 @@ const point = {
       component: Server,
       meta: {
         title: '服务器'
+      }
+    }
+  ]
+};
+
+const tools = {
+  path: 'tools',
+  component: Tools,
+  children: [
+    {
+      path: 'link',
+      component: Link,
+      meta: {
+        title: '软链接'
       }
     }
   ]
@@ -227,7 +243,8 @@ export default new Router({
         _global,
         siteMix,
         point,
-        bingeWatching
+        bingeWatching,
+        tools
       ]
     }
   ]

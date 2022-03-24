@@ -138,10 +138,13 @@ class SiteMod {
     return result;
   }
 
-  async pushTorrent (options) {
-    if (!options.id || options.id === 'undefined') {
+  async pushTorrent (_options) {
+    if (!_options.id || _options.id === 'undefined') {
       throw new Error('种子 id 为空!!');
     }
+    const options = { ..._options };
+    options.savePath = options.savePath.replace('{SITE}', options.site);
+    options.category = options.category.replace('{SITE}', options.site);
     const result = await global.runningSite[options.site].pushTorrentById(options.id, options.downloadLink, options.client, options.savePath, options.category, options.autoTMM, 4, '种子推送');
     return result;
   }

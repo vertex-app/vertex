@@ -223,6 +223,7 @@
         </el-form-item>
         <el-form-item size="mini">
           <el-button type="primary" @click="pushTorrent">推送种子</el-button>
+          <el-button type="primary" @click="modifyTorrentPushSetting">保存配置</el-button>
         </el-form-item>
       </el-form>
     </el-dialog>
@@ -385,11 +386,35 @@ export default {
     async gotoDetail (row, proxy) {
       if (!row.link) return await this.$message.error('链接不存在');
       window.open(proxy ? row.link.replace(/https:\/\/.*?\//, `/proxy/site/${row.site}/`) : row.link);
+    },
+
+    async getTorrentPushSetting () {
+      const url = '/api/setting/getTorrentPushSetting';
+      const res = await this.$axiosGet(url);
+      this.client = res ? res.data.client : '';
+      this.autoTMM = res ? res.data.autoTMM : '';
+      this.category = res ? res.data.category : '';
+      this.savePath = res ? res.data.savePath : '';
+    },
+
+    async modifyTorrentPushSetting () {
+      const url = '/api/setting/modifyTorrentPushSetting';
+      const res = await this.$axiosPost(url, {
+        client: this.client,
+        autoTMM: this.autoTMM,
+        category: this.category,
+        savePath: this.savePath
+      });
+      if (!res) {
+        return;
+      }
+      await this.$messageBox(res);
     }
   },
   async mounted () {
     this.listClient();
     this.listSite();
+    this.getTorrentPushSetting();
     const torrentList = sessionStorage.getItem('torrentList');
     if (torrentList) {
       const torrentListJson = JSON.parse(torrentList);

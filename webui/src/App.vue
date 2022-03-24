@@ -79,15 +79,19 @@ body {
 
 tr.hover-row>td.el-table__cell {
   background-color: rgba(255,255,255, 0.2) !important;
-    border-radius: 8px;
+  border-radius: 8px;
+}
+
+.el-dialog {
+  border-radius: 8px;
 }
 
 .el-table__body .el-table__row:hover, .el-table--enable-row-hover .el-table__body tr:hover>td.el-table__cell {
-    background-color: transparent !important;
+  background-color: transparent !important;
 }
 
 .el-table__body td.el-table__cell .cell:hover{
-    background-color: transparent !important;
+  background-color: transparent !important;
 }
 
 .el-textarea__inner {

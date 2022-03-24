@@ -119,6 +119,39 @@ class Setting {
     }
   };
 
+  async getTorrentPushSetting (req, res) {
+    try {
+      const r = settingMod.getTorrentPushSetting();
+      res.send({
+        success: true,
+        data: r
+      });
+    } catch (e) {
+      logger.error(e);
+      res.send({
+        success: false,
+        message: e.message
+      });
+    }
+  };
+
+  async modifyTorrentPushSetting (req, res) {
+    const options = req.body;
+    try {
+      const r = settingMod.modifyTorrentPushSetting(options);
+      res.send({
+        success: true,
+        message: r
+      });
+    } catch (e) {
+      logger.error(e);
+      res.send({
+        success: false,
+        message: e.message
+      });
+    }
+  };
+
   async getSitePushSetting (req, res) {
     try {
       const r = settingMod.getSitePushSetting();

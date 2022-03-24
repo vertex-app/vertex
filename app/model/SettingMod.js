@@ -10,6 +10,7 @@ const settingPath = path.join(__dirname, '../data/setting.json');
 const torrentHistorySettingPath = path.join(__dirname, '../data/setting/torrent-history-setting.json');
 const torrentMixSettingPath = path.join(__dirname, '../data/setting/torrent-mix-setting.json');
 const sitePushSettingPath = path.join(__dirname, '../data/setting/site-push-setting.json');
+const torrentPushSettingPath = path.join(__dirname, '../data/setting/torrent-push-setting.json');
 
 class SettingMod {
   get () {
@@ -70,6 +71,16 @@ class SettingMod {
 
   modifyTorrentMixSetting (options) {
     fs.writeFileSync(torrentMixSettingPath, JSON.stringify(options, null, 2));
+    return '修改成功';
+  };
+
+  getTorrentPushSetting () {
+    const settingStr = fs.readFileSync(torrentPushSettingPath, { encoding: 'utf-8' });
+    return JSON.parse(settingStr);
+  };
+
+  modifyTorrentPushSetting (options) {
+    fs.writeFileSync(torrentPushSettingPath, JSON.stringify(options, null, 2));
     return '修改成功';
   };
 

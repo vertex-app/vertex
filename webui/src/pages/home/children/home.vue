@@ -27,18 +27,22 @@
           {{this.version.commitInfo}}
         </el-descriptions-item>
       </el-descriptions>
-      <el-descriptions style="padding: 24px" title="使用帮助" :column="3">
+      <el-descriptions style="padding: 24px" title="使用帮助" :column="4">
         <el-descriptions-item
           label="文档">
           <el-link style="color: blue" @click="gotoDoc()">文档</el-link>
+        </el-descriptions-item>
+        <el-descriptions-item
+          label="QQ 交流群组">
+          852643057
         </el-descriptions-item>
         <el-descriptions-item
           label="更新推送频道">
           <el-link style="color: blue" @click="gotoChannel()">Telegram</el-link>
         </el-descriptions-item>
         <el-descriptions-item
-          label="QQ 交流群组">
-          852643057
+          label="Telegram 群组">
+          <el-link style="color: blue" @click="gotoGroup()">Telegram</el-link>
         </el-descriptions-item>
       </el-descriptions>
       <el-descriptions style="padding: 24px" title="任务信息" :column="3">
@@ -160,8 +164,11 @@ export default {
     async gotoChannel () {
       window.open('https://t.me/lswl_vertex');
     },
+    async gotoGroup () {
+      window.open('https://t.me/group_vertex');
+    },
     async gotoDoc () {
-      window.open('https://vertex.icu');
+      window.open('https://docs.vertex.icu');
     },
     async gotoVersion () {
       window.open('https://lswl.in/2022/01/14/vertex-changelog');

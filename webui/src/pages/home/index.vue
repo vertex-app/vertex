@@ -78,6 +78,10 @@ export default {
         title: ' 追光迷影',
         path: '/binge-watching/search-mix'
       }, {
+        icon: ['fas', 'toolbox'],
+        title: ' 常用工具',
+        path: '/tools/link'
+      }, {
         icon: ['fas', 'sliders-h'],
         title: ' 全局设置',
         path: '/global/setting'

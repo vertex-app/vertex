@@ -414,6 +414,7 @@ class Douban {
         const linkFile = path.join(linkFilePath, season + episode + fileExt).replace(/'/g, '\\\'');
         const targetFile = path.join(torrent.savePath.replace(linkRule.targetPath.split('##')[0], linkRule.targetPath.split('##')[1]), file.name).replace(/'/g, '\\\'');
         const command = `mkdir -p $'${linkFilePath}' && ln -sf $'${targetFile}' $'${linkFile}'`;
+        logger.binge(this.alias, '执行软连接命令', command);
         try {
           await global.runningServer[linkRule.server].run(command);
         } catch (e) {
@@ -433,6 +434,7 @@ class Douban {
         const linkFile = path.join(linkFilePath, `${movieName}.${year}${fileExt}`).replace(/'/g, '\\\'');
         const targetFile = path.join(torrent.savePath.replace(linkRule.targetPath.split('##')[0], linkRule.targetPath.split('##')[1]), file.name).replace(/'/g, '\\\'');
         const command = `mkdir -p $'${linkFilePath}' && ln -sf $'${targetFile}' $'${linkFile}'`;
+        logger.binge(this.alias, '执行软连接命令', command);
         await global.runningServer[linkRule.server].run(command);
       }
     }

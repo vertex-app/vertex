@@ -20,7 +20,7 @@ fi
 if [ ! -d '/vertex/data/rule/race' ]; then
   mkdir /vertex/data/rule/race
 else
-  echo '/vertex/data exists, continue'
+  echo '/vertex/data/rule/race exists, continue'
 fi
 
 if [ ! -d '/vertex/data/rule/link' ]; then
@@ -107,6 +107,12 @@ if [ ! -f '/vertex/data/setting/site-push-setting.json' ]; then
   cp /app/vertex/app/config_backup/site-push-setting.json /vertex/data/setting/
 else
   echo '/vertex/data/setting/site-push-setting.json exists, continue'
+fi
+
+if [ ! -f '/vertex/data/setting/torrent-push-setting.json' ]; then
+  cp /app/vertex/app/config_backup/torrent-push-setting.json /vertex/data/setting/
+else
+  echo '/vertex/data/setting/torrent-push-setting.json exists, continue'
 fi
 
 if [ -f '/tmp/.X99-lock' ]; then
