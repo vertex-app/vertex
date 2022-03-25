@@ -102,6 +102,7 @@ class Site {
     this.refreshJob = new CronJob(this.cron, () => { try { this.refreshInfo(); } catch (e) {} });
     this.refreshJob.start();
     this._init();
+    logger.info('站点', this.site, '初始化完毕');
   };
 
   _getSum (a, b) {

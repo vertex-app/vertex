@@ -67,6 +67,7 @@ class Client {
     this.errorCount = 0;
     this.trackerStatus = {};
     this.login();
+    logger.info('下载器', this.alias, '初始化完毕');
   };
 
   _sum (arr) {

@@ -44,6 +44,7 @@ class Rss {
     this.clearCount = new CronJob('0 * * * *', () => { this.addCount = 0; });
     this.clearCount.start();
     this.rssJob.start();
+    logger.info('Rss 任务', this.alias, '初始化完毕');
   }
 
   _all (str, keys) {
