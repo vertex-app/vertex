@@ -121,6 +121,10 @@
               </el-input>
               <div><el-tag type="info">下载器下载速度在此速度之上时, 不添加种子, 留空或 0 不启用</el-tag></div>
             </el-form-item>
+            <el-form-item label="下载器下载任务上限" prop="maxClientDownloadCount">
+              <el-input v-model="rss.maxClientDownloadCount"></el-input>
+              <div><el-tag type="info">下载器下载任务之上时, 不添加种子, 留空或 0 不启用</el-tag></div>
+            </el-form-item>
             <el-form-item required label="RssUrl 列表" prop="rssUrls">
               <div v-for="(item, index) in rss.rssUrls" :key="index" style="margin-top: 6px">
                 <el-input v-model="rss.rssUrls[index]" style="width: 350px;"></el-input>

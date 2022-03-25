@@ -68,7 +68,7 @@ export default {
       }, {
         icon: ['fas', 'rss'],
         title: ' 刷流工具',
-        path: '/hit-and-run/rss'
+        path: '/hit-and-run/torrent-mix'
       }, {
         icon: ['fas', 'server'],
         title: ' 下载服务',

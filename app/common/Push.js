@@ -68,8 +68,8 @@ class Push {
   async scrapeError (rss, torrent) {
     this.errorCount += 1;
     const text = '抓取失败 ' + moment().format('YYYY-MM-DD HH:mm:ss');
-    let desp = `Rss 任务: ${rss.alias}` +
-      `种子名称: ${torrent.name}` +
+    let desp = `Rss 任务: ${rss.alias}\n` +
+      `种子名称: ${torrent.name}\n` +
       '请确认 Rss 站点是否支持抓取免费或抓取 HR, 若确认无问题, 请前往 Vertex 日志页面查看详细原因';
     if (this.markdown) {
       desp = '```\n' + desp + '\n```';
