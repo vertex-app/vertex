@@ -1079,7 +1079,7 @@ class Site {
       torrent.seeders = +(_torrent.querySelector('a[href*=seeders] font') || _torrent.querySelector('a[href*=seeders]') || _torrent.querySelector('span[class=red]')).innerHTML.trim();
       torrent.leechers = +(_torrent.querySelector('a[href*=leechers]') || _torrent.childNodes[7]).innerHTML.trim();
       torrent.snatches = +(_torrent.querySelector('a[href*=snatches] b') || _torrent.childNodes[8]).innerHTML.trim();
-      torrent.size = _torrent.childNodes[5].innerHTML.trim().replace('<br>', ' ');
+      torrent.size = _torrent.childNodes[5].innerHTML.trim().replace('<br>', ' ').replace(/([KMGPT])B/, '$1iB');;
       torrent.time = moment(_torrent.childNodes[4].querySelector('span') ? _torrent.childNodes[4].querySelector('span').title : _torrent.childNodes[4].innerHTML.replace(/<br>/, ' ')).unix();
       torrent.size = util.calSize(...torrent.size.split(' '));
       torrent.tags = [];
@@ -1146,7 +1146,7 @@ class Site {
         torrent.leechers = +_torrent.querySelector('a[href*=todlers]').innerHTML.trim();
       }
       torrent.snatches = +_torrent.innerHTML.match(/(\d+)<br>次/)[1];
-      torrent.size = _torrent.innerHTML.match(/\d+\.*\d+<br>[PTGMK]B/)[0].replace('<br>', ' ');
+      torrent.size = _torrent.innerHTML.match(/\d+\.*\d+<br>[PTGMK]B/)[0].replace('<br>', ' ').replace(/([KMGPT])B/, '$1iB');
       torrent.time = moment(_torrent.innerHTML.match(/\d{4}-\d{2}-\d{2}<br>\d{2}:\d{2}:\d{2}/)[0].replace('<br>', ' ')).unix();
       torrent.size = util.calSize(...torrent.size.split(' '));
       torrent.tags = [];
