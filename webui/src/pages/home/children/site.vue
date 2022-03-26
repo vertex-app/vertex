@@ -127,7 +127,7 @@
             </el-form-item>
             <el-form-item label="更新周期" prop="cron">
               <el-input v-model="site.cron" style="width: 300px;"></el-input>
-              <div><el-tag type="info">Crontab 表达式, 默认 4 小时一次</el-tag></div>
+              <div><el-tag type="info">Crontab 表达式, 默认每天的 11:55 与 23:55 各更新一次</el-tag></div>
             </el-form-item>
             <el-form-item label="最大重试次数" prop="maxRetryCount">
               <el-input v-model="site.maxRetryCount" style="width: 200px;"></el-input>
@@ -157,7 +157,7 @@ export default {
         'HDSky', 'HDHome', 'PTerClub', 'Audiences', 'OurBits',
         'SpringSunDay', 'MTeam', 'OpenCD', 'U2', 'BeiTai',
         'TCCF', 'TLFBits', 'PTMSG', 'HDFans', 'DICMusic', 'GPW',
-        'BTSchool', 'TJUPT', 'ToTheGlory', 'KeepFriends'].sort(),
+        'BTSchool', 'TJUPT', 'ToTheGlory', 'KeepFriends', 'HDDolby'].sort(),
       defaultSite: {
         name: '',
         cookie: '',
