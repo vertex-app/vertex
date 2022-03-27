@@ -158,7 +158,7 @@ export default {
         'SpringSunDay', 'MTeam', 'OpenCD', 'U2', 'BeiTai',
         'TCCF', 'TLFBits', 'PTMSG', 'HDFans', 'DICMusic', 'GPW',
         'BTSchool', 'TJUPT', 'ToTheGlory', 'KeepFriends', 'HDDolby',
-        'HDArea', 'SoulVoice'].sort(),
+        'HDArea', 'SoulVoice', 'PTHome'].sort(),
       defaultSite: {
         name: '',
         cookie: '',

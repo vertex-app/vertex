@@ -180,7 +180,7 @@
             </el-form-item>
             <el-form-item required label="刷新周期" prop="cron">
               <el-input v-model="douban.cron" type="input"></el-input>
-              <div><el-tag size="small" type="info">刷新 想看 列表的周期, 默认为 一小时 一次</el-tag></div>
+              <div><el-tag size="small" type="info">刷新 想看 列表的周期, 默认为每天晚上 20:35 刷新一次</el-tag></div>
             </el-form-item>
             <el-form-item label="接收微信消息" prop="enableWechatLink">
               <el-checkbox v-model="douban.enableWechatLink">接收微信消息</el-checkbox>
@@ -223,7 +223,7 @@ export default {
     return {
       douban: {},
       defaultDouban: {
-        cron: '35 * * * *',
+        cron: '35 20 * * *',
         sites: [],
         raceRules: [],
         rejectRules: [],
