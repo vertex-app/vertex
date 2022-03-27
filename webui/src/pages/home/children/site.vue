@@ -157,7 +157,8 @@ export default {
         'HDSky', 'HDHome', 'PTerClub', 'Audiences', 'OurBits',
         'SpringSunDay', 'MTeam', 'OpenCD', 'U2', 'BeiTai',
         'TCCF', 'TLFBits', 'PTMSG', 'HDFans', 'DICMusic', 'GPW',
-        'BTSchool', 'TJUPT', 'ToTheGlory', 'KeepFriends', 'HDDolby'].sort(),
+        'BTSchool', 'TJUPT', 'ToTheGlory', 'KeepFriends', 'HDDolby',
+        'HDArea', 'SoulVoice'].sort(),
       defaultSite: {
         name: '',
         cookie: '',

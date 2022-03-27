@@ -440,7 +440,7 @@ class Douban {
     }
   }
 
-  async selectTorrent (_wish) {
+  async selectTorrent (_wish, type) {
     const wish = { ..._wish };
     wish.doubanId = this.id;
     if (!wish.imdb) wish.imdb = wish.name.split('/')[0].trim();
