@@ -228,7 +228,14 @@ class Douban {
             continue;
           }
           wish.tag = fitTag[0];
-          const doubanInfo = await this._getDoubanInfo(wish.link);
+          let doubanInfo;
+          try {
+            doubanInfo = await this._getDoubanInfo(wish.link);
+          } catch (e) {
+            logger.error('豆瓣账户', this.alias, '查询影视', wish.name, '详情失败', '疑似是豆瓣 Cookie 过期', '任务退出\n', e);
+            this.ntf.selectTorrentError(this.alias, wish, ['豆瓣账户', this.alias, '查询影视', wish.name, '详情失败', '疑似是豆瓣 Cookie 过期', '任务退出'].join(' '));
+            return;
+          }
           const imdb = doubanInfo.imdb;
           const year = doubanInfo.year;
           wish.imdb = imdb ? imdb[1] : null;
