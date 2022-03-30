@@ -94,6 +94,38 @@ const _getTorrentsFileList = async function (rssUrl) {
   return torrents;
 };
 
+const _getTorrentsBeyondHD = async function (rssUrl) {
+  const rss = await parseXml(await _getRssContent(rssUrl));
+  const torrents = [];
+  const items = rss.rss.channel[0].item;
+  for (let i = 0; i < items.length; ++i) {
+    const torrent = {
+      size: 0,
+      name: '',
+      hash: '',
+      id: 0,
+      url: '',
+      link: ''
+    };
+    const size = items[i].description[0].match(/(\d*\.\d*|\d*) (GiB|MiB|TiB|KiB)/)[0];
+    const map = {
+      KiB: 1024,
+      MiB: 1024 * 1024,
+      GiB: 1024 * 1024 * 1024,
+      TiB: 1024 * 1024 * 1024 * 1024
+    };
+    const regRes = size.match(/(\d*\.\d*|\d*) (GB|MB|TB|KB)/);
+    torrent.size = parseFloat(regRes[1]) * map[regRes[2]];
+    torrent.name = items[i].title[0].split('\n')[0];
+    torrent.link = items[i].guid[0];
+    torrent.id = torrent.link.match(/\.(\d*)/)[0];
+    torrent.hash = 'fakehash' + torrent.id + 'fakehash';
+    torrent.url = items[i].link[0];
+    torrents.push(torrent);
+  }
+  return torrents;
+};
+
 const _getTorrentsUnit3D = async function (rssUrl) {
   const rss = await parseXml(await _getRssContent(rssUrl));
   const torrents = [];
@@ -305,7 +337,8 @@ const _getTorrentsWrapper = {
   'uhdbits.org': _getTorrentsUHDBits,
   'www.empornium.is': _getTorrentsEmpornium,
   'www.skyey2.com': _getTorrentsSkyeySnow,
-  'hdbits.org': _getTorrentsHDBits
+  'hdbits.org': _getTorrentsHDBits,
+  'beyond-hd.me': _getTorrentsBeyondHD
 };
 
 exports.getTorrents = async function (rssUrl) {
