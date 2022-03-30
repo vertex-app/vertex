@@ -15,4 +15,15 @@
     <div id="app"></div>
     <!-- built files will be auto injected -->
   </body>
+  <script>
+    let customVH = window.innerHeight * 0.01
+    document.documentElement.style.setProperty('--vh', customVH + 'px')
+    window.addEventListener('resize', () => {
+      let customVH = window.innerHeight * 0.01
+      document.documentElement.style.setProperty(
+        '--vh',
+        customVH + 'px',
+      )
+    })
+  </script>
 </html>

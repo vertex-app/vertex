@@ -1,5 +1,5 @@
 <template>
-  <el-container style="height: 100vh;">
+  <el-container style="height: calc(var(--vh, 1vh) * 100);">
     <el-aside style="width: fit-content;">
       <el-menu :default-active="menuIndex" @select="selectMenu" class="admin-menu" :collapse="isCollapse">
         <div :style="`line-height: 0; width: ${isCollapse ? '64px' : '144px; margin: 0 28px'}`" class="logo">
@@ -108,11 +108,11 @@ export default {
 .el-aside {
   text-align: center;
   line-height: 200px;
-  height: 100vh;
+  height: calc(var(--vh, 1vh) * 100);
 }
 
 .el-main {
-  height: 100vh;
+  height: calc(var(--vh, 1vh) * 100);
   text-align: center;
   overflow-y: auto;
 }

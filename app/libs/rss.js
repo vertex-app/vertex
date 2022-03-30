@@ -107,14 +107,14 @@ const _getTorrentsBeyondHD = async function (rssUrl) {
       url: '',
       link: ''
     };
-    const size = items[i].description[0].match(/(\d*\.\d*|\d*) (GiB|MiB|TiB|KiB)/)[0];
+    const size = items[i].title[0].match(/(\d*\.\d*|\d*) (GiB|MiB|TiB|KiB)/)[0];
     const map = {
       KiB: 1024,
       MiB: 1024 * 1024,
       GiB: 1024 * 1024 * 1024,
       TiB: 1024 * 1024 * 1024 * 1024
     };
-    const regRes = size.match(/(\d*\.\d*|\d*) (GB|MB|TB|KB)/);
+    const regRes = size.match(/(\d*\.\d*|\d*) (GiB|MiB|TiB|KiB)/);
     torrent.size = parseFloat(regRes[1]) * map[regRes[2]];
     torrent.name = items[i].title[0].split('\n')[0];
     torrent.link = items[i].guid[0];

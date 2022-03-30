@@ -34,7 +34,7 @@ export default {
 @import '/api/setting/getCss.css';
 
 body {
-  height: 100vh;
+  height: calc(var(--vh, 1vh) * 100);
   background-position-x: center;
   background-size: cover;
 }

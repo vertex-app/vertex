@@ -7,7 +7,7 @@
       <el-tab-pane label="服务器" name="server">
       </el-tab-pane>
     </el-tabs>
-    <router-view style="height: calc(100vh - 156px); overflow: auto;"></router-view>
+    <router-view style="height: calc(var(--vh, 1vh) * 100) - 156px); overflow: auto;"></router-view>
   </div>
 </template>
 
