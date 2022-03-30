@@ -1,6 +1,6 @@
 const logger = require('../libs/logger');
 const util = require('../libs/util');
-const CronJob = require('cron').CronJob;
+const Cron = require('croner');
 const moment = require('moment');
 const redis = require('../libs/redis');
 const { JSDOM } = require('jsdom');
@@ -111,8 +111,7 @@ class Site {
     this.maxRetryCount = +site.maxRetryCount || 5;
     this.retryCount = 0;
     this.cron = site.cron || '0 */4 * * *';
-    this.refreshJob = new CronJob(this.cron, () => { try { this.refreshInfo(); } catch (e) {} });
-    this.refreshJob.start();
+    this.refreshJob = Cron(this.cron, () => { try { this.refreshInfo(); } catch (e) {} });
     this._init();
     logger.info('站点', this.site, '初始化完毕');
   };

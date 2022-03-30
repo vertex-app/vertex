@@ -14,7 +14,7 @@
     "body-parser": "^1.19.0",
     "connect-multiparty": "^2.2.0",
     "connect-redis": "^6.0.0",
-    "cron": "^1.8.2",
+    "croner": "^4.3.8",
     "express": "^4.17.1",
     "express-http-proxy": "^1.6.3",
     "express-session": "^1.17.2",

@@ -4,7 +4,7 @@ const de = require('../libs/client/de');
 const redis = require('../libs/redis');
 const moment = require('moment');
 const logger = require('../libs/logger');
-const CronJob = require('cron').CronJob;
+const Cron = require('croner');
 const Push = require('./Push');
 
 const clients = {
@@ -30,11 +30,9 @@ class Client {
     this.maxLeechNum = client.maxLeechNum;
     this.sameServerClients = client.sameServerClients;
     this.maindata = null;
-    this.maindataJob = new CronJob(client.cron, () => this.getMaindata());
-    this.maindataJob.start();
+    this.maindataJob = Cron(client.cron, () => this.getMaindata());
     this.spaceAlarm = client.spaceAlarm;
-    this.spaceAlarmJob = new CronJob('*/15 * * * *', () => this.pushSpaceAlarm());
-    this.spaceAlarmJob.start();
+    this.spaceAlarmJob = Cron('*/15 * * * *', () => this.pushSpaceAlarm());
     this.notify = util.listPush().filter(item => item.id === client.notify)[0] || {};
     this.notify.push = client.pushNotify;
     this.monitor = util.listPush().filter(item => item.id === client.monitor)[0] || {};
@@ -42,27 +40,22 @@ class Client {
     this.ntf = new Push(this.notify);
     this.mnt = new Push(this.monitor);
     if (client.autoReannounce) {
-      this.reannounceJob = new CronJob('*/11 * * * * *', () => this.autoReannounce());
-      this.reannounceJob.start();
+      this.reannounceJob = Cron('*/11 * * * * *', () => this.autoReannounce());
     }
     this._deleteRules = client.deleteRules;
     this.deleteRules = util.listDeleteRule().filter(item => client.deleteRules.indexOf(item.id) !== -1).sort((a, b) => b.priority - a.priority);
     if (client.autoDelete) {
-      this.autoDeleteJob = new CronJob(client.autoDeleteCron, () => this.autoDelete());
-      this.autoDeleteJob.start();
+      this.autoDeleteJob = Cron(client.autoDeleteCron, () => this.autoDelete());
       this.fitTime = {};
       for (const rule of this.deleteRules) {
         if (rule.fitTime) {
           this.fitTime[rule.id] = {};
-          rule.fitTimeJob = new CronJob('*/5 * * * * *', () => this.flashFitTime(rule));
-          rule.fitTimeJob.start();
+          rule.fitTimeJob = Cron('*/5 * * * * *', () => this.flashFitTime(rule));
         }
       }
     }
-    this.recordJob = new CronJob('*/5 * * * *', () => this.record());
-    this.recordJob.start();
-    this.trackerSyncJob = new CronJob('*/5 * * * *', () => this.trackerSync());
-    this.trackerSyncJob.start();
+    this.recordJob = Cron('*/5 * * * *', () => this.record());
+    this.trackerSyncJob = Cron('*/5 * * * *', () => this.trackerSync());
     this.messageId = 0;
     this.errorCount = 0;
     this.trackerStatus = {};
@@ -185,8 +178,7 @@ class Client {
     for (const rule of this.deleteRules) {
       if (rule.fitTime) {
         this.fitTime[rule.id] = {};
-        rule.fitTimeJob = new CronJob('*/5 * * * * *', () => this.flashFitTime(rule));
-        rule.fitTimeJob.start();
+        rule.fitTimeJob = Cron('*/5 * * * * *', () => this.flashFitTime(rule));
       }
     }
   };

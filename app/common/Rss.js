@@ -1,7 +1,7 @@
 const rss = require('../libs/rss');
 const util = require('../libs/util');
 const logger = require('../libs/logger');
-const CronJob = require('cron').CronJob;
+const Cron = require('croner');
 const moment = require('moment');
 const Push = require('./Push');
 
@@ -40,10 +40,8 @@ class Rss {
     this.maxClientUploadSpeed = util.calSize(rss.maxClientUploadSpeed, rss.maxClientUploadSpeedUnit);
     this.maxClientDownloadSpeed = util.calSize(rss.maxClientDownloadSpeed, rss.maxClientDownloadSpeedUnit);
     this.maxClientDownloadCount = rss.maxClientDownloadCount;
-    this.rssJob = new CronJob(rss.cron, async () => { try { await this.rss(); } catch (e) { logger.error(this.alias, e); } });
-    this.clearCount = new CronJob('0 * * * *', () => { this.addCount = 0; });
-    this.clearCount.start();
-    this.rssJob.start();
+    this.rssJob = Cron(rss.cron, async () => { try { await this.rss(); } catch (e) { logger.error(this.alias, e); } });
+    this.clearCount = Cron('0 * * * *', () => { this.addCount = 0; });
     logger.info('Rss 任务', this.alias, '初始化完毕');
   }
 

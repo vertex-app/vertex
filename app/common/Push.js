@@ -1,5 +1,5 @@
 const moment = require('moment');
-const CronJob = require('cron').CronJob;
+const Cron = require('croner');
 const util = require('../libs/util');
 const logger = require('../libs/logger');
 
@@ -13,7 +13,7 @@ class Push {
       this[key] = push[key];
     }
     this.clearCountCron = this.clearCountCron || '0 * * * *';
-    this.clearCountJob = new CronJob(this.clearCountCron, () => this._clearErrorCount());
+    this.clearCountJob = Cron(this.clearCountCron, () => this._clearErrorCount());
     this.maxErrorCount = +this.maxErrorCount || 100;
     this.errorCount = 0;
     this.accessToken = {

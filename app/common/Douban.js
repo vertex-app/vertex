@@ -1,7 +1,7 @@
 const util = require('../libs/util');
 const moment = require('moment');
 const logger = require('../libs/logger');
-const CronJob = require('cron').CronJob;
+const Cron = require('croner');
 const redis = require('../libs/redis');
 const { JSDOM } = require('jsdom');
 const Push = require('./Push');
@@ -29,12 +29,9 @@ class Douban {
     this.push = douban.push;
     this._notify.push = this.push;
     this.ntf = new Push(this._notify);
-    this.refreshWishJob = new CronJob(douban.cron, () => this.refreshWish());
-    this.checkFinishJob = new CronJob(global.checkFinishCron, () => this.checkFinish());
-    this.clearSelectFailedJob = new CronJob('0 0 * * *', () => this.clearSelectFailed());
-    this.refreshWishJob.start();
-    this.checkFinishJob.start();
-    this.clearSelectFailedJob.start();
+    this.refreshWishJob = Cron(douban.cron, () => this.refreshWish());
+    this.checkFinishJob = Cron(global.checkFinishCron, () => this.checkFinish());
+    this.clearSelectFailedJob = Cron('0 0 * * *', () => this.clearSelectFailed());
     this.selectTorrentToday = {};
     this.wishes = (util.listDoubanSet().filter(item => item.id === this.id)[0] || {}).wishes || [];
     logger.binge('豆瓣账号', this.alias, '初始化完毕');

@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const moment = require('moment');
 const util = require('../libs/util');
-const CronJob = require('cron').CronJob;
+const Cron = require('croner');
 const Push = require('../common/Push');
 const logger = require('../libs/logger');
 
@@ -92,13 +92,12 @@ class SettingMod {
   modifySitePushSetting (options) {
     fs.writeFileSync(sitePushSettingPath, JSON.stringify(options, null, 2));
     if (global.sitePushJob) global.sitePushJob.stop();
-    global.sitePushJob = new CronJob(options.cron, () => {
+    global.sitePushJob = Cron(options.cron, () => {
       const pushTo = util.listPush().filter(item => item.id === options.pushTo)[0] || {};
       pushTo.push = true;
       const push = new Push(pushTo);
       push.pushSiteData();
     });
-    global.sitePushJob.start();
     return '修改成功';
   };
 

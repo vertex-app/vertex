@@ -13,7 +13,7 @@ class Server {
     this.connected = false;
     this.connect(this.server);
     this.connectFailCount = 0;
-    logger.info('服务器', this.alias, '初始化完毕');
+    logger.info('服务器', this.server.alias, '初始化完毕');
   };
 
   async connect () {
