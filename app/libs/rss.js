@@ -118,7 +118,7 @@ const _getTorrentsBeyondHD = async function (rssUrl) {
     torrent.size = parseFloat(regRes[1]) * map[regRes[2]];
     torrent.name = items[i].title[0].split('\n')[0];
     torrent.link = items[i].guid[0];
-    torrent.id = torrent.link.match(/\.(\d*)/)[0];
+    torrent.id = torrent.link.match(/\.(\d+)/)[1];
     torrent.hash = 'fakehash' + torrent.id + 'fakehash';
     torrent.url = items[i].link[0];
     torrents.push(torrent);
