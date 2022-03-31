@@ -34,6 +34,7 @@ class Douban {
     this.clearSelectFailedJob = Cron('0 0 * * *', () => this.clearSelectFailed());
     this.selectTorrentToday = {};
     this.wishes = (util.listDoubanSet().filter(item => item.id === this.id)[0] || {}).wishes || [];
+    redis.del(`vertex:douban:refresh:${this.id}`);
     logger.binge('豆瓣账号', this.alias, '初始化完毕');
   };
 
@@ -171,6 +172,15 @@ class Douban {
   };
 
   async refreshWish (key) {
+    if (!key) {
+      const refreshLog = await redis.get(`vertex:douban:refresh:${this.id}`);
+      if (refreshLog) {
+        logger.error(this.alias, '近 4 小时内刷新过豆瓣, 本次任务提前退出');
+        return;
+      } else {
+        await redis.setWithExpire(`vertex:douban:refresh:${this.id}`, moment().unix(), 3600 * 4);
+      }
+    }
     const document = await this._getDocument('https://movie.douban.com/mine?status=wish');
     const items = document.querySelectorAll('.article .grid-view .item');
     const wishes = [];
