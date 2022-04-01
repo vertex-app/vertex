@@ -69,8 +69,8 @@ build_docker_image_and_push:
     - cd docker
     - sed -i 's/COMMIT_ID/'$CI_COMMIT_SHA'/' Dockerfile
     - ls src/static
-    - docker pull --platform linux/arm64 lswl/vertex:latest
-    - docker pull --platform linux/amd64 lswl/vertex:latest
+    - docker pull --platform linux/arm64 lswl/vertex:latest || echo 'fail'
+    - docker pull --platform linux/amd64 lswl/vertex:latest || echo 'fail'
     - |
       docker buildx build --platform linux/amd64,linux/arm64 --cache-from lswl/vertex --tag $IMAGE_TAG_LATEST --build-arg BUILDKIT_INLINE_CACHE=1 . --push
     - |
