@@ -145,7 +145,7 @@ class WebhookMod {
         return '';
       }
       await redis.del('vertex:select:douban');
-      let note = result.map(item => `${result.indexOf(item)}: ${item.title} / ${item.subtitle}`).join('\n');
+      let note = result.map(item => `${result.indexOf(item)}: ${item.title} / ${item.subtitle} / ${item.year}`).join('\n');
       note += '\n输入剧集前的序号以及标签, 格式为 序号/标签, 5 分钟内输入有效';
       await redis.setWithExpire('vertex:select:movies', JSON.stringify(result), 300);
       await global.doubanPush.selectWish(note);

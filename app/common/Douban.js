@@ -661,6 +661,7 @@ class Douban {
       item.subtitle = detail.sub_title;
       item.link = detail.url;
       item.id = detail.id;
+      item.year = detail.year;
       result.push(item);
     }
     return result;
