@@ -618,22 +618,20 @@ class Douban {
   async checkFinish () {
     const unfinishTorrents = await util.getRecords('select * from torrents where record_type = 6 and record_note like ?', [`%${this.id}%`]);
     for (const torrent of unfinishTorrents) {
-      for (const _client of Object.keys(global.runningClient)) {
-        const client = global.runningClient[_client];
-        if (!client || !client.maindata || !client.maindata.torrents) continue;
-        for (const _torrent of client.maindata.torrents) {
-          if (torrent.hash !== _torrent.hash) continue;
-          if (_torrent.completed === _torrent.size) {
-            const recordNoteJson = JSON.parse(torrent.record_note);
-            logger.binge('种子', _torrent.name, '已完成, 稍后将进行软链接操作');
-            await this.ntf.torrentFinish(recordNoteJson);
-            try {
-              await this._linkTorrentFiles(_torrent, _client, recordNoteJson);
-            } catch (e) {
-              logger.error(e);
-            }
-            await util.runRecord('update torrents set record_type = 99 where hash = ? and rss_id = ?', [torrent.hash, torrent.rss_id]);
+      const client = global.runningClient[this.client];
+      if (!client || !client.maindata || !client.maindata.torrents) continue;
+      for (const _torrent of client.maindata.torrents) {
+        if (torrent.hash !== _torrent.hash) continue;
+        if (_torrent.completed === _torrent.size) {
+          const recordNoteJson = JSON.parse(torrent.record_note);
+          logger.binge('种子', _torrent.name, '已完成, 稍后将进行软链接操作');
+          await this.ntf.torrentFinish(recordNoteJson);
+          try {
+            await this._linkTorrentFiles(_torrent, this.client, recordNoteJson);
+          } catch (e) {
+            logger.error(e);
           }
+          await util.runRecord('update torrents set record_type = 99 where hash = ? and rss_id = ?', [torrent.hash, torrent.rss_id]);
         }
       }
     }
