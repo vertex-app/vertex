@@ -61,6 +61,40 @@ const _getTorrents = async function (rssUrl) {
   return torrents;
 };
 
+const _getTorrentsPuTao = async function (rssUrl) {
+  const rss = await parseXml(await _getRssContent(rssUrl));
+  const torrents = [];
+  const items = rss.rss.channel[0].item;
+  for (let i = 0; i < items.length; ++i) {
+    const torrent = {
+      size: 0,
+      name: '',
+      hash: '',
+      id: 0,
+      url: '',
+      link: ''
+    };
+    const size = items[i].title[0].match(/\[\d+\.\d+ [KMGT]B\]/)[0]?.match(/\d+\.\d+ [KMGT]B/)[0];
+    const map = {
+      KB: 1000,
+      MB: 1000 * 1000,
+      GB: 1000 * 1000 * 1000,
+      TB: 1000 * 1000 * 1000 * 1000
+    };
+    torrent.size = size.match(/(\d*\.\d*|\d*) (GB|MB|TB|KB)/);
+    torrent.size = parseFloat(torrent.size[1]) * map[torrent.size[2]];
+    torrent.name = items[i].title[0];
+    const link = items[i].link[0];
+    torrent.link = link.substring(0, link.indexOf('&passkey='));
+    torrent.id = torrent.link.substring(link.indexOf('?id=') + 4);
+    torrent.url = link;
+    torrent.hash = items[i].guid[0]._ || items[i].guid[0];
+    torrent.pubTime = moment(items[i].pubDate[0]).unix();
+    torrents.push(torrent);
+  }
+  return torrents;
+};
+
 const _getTorrentsFileList = async function (rssUrl) {
   const rss = await parseXml(await _getRssContent(rssUrl));
   const torrents = [];
@@ -338,7 +372,8 @@ const _getTorrentsWrapper = {
   'www.empornium.is': _getTorrentsEmpornium,
   'www.skyey2.com': _getTorrentsSkyeySnow,
   'hdbits.org': _getTorrentsHDBits,
-  'beyond-hd.me': _getTorrentsBeyondHD
+  'beyond-hd.me': _getTorrentsBeyondHD,
+  'pt.sjtu.edu.cn': _getTorrentsPuTao
 };
 
 exports.getTorrents = async function (rssUrl) {
