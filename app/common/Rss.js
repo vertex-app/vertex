@@ -1,6 +1,7 @@
 const rss = require('../libs/rss');
 const util = require('../libs/util');
 const logger = require('../libs/logger');
+const redis = require('../libs/redis');
 const Cron = require('croner');
 const moment = require('moment');
 const Push = require('./Push');
@@ -213,8 +214,10 @@ class Rss {
       if (this.scrapeFree) {
         try {
           if (!await util.scrapeFree(torrent.link, this.cookie)) {
-            if (this.sleepTime && (moment().unix() - +this.sleepTime) < torrent.pubTime) {
+            const isScraped = await redis.get(`vertex:scrape:free:${torrent.hash}`);
+            if (this.sleepTime && (moment().unix() - +this.sleepTime) < torrent.pubTime && !isScraped) {
               logger.info(this.alias, '已设置等待时间', this.sleepTime, ', ', torrent.name, '发布时间为', moment(torrent.pubTime * 1000).format('YYYY-MM-DD HH:mm:ss'), ', 跳过');
+              await redis.setWithExpire(`vertex:scrape:free:${torrent.hash}`, '7777', 3600 * 4);
             } else {
               await util.runRecord('INSERT INTO torrents (hash, name, size, rss_id, link, record_time, record_type, record_note) values (?, ?, ?, ?, ?, ?, ?, ?)',
                 [torrent.hash, torrent.name, torrent.size, this.id, torrent.link, moment().unix(), 2, '拒绝原因: 非免费种']);
