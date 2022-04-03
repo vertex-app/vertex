@@ -226,6 +226,7 @@ class Douban {
         }
       }
       for (const wish of wishes) {
+        if (key && wish.name.indexOf(key) === -1) continue;
         if (!this.wishes.filter(item => item.id === wish.id)[0]) {
           logger.binge('豆瓣账户', this.alias, wish.name, '已添加入想看列表, 稍后将开始处理');
           if (!wish.tag) {
@@ -266,11 +267,7 @@ class Douban {
           try {
             await this.ntf.addDoubanWish(this.alias, wish);
             this.wishes.push(wish);
-            if (!key) {
-              wish.downloaded = await this.selectTorrent(wish);
-            } else {
-              wish.downloaded = false;
-            }
+            wish.downloaded = await this.selectTorrent(wish);
             this._saveSet();
             if (!wish.downloaded && !key) {
               logger.binge(this.alias, '未匹配种子', wish.name);
