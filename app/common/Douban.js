@@ -447,7 +447,7 @@ class Douban {
         const movieName = wish.name.split('/')[0].trim();
         const year = (file.name.match(/[. ](20\d\d)[. ]/) || file.name.match(/[. ](19\d\d)[. ]/) || ['', ''])[1];
         const fileExt = path.extname(file.name);
-        const linkFilePath = path.join(linkRule.linkFilePath, category.libraryPath).replace(/'/g, '\\\'');
+        const linkFilePath = path.join(linkRule.linkFilePath, category.libraryPath, `${movieName}.${year}`).replace(/'/g, '\\\'');
         const linkFile = path.join(linkFilePath, `${movieName}.${year}${fileExt}`).replace(/'/g, '\\\'');
         const targetFile = path.join(torrent.savePath.replace(linkRule.targetPath.split('##')[0], linkRule.targetPath.split('##')[1]), file.name).replace(/'/g, '\\\'');
         const command = `mkdir -p $'${linkFilePath}' && ln -sf $'${targetFile}' $'${linkFile}'`;
@@ -463,7 +463,7 @@ class Douban {
     wish.doubanId = this.id;
     const searchKey = wish.name.split('/')[0].replace(/[!\uff01.。?？]/g, ' ').replace(/([^\d]?)([\d一二三四五六七八九十]+)([^\d])/g, '$1 $2 $3').replace(/([^\d])([\d一二三四五六七八九十]+)([^\d]?)/g, '$1 $2 $3').replace(/ +/g, ' ').trim();
     if (!wish.imdb) wish.imdb = searchKey;
-    logger.binge(this.alias, '启动搜索任务,搜索类型:', imdb ? 'imdb,' : '关键词,', '名称', wish.name, '豆瓣ID', wish.id, 'imdb', wish.imdb, '开始搜索以下站点', this.sites.join(', '));
+    logger.binge(this.alias, '启动搜索任务, 搜索类型:', imdb ? 'imdb,' : '关键词,', '名称', wish.name, '豆瓣ID', wish.id, 'imdb', wish.imdb, '开始搜索以下站点', this.sites.join(', '));
     const result = await Promise.all(this.sites.map(i => global.runningSite[i].search(imdb ? wish.imdb : searchKey)));
     let torrents = result.map(i => i.torrentList).flat();
     logger.binge(this.alias, '种子搜索已完成, 共计查找到', torrents.length, '个种子');
