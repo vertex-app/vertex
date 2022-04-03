@@ -212,6 +212,9 @@ class Douban {
             continue;
           }
           wish.downloaded = await this.selectTorrent(wish);
+          if (await redis.get(`vertex:douban:fityear:${this.id}:${wish.id}`)) {
+            wish.downloaded = await this.selectTorrent(wish, true);
+          }
           this._saveSet();
           if (!wish.downloaded) {
             logger.binge(this.alias, '未匹配种子', wish.name);
@@ -268,6 +271,9 @@ class Douban {
             await this.ntf.addDoubanWish(this.alias, wish);
             this.wishes.push(wish);
             wish.downloaded = await this.selectTorrent(wish);
+            if (await redis.get(`vertex:douban:fityear:${this.id}:${wish.id}`)) {
+              wish.downloaded = await this.selectTorrent(wish, true);
+            }
             this._saveSet();
             if (!wish.downloaded && !key) {
               logger.binge(this.alias, '未匹配种子', wish.name);
@@ -451,13 +457,14 @@ class Douban {
     }
   }
 
-  async selectTorrent (_wish, type) {
+  async selectTorrent (_wish, imdb = false) {
+    await redis.set(`vertex:douban:fityear:${this.id}:${_wish.id}`, 1);
     const wish = { ..._wish };
     wish.doubanId = this.id;
-    if (!wish.imdb) wish.imdb = wish.name.split('/')[0].trim();
-    logger.binge(this.alias, '启动豆瓣选剧, 影片', wish.name, '豆瓣ID', wish.id, 'imdb', wish.imdb, '开始搜索以下站点', this.sites.join(', '));
     const searchKey = wish.name.split('/')[0].replace(/[!\uff01.。?？]/g, ' ').replace(/([^\d]?)([\d一二三四五六七八九十]+)([^\d])/g, '$1 $2 $3').replace(/([^\d])([\d一二三四五六七八九十]+)([^\d]?)/g, '$1 $2 $3').replace(/ +/g, ' ').trim();
-    const result = await Promise.all(this.sites.map(i => global.runningSite[i].search(searchKey)));
+    if (!wish.imdb) wish.imdb = searchKey;
+    logger.binge(this.alias, '启动搜索任务,搜索类型:', imdb ? 'imdb,' : '关键词,', '名称', wish.name, '豆瓣ID', wish.id, 'imdb', wish.imdb, '开始搜索以下站点', this.sites.join(', '));
+    const result = await Promise.all(this.sites.map(i => global.runningSite[i].search(imdb ? wish.imdb : searchKey)));
     let torrents = result.map(i => i.torrentList).flat();
     logger.binge(this.alias, '种子搜索已完成, 共计查找到', torrents.length, '个种子');
     const raceRuleList = util.listRaceRule();
@@ -511,19 +518,22 @@ class Douban {
             logger.binge(this.alias, '选种规则', rulesName, '种子', `[${torrent.site}]`, torrent.title, '/', torrent.subtitle, '匹配成功, 同时匹配排除关键词:', this.categories[wish.tag].rejectKeys, '跳过');
             continue;
           }
-          const torrentYear = (torrent.title.match(/19\d{2}/g) || []).concat(torrent.title.match(/20\d{2}/g) || []);
-          let fitYear = false;
-          for (const year of torrentYear) {
-            fitYear = fitYear || +year === +wish.year;
+          if (!imdb) {
+            const torrentYear = (torrent.title.match(/19\d{2}/g) || []).concat(torrent.title.match(/20\d{2}/g) || []);
+            let fitYear = false;
+            for (const year of torrentYear) {
+              fitYear = fitYear || +year === +wish.year;
+            }
+            if (!fitYear) {
+              logger.binge(this.alias, '选种规则', rulesName, '种子', `[${torrent.site}]`, torrent.title, '/', torrent.subtitle, '匹配成功, 未匹配首映年份:', wish.year, '跳过');
+              continue;
+            }
+            if (wish.year > parseInt(torrent.time / 3600 * 24 * 365 + 1970)) {
+              logger.binge(this.alias, '选种规则', rulesName, '种子', `[${torrent.site}]`, torrent.title, '/', torrent.subtitle, '匹配成功, 发种时间小于首映年份:', wish.year, '跳过');
+              continue;
+            }
           }
-          if (!fitYear) {
-            logger.binge(this.alias, '选种规则', rulesName, '种子', `[${torrent.site}]`, torrent.title, '/', torrent.subtitle, '匹配成功, 未匹配首映年份:', wish.year, '跳过');
-            continue;
-          }
-          if (wish.year > parseInt(torrent.time / 3600 * 24 * 365 + 1970)) {
-            logger.binge(this.alias, '选种规则', rulesName, '种子', `[${torrent.site}]`, torrent.title, '/', torrent.subtitle, '匹配成功, 发种时间小于首映年份:', wish.year, '跳过');
-            continue;
-          }
+          await redis.del(`vertex:douban:fityear:${this.id}:${_wish.id}`);
           let episodes;
           if (wish.episodes) {
             const subtitle = torrent.subtitle.replace(/ /g, '').replace(/[Hh][Dd][Rr]10/g, '').replace(/\d{4}-\d{1,2}-\d{1,2}/g, '');
