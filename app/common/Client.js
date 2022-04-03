@@ -1,6 +1,7 @@
 const qb = require('../libs/client/qb');
 const util = require('../libs/util');
 const de = require('../libs/client/de');
+const tr = require('../libs/client/tr');
 const redis = require('../libs/redis');
 const moment = require('moment');
 const logger = require('../libs/logger');
@@ -9,7 +10,8 @@ const Push = require('./Push');
 
 const clients = {
   qBittorrent: qb,
-  deluge: de
+  deluge: de,
+  Transmission: tr
 };
 
 class Client {
@@ -39,7 +41,7 @@ class Client {
     this.monitor.push = client.pushMonitor;
     this.ntf = new Push(this.notify);
     this.mnt = new Push(this.monitor);
-    if (client.autoReannounce) {
+    if (client.type === 'qBittorrent' && client.autoReannounce) {
       this.reannounceJob = Cron('*/11 * * * * *', () => this.autoReannounce());
     }
     this._deleteRules = client.deleteRules;
@@ -55,11 +57,13 @@ class Client {
       }
     }
     this.recordJob = Cron('*/5 * * * *', () => this.record());
-    this.trackerSyncJob = Cron('*/5 * * * *', () => this.trackerSync());
+    if (client.type === 'qBittorrent') {
+      this.trackerSyncJob = Cron('*/5 * * * *', () => this.trackerSync());
+    }
     this.messageId = 0;
     this.errorCount = 0;
     this.trackerStatus = {};
-    this.login();
+    this.getMaindata();
     logger.info('下载器', this.alias, '初始化完毕');
   };
 
@@ -154,7 +158,7 @@ class Client {
   destroy () {
     logger.info('销毁下载器实例', this.alias);
     this.maindataJob.stop();
-    this.trackerSyncJob.stop();
+    if (this.trackerSyncJob) this.trackerSyncJob.stop();
     if (this.reannounceJob) this.reannounceJob.stop();
     if (this.autoDeleteJob) this.autoDeleteJob.stop();
     if (this.spaceAlarmJob) this.spaceAlarmJob.stop();
@@ -259,7 +263,7 @@ class Client {
       logger.error('下载器', this.alias, '获取种子信息失败\n', error);
       this.status = false;
       this.errorCount += 1;
-      if (this.errorCount > 10) {
+      if (this.errorCount > 5) {
         await this.ntf.getMaindataError(this._client);
         await this.login();
       }
@@ -272,6 +276,9 @@ class Client {
   };
 
   async addTorrent (torrentUrl, hash, isSkipChecking = false, uploadLimit = 0, downloadLimit = 0, savePath, category) {
+    if (!this.status) {
+      throw new Error('客户端', this.alias, '当前状态为不可用');
+    }
     const { statusCode } = await this.client.addTorrent(this.clientUrl, this.cookie, torrentUrl, isSkipChecking, uploadLimit, downloadLimit, savePath, category);
     if (statusCode !== 200) {
       this.login();
@@ -462,7 +469,16 @@ class Client {
   }
 
   async getFiles (hash) {
-    return await this.client.getFiles(this.clientUrl, this.cookie, hash);
+    if (this._client.type === 'qBittorrent') {
+      return await this.client.getFiles(this.clientUrl, this.cookie, hash);
+    }
+    if (this._client.type === 'Transmission') {
+      for (const t of this.maindata.torrents) {
+        if (t.hash === hash) {
+          return await this.client.getFiles(this.clientUrl, this.cookie, t.id);
+        }
+      }
+    }
   }
 }
 module.exports = Client;

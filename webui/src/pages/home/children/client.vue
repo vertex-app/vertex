@@ -92,6 +92,7 @@
             <el-form-item required label="下载器类型" prop="type">
               <el-select v-model="client.type" placeholder="下载器类型">
                 <el-option label="qBittorrent" value="qBittorrent"></el-option>
+                <el-option label="Transmission" value="Transmission"></el-option>
                 <el-option disabled label="Deluge" value="deluge"></el-option>
               </el-select>
               <div><el-tag type="info">下载器类型, 目前仅支持 qBittorrent</el-tag></div>
@@ -126,7 +127,7 @@
             </el-form-item>
             <el-form-item required label="信息更新周期" prop="cron">
               <el-input v-model="client.cron" style="width: 500px;"></el-input>
-              <div><el-tag type="info">下载器信息更新 Cron 表达式, 默认为 4s 更新一次</el-tag></div>
+              <div><el-tag type="info">下载器信息更新 Cron 表达式, 默认为 4s 更新一次, 种子量过多请考虑 一分钟 一次甚至 五分钟 一次</el-tag></div>
             </el-form-item>
             <el-form-item required label="自动汇报" prop="autoReannounce">
               <el-checkbox v-model="client.autoReannounce">自动汇报</el-checkbox>

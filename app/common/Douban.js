@@ -34,7 +34,6 @@ class Douban {
     this.clearSelectFailedJob = Cron('0 0 * * *', () => this.clearSelectFailed());
     this.selectTorrentToday = {};
     this.wishes = (util.listDoubanSet().filter(item => item.id === this.id)[0] || {}).wishes || [];
-    redis.del(`vertex:douban:refresh:${this.id}`);
     logger.binge('豆瓣账号', this.alias, '初始化完毕');
   };
 
@@ -171,8 +170,8 @@ class Douban {
     delete global.runningClient[this.id];
   };
 
-  async refreshWish (key) {
-    if (!key) {
+  async refreshWish (key, manual) {
+    if (!key && !manual) {
       const refreshLog = await redis.get(`vertex:douban:refresh:${this.id}`);
       if (refreshLog) {
         logger.error(this.alias, '近 4 小时内刷新过豆瓣, 本次任务提前退出');
@@ -613,7 +612,7 @@ class Douban {
     switch (type) {
     case 'refresh':
       this.ntf.startRefreshJob(this.alias);
-      this.refreshWish();
+      this.refreshWish(false, true);
       break;
     case 'refreshWish':
       this.ntf.startRefreshWish(`${this.alias} / ${options.key}`);

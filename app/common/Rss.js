@@ -252,7 +252,7 @@ class Rss {
       if (this.skipSameTorrent) {
         for (const key of Object.keys(global.runningClient)) {
           const client = global.runningClient[key];
-          if (!client || !client.maindata) {
+          if (!client || !client.maindata || client._client.type !== 'qBittorrent') {
             continue;
           }
           for (const _torrent of client.maindata.torrents) {

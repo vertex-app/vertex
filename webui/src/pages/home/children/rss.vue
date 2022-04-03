@@ -90,7 +90,7 @@
             </el-form-item>
             <el-form-item required label="下载器" prop="clientArr">
               <el-checkbox-group v-model="rss.clientArr">
-                <el-checkbox v-for="client of clientList" :key="client.id" :disabled="!client.enable" :label="client.id">{{client.alias}}</el-checkbox>
+                <el-checkbox v-for="client of clientList" :key="client.id" :disabled="!client.enable || client.type === 'Transmission'" :label="client.id">{{client.alias}}</el-checkbox>
               </el-checkbox-group>
               <div><el-tag type="info">选择下载器, 仅可选择已经启用的下载器</el-tag></div>
             </el-form-item>

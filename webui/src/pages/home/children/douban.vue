@@ -252,7 +252,8 @@ export default {
       refreshStatus: '刷新想看',
       doubanCollapse: ['0'],
       importDoubanVisible: false,
-      importDoubanText: ''
+      importDoubanText: '',
+      push: true
     };
   },
   methods: {

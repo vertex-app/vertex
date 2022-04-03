@@ -74,7 +74,7 @@ class DoubanMod {
   }
 
   async refreshWishes (options) {
-    global.runningDouban[options.id].refreshWish();
+    global.runningDouban[options.id].refreshWish(false, true);
     return '已启动刷新豆瓣任务, 稍后将接收到通知';
   }
 
