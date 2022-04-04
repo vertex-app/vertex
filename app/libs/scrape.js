@@ -81,6 +81,15 @@ const _freeHaresClub = async function (url, cookie) {
   return state && ['free', 'twoupfree'].indexOf(state.className) !== -1;
 };
 
+const _freeHDBits = async function (url, cookie) {
+  const d = await getDocument(url, cookie);
+  if (d.body.innerHTML.indexOf('userdetails') === -1) {
+    throw new Error('疑似登陆状态失效, 请检查 Cookie');
+  }
+  const state = d.querySelector('span[class="tag freeleech"]');
+  return state;
+};
+
 const freeWrapper = {
   'pterclub.com': _free,
   'pt.btschool.club': _free,
@@ -102,7 +111,8 @@ const freeWrapper = {
   'open.cd': _freeOpencd,
   'www.open.cd': _freeOpencd,
   'totheglory.im': _freeToTheGlory,
-  'u2.dmhy.org': _freeDmhy
+  'u2.dmhy.org': _freeDmhy,
+  'hdbits.org': _freeHDBits
 };
 
 const _hr = async function (url, cookie) {

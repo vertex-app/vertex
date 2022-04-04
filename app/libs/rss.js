@@ -343,9 +343,10 @@ const _getTorrentsHDBits = async function (rssUrl) {
       link: ''
     };
     torrent.name = items[i].title[0];
-    const link = items[i].link[0];
-    torrent.id = link.match(/id=(\d+)/)[1];
-    torrent.url = link;
+    const url = items[i].link[0];
+    torrent.id = url.match(/id=(\d+)/)[1];
+    torrent.url = url;
+    torrent.link = `https://hdbits.org/details.php?id=${torrent.id}&source=browse`;
     if (torrent.url.indexOf('hdbits') !== -1) {
       const cache = await redis.get(`vertex:hash:${torrent.url}`);
       if (cache) {
