@@ -55,7 +55,7 @@ const init = function () {
     password: setting.password
   };
   global.telegramProxy = setting.telegramProxy || 'https://api.telegram.org';
-  global.checkFinishCron = setting.checkFinishCron || '* * * * *';
+  global.checkFinishCron = setting.checkFinishCron || '30 * * * * *';
   global.userAgent = setting.userAgent;
   global.webhookPushTo = setting.webhookPushTo;
   global.doubanPush = setting.doubanPush;

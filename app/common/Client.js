@@ -394,8 +394,11 @@ class Client {
     }
     const trackerSet = {};
     for (const torrent of this.maindata.torrents) {
-      const sqlRes = await util.getRecord('SELECT * FROM torrents WHERE hash = ?', [torrent.hash]);
-      if (!sqlRes) continue;
+      if (!await redis.get('vertex:torrent:' + torrent.hash)) {
+        const sqlRes = await util.getRecord('SELECT * FROM torrents WHERE hash = ?', [torrent.hash]);
+        await redis.set('vertex:torrent:' + torrent.hash, 1);
+        if (!sqlRes) continue;
+      }
       await util.runRecord('update torrents set size = ?, tracker = ?, upload = ?, download = ? where hash = ?',
         [torrent.size, torrent.tracker, torrent.uploaded, torrent.downloaded, torrent.hash]);
       await util.runRecord('insert into torrent_flow (hash, upload, download, time) values (?, ?, ?, ?)',
@@ -441,8 +444,12 @@ class Client {
     const torrents = this.maindata.torrents;
     for (const torrent of torrents) {
       try {
+        if (await redis.get(`vertex:torrent_tracker:${torrent.hash}`)) continue;
         const sqlRes = await util.getRecord('SELECT * FROM torrents WHERE hash = ?', [torrent.hash]);
-        if (!sqlRes || !!sqlRes.delete_time) continue;
+        if (!sqlRes || !!sqlRes.delete_time) {
+          await redis.set(`vertex:torrent_tracker:${torrent.hash}`, 1);
+          continue;
+        };
         const { statusCode, body } = await this.client.getTrackerList(this.clientUrl, this.cookie, torrent.hash);
         if (statusCode === 404) {
           logger.debug('下载器', this.alias, '种子', torrent.name, 'tracker 状态同步 404');
