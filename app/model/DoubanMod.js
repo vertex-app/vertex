@@ -49,8 +49,8 @@ class DoubanMod {
   async listHistory (options) {
     const index = options.length * (options.page - 1);
     const params = [options.length, index];
-    const history = await util.getRecords('select record_note, id, record_type, record_time from torrents where record_type in (6, 99) order by id desc limit ? offset ?', params);
-    const total = (await util.getRecord('select count(*) as total from torrents where record_type in (6, 99)')).total;
+    const history = await util.getRecords('select record_note, id, record_type, record_time from torrents where record_type in (6, 99) and record_note != \'种子推送\' order by id desc limit ? offset ?', params);
+    const total = (await util.getRecord('select count(*) as total from torrents where record_type in (6, 99) and record_note != \'种子推送\'')).total;
     return {
       history: history.map(item => { return { ...JSON.parse(item.record_note), id: item.id, recordTime: item.record_time, recordType: item.record_type }; }),
       total
