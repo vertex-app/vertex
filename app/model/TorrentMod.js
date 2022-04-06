@@ -55,7 +55,6 @@ class TorrentMod {
   }
 
   async _linkTorrentFiles ({ hash, savePath, client, mediaName, type, libraryPath, linkRule }) {
-    console.log(hash);
     const _linkRule = util.listLinkRule().filter(item => item.id === linkRule)[0];
     let size = 1;
     _linkRule.minFileSize.split('*').forEach(i => { size *= +i; });
