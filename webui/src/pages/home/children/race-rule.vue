@@ -104,6 +104,8 @@
                       <el-option label="小于" value="smaller"></el-option>
                       <el-option label="包含" value="contain"></el-option>
                       <el-option label="不包含" value="notContain"></el-option>
+                      <el-option label="正则匹配" value="regExp"></el-option>
+                      <el-option label="正则不匹配" value="notRegExp"></el-option>
                     </el-select>
                   </template>
                 </el-table-column>
