@@ -469,6 +469,7 @@ class Douban {
     const searchKey = wish.name.split('/')[0].replace(/[!\uff01.。?？]/g, ' ').replace(/([^\d]?)([\d一二三四五六七八九十]+)([^\d])/g, '$1 $2 $3').replace(/([^\d])([\d一二三四五六七八九十]+)([^\d]?)/g, '$1 $2 $3').replace(/ +/g, ' ').trim();
     if (!wish.imdb && imdb) {
       logger.binge(this.alias, '无 IMDB 编号, 跳过搜索种子');
+      return false;
     }
     if (!wish.imdb) wish.imdb = searchKey;
     logger.binge(this.alias, '启动搜索任务, 搜索类型:', imdb ? 'imdb,' : '关键词,', '名称', wish.name, '豆瓣ID', wish.id, 'imdb', wish.imdb, '开始搜索以下站点', this.sites.join(', '));
