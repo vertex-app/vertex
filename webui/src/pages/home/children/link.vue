@@ -76,7 +76,6 @@ export default {
         libraryPath: this.libraryPath,
         savePath: this.torrentInfo.savePath
       });
-      this.linkRuleList = res ? res.data.sort((a, b) => a.alias > b.alias ? 1 : -1) : [];
       if (!res) {
         return;
       }

@@ -98,7 +98,7 @@ class TorrentMod {
         }
         season = season || 1;
         newEpisode = Math.max(episode, newEpisode);
-        episode = 'E' + '0'.repeat(3 - ('' + (fakeEpisode || episode)).length) + (fakeEpisode || episode);
+        episode = 'E' + '0'.repeat(2 - ('' + (fakeEpisode || episode)).length) + (fakeEpisode || episode);
         season = 'S' + '0'.repeat(2 - ('' + season).length) + season;
         const fileExt = path.extname(file.name);
         const linkFilePath = path.join(_linkRule.linkFilePath, libraryPath, seriesName, season).replace(/'/g, '\\\'');
