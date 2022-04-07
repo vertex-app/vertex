@@ -100,7 +100,7 @@ exports.getMaindata = async function (clientUrl, cookie) {
     }
     torrent.completed = torrent.size * torrent.progress;
     torrent.originProp = { k };
-    torrent.tracker = torrent.tracker ? new url.URL(torrent.tracker[0].announce).hostname : '';
+    torrent.tracker = torrent.tracker && torrent.tracker[0] ? new url.URL(torrent.tracker[0].announce).hostname : '';
     maindata.torrents.push(torrent);
   }
   return maindata;
