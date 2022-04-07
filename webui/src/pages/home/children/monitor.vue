@@ -622,7 +622,7 @@ export default {
       for (const _tracker of Object.keys(recordList)) {
         const trackerRecord = recordList[_tracker];
         const tracker = { ...template };
-        tracker.data = Object.keys(trackerRecord).map(i => trackerRecord[i].upload);
+        tracker.data = Object.keys(trackerRecord).map(i => Math.max(trackerRecord[i].upload, 0));
         tracker.name = _tracker;
         this.tracker.series.push(tracker);
       }
@@ -631,9 +631,9 @@ export default {
         for (const [i, v] of this.tracker.series[0].data.entries()) {
           for (const series of this.tracker.series) {
             if (total[i]) {
-              total[i] += series.data[i];
+              total[i] += Math.max(series.data[i], 0);
             } else {
-              total[i] = series.data[i];
+              total[i] = Math.max(series.data[i], 0);
             }
           }
         }
