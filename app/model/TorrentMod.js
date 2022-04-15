@@ -67,7 +67,7 @@ class TorrentMod {
         if (_linkRule.excludeKeys && _linkRule.excludeKeys.split(',').some(item => file.name.indexOf(item) !== -1)) continue;
         const seriesName = mediaName.split('/')[0].trim().replace(/ /g, '.').replace(/\.?[第][\d一二三四五六七八九十]+[季部]/, '');
         let season = (file.name.match(/[. ]S(\d+)/) || [0, null])[1];
-        let episode = +(file.name.match(/E[Pp]?(\d+)[. ]/) || [0, '01'])[1];
+        let episode = +(file.name.match(/[Ee][Pp]?(\d+)[. ]/) || [0, '01'])[1];
         let fakeEpisode = 0;
         const part = (file.name.match(/[ .][Pp][Aa][Rr][Tt][ .]?([abAB12])/));
         if (part?.[1]) {
@@ -118,7 +118,7 @@ class TorrentMod {
         const movieName = mediaName.split('/')[0].trim();
         const year = (file.name.match(/[. ](20\d\d)[. ]/) || file.name.match(/[. ](19\d\d)[. ]/) || ['', ''])[1];
         const fileExt = path.extname(file.name);
-        const linkFilePath = path.join(_linkRule.linkFilePath, libraryPath).replace(/'/g, '\\\'');
+        const linkFilePath = path.join(_linkRule.linkFilePath, libraryPath, `${movieName}.${year}`).replace(/'/g, '\\\'');
         const linkFile = path.join(linkFilePath, `${movieName}.${year}${fileExt}`).replace(/'/g, '\\\'');
         const targetFile = path.join(savePath.replace(_linkRule.targetPath.split('##')[0], _linkRule.targetPath.split('##')[1]), file.name).replace(/'/g, '\\\'');
         const command = `mkdir -p $'${linkFilePath}' && ln -sf $'${targetFile}' $'${linkFile}'`;
