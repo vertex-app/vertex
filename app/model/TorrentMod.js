@@ -62,7 +62,9 @@ class TorrentMod {
     const files = await global.runningClient[client].getFiles(hash);
     if (type === 'series') {
       let newEpisode = 0;
-      for (const file of files) {
+      for (const _file of files) {
+        const file = { ..._file };
+        file.name = path.basename(file.name);
         if (file.size < _linkRule.minFileSize) continue;
         if (_linkRule.excludeKeys && _linkRule.excludeKeys.split(',').some(item => file.name.indexOf(item) !== -1)) continue;
         const seriesName = mediaName.split('/')[0].trim().replace(/ /g, '.').replace(/\.?[第][\d一二三四五六七八九十]+[季部]/, '');

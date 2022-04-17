@@ -393,7 +393,9 @@ class Douban {
     const category = recordNoteJson.category;
     if (category.type === 'series') {
       let newEpisode = 0;
-      for (const file of files) {
+      for (const _file of files) {
+        const file = { ..._file };
+        file.name = path.basename(file.name);
         if (file.size < linkRule.minFileSize) continue;
         if (linkRule.excludeKeys && linkRule.excludeKeys.split(',').some(item => file.name.indexOf(item) !== -1)) continue;
         const seriesName = wish.name.split('/')[0].trim().replace(/ /g, '.').replace(/\.?[第].*[季部]/, '').replace(/\..*[篇]/, '');
