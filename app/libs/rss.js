@@ -379,7 +379,7 @@ const _getHDTorrents = async function (rssUrl) {
     };
     torrent.name = items[i].title[0];
     const link = items[i].link[0];
-    torrent.link = null;
+    torrent.link = link;
     torrent.id = moment().unix();
     torrent.url = link;
     torrent.hash = link.match(/hash=(.*?)&/)[1];
