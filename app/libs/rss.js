@@ -364,6 +364,31 @@ const _getTorrentsHDBits = async function (rssUrl) {
   return torrents;
 };
 
+const _getHDTorrents = async function (rssUrl) {
+  const rss = await parseXml(await _getRssContent(rssUrl));
+  const torrents = [];
+  const items = rss.rss.channel[0].item;
+  for (let i = 0; i < items.length; ++i) {
+    const torrent = {
+      size: 0,
+      name: '',
+      hash: '',
+      id: 0,
+      url: '',
+      link: ''
+    };
+    torrent.name = items[i].title[0];
+    const link = items[i].link[0];
+    torrent.link = null;
+    torrent.id = moment().unix();
+    torrent.url = link;
+    torrent.hash = link.match(/hash=(.*?)&/)[1];
+    torrent.pubTime = moment(items[i].pubDate[0]).unix();
+    torrents.push(torrent);
+  }
+  return torrents;
+};
+
 const _getTorrentsWrapper = {
   'filelist.io': _getTorrentsFileList,
   'blutopia.xyz': _getTorrentsUnit3D,
@@ -374,7 +399,8 @@ const _getTorrentsWrapper = {
   'www.skyey2.com': _getTorrentsSkyeySnow,
   'hdbits.org': _getTorrentsHDBits,
   'beyond-hd.me': _getTorrentsBeyondHD,
-  'pt.sjtu.edu.cn': _getTorrentsPuTao
+  'pt.sjtu.edu.cn': _getTorrentsPuTao,
+  'hd-torrents.org': _getHDTorrents
 };
 
 exports.getTorrents = async function (rssUrl) {
