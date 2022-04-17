@@ -393,16 +393,15 @@ class Douban {
     const category = recordNoteJson.category;
     if (category.type === 'series') {
       let newEpisode = 0;
-      for (const _file of files) {
-        const file = { ..._file };
-        file.name = path.basename(file.name);
+      for (const file of files) {
+        const filename = path.basename(file.name);
         if (file.size < linkRule.minFileSize) continue;
-        if (linkRule.excludeKeys && linkRule.excludeKeys.split(',').some(item => file.name.indexOf(item) !== -1)) continue;
+        if (linkRule.excludeKeys && linkRule.excludeKeys.split(',').some(item => filename.indexOf(item) !== -1)) continue;
         const seriesName = wish.name.split('/')[0].trim().replace(/ /g, '.').replace(/\.?[第].*[季部]/, '').replace(/\..*[篇]/, '');
-        let season = (file.name.match(/[. ]S(\d+)/) || [0, null])[1];
-        let episode = +(file.name.match(/[Ee][Pp]?(\d+)[. ]/) || [0, '01'])[1];
+        let season = (filename.match(/[. ]S(\d+)/) || [0, null])[1];
+        let episode = +(filename.match(/[Ee][Pp]?(\d+)[. ]/) || [0, '01'])[1];
         let fakeEpisode = 0;
-        const part = (file.name.match(/[ .][Pp][Aa][Rr][Tt][ .]?([abAB12])/));
+        const part = (filename.match(/[ .][Pp][Aa][Rr][Tt][ .]?([abAB12])/));
         if (part?.[1]) {
           fakeEpisode = part?.[1] === 'A' || part?.[1] === '1' ? episode * 2 - 1 : episode * 2;
         }
