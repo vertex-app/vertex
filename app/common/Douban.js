@@ -467,7 +467,7 @@ class Douban {
     await redis.set(`vertex:douban:fityear:${this.id}:${_wish.id}`, 1);
     const wish = { ..._wish };
     wish.doubanId = this.id;
-    const searchKey = wish.name.split('/')[0].replace(/[!\uff01.。?？]/g, ' ').replace(/([^\d]?)([\d一二三四五六七八九十]+)([^\d])/g, '$1 $2 $3').replace(/([^\d])([\d一二三四五六七八九十]+)([^\d]?)/g, '$1 $2 $3').replace(/ +/g, ' ').trim();
+    const searchKey = wish.name.split('/')[0].replace(/[!\uff01\uff1a.。:?？，,·・]/g, ' ').replace(/([^\d]?)([\d一二三四五六七八九十]+)([^\d])/g, '$1 $2 $3').replace(/([^\d])([\d一二三四五六七八九十]+)([^\d]?)/g, '$1 $2 $3').replace(/ +/g, ' ').trim();
     if (!wish.imdb && imdb) {
       logger.binge(this.alias, '无 IMDB 编号, 跳过搜索种子');
       return false;
@@ -513,11 +513,11 @@ class Douban {
       });
       if (!imdb) {
         torrents = torrents.filter(item => {
-          const serachName = wish.name.split('/')[0].replace(/[!\uff01.。?？ ]/g, '');
-          const subtitle = wish.name.split('/')[0].indexOf(' ') !== -1 ? item.subtitle : item.subtitle.replace(/ /g, '');
-          const keys = subtitle.split(/[^0-9a-zA-Z\u4e00-\u9fa5:\uff1a·・]/g).filter(item => item);
-          const result = keys.indexOf(serachName) !== -1;
-          if (!result) logger.binge(this.alias, '想看', serachName, '种子', item.subtitle, '提取分词', JSON.stringify(keys), '未匹配 提前拒绝');
+          const name = wish.name.split('/')[0].replace(/[!\uff01\uff1a.。:?？，,·・]/g, '');
+          const serachKeys = name.split(' ');
+          const keys = item.subtitle.split(/[^0-9a-zA-Z\u4e00-\u9fa5]/g).filter(item => item);
+          const result = serachKeys.every(i => keys.indexOf(i) !== -1) || keys.indexOf(name.replace(' ', '')) !== -1;
+          if (!result) logger.binge(this.alias, '想看', JSON.stringify(serachKeys), '种子', item.subtitle, '提取分词', JSON.stringify(keys), '未匹配 提前拒绝');
           return result;
         });
       }
