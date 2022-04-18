@@ -593,8 +593,8 @@ class Douban {
           };
           try {
             const mediaName = wish.name.split('/')[0].replace(/[?？/. ]/g, '');
-            const _savePath = category.savePath.replace('{SITE}', torrent.site).replace('{NAME}', mediaName);
-            const _category = category.category.replace('{SITE}', torrent.site).replace('{NAME}', mediaName);
+            const _savePath = category.savePath.replace('{SITE}', torrent.site).replace('{NAME}', mediaName).replace('{YEAR}', wish.year);
+            const _category = category.category.replace('{SITE}', torrent.site).replace('{NAME}', mediaName).replace('{YEAR}', wish.year);
             await global.runningSite[torrent.site].pushTorrentById(torrent.id, torrent.downloadLink, this.client, _savePath, _category, category.autoTMM, 6, JSON.stringify(recordNoteJson));
             if (episodes) {
               const maxEpisode = Math.max(...episodes.map(item => +item || 0));
