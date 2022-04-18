@@ -1414,7 +1414,7 @@ class Site {
     }
   };
 
-  async pushTorrentById (id, downloadLink, client, savePath, category, autoTMM, recordType, recordNote) {
+  async pushTorrentById (id, torrentLink, downloadLink, client, savePath, category, autoTMM, recordType, recordNote) {
     recordNote = recordNote || `搜索推送, 站点: ${this.id}`;
     if (!downloadLink) {
       const downloadLinkTemplate = this.torrentDownloadLinkMap[this.site];
@@ -1425,7 +1425,7 @@ class Site {
     await global.runningClient[client].addTorrentByTorrentFile(filepath, hash, false, 0, 0, savePath, category, autoTMM);
     // 1: 添加 2: 拒绝 3: 错误 4: 搜索推送 6: 豆瓣推送 98: 4 完成 99: 6 完成
     await util.runRecord('INSERT INTO torrents (hash, name, size, rss_id, link, record_time, add_time, record_type, record_note) values (?, ?, ?, ?, ?, ?, ?, ?, ?)',
-      [hash, name, size, this.site, downloadLink, moment().unix(), moment().unix(), recordType, recordNote]);
+      [hash, name, size, this.site, torrentLink, moment().unix(), moment().unix(), recordType, recordNote]);
     return '推送成功, 种子 hash: ' + hash;
   }
 

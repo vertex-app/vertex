@@ -145,7 +145,7 @@ class SiteMod {
     const options = { ..._options };
     options.savePath = options.savePath.replace('{SITE}', options.site);
     options.category = options.category.replace('{SITE}', options.site);
-    const result = await global.runningSite[options.site].pushTorrentById(options.id, options.downloadLink, options.client, options.savePath, options.category, options.autoTMM, 4, '种子推送');
+    const result = await global.runningSite[options.site].pushTorrentById(options.id, options.link, options.downloadLink, options.client, options.savePath, options.category, options.autoTMM, 4, '种子推送');
     return result;
   }
 }

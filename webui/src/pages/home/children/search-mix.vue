@@ -313,7 +313,7 @@ export default {
       if (this.client === '') {
         return this.$message.error('请选择下载器');
       }
-      let url = `/api/site/pushTorrent?id=${this.pushRow.id}&site=${this.pushRow.site}&client=${this.client}&autoTMM=${this.autoTMM}&savePath=${this.savePath}&category=${this.category}`;
+      let url = `/api/site/pushTorrent?id=${this.pushRow.id}&link=${encodeURIComponent(this.pushRow.link)}&site=${this.pushRow.site}&client=${this.client}&autoTMM=${this.autoTMM}&savePath=${encodeURIComponent(this.savePath)}&category=${encodeURIComponent(this.category)}`;
       if (this.pushRow.downloadLink) {
         url += '&downloadLink=' + encodeURIComponent(this.pushRow.downloadLink);
       }
