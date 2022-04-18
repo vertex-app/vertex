@@ -1,7 +1,10 @@
 levels:
   binge: 
-    value: 20001
+    value: 20002
     colour: white
+  bingedebug: 
+    value: 20001
+    colour: cyan
 
 appenders:
   console:
@@ -38,6 +41,14 @@ appenders:
     layout:
       type: pattern
       pattern: '[%d{ISO8601}][%p %c] %z (%f{3} %l:%o) %m'
+  bingedebug:
+    type: dateFile
+    filename: logs/app-binge-debug.log
+    pattern: .yyyy-MM-dd
+    compress: true
+    layout:
+      type: pattern
+      pattern: '[%d{ISO8601}][%p %c] %z (%f{3} %l:%o) %m'
   debug:
     type: dateFile
     filename: logs/app-debug.log
@@ -56,6 +67,11 @@ appenders:
     appender: binge
     level: binge
     maxLevel: binge
+  bingedebugFilter:
+    type: logLevelFilter
+    appender: bingedebug
+    level: bingedebug
+    maxLevel: bingedebug
   debugFilter:
     type: logLevelFilter
     appender: debug
@@ -82,5 +98,6 @@ categories:
       - infoFilter
       - debugFilter
       - minError
+      - bingedebugFilter
       - bingeFilter
     level: info

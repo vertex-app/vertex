@@ -277,7 +277,7 @@ class Client {
 
   async addTorrent (torrentUrl, hash, isSkipChecking = false, uploadLimit = 0, downloadLimit = 0, savePath, category) {
     if (!this.status) {
-      throw new Error('客户端', this.alias, '当前状态为不可用');
+      throw new Error('客户端' + this.alias + '当前状态为不可用');
     }
     const { statusCode } = await this.client.addTorrent(this.clientUrl, this.cookie, torrentUrl, isSkipChecking, uploadLimit, downloadLimit, savePath, category);
     if (statusCode !== 200) {

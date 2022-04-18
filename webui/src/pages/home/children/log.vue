@@ -5,6 +5,7 @@
       <el-select size="small" v-model="type" @change="getLog" placeholder="日志级别">
         <el-option label="信息" value="info"></el-option>
         <el-option label="豆瓣" value="binge"></el-option>
+        <el-option label="豆瓣调试" value="binge-debug"></el-option>
         <el-option label="错误" value="error"></el-option>
         <el-option label="调试" value="debug"></el-option>
         <el-option label="跟踪" value="access"></el-option>
