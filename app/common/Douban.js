@@ -463,7 +463,7 @@ class Douban {
     }
   }
 
-  scrapeEpisode (_subtitle) {
+  scrapeEpisode (_subtitle = '') {
     const subtitle = _subtitle.replace(/ /g, '').replace(/[Hh][Dd][Rr]10/g, '').replace(/\d{4}-\d{1,2}-\d{1,2}/g, '');
     const episodeMap = {
       一: 1,
@@ -520,6 +520,7 @@ class Douban {
       torrents = torrents.filter(item => {
         const name = wish.name.split('/')[0].replace(/[!\uff01\uff1a.。:?？，,·・]/g, ' ').trim();
         const serachKeys = name.split(' ');
+        if (!item.subtitle) return false;
         const keys = item.subtitle.split(/[^0-9a-zA-Z\u4e00-\u9fa5]/g).filter(item => item);
         const result = serachKeys.every(i => keys.indexOf(i) !== -1) || keys.indexOf(name.replace(' ', '')) !== -1;
         if (!result) logger.bingedebug(this.alias, '想看', JSON.stringify(serachKeys), '种子', item.subtitle, '提取分词', JSON.stringify(keys), '未匹配 提前拒绝');
