@@ -15,7 +15,7 @@ appenders:
   trace:
     type: dateFile
     filename: logs/app-access.log
-    pattern: .yyyy-MM-dd
+    pattern: yyyy-MM-dd
     compress: true
     layout:
       type: pattern
@@ -28,7 +28,7 @@ appenders:
   info:
     type: dateFile
     filename: logs/app-info.log
-    pattern: .yyyy-MM-dd
+    pattern: yyyy-MM-dd
     compress: true
     layout:
       type: pattern
@@ -36,7 +36,7 @@ appenders:
   binge:
     type: dateFile
     filename: logs/app-binge.log
-    pattern: .yyyy-MM-dd
+    pattern: yyyy-MM-dd
     compress: true
     layout:
       type: pattern
@@ -44,7 +44,7 @@ appenders:
   bingedebug:
     type: dateFile
     filename: logs/app-binge-debug.log
-    pattern: .yyyy-MM-dd
+    pattern: yyyy-MM-dd
     compress: true
     layout:
       type: pattern
@@ -52,7 +52,7 @@ appenders:
   debug:
     type: dateFile
     filename: logs/app-debug.log
-    pattern: .yyyy-MM-dd
+    pattern: yyyy-MM-dd
     compress: true
     layout:
       type: pattern
@@ -80,7 +80,7 @@ appenders:
   error:
     type: dateFile
     filename: logs/app-error.log
-    pattern: .yyyy-MM-dd
+    pattern: yyyy-MM-dd
     compress: true
     layout:
       type: pattern

@@ -46,7 +46,7 @@ class Douban {
           cookie: this.cookie
         }
       })).body;
-      await redis.setWithExpire(`vertex:document:body:${url}`, html, 30);
+      await redis.setWithExpire(`vertex:document:body:${url}`, html, 300);
       const dom = new JSDOM(html);
       return dom.window.document;
     } else {
@@ -513,7 +513,7 @@ class Douban {
       });
       if (!imdb) {
         torrents = torrents.filter(item => {
-          const name = wish.name.split('/')[0].replace(/[!\uff01\uff1a.。:?？，,·・]/g, '');
+          const name = wish.name.split('/')[0].replace(/[!\uff01\uff1a.。:?？，,·・]/g, ' ').trim();
           const serachKeys = name.split(' ');
           const keys = item.subtitle.split(/[^0-9a-zA-Z\u4e00-\u9fa5]/g).filter(item => item);
           const result = serachKeys.every(i => keys.indexOf(i) !== -1) || keys.indexOf(name.replace(' ', '')) !== -1;
