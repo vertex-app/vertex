@@ -511,6 +511,16 @@ class Douban {
         }
         return sortType === 'asc' ? a[sortBy] - b[sortBy] : b[sortBy] - a[sortBy];
       });
+      if (!imdb) {
+        torrents = torrents.filter(item => {
+          const serachName = wish.name.split('/')[0].replace(/[!\uff01.。?？ ]/g, '');
+          const subtitle = wish.name.split('/')[0].indexOf(' ') !== -1 ? item.subtitle : item.subtitle.replace(/ /g, '');
+          const keys = subtitle.split(/[^0-9a-zA-Z\u4e00-\u9fa5:\uff1a·・]/g).filter(item => item);
+          const result = keys.indexOf(serachName) !== -1;
+          if (!result) logger.binge(this.alias, '想看', serachName, '种子', item.subtitle, '提取分词', JSON.stringify(keys), '未匹配 提前拒绝');
+          return result;
+        });
+      }
       for (const torrent of torrents) {
         if (rules.some(item => this._fitRaceRule(item, torrent))) {
           let fitReject = false;
