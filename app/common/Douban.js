@@ -274,7 +274,7 @@ class Douban {
               wish.downloaded = await this.selectTorrent(wish, true);
             }
             this._saveSet();
-            if (!wish.downloaded && !key) {
+            if (!wish.downloaded && key) {
               logger.binge(this.alias, '未匹配种子', wish.name);
               this.ntf.selectTorrentError(this.alias, wish);
             }
@@ -463,6 +463,29 @@ class Douban {
     }
   }
 
+  scrapeEpisode (_subtitle) {
+    const subtitle = _subtitle.replace(/ /g, '').replace(/[Hh][Dd][Rr]10/g, '').replace(/\d{4}-\d{1,2}-\d{1,2}/g, '');
+    const episodeMap = {
+      一: 1,
+      二: 2,
+      三: 3,
+      四: 4,
+      五: 5,
+      六: 6,
+      七: 7,
+      八: 8,
+      九: 9,
+      十: 10
+    };
+    const episodeTypeA = (subtitle.match(/[第]E?\d{1,3}-E?\d{1,3}[集期]/g) || []).map(item => item.replace(/[E第集期]/g, '').split('-'))[0] || [];
+    const episodeTypeB = (subtitle.match(/[第全]E?\d{2,3}[^\d帧部季Ff]/g) || []).map(item => item.match(/\d{2,3}/g)).flat() || [];
+    const episodeTypeC = (subtitle.match(/[第全]E?\d[^\d帧部季Kk]/g) || []).map(item => item.match(/\d/g)).flat() || [];
+    const episodeTypeD = ((subtitle.match(/全[一二三四五六七八九十]集/g) || []).map(item => item.match(/[一二三四五六七八九十]/g)).flat() || []).map(item => episodeMap[item]);
+    const episodeTypeE = ((subtitle.match(/[^\d][第全][一二三四五六七八九十][集期话]/g) || []).map(item => item.match(/[一二三四五六七八九十]/g)).flat() || []).map(item => episodeMap[item]);
+    const episodes = episodeTypeA.concat(episodeTypeB).concat(episodeTypeC).concat(episodeTypeD).concat(episodeTypeE);
+    return episodes;
+  };
+
   async selectTorrent (_wish, imdb = false) {
     await redis.set(`vertex:douban:fityear:${this.id}:${_wish.id}`, 1);
     const wish = { ..._wish };
@@ -493,135 +516,136 @@ class Douban {
         raceRuleArrs[raceRule.priority].push(raceRule);
       }
     }
-    logger.binge(this.alias, '选种规则总计:', raceRules.length, ' 开始按照优先级查找');
-    for (const priority of Object.keys(raceRuleArrs).sort((a, b) => +b - +a)) {
-      const rules = raceRuleArrs[priority];
-      const rule = rules[0];
-      const rulesName = rules.map(item => item.alias).join('/');
-      logger.binge(this.alias, '选种规则', rulesName, '开始匹配');
-      const sortType = rule.sortType || 'desc';
-      const sortBy = rule.sortBy || 'time';
-      const numberSet = {
-        desc: [-1, 1],
-        asc: [1, -1]
-      };
-      torrents = torrents.sort((a, b) => {
-        if (typeof a[sortBy] === 'string') {
-          return (a[sortBy] < b[sortBy] ? numberSet[sortType][1] : numberSet[sortType][0]);
-        }
-        return sortType === 'asc' ? a[sortBy] - b[sortBy] : b[sortBy] - a[sortBy];
+    if (!imdb) {
+      torrents = torrents.filter(item => {
+        const name = wish.name.split('/')[0].replace(/[!\uff01\uff1a.。:?？，,·・]/g, ' ').trim();
+        const serachKeys = name.split(' ');
+        const keys = item.subtitle.split(/[^0-9a-zA-Z\u4e00-\u9fa5]/g).filter(item => item);
+        const result = serachKeys.every(i => keys.indexOf(i) !== -1) || keys.indexOf(name.replace(' ', '')) !== -1;
+        if (!result) logger.bingedebug(this.alias, '想看', JSON.stringify(serachKeys), '种子', item.subtitle, '提取分词', JSON.stringify(keys), '未匹配 提前拒绝');
+        return result;
       });
-      if (!imdb) {
-        torrents = torrents.filter(item => {
-          const name = wish.name.split('/')[0].replace(/[!\uff01\uff1a.。:?？，,·・]/g, ' ').trim();
-          const serachKeys = name.split(' ');
-          const keys = item.subtitle.split(/[^0-9a-zA-Z\u4e00-\u9fa5]/g).filter(item => item);
-          const result = serachKeys.every(i => keys.indexOf(i) !== -1) || keys.indexOf(name.replace(' ', '')) !== -1;
-          if (!result) logger.bingedebug(this.alias, '想看', JSON.stringify(serachKeys), '种子', item.subtitle, '提取分词', JSON.stringify(keys), '未匹配 提前拒绝');
-          return result;
-        });
-      }
-      for (const torrent of torrents) {
-        if (rules.some(item => this._fitRaceRule(item, torrent))) {
-          let fitReject = false;
-          for (const rejectRule of rejectRules) {
-            if (this._fitRaceRule(rejectRule, torrent)) {
-              fitReject = true;
-              logger.bingedebug(this.alias, '选种规则', rulesName, '种子', `[${torrent.site}]`, torrent.title, '/', torrent.subtitle, '匹配成功, 同时匹配拒绝规则成功:', rejectRule.alias, '跳过');
-              break;
-            }
-          }
-          if (fitReject) continue;
-          const fitRejectKeys = this.categories[wish.tag].rejectKeys && !!this.categories[wish.tag].rejectKeys
-            .split(',').some(item => (torrent.title.indexOf(item) !== -1 || torrent.subtitle.indexOf(item) !== -1));
-          if (fitRejectKeys) {
-            logger.bingedebug(this.alias, '选种规则', rulesName, '种子', `[${torrent.site}]`, torrent.title, '/', torrent.subtitle, '匹配成功, 同时匹配排除关键词:', this.categories[wish.tag].rejectKeys, '跳过');
-            continue;
-          }
-          if (!imdb) {
-            const torrentYear = (torrent.title.match(/19\d{2}/g) || []).concat(torrent.title.match(/20\d{2}/g) || []);
-            let fitYear = false;
-            for (const year of torrentYear) {
-              fitYear = fitYear || +year === +wish.year;
-            }
-            if (!fitYear) {
-              logger.bingedebug(this.alias, '选种规则', rulesName, '种子', `[${torrent.site}]`, torrent.title, '/', torrent.subtitle, '匹配成功, 未匹配首映年份:', wish.year, '跳过');
-              continue;
-            }
-            if (wish.year > parseInt(torrent.time / 3600 / 24 / 365 + 1970)) {
-              logger.bingedebug(this.alias, '选种规则', rulesName, '种子', `[${torrent.site}]`, torrent.title, '/', torrent.subtitle, '匹配成功, 发种时间小于首映年份:', wish.year, '跳过');
-              continue;
-            }
-          }
-          await redis.del(`vertex:douban:fityear:${this.id}:${_wish.id}`);
-          let episodes;
-          if (wish.episodes) {
-            const subtitle = torrent.subtitle.replace(/ /g, '').replace(/[Hh][Dd][Rr]10/g, '').replace(/\d{4}-\d{1,2}-\d{1,2}/g, '');
-            const episodeMap = {
-              一: 1,
-              二: 2,
-              三: 3,
-              四: 4,
-              五: 5,
-              六: 6,
-              七: 7,
-              八: 8,
-              九: 9,
-              十: 10
-            };
-            const episodeTypeA = (subtitle.match(/[第]E?\d{1,3}-E?\d{1,3}[集期]/g) || []).map(item => item.replace(/[E第集期]/g, '').split('-'))[0] || [];
-            const episodeTypeB = (subtitle.match(/[第全]E?\d{2,3}[^\d帧部季Ff]/g) || []).map(item => item.match(/\d{2,3}/g)).flat() || [];
-            const episodeTypeC = (subtitle.match(/[第全]E?\d[^\d帧部季Kk]/g) || []).map(item => item.match(/\d/g)).flat() || [];
-            const episodeTypeD = ((subtitle.match(/全[一二三四五六七八九十]集/g) || []).map(item => item.match(/[一二三四五六七八九十]/g)).flat() || []).map(item => episodeMap[item]);
-            const episodeTypeE = ((subtitle.match(/[^\d][第全][一二三四五六七八九十][集期话]/g) || []).map(item => item.match(/[一二三四五六七八九十]/g)).flat() || []).map(item => episodeMap[item]);
-            episodes = episodeTypeA.concat(episodeTypeB).concat(episodeTypeC).concat(episodeTypeD).concat(episodeTypeE);
-            episodes = episodes.filter(item => +item <= wish.episodes);
-            logger.bingedebug(this.alias, '选种规则', rulesName, '种子', `[${torrent.site}]`, torrent.title, '/', torrent.subtitle, '识别到分集', episodes, '已完成至', wish.episodeNow);
-            if (episodes
-              .some(item => +item < wish.episodeNow - 2) ||
-              !episodes.some(item => +item > wish.episodeNow) ||
-              episodes.length === 0
-            ) {
-              logger.bingedebug(this.alias, '选种规则', rulesName, '种子', `[${torrent.site}]`, torrent.title, '/', torrent.subtitle, '匹配成功, 已完成至', wish.episodeNow, '判断结果为已下载, 跳过');
-              continue;
-            }
-            if (episodes.every(item => +item > wish.episodeNow + 1) && !(episodes.length === 1 && +episodes[0] === wish.episodes)) {
-              logger.bingedebug(this.alias, '选种规则', rulesName, '种子', `[${torrent.site}]`, torrent.title, '/', torrent.subtitle, '匹配成功, 已完成至', wish.episodeNow, '剧集跨度过大, 跳过');
-              continue;
-            }
-            wish.episodeNow = Math.max(...episodes.map(i => +i));
-          }
-          logger.binge(this.alias, '选种规则', rulesName, '种子', `[${torrent.site}]`, torrent.title, '/', torrent.subtitle, '匹配成功, 准备推送至下载器:', global.runningClient[this.client].alias);
-          const category = this.categories[wish.tag];
-          const recordNoteJson = {
-            wish,
-            category,
-            torrent: {
-              ...torrent,
-              client: this.client.alias
-            }
-          };
-          try {
-            const mediaName = wish.name.split('/')[0].replace(/[?？/. ]/g, '');
-            const _savePath = category.savePath.replace('{SITE}', torrent.site).replace('{NAME}', mediaName).replace('{YEAR}', wish.year);
-            const _category = category.category.replace('{SITE}', torrent.site).replace('{NAME}', mediaName).replace('{YEAR}', wish.year);
-            await global.runningSite[torrent.site].pushTorrentById(torrent.id, torrent.link, torrent.downloadLink, this.client, _savePath, _category, category.autoTMM, 6, JSON.stringify(recordNoteJson));
-            if (episodes) {
-              const maxEpisode = Math.max(...episodes.map(item => +item || 0));
-              this._setEpisodeNow(wish.id, maxEpisode);
-            }
-          } catch (e) {
-            logger.error(this.alias, '选种规则', rulesName, '种子', `[${torrent.site}]`, torrent.title, '/', torrent.subtitle, '推送至下载器', global.runningClient[this.client].alias, '失败, 报错如下:\n', e);
-            await this.ntf.addDoubanTorrentError(global.runningClient[this.client], torrent, rule, wish);
-            throw (e);
-          }
-          logger.binge(this.alias, '选种规则', rulesName, '种子', `[${torrent.site}]`, torrent.title, '/', torrent.subtitle, '推送至下载器', global.runningClient[this.client].alias, '成功');
-          await this.ntf.addDoubanTorrent(global.runningClient[this.client], torrent, rule, wish);
-          return true;
-        };
-      }
     }
-    return false;
+    let episodeList = [];
+    let maxEpisode = 0;
+    if (wish.episodes) {
+      episodeList = Array.from(new Set(torrents.map(item => this.scrapeEpisode(item.subtitle)).flat()));
+      maxEpisode = Math.max(...episodeList);
+    }
+    let matched = false;
+    let _matched = false;
+    let matchFailed = false;
+    logger.binge(this.alias, '选种规则总计:', raceRules.length, ' 开始按照优先级查找');
+    while (!matchFailed || !wish.episodes || wish.episodeNow < maxEpisode) {
+      matched = false;
+      for (const priority of Object.keys(raceRuleArrs).sort((a, b) => +b - +a)) {
+        const rules = raceRuleArrs[priority];
+        const rule = rules[0];
+        const rulesName = rules.map(item => item.alias).join('/');
+        logger.binge(this.alias, '选种规则', rulesName, '开始匹配');
+        const sortType = rule.sortType || 'desc';
+        const sortBy = rule.sortBy || 'time';
+        const numberSet = {
+          desc: [-1, 1],
+          asc: [1, -1]
+        };
+        torrents = torrents.sort((a, b) => {
+          if (typeof a[sortBy] === 'string') {
+            return (a[sortBy] < b[sortBy] ? numberSet[sortType][1] : numberSet[sortType][0]);
+          }
+          return sortType === 'asc' ? a[sortBy] - b[sortBy] : b[sortBy] - a[sortBy];
+        });
+        for (const torrent of torrents) {
+          if (rules.some(item => this._fitRaceRule(item, torrent))) {
+            let fitReject = false;
+            for (const rejectRule of rejectRules) {
+              if (this._fitRaceRule(rejectRule, torrent)) {
+                fitReject = true;
+                logger.bingedebug(this.alias, '选种规则', rulesName, '种子', `[${torrent.site}]`, torrent.title, '/', torrent.subtitle, '匹配成功, 同时匹配拒绝规则成功:', rejectRule.alias, '跳过');
+                break;
+              }
+            }
+            if (fitReject) continue;
+            const fitRejectKeys = this.categories[wish.tag].rejectKeys && !!this.categories[wish.tag].rejectKeys
+              .split(',').some(item => (torrent.title.indexOf(item) !== -1 || torrent.subtitle.indexOf(item) !== -1));
+            if (fitRejectKeys) {
+              logger.bingedebug(this.alias, '选种规则', rulesName, '种子', `[${torrent.site}]`, torrent.title, '/', torrent.subtitle, '匹配成功, 同时匹配排除关键词:', this.categories[wish.tag].rejectKeys, '跳过');
+              continue;
+            }
+            if (!imdb) {
+              const torrentYear = (torrent.title.match(/19\d{2}/g) || []).concat(torrent.title.match(/20\d{2}/g) || []);
+              let fitYear = false;
+              for (const year of torrentYear) {
+                fitYear = fitYear || +year === +wish.year;
+              }
+              if (!fitYear) {
+                logger.bingedebug(this.alias, '选种规则', rulesName, '种子', `[${torrent.site}]`, torrent.title, '/', torrent.subtitle, '匹配成功, 未匹配首映年份:', wish.year, '跳过');
+                continue;
+              }
+              if (wish.year > parseInt(torrent.time / 3600 / 24 / 365 + 1970)) {
+                logger.bingedebug(this.alias, '选种规则', rulesName, '种子', `[${torrent.site}]`, torrent.title, '/', torrent.subtitle, '匹配成功, 发种时间小于首映年份:', wish.year, '跳过');
+                continue;
+              }
+            }
+            await redis.del(`vertex:douban:fityear:${this.id}:${_wish.id}`);
+            let episodes;
+            if (wish.episodes) {
+              episodes = this.scrapeEpisode(torrent.subtitle);
+              episodes = episodes.filter(item => +item <= wish.episodes);
+              logger.bingedebug(this.alias, '选种规则', rulesName, '种子', `[${torrent.site}]`, torrent.title, '/', torrent.subtitle, '识别到分集', episodes, '已完成至', wish.episodeNow);
+              if (episodes
+                .some(item => +item < wish.episodeNow - 2) ||
+                !episodes.some(item => +item > wish.episodeNow) ||
+                episodes.length === 0
+              ) {
+                logger.bingedebug(this.alias, '选种规则', rulesName, '种子', `[${torrent.site}]`, torrent.title, '/', torrent.subtitle, '匹配成功, 已完成至', wish.episodeNow, '判断结果为已下载, 跳过');
+                continue;
+              }
+              if (episodes.every(item => +item > wish.episodeNow + 1) && !(episodes.length === 1 && +episodes[0] === wish.episodes)) {
+                logger.bingedebug(this.alias, '选种规则', rulesName, '种子', `[${torrent.site}]`, torrent.title, '/', torrent.subtitle, '匹配成功, 已完成至', wish.episodeNow, '剧集跨度过大, 跳过');
+                continue;
+              }
+              wish.episodeNow = Math.max(...episodes.map(i => +i));
+            }
+            logger.binge(this.alias, '选种规则', rulesName, '种子', `[${torrent.site}]`, torrent.title, '/', torrent.subtitle, '匹配成功, 准备推送至下载器:', global.runningClient[this.client].alias);
+            const category = this.categories[wish.tag];
+            const recordNoteJson = {
+              wish,
+              category,
+              torrent: {
+                ...torrent,
+                client: this.client.alias
+              }
+            };
+            try {
+              const mediaName = wish.name.split('/')[0].replace(/[?？/. ]/g, '');
+              const _savePath = category.savePath.replace('{SITE}', torrent.site).replace('{NAME}', mediaName).replace('{YEAR}', wish.year);
+              const _category = category.category.replace('{SITE}', torrent.site).replace('{NAME}', mediaName).replace('{YEAR}', wish.year);
+              await global.runningSite[torrent.site].pushTorrentById(torrent.id, torrent.link, torrent.downloadLink, this.client, _savePath, _category, category.autoTMM, 6, JSON.stringify(recordNoteJson));
+              if (episodes) {
+                const maxEpisode = Math.max(...episodes.map(item => +item || 0));
+                this._setEpisodeNow(wish.id, maxEpisode);
+              }
+            } catch (e) {
+              logger.error(this.alias, '选种规则', rulesName, '种子', `[${torrent.site}]`, torrent.title, '/', torrent.subtitle, '推送至下载器', global.runningClient[this.client].alias, '失败, 报错如下:\n', e);
+              await this.ntf.addDoubanTorrentError(global.runningClient[this.client], torrent, rule, wish);
+              throw (e);
+            }
+            logger.binge(this.alias, '选种规则', rulesName, '种子', `[${torrent.site}]`, torrent.title, '/', torrent.subtitle, '推送至下载器', global.runningClient[this.client].alias, '成功');
+            await this.ntf.addDoubanTorrent(global.runningClient[this.client], torrent, rule, wish);
+            matched = true;
+            _matched = true;
+            break;
+          };
+        }
+      }
+      if (!matched) {
+        matchFailed = true;
+        break;
+      }
+      if (!wish.episodes) break;
+    }
+    return _matched;
   }
 
   async wechatLink (type, options = {}) {
