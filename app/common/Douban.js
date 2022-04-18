@@ -124,7 +124,7 @@ class Douban {
     info.imdb = dom.querySelector('#info').innerHTML.match(/(tt\d+)/);
 
     // desc
-    info.desc = dom.querySelector('span[property="v:summary"]').innerHTML.replace(/\n +/g, '').replace('<br>', '\n');
+    info.desc = dom.querySelector('span[property="v:summary"]')?.innerHTML.replace(/\n +/g, '').replace('<br>', '\n') || '无';
 
     // category
     info.category = [...dom.querySelectorAll('span[property="v:genre"]')].map(item => item.innerHTML).join(' / ');
