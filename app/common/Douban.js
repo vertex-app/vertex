@@ -495,7 +495,6 @@ class Douban {
       logger.binge(this.alias, '无 IMDB 编号, 跳过搜索种子');
       return false;
     }
-    if (!wish.imdb) wish.imdb = searchKey;
     logger.binge(this.alias, '启动搜索任务, 搜索类型:', imdb ? 'imdb,' : '关键词,', '名称', wish.name, '豆瓣ID', wish.id, 'imdb', wish.imdb, '开始搜索以下站点', this.sites.join(', '));
     const result = await Promise.all(this.sites.map(i => global.runningSite[i].search(imdb ? wish.imdb : searchKey)));
     let torrents = result.map(i => i.torrentList).flat();
@@ -516,17 +515,15 @@ class Douban {
         raceRuleArrs[raceRule.priority].push(raceRule);
       }
     }
-    if (!imdb) {
-      torrents = torrents.filter(item => {
-        const name = wish.name.split('/')[0].replace(/[!\uff01\uff1a.。:?？，,·・]/g, ' ').trim();
-        const serachKeys = name.split(' ').filter(item => item);
-        if (!item.subtitle) return false;
-        const keys = item.subtitle.split(/[^0-9a-zA-Z\u4e00-\u9fa5]|丨/g).filter(item => item);
-        const result = serachKeys.every(i => keys.indexOf(i) !== -1) || keys.indexOf(name.replace(' ', '')) !== -1;
-        if (!result) logger.bingedebug(this.alias, '想看', JSON.stringify(serachKeys), '种子', item.subtitle, '提取分词', JSON.stringify(keys), '未匹配 提前拒绝');
-        return result;
-      });
-    }
+    torrents = torrents.filter(item => {
+      const name = wish.name.split('/')[0].replace(/[!\uff01\uff1a.。:?？，,·・]/g, ' ').trim();
+      const serachKeys = name.split(' ').filter(item => item);
+      if (!item.subtitle) return false;
+      const keys = item.subtitle.split(/[^0-9a-zA-Z\u4e00-\u9fa5]|丨/g).filter(item => item);
+      const result = serachKeys.every(i => keys.indexOf(i) !== -1) || keys.indexOf(name.replace(' ', '')) !== -1;
+      if (!result) logger.bingedebug(this.alias, '想看', JSON.stringify(serachKeys), '种子', item.subtitle, '提取分词', JSON.stringify(keys), '未匹配 提前拒绝');
+      return result;
+    });
     let episodeList = [];
     let maxEpisode = 0;
     if (wish.episodes) {
