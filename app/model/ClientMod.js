@@ -41,7 +41,7 @@ class ClientMod {
       client.used = rssList.some(item => (item.clientArr || [item.client]).indexOf(client.id) !== -1) ||
         rssList.some(item => item.reseedClients.indexOf(client.id) !== -1) ||
         doubanList.some(item => item.client === client.id);
-      client.status = !!(client.enable && global.runningClient[client.id].status && global.runningClient[client.id].maindata);
+      client.status = !!(client.enable && global.runningClient[client.id] && global.runningClient[client.id].status && global.runningClient[client.id].maindata);
       if (client.status) {
         client.allTimeUpload = global.runningClient[client.id].maindata.allTimeUpload;
         client.allTimeDownload = global.runningClient[client.id].maindata.allTimeDownload;
