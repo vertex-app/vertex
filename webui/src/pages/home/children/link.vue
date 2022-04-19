@@ -61,6 +61,9 @@ export default {
     async getTorrentInfo () {
       const res = await this.$axiosGet('/api/torrent/info?hash=' + this.hash);
       this.torrentInfo = res?.data;
+      if (this.torrentInfo.scrapeName) {
+        this.mediaName = this.torrentInfo.scrapeName;
+      }
     },
     async listLinkRule () {
       const res = await this.$axiosGet('/api/linkRule/list');

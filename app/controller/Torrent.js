@@ -24,7 +24,7 @@ class Torrent {
   async info (req, res) {
     const options = req.query;
     try {
-      const r = torrentMod.info(options);
+      const r = await torrentMod.info(options);
       res.send({
         success: true,
         data: r

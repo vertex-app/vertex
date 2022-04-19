@@ -33,6 +33,7 @@ class SettingMod {
     global.webhookPushTo = options.webhookPushTo;
     global.userAgent = options.userAgent;
     global.apiKey = options.apiKey;
+    global.tmdbApiKey = options.tmdbApiKey;
     global.dataPath = options.dataPath || '/';
     global.transparent = options.transparent;
     global.blurSize = options.blurSize;

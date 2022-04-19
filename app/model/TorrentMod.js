@@ -39,13 +39,17 @@ class TorrentMod {
     };
   };
 
-  info (options) {
+  async info (options) {
     const torrentHash = options.hash;
     const clients = global.runningClient;
     for (const clientId of Object.keys(clients)) {
+      if (!clients[clientId].maindata) continue;
       for (const torrent of clients[clientId].maindata.torrents) {
         if (torrent.hash !== torrentHash) continue;
         const _torrent = { ...torrent };
+        try {
+          _torrent.scrapeName = await util.scrapeNameByFile(torrent.name);
+        } catch (e) {}
         _torrent.clientAlias = clients[clientId].alias;
         _torrent.client = clientId;
         return _torrent;

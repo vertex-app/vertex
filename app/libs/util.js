@@ -151,6 +151,27 @@ exports.uuid = uuid;
 exports.md5 = md5;
 exports.tar = tar;
 
+exports.scrapeNameByFile = async function (filename) {
+  const url = `https://api.themoviedb.org/3/search/multi?language=zh-CN&api_key=${global.tmdbApiKey}&query=`;
+  const searchKey = filename.split(/19\d\d|20\d\d|S\d\d/)[0]
+    .replace(/[\u4e00-\u9fa5\uff01\uff1a]+\d+[\u4e00-\u9fa5\uff01\uff1a]+/g, '')
+    .replace(/[!\u4e00-\u9fa5\uff01\uff1a。:?？，,·・]/g, '')
+    .replace(/\./g, ' ').trim();
+  const res = await exports.requestPromise(url + searchKey);
+  const body = JSON.parse(res.body);
+  if (body.status_code === 7) {
+    logger.error(filename, searchKey, body);
+    throw new Error('The Movie Database Api Key 失效, 请重试');
+  }
+  if (!body.results) {
+    logger.error(filename, searchKey, body);
+    throw new Error('请求 TMDB Api 返回有误, 请重试');
+  }
+  body.results = body.results.sort((a, b) => b.popularity - a.popularity);
+  logger.debug('根据文件名抓取影视剧名', filename, searchKey, body.results[0]?.name || body.results[0]?.title || '');
+  return body.results[0]?.name || body.results[0]?.title || '';
+};
+
 exports.listSite = function () {
   const files = fs.readdirSync(path.join(__dirname, '../data/site'));
   const list = [];
