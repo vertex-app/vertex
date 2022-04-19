@@ -299,7 +299,7 @@ class Rss {
     const availableClients = this.clientArr
       .map(item => global.runningClient[item])
       .filter(item => {
-        return !!item &&
+        return !!item && !!item.status && !!item.maindata &&
           (!this.maxClientUploadSpeed || this.maxClientUploadSpeed > item.maindata.uploadSpeed) &&
           (!this.maxClientDownloadSpeed || this.maxClientDownloadSpeed > item.maindata.downloadSpeed) &&
           (!this.maxClientDownloadCount || this.maxClientDownloadCount > item.maindata.leechingCount);
