@@ -37,7 +37,7 @@ class Douban {
     logger.binge('豆瓣账号', this.alias, '初始化完毕');
   };
 
-  async _getDocument (url) {
+  async _getDocument (url, expire = 300) {
     const cache = await redis.get(`vertex:document:body:${url}`);
     if (!cache) {
       const html = (await util.requestPromise({
@@ -46,7 +46,7 @@ class Douban {
           cookie: this.cookie
         }
       })).body;
-      await redis.setWithExpire(`vertex:document:body:${url}`, html, 300);
+      await redis.setWithExpire(`vertex:document:body:${url}`, html, expire);
       const dom = new JSDOM(html);
       return dom.window.document;
     } else {
@@ -180,7 +180,7 @@ class Douban {
         await redis.setWithExpire(`vertex:douban:refresh:${this.id}`, moment().unix(), 3600 * 4);
       }
     }
-    const document = await this._getDocument('https://movie.douban.com/mine?status=wish');
+    const document = await this._getDocument('https://movie.douban.com/mine?status=wish', 20);
     const items = document.querySelectorAll('.article .grid-view .item');
     const wishes = [];
     for (const item of items) {
