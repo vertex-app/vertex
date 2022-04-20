@@ -5,7 +5,7 @@ const tr = require('../libs/client/tr');
 const redis = require('../libs/redis');
 const moment = require('moment');
 const logger = require('../libs/logger');
-const Cron = require('croner');
+const cron = require('node-cron');
 const Push = require('./Push');
 
 const clients = {
@@ -32,9 +32,9 @@ class Client {
     this.maxLeechNum = client.maxLeechNum;
     this.sameServerClients = client.sameServerClients;
     this.maindata = null;
-    this.maindataJob = Cron(client.cron, () => this.getMaindata());
+    this.maindataJob = cron.schedule(client.cron, () => this.getMaindata());
     this.spaceAlarm = client.spaceAlarm;
-    this.spaceAlarmJob = Cron('*/15 * * * *', () => this.pushSpaceAlarm());
+    this.spaceAlarmJob = cron.schedule('*/15 * * * *', () => this.pushSpaceAlarm());
     this.notify = util.listPush().filter(item => item.id === client.notify)[0] || {};
     this.notify.push = client.pushNotify;
     this.monitor = util.listPush().filter(item => item.id === client.monitor)[0] || {};
@@ -42,23 +42,23 @@ class Client {
     this.ntf = new Push(this.notify);
     this.mnt = new Push(this.monitor);
     if (client.type === 'qBittorrent' && client.autoReannounce) {
-      this.reannounceJob = Cron('*/11 * * * * *', () => this.autoReannounce());
+      this.reannounceJob = cron.schedule('*/11 * * * * *', () => this.autoReannounce());
     }
     this._deleteRules = client.deleteRules;
     this.deleteRules = util.listDeleteRule().filter(item => client.deleteRules.indexOf(item.id) !== -1).sort((a, b) => b.priority - a.priority);
     if (client.autoDelete) {
-      this.autoDeleteJob = Cron(client.autoDeleteCron, () => this.autoDelete());
+      this.autoDeleteJob = cron.schedule(client.autoDeleteCron, () => this.autoDelete());
       this.fitTime = {};
       for (const rule of this.deleteRules) {
         if (rule.fitTime) {
           this.fitTime[rule.id] = {};
-          rule.fitTimeJob = Cron('*/5 * * * * *', () => this.flashFitTime(rule));
+          rule.fitTimeJob = cron.schedule('*/5 * * * * *', () => this.flashFitTime(rule));
         }
       }
     }
-    this.recordJob = Cron('*/5 * * * *', () => this.record());
+    this.recordJob = cron.schedule('*/5 * * * *', () => this.record());
     if (client.type === 'qBittorrent') {
-      this.trackerSyncJob = Cron('*/5 * * * *', () => this.trackerSync());
+      this.trackerSyncJob = cron.schedule('*/5 * * * *', () => this.trackerSync());
     }
     this.messageId = 0;
     this.errorCount = 0;
@@ -158,16 +158,30 @@ class Client {
   destroy () {
     logger.info('销毁下载器实例', this.alias);
     this.maindataJob.stop();
-    if (this.trackerSyncJob) this.trackerSyncJob.stop();
-    if (this.reannounceJob) this.reannounceJob.stop();
-    if (this.autoDeleteJob) this.autoDeleteJob.stop();
-    if (this.spaceAlarmJob) this.spaceAlarmJob.stop();
+    if (this.trackerSyncJob) {
+      this.trackerSyncJob.stop();
+      delete this.trackerSyncJob;
+    }
+    if (this.reannounceJob) {
+      this.reannounceJob.stop();
+      delete this.reannounceJob;
+    }
+    if (this.autoDeleteJob) {
+      this.autoDeleteJob.stop();
+      delete this.autoDeleteJob;
+    }
+    if (this.spaceAlarmJob) {
+      this.spaceAlarmJob.stop();
+      delete this.spaceAlarmJob;
+    }
     for (const rule of this.deleteRules) {
       if (rule.fitTimeJob) {
         rule.fitTimeJob.stop();
+        delete rule.fitTimeJob;
       }
     }
     this.recordJob.stop();
+    delete this.recordJob;
     delete global.runningClient[this.id];
   };
 
@@ -176,13 +190,14 @@ class Client {
     for (const rule of this.deleteRules) {
       if (rule.fitTimeJob) {
         rule.fitTimeJob.stop();
+        delete rule.fitTimeJob;
       }
     }
     this.deleteRules = util.listDeleteRule().filter(item => this._deleteRules.indexOf(item.id) !== -1).sort((a, b) => +b.priority - +a.priority);
     for (const rule of this.deleteRules) {
       if (rule.fitTime) {
         this.fitTime[rule.id] = {};
-        rule.fitTimeJob = Cron('*/5 * * * * *', () => this.flashFitTime(rule));
+        rule.fitTimeJob = cron.schedule('*/5 * * * * *', () => this.flashFitTime(rule));
       }
     }
   };

@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const moment = require('moment');
 const util = require('../libs/util');
-const Cron = require('croner');
+const cron = require('node-cron');
 const Push = require('../common/Push');
 const logger = require('../libs/logger');
 
@@ -93,7 +93,7 @@ class SettingMod {
   modifySitePushSetting (options) {
     fs.writeFileSync(sitePushSettingPath, JSON.stringify(options, null, 2));
     if (global.sitePushJob) global.sitePushJob.stop();
-    global.sitePushJob = Cron(options.cron, () => {
+    global.sitePushJob = cron.schedule(options.cron, () => {
       const pushTo = util.listPush().filter(item => item.id === options.pushTo)[0] || {};
       pushTo.push = true;
       const push = new Push(pushTo);

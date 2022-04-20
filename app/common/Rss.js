@@ -2,7 +2,7 @@ const rss = require('../libs/rss');
 const util = require('../libs/util');
 const logger = require('../libs/logger');
 const redis = require('../libs/redis');
-const Cron = require('croner');
+const cron = require('node-cron');
 const moment = require('moment');
 const Push = require('./Push');
 
@@ -41,8 +41,8 @@ class Rss {
     this.maxClientUploadSpeed = util.calSize(rss.maxClientUploadSpeed, rss.maxClientUploadSpeedUnit);
     this.maxClientDownloadSpeed = util.calSize(rss.maxClientDownloadSpeed, rss.maxClientDownloadSpeedUnit);
     this.maxClientDownloadCount = +rss.maxClientDownloadCount;
-    this.rssJob = Cron(rss.cron, async () => { try { await this.rss(); } catch (e) { logger.error(this.alias, e); } });
-    this.clearCount = Cron('0 * * * *', () => { this.addCount = 0; });
+    this.rssJob = cron.schedule(rss.cron, async () => { try { await this.rss(); } catch (e) { logger.error(this.alias, e); } });
+    this.clearCount = cron.schedule('0 * * * *', () => { this.addCount = 0; });
     logger.info('Rss 任务', this.alias, '初始化完毕');
   }
 
@@ -126,7 +126,9 @@ class Rss {
   destroy () {
     logger.info('销毁 Rss 实例:', this.alias);
     this.rssJob.stop();
+    delete this.rssJob;
     this.clearCount.stop();
+    delete this.clearCount;
     delete global.runningRss[this.id];
   }
 

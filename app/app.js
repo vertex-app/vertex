@@ -4,7 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const app = express();
 const router = express.Router();
-const Cron = require('croner');
+const cron = require('node-cron');
 const Push = require('./common/Push');
 
 const logger = require('./libs/logger');
@@ -17,7 +17,7 @@ require('./routes/router.js')(app, express, router);
 const initPush = function () {
   const sitePushSettng = JSON.parse(fs.readFileSync(path.join(__dirname, './data/setting/site-push-setting.json')));
   if (sitePushSettng.push) {
-    global.sitePushJob = Cron(sitePushSettng.cron, () => {
+    global.sitePushJob = cron.schedule(sitePushSettng.cron, () => {
       const pushTo = util.listPush().filter(item => item.id === sitePushSettng.pushTo)[0] || {};
       pushTo.push = true;
       const push = new Push(pushTo);
@@ -35,7 +35,7 @@ const initPush = function () {
 };
 
 const init = function () {
-  global.clearDatabase = Cron('0 0 * * *', async () => {
+  global.clearDatabase = cron.schedule('0 0 * * *', async () => {
     await util.runRecord('delete from torrent_flow where time < ?', [moment().unix() - 1]);
     await util.runRecord('delete from tracker_flow where time < ?', [moment().unix() - 7 * 24 * 3600]);
   });

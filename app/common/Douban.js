@@ -1,7 +1,7 @@
 const util = require('../libs/util');
 const moment = require('moment');
 const logger = require('../libs/logger');
-const Cron = require('croner');
+const cron = require('node-cron');
 const redis = require('../libs/redis');
 const { JSDOM } = require('jsdom');
 const Push = require('./Push');
@@ -29,9 +29,9 @@ class Douban {
     this.push = douban.push;
     this._notify.push = this.push;
     this.ntf = new Push(this._notify);
-    this.refreshWishJob = Cron(douban.cron, () => this.refreshWish());
-    this.checkFinishJob = Cron(global.checkFinishCron, () => this.checkFinish());
-    this.clearSelectFailedJob = Cron('0 0 * * *', () => this.clearSelectFailed());
+    this.refreshWishJob = cron.schedule(douban.cron, () => this.refreshWish());
+    this.checkFinishJob = cron.schedule(global.checkFinishCron, () => this.checkFinish());
+    this.clearSelectFailedJob = cron.schedule('0 0 * * *', () => this.clearSelectFailed());
     this.selectTorrentToday = {};
     this.wishes = (util.listDoubanSet().filter(item => item.id === this.id)[0] || {}).wishes || [];
     logger.binge('豆瓣账号', this.alias, '初始化完毕');
@@ -165,8 +165,11 @@ class Douban {
   destroy () {
     logger.binge('销毁豆瓣实例', this.alias);
     this.refreshWishJob.stop();
+    delete this.refreshWishJob;
     this.checkFinishJob.stop();
+    delete this.checkFinishJob;
     this.clearSelectFailedJob.stop();
+    delete this.clearSelectFailedJob;
     delete global.runningClient[this.id];
   };
 
