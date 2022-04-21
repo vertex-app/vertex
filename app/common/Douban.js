@@ -130,7 +130,7 @@ class Douban {
     info.category = [...dom.querySelectorAll('span[property="v:genre"]')].map(item => item.innerHTML).join(' / ');
 
     // tag
-    info.tag = dom.querySelector('span.color_gray');
+    info.tag = dom.querySelector('span.color_gray').innerHTML;
 
     try {
       // rating
@@ -192,7 +192,7 @@ class Douban {
       wish.link = item.querySelector('li[class=title] a').href;
       wish.poster = item.querySelector('a[class=nbg] img').src.trim().replace(/img\d/, 'img9').replace('s_ratio', 'l_ratio').replace('webp', 'jpg');
       wish.id = wish.link.match(/\/(\d+)\//)[1];
-      wish.tag = (item.querySelector('span.tags')?.innerHTML)?.replace('标签: ', '');
+      wish.tag = (item.querySelector('span.tags')?.innerHTML)?.replace('标签: ', '') || item.querySelector('span[class=\'comment\']')?.innerHTML;
       wishes.push(wish);
     }
     const _doubanSet = util.listDoubanSet().filter(item => item.id === this.id)[0];
@@ -728,7 +728,7 @@ class Douban {
       interest: 'wish',
       foldcollect: 'F',
       tags: tag,
-      comment: ''
+      comment: tag
     });
     if (res.r !== 0) {
       logger.error(res);
