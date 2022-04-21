@@ -130,7 +130,7 @@ class Douban {
     info.category = [...dom.querySelectorAll('span[property="v:genre"]')].map(item => item.innerHTML).join(' / ');
 
     // tag
-    info.tag = dom.querySelector('span.color_gray').innerHTML;
+    // info.tag = dom.querySelector('span.color_gray')?.innerHTML;
 
     try {
       // rating
