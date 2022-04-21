@@ -3,7 +3,7 @@ stages:
   - build_docker_image_and_push
 
 generate_static:
-  image: alpine:latest
+  image: alpine:3.14
   before_script:
     - apk update
     - apk add nodejs npm git coreutils curl tzdata

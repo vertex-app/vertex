@@ -44,6 +44,7 @@ class Client {
     if (client.type === 'qBittorrent' && client.autoReannounce) {
       this.reannounceJob = cron.schedule('*/11 * * * * *', () => this.autoReannounce());
     }
+    this.reannouncedHash = [];
     this._deleteRules = client.deleteRules;
     this.deleteRules = util.listDeleteRule().filter(item => client.deleteRules.indexOf(item.id) !== -1).sort((a, b) => b.priority - a.priority);
     if (client.autoDelete) {
@@ -343,7 +344,14 @@ class Client {
 
   async autoReannounce () {
     if (!this.maindata) return;
+    this.reannouncedHash = [];
+    logger.debug(this.alias, moment().format(), '启动重新汇报任务');
     for (const torrent of this.maindata.torrents) {
+      if (this.reannouncedHash.includes(torrent.hash)) {
+        continue;
+      } else {
+        this.reannouncedHash.push(torrent.hash);
+      }
       const now = moment().unix();
       if (now - torrent.addedTime < 300 && now - torrent.addedTime > 60 && (now - torrent.addedTime) % 60 < 10) {
         await this.reannounceTorrent(torrent);
