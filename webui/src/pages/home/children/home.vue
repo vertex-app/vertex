@@ -34,7 +34,9 @@
         </el-descriptions-item>
         <el-descriptions-item
           label="QQ 交流群组">
-          852643057
+          刷流: 852643057
+          <br>
+          追剧: 926921776
         </el-descriptions-item>
         <el-descriptions-item
           label="更新推送频道">
