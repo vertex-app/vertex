@@ -107,7 +107,6 @@ const freeWrapper = {
   'hdfans.org': _free,
   'www.nicept.net': _free,
   'kp.m-team.cc': _free,
-  'hdchina.org': _freeHDChina,
   'open.cd': _freeOpencd,
   'www.open.cd': _freeOpencd,
   'totheglory.im': _freeToTheGlory,
