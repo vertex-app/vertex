@@ -12,6 +12,7 @@
       </el-select>
       <el-button type="primary" size="small" @click="clearLogFiles">清空历史日志文件</el-button>
       <el-button type="primary" size="small" @click="getLog">刷新</el-button>
+      <el-link style="color: red" @click="gotoFAQ()">常见问题</el-link>
     </div>
     <el-input type="textarea" autosize v-model="log">
     </el-input>
@@ -30,6 +31,9 @@ export default {
     async getLog () {
       const res = await this.$axiosGet(`/api/log/get?type=${this.type}`);
       this.log = res ? '[202' + res.data.split('[202').reverse().join('[202') : '';
+    },
+    async gotoFAQ () {
+      window.open('https://lswl.in/2022/03/19/vertex-faq/');
     },
     async clearLogFiles () {
       const res = await this.$axiosGet('/api/log/clear');

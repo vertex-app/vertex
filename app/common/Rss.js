@@ -110,14 +110,14 @@ class Rss {
         // eslint-disable-next-line no-eval
         return (eval(rule.code))(torrent);
       } catch (e) {
-        logger.error('Rss 规则', this.alias, '存在语法错误\n', e);
+        logger.error(this.alias, 'Rss 规则', rule.alias, '存在语法错误\n', e);
         return false;
       }
     } else {
       try {
         return rule.conditions.length !== 0 && this._fitConditions(torrent, rule.conditions);
       } catch (e) {
-        logger.error('Rss 规则', this.alias, '遇到错误\n', e);
+        logger.error(this.alias, 'Rss 规则', rule.alias, '遇到错误\n', e);
         return false;
       }
     }
