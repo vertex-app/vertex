@@ -134,7 +134,7 @@ class Site {
     };
   }
 
-  async _getDocument (url, origin = false) {
+  async _getDocument (url, origin = false, expire = 300) {
     const cache = await redis.get(`vertex:document:body:${url}`);
     if (!cache) {
       const html = (await util.requestPromise({
@@ -144,7 +144,7 @@ class Site {
         }
       })).body;
       if (origin) return html;
-      await redis.setWithExpire(`vertex:document:body:${url}`, html, 30);
+      await redis.setWithExpire(`vertex:document:body:${url}`, html, expire);
       const dom = new JSDOM(html);
       return dom.window.document;
     } else {
@@ -186,7 +186,7 @@ class Site {
   // 白兔
   async _haresclub () {
     const info = {};
-    const document = await this._getDocument('https://club.hares.top/');
+    const document = await this._getDocument('https://club.hares.top/', false, 10);
     // 用户名
     info.username = document.querySelector('a[href^=userdetails] b,a[href^=userdetails] em').innerHTML;
     // uid
@@ -211,7 +211,7 @@ class Site {
   // CHDBits
   async _chdbits () {
     const info = {};
-    const document = await this._getDocument('https://chdbits.co/');
+    const document = await this._getDocument('https://chdbits.co/', false, 10);
     // 用户名
     info.username = document.querySelector('a[href^=userdetails] b').innerHTML;
     // 上传
@@ -230,7 +230,7 @@ class Site {
   // HDSky
   async _hdsky () {
     const info = {};
-    const document = await this._getDocument('https://hdsky.me/');
+    const document = await this._getDocument('https://hdsky.me/', false, 10);
     // 用户名
     info.username = document.querySelector('a[href^=userdetails] b').innerHTML;
     // 上传
@@ -249,7 +249,7 @@ class Site {
   // PTerClub
   async _pterclub () {
     const info = {};
-    const document = await this._getDocument('https://pterclub.com/');
+    const document = await this._getDocument('https://pterclub.com/', false, 10);
     // 用户名
     info.username = document.querySelector('a[href^=userdetails] b').innerHTML;
     // 彩虹 ID
@@ -272,7 +272,7 @@ class Site {
   // HDHome
   async _hdhome () {
     const info = {};
-    const document = await this._getDocument('https://hdhome.org/');
+    const document = await this._getDocument('https://hdhome.org/', false, 10);
     // 用户名
     info.username = document.querySelector('a[href^=userdetails] b').innerHTML;
     // 上传
@@ -291,7 +291,7 @@ class Site {
   // Audiences
   async _audiences () {
     const info = {};
-    const document = await this._getDocument('https://audiences.me/');
+    const document = await this._getDocument('https://audiences.me/', false, 10);
     // 用户名
     info.username = document.querySelector('a[href^=userdetails] b').innerHTML;
     // 上传
@@ -310,7 +310,7 @@ class Site {
   // PTHome
   async _pthome () {
     const info = {};
-    const document = await this._getDocument('https://pthome.net/');
+    const document = await this._getDocument('https://pthome.net/', false, 10);
     // 用户名
     info.username = document.querySelector('a[href^=userdetails] b').innerHTML;
     // 上传
@@ -329,7 +329,7 @@ class Site {
   // OurBits
   async _ourbits () {
     const info = {};
-    const document = await this._getDocument('https://ourbits.club/');
+    const document = await this._getDocument('https://ourbits.club/', false, 10);
     // 用户名
     info.username = document.querySelector('a[href^=userdetails] b').innerHTML;
     // 上传
@@ -348,7 +348,7 @@ class Site {
   // MTeam
   async _mteam () {
     const info = {};
-    const document = await this._getDocument('https://kp.m-team.cc/');
+    const document = await this._getDocument('https://kp.m-team.cc/', false, 10);
     // 用户名
     info.username = document.querySelector('a[href^=userdetails] b').innerHTML;
     // 上传
@@ -367,7 +367,7 @@ class Site {
   // BeiTai
   async _beitai () {
     const info = {};
-    const document = await this._getDocument('https://www.beitai.pt/');
+    const document = await this._getDocument('https://www.beitai.pt/', false, 10);
     // 用户名
     info.username = document.querySelector('a[href^=userdetails] b').innerHTML;
     // 上传
@@ -386,7 +386,7 @@ class Site {
   // TCCF
   async _tccf () {
     const info = {};
-    const document = await this._getDocument('https://et8.org/');
+    const document = await this._getDocument('https://et8.org/', false, 10);
     // 用户名
     info.username = document.querySelector('a[href^=userdetails] b').innerHTML;
     // 上传
@@ -405,7 +405,7 @@ class Site {
   // TLFBits
   async _tlfbits () {
     const info = {};
-    const document = await this._getDocument('https://pt.eastgame.org/');
+    const document = await this._getDocument('https://pt.eastgame.org/', false, 10);
     // 用户名
     info.username = document.querySelector('a[href^=userdetails] b').innerHTML;
     // 上传
@@ -424,7 +424,7 @@ class Site {
   // PTMSG
   async _ptmsg () {
     const info = {};
-    const document = await this._getDocument('https://pt.msg.vg/');
+    const document = await this._getDocument('https://pt.msg.vg/', false, 10);
     // 用户名
     info.username = document.querySelector('a[href^=userdetails] b').innerHTML;
     // 上传
@@ -443,7 +443,7 @@ class Site {
   // BTSchool
   async _btschool () {
     const info = {};
-    const document = await this._getDocument('https://pt.btschool.club/');
+    const document = await this._getDocument('https://pt.btschool.club/', false, 10);
     // 用户名
     info.username = document.querySelector('a[href^=userdetails] b').innerHTML;
     // 上传
@@ -462,7 +462,7 @@ class Site {
   // HDDolby
   async _hddolby () {
     const info = {};
-    const document = await this._getDocument('https://www.hddolby.com/');
+    const document = await this._getDocument('https://www.hddolby.com/', false, 10);
     // 用户名
     info.username = document.querySelector('a[href^=userdetails] b').innerHTML;
     // 上传
@@ -481,7 +481,7 @@ class Site {
   // HDArea
   async _hdarea () {
     const info = {};
-    const document = await this._getDocument('https://www.hdarea.co/');
+    const document = await this._getDocument('https://www.hdarea.co/', false, 10);
     // 用户名
     info.username = document.querySelector('a[href^=userdetails] b').innerHTML;
     // 上传
@@ -500,7 +500,7 @@ class Site {
   // SoulVoice
   async _soulVoice () {
     const info = {};
-    const document = await this._getDocument('https://pt.soulvoice.club/');
+    const document = await this._getDocument('https://pt.soulvoice.club/', false, 10);
     // 用户名
     info.username = document.querySelector('a[href^=userdetails] b').innerHTML;
     // 上传
@@ -519,7 +519,7 @@ class Site {
   // HDFans
   async _hdfans () {
     const info = {};
-    const document = await this._getDocument('https://hdfans.org/');
+    const document = await this._getDocument('https://hdfans.org/', false, 10);
     // 用户名
     info.username = document.querySelector('a[href^=userdetails] b').innerHTML;
     // 上传
@@ -538,7 +538,7 @@ class Site {
   // OpenCD
   async _opencd () {
     const info = {};
-    const document = await this._getDocument('https://open.cd/');
+    const document = await this._getDocument('https://open.cd/', false, 10);
     // 用户名
     info.username = document.querySelector('a[href^=userdetails] b').innerHTML;
     // 上传
@@ -557,7 +557,7 @@ class Site {
   // U2
   async _u2 () {
     const info = {};
-    const document = await this._getDocument('https://u2.dmhy.org/');
+    const document = await this._getDocument('https://u2.dmhy.org/', false, 10);
     // 用户名
     info.username = document.querySelector('a[href^=userdetails] b bdo').innerHTML;
     // 上传
@@ -576,7 +576,7 @@ class Site {
   // SpringSunDay
   async _springsunday () {
     const info = {};
-    const document = await this._getDocument('https://springsunday.net/');
+    const document = await this._getDocument('https://springsunday.net/', false, 10);
     // 用户名
     info.username = document.querySelector('a[href^=userdetails] b span').innerHTML;
     // 上传
@@ -595,7 +595,7 @@ class Site {
   // TJUPT
   async _tjupt () {
     const info = {};
-    const document = await this._getDocument('https://www.tjupt.org/');
+    const document = await this._getDocument('https://www.tjupt.org/', false, 10);
     // 用户名
     info.username = document.querySelector('a[href^=userdetails] b span').innerHTML;
     // 上传
@@ -613,7 +613,7 @@ class Site {
   // LemonHD
   async _lemonhd () {
     const info = {};
-    const document = await this._getDocument('https://lemonhd.org/');
+    const document = await this._getDocument('https://lemonhd.org/', false, 10);
     // 用户名
     info.username = document.querySelector('a[href^=userdetails] b').innerHTML;
     // 上传
@@ -632,7 +632,7 @@ class Site {
   // KeepFriends
   async _keepfriends () {
     const info = {};
-    const document = await this._getDocument('https://pt.keepfrds.com/');
+    const document = await this._getDocument('https://pt.keepfrds.com/', false, 10);
     // 用户名
     info.username = document.querySelector('a[href^=userdetails] b').innerHTML;
     // 上传
@@ -651,7 +651,7 @@ class Site {
   // HDChina
   async _hdchina () {
     const info = {};
-    const document = await this._getDocument('https://hdchina.org/');
+    const document = await this._getDocument('https://hdchina.org/', false, 10);
     // 用户名
     info.username = document.querySelector('a[href^=userdetails] b').innerHTML;
 
@@ -673,7 +673,7 @@ class Site {
   // DICMusic
   async _dicmusic () {
     const info = {};
-    const document = await this._getDocument('https://dicmusic.club/user.php');
+    const document = await this._getDocument('https://dicmusic.club/user.php', false, 10);
     // 用户名
     info.username = document.querySelector('a[href^="user.php"]').innerHTML;
     // uid
@@ -703,7 +703,7 @@ class Site {
   // GPW
   async _gpw () {
     const info = {};
-    const document = await this._getDocument('https://greatposterwall.com/user.php');
+    const document = await this._getDocument('https://greatposterwall.com/user.php', false, 10);
     // 用户名
     info.username = document.querySelector('span[class=Header-profileName]').innerHTML;
     // uid
@@ -733,7 +733,7 @@ class Site {
   // ToTheGlory
   async _totheglory () {
     const info = {};
-    const document = await this._getDocument('https://totheglory.im/');
+    const document = await this._getDocument('https://totheglory.im/', false, 10);
     // 用户名
     info.username = document.querySelector('a[href*=userdetails]').innerHTML;
     // 上传
