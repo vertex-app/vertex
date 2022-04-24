@@ -230,6 +230,22 @@ class Setting {
     }
   }
 
+  async networkTest (req, res) {
+    try {
+      const r = await settingMod.networkTest(req.body);
+      res.send({
+        success: true,
+        data: r.body
+      });
+    } catch (e) {
+      logger.error(e);
+      res.send({
+        success: true,
+        data: e.toString()
+      });
+    }
+  }
+
   async getCss (req, res) {
     const css =
 `.el-tabs, .radius-div {

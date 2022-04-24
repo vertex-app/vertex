@@ -123,7 +123,7 @@ exports.requestUsePuppeteer = async function (options) {
       });
     if (cookieList.length !== 0) await page.setCookie(...cookieList);
     await page.goto(options.url, {});
-    await page.waitFor(10000);
+    await page.waitForTimeout(10000);
     const body = await page.content();
     await page.close();
     if ((await browser.pages()).length === 1) {

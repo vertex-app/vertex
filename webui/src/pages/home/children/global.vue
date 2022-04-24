@@ -5,10 +5,12 @@
       </el-tab-pane>
       <el-tab-pane label="通知工具" name="push">
       </el-tab-pane>
+      <el-tab-pane label="网络测试" name="network-test">
+      </el-tab-pane>
       <el-tab-pane label="关于" name="about">
       </el-tab-pane>
     </el-tabs>
-    <router-view style="height: calc(var(--vh, 1vh) * 100) - 156px); overflow: auto;"></router-view>
+    <router-view style="height: calc(var(--vh, 1vh) * 100 - 156px); overflow: auto;"></router-view>
   </div>
 </template>
 

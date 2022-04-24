@@ -169,6 +169,14 @@ class SettingMod {
     return '数据导入成功, 重启容器后生效。';
   }
 
+  async networkTest (options) {
+    return await util.requestPromise(options.address, {
+      headers: {
+        cookie: options.cookie
+      }
+    });
+  }
+
   async getTrackerFlowHistory () {
     const _timeGroup = await util.getRecords('select time from tracker_flow where time >= ? group by time', [moment().unix() - 24 * 3600]);
     const timeGroup = _timeGroup.map(i => i.time);

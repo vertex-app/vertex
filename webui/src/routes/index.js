@@ -30,6 +30,7 @@ import Rss from '@/pages/home/children/rss';
 import Log from '@/pages/home/children/log';
 import Tools from '@/pages/home/children/tools';
 import Link from '@/pages/home/children/link';
+import NetworkTest from '@/pages/home/children/network-test';
 
 Vue.use(Router);
 
@@ -154,6 +155,12 @@ const _global = {
       component: Push,
       meta: {
         title: '通知工具'
+      }
+    }, {
+      path: 'network-test',
+      component: NetworkTest,
+      meta: {
+        title: '网络测试'
       }
     }, {
       path: 'about',

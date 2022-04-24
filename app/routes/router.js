@@ -226,6 +226,7 @@ module.exports = function (app, express, router) {
   router.get('/setting/backupVertex', ctrl.Setting.backupVertex);
   router.post('/setting/restoreVertex', ctrl.Setting.restoreVertex);
   router.get('/setting/getCss.css', ctrl.Setting.getCss);
+  router.post('/setting/networkTest', ctrl.Setting.networkTest);
 
   router.all('/openapi/:apiKey/plex', ctrl.Webhook.plex);
   router.all('/openapi/:apiKey/emby', ctrl.Webhook.emby);

@@ -6,7 +6,7 @@
       <el-tab-pane label="MT登录" name="login-mteam">
       </el-tab-pane>
     </el-tabs>
-    <router-view style="height: calc(var(--vh, 1vh) * 100) - 156px); overflow: auto;"></router-view>
+    <router-view style="height: calc(var(--vh, 1vh) * 100 - 156px); overflow: auto;"></router-view>
   </div>
 </template>
 
