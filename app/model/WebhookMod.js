@@ -146,7 +146,7 @@ class WebhookMod {
       }
       await redis.del('vertex:select:douban');
       let note = result.map(item => `${result.indexOf(item)}: ${item.title} / ${item.subtitle} / ${item.year}`).join('\n');
-      note += '\n输入剧集前的序号以及标签, 格式为 序号/标签, 5 分钟内输入有效';
+      note += '\n输入影视剧前的序号以及标签, 格式为 序号/标签, 5 分钟内输入有效';
       await redis.setWithExpire('vertex:select:movies', JSON.stringify(result), 300);
       await global.doubanPush.selectWish(note);
       return '';
@@ -162,7 +162,7 @@ class WebhookMod {
       }
       await redis.setWithExpire('vertex:select:douban', douban, 300);
       const note = '已选择豆瓣账户: ' + global.runningDouban[douban].alias + '\n' +
-        '请输入希望搜索的剧名, 5 分钟内输入有效';
+        '请输入希望搜索的影视剧名称, 5 分钟内输入有效';
       await global.doubanPush.selectWish(note);
       return '';
     }

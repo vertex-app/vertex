@@ -12,7 +12,7 @@
       </el-select>
       <el-button type="primary" size="small" @click="clearLogFiles">清空历史日志文件</el-button>
       <el-button type="primary" size="small" @click="getLog">刷新</el-button>
-      <el-link style="color: red" @click="gotoFAQ()">常见问题</el-link>
+      <el-link style="color: red; margin-left: 24px;" @click="gotoFAQ()">常见问题</el-link>
     </div>
     <el-input type="textarea" autosize v-model="log">
     </el-input>
