@@ -560,6 +560,22 @@ class Douban {
           return sortType === 'asc' ? a[sortBy] - b[sortBy] : b[sortBy] - a[sortBy];
         });
         for (const torrent of torrents) {
+          if (!imdb) {
+            const torrentYear = (torrent.title.match(/19\d{2}/g) || []).concat(torrent.title.match(/20\d{2}/g) || []);
+            let fitYear = false;
+            for (const year of torrentYear) {
+              fitYear = fitYear || +year === +wish.year;
+            }
+            if (!fitYear) {
+              logger.bingedebug(this.alias, '种子', `[${torrent.site}]`, torrent.title, '/', torrent.subtitle, '未匹配首映年份:', wish.year, '跳过');
+              continue;
+            }
+            if (wish.year > parseInt(torrent.time / 3600 / 24 / 365 + 1970)) {
+              logger.bingedebug(this.alias, '种子', `[${torrent.site}]`, torrent.title, '/', torrent.subtitle, '发种时间小于首映年份:', wish.year, '跳过');
+              continue;
+            }
+          }
+          await redis.del(`vertex:douban:fityear:${this.id}:${_wish.id}`);
           if (rules.some(item => this._fitRaceRule(item, torrent))) {
             let fitReject = false;
             for (const rejectRule of rejectRules) {
@@ -576,22 +592,6 @@ class Douban {
               logger.bingedebug(this.alias, '选种规则', rulesName, '种子', `[${torrent.site}]`, torrent.title, '/', torrent.subtitle, '匹配成功, 同时匹配排除关键词:', this.categories[wish.tag].rejectKeys, '跳过');
               continue;
             }
-            if (!imdb) {
-              const torrentYear = (torrent.title.match(/19\d{2}/g) || []).concat(torrent.title.match(/20\d{2}/g) || []);
-              let fitYear = false;
-              for (const year of torrentYear) {
-                fitYear = fitYear || +year === +wish.year;
-              }
-              if (!fitYear) {
-                logger.bingedebug(this.alias, '选种规则', rulesName, '种子', `[${torrent.site}]`, torrent.title, '/', torrent.subtitle, '匹配成功, 未匹配首映年份:', wish.year, '跳过');
-                continue;
-              }
-              if (wish.year > parseInt(torrent.time / 3600 / 24 / 365 + 1970)) {
-                logger.bingedebug(this.alias, '选种规则', rulesName, '种子', `[${torrent.site}]`, torrent.title, '/', torrent.subtitle, '匹配成功, 发种时间小于首映年份:', wish.year, '跳过');
-                continue;
-              }
-            }
-            await redis.del(`vertex:douban:fityear:${this.id}:${_wish.id}`);
             let episodes;
             if (wish.episodes) {
               episodes = this.scrapeEpisode(torrent.subtitle);
