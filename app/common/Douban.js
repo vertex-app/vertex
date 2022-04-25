@@ -519,10 +519,12 @@ class Douban {
       }
     }
     torrents = torrents.filter(item => {
+      let subtitle = item.subtitle;
       const name = wish.name.split('/')[0].replace(/[!\uff01\uff1a.。:?？，,·・]/g, ' ').trim();
       const serachKeys = name.split(' ').filter(item => item);
-      if (!item.subtitle) return false;
-      const keys = item.subtitle.split(/[^0-9a-zA-Z\u4e00-\u9fa5]|丨/g).filter(item => item);
+      if (!subtitle) return false;
+      subtitle = subtitle.replace(/(第[\d一二三四五六七八九十]+季)([第全][\d一二三四五六七八九十]+[集话期])/, '$1 $2');
+      const keys = item.subtitle.split(/[^0-9a-zA-Z\u4e00-\u9fa5*]|丨/g).filter(item => item);
       const result = serachKeys.every(i => keys.indexOf(i) !== -1) || keys.indexOf(name.replace(' ', '')) !== -1;
       if (!result) logger.bingedebug(this.alias, '想看', JSON.stringify(serachKeys), '种子', item.subtitle, '提取分词', JSON.stringify(keys), '未匹配 提前拒绝');
       return result;
