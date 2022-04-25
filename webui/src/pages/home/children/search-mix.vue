@@ -5,7 +5,7 @@
         <el-form-item label="选择站点">
           <el-checkbox :indeterminate="isIndeterminateSites" v-model="checkAllSites" @change="handleCheckAllSitesChange">全选</el-checkbox>
           <el-checkbox-group v-model="searchSiteList">
-            <el-checkbox v-for="item of siteList" :key="item.name" :label="item.name">{{`${item.name === 'SpringSunDay' ? '不可说' : item.name}`}}</el-checkbox>
+            <el-checkbox v-for="item of siteList" :key="item.name" :disabled="!item.enable" :label="item.name">{{`${item.name === 'SpringSunDay' ? '不可说' : item.name}`}}</el-checkbox>
           </el-checkbox-group>
         </el-form-item>
       </el-form>
@@ -337,7 +337,7 @@ export default {
     },
 
     handleCheckAllSitesChange (value) {
-      this.searchSiteList = value ? this.siteList.map(i => i.name) : [];
+      this.searchSiteList = value ? this.siteList.filter(i => i.enable).map(i => i.name) : [];
       this.isIndeterminateSites = false;
     },
 

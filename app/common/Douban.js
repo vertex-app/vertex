@@ -306,6 +306,7 @@ class Douban {
     const torrent = { ..._torrent };
     torrent.time = moment().unix() - torrent.time;
     torrent.tags = torrent.tags.join(',');
+    torrent.subtitle = torrent.subtitle + torrent.tags;
     for (const condition of conditions) {
       let value;
       switch (condition.compareType) {

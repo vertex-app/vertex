@@ -123,7 +123,7 @@
               </el-select>
             </el-form-item>
             <el-form-item required label="启用" prop="enable">
-              <el-checkbox v-model="site.enable">启用</el-checkbox>
+              <el-checkbox v-model="site.enable" :disabled="site.used">启用</el-checkbox>
             </el-form-item>
             <el-form-item label="更新周期" prop="cron">
               <el-input v-model="site.cron" style="width: 300px;"></el-input>
