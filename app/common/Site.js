@@ -1368,6 +1368,10 @@ class Site {
     const document = await this._getDocument(`https://chdbits.co/torrents.php?incldead=0&spstate=0&inclbookmarked=0&search=${encodeURIComponent(keyword)}&search_area=${keyword.match(/tt\d+/) ? 4 : 0}&search_mode=0&tag=`);
     const torrents = document.querySelectorAll('.torrents tbody tr:not(:first-child)');
     for (const _torrent of torrents) {
+      const hr = _torrent.querySelector('.torrentname > tbody > tr .embedded').querySelector('div[class="circle"]');
+      if (hr) {
+        _torrent.querySelector('.torrentname > tbody > tr .embedded').lastChild.removeChild(hr);
+      }
       const torrent = {};
       torrent.site = this.site;
       torrent.title = _torrent.querySelector('td[class="embedded"] > a[href*="details"]').title.trim();
