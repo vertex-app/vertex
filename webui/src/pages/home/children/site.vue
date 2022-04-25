@@ -30,7 +30,6 @@
         :default-sort="{prop: 'alias'}"
         style="margin: 20px">
         <el-table-column
-          sortable
           prop="name"
           label="站点"
           min-width="180">
@@ -42,8 +41,8 @@
           </template>
           <template slot-scope="scope">
             <el-switch
-              v-model="scope.row.display"
-              @change="loadSite">
+              @change="test(scope)"
+              :value="(scope.row.display && displayAll)">
             </el-switch>
             {{ scope.row.display && displayAll ? scope.row.name : '*******' }}
           </template>
@@ -103,7 +102,7 @@
           </template>
           <template slot-scope="scope">
             <el-button @click="gotoSite(scope.row)" type="primary" size="small">打开</el-button>
-            <el-button @click="refresh(scope.row)" type="primary" size="small">刷新</el-button>
+            <el-button @click="refresh(scope.row)" :disabled="!scope.row.enable" type="primary" size="small">{{ scope.row.enable ? '刷新' : '停用' }}</el-button>
             <el-button @click="modifySite(scope.row)" type="warning" size="small">编辑</el-button>
             <el-button @click="deleteSite(scope.row)" :disabled="scope.row.used" type="danger" size="small">删除</el-button>
           </template>
@@ -217,11 +216,13 @@ export default {
       this.loadSite();
     },
     loadSite () {
+      this.siteList = [];
       const siteList = this.siteInfo.data.siteList;
       for (const site of siteList) {
+        site.id = site.name;
         site.display = site.display === undefined ? true : site.display;
+        this.siteList.push({ ...site });
       }
-      this.siteList = siteList;
     },
     async refreshAll () {
       this.refreshState = '刷新中 ......';
@@ -240,6 +241,11 @@ export default {
       }
       await this.$messageBox(res);
       this.listSite();
+    },
+
+    test (scope) {
+      scope.row.display = !scope.row.display;
+      console.log(scope.row);
     },
 
     async listPush () {

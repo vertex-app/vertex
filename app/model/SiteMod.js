@@ -28,6 +28,8 @@ class SiteMod {
       global.runningSite[options.name].cookie = set.cookie;
       logger.info('站点', set.name, '重新加载 Cookie');
       if (!set.enable) global.runningSite[options.name].destroy();
+    } else {
+      global.runningSite[set.name] = new Site(set);
     }
     return '编辑站点成功';
   };
@@ -64,10 +66,10 @@ class SiteMod {
 
   async list () {
     const doubanList = util.listDouban();
-    const siteList = util.listSite().filter(i => !!global.runningSite[i.name])
+    const siteList = util.listSite()
       .map(item => { return { ...item, used: doubanList.filter(i => i.sites.indexOf(item.name) !== -1).length !== 0 }; });
     for (let site of siteList) {
-      site = Object.assign(site, global.runningSite[site.name].info);
+      site = Object.assign(site, global.runningSite[site.name]?.info || {});
     }
     const increase = {
       today: {
