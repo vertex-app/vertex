@@ -170,7 +170,8 @@ class SettingMod {
   }
 
   async networkTest (options) {
-    return await util.requestPromise(options.address, {
+    return await util.requestPromise({
+      url: options.address,
       headers: {
         cookie: options.cookie
       }

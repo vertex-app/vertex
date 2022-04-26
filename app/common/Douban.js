@@ -185,6 +185,10 @@ class Douban {
     }
     const document = await this._getDocument('https://movie.douban.com/mine?status=wish', 20);
     const items = document.querySelectorAll('.article .grid-view .item');
+    if (!items.length) {
+      logger.error('豆瓣账户', this.alias, '刷新想看列表失败', '疑似是豆瓣 Cookie 过期', '任务退出');
+      return;
+    }
     const wishes = [];
     for (const item of items) {
       const wish = {};
