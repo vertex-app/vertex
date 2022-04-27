@@ -31,7 +31,7 @@ export default {
     async getLog () {
       const res = await this.$axiosGet(`/api/log/get?type=${this.type}`);
       this.log = res ? '[202' + res.data.split('[202').reverse().join('[202') : '';
-      this.log = this.log.replace(/\[2022-/g, '[').replace(/\[.*? console\]/g, '').replace(/\[202/g, '');
+      this.log = this.log.replace(/\[2022-/g, '[').replace(/\[[^\d]*? console\] \d*/g, '').replace(/\[202/g, '');
     },
     async gotoFAQ () {
       window.open('https://lswl.in/2022/03/19/vertex-faq/');
