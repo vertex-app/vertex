@@ -80,7 +80,7 @@ export default {
       }, {
         icon: ['fas', 'toolbox'],
         title: ' 常用工具',
-        path: '/tools/link'
+        path: '/tools/network-test'
       }, {
         icon: ['fas', 'sliders-h'],
         title: ' 全局设置',

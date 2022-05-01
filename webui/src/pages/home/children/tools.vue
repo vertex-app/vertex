@@ -1,9 +1,11 @@
 <template>
   <div class="site-mix" style="color: #dde6f9">
     <el-tabs v-model="activeName" type="card" @tab-click="handleTabsClick">
-      <el-tab-pane label="软链接" name="link">
+      <el-tab-pane label="网络测试" name="network-test">
       </el-tab-pane>
       <el-tab-pane label="MT登录" name="login-mteam">
+      </el-tab-pane>
+      <el-tab-pane label="软链接" name="link">
       </el-tab-pane>
     </el-tabs>
     <router-view style="height: calc(var(--vh, 1vh) * 100 - 156px); overflow: auto;"></router-view>
@@ -14,7 +16,7 @@
 export default {
   data () {
     return {
-      activeName: 'link'
+      activeName: 'network-test'
     };
   },
   methods: {

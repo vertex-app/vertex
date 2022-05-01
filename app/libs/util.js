@@ -69,7 +69,7 @@ exports.scrapeFree = scrape.free;
 exports.scrapeHr = scrape.hr;
 
 exports._requestPromise = util.promisify(request);
-exports.requestPromise = async function (options) {
+exports.requestPromise = async function (options, usePuppeteer = true) {
   if (typeof options === 'string') {
     return await exports._requestPromise({
       url: options,
@@ -83,7 +83,7 @@ exports.requestPromise = async function (options) {
   };
   options.headers['User-Agent'] = global.userAgent || 'Vertex';
   const res = await exports._requestPromise(options);
-  if (res.body && typeof res.body === 'string' && (res.body.indexOf('jschl-answer') !== -1 || (res.body.indexOf('cloudflare-static') !== -1 && res.body.indexOf('email-decode.min.js') === -1))) {
+  if (usePuppeteer && res.body && typeof res.body === 'string' && (res.body.indexOf('jschl-answer') !== -1 || (res.body.indexOf('cloudflare-static') !== -1 && res.body.indexOf('email-decode.min.js') === -1))) {
     logger.debug(new url.URL(options.url).hostname, '疑似遇到 5s 盾, 启用 Puppeteer 抓取页面....');
     return await exports.requestUsePuppeteer(options);
   }

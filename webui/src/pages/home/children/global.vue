@@ -5,8 +5,6 @@
       </el-tab-pane>
       <el-tab-pane label="通知工具" name="push">
       </el-tab-pane>
-      <el-tab-pane label="网络测试" name="network-test">
-      </el-tab-pane>
       <el-tab-pane label="关于" name="about">
       </el-tab-pane>
     </el-tabs>

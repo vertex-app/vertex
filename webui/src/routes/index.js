@@ -17,7 +17,7 @@ import BingeWatching from '@/pages/home/children/binge-watching';
 import RaceRule from '@/pages/home/children/race-rule';
 import LinkRule from '@/pages/home/children/link-rule';
 import Douban from '@/pages/home/children/douban';
-import Wishes from '@/pages/home/children/wishes';
+import DoubanHistory from '@/pages/home/children/douban-history';
 import Server from '@/pages/home/children/server';
 import Client from '@/pages/home/children/client';
 import SearchMix from '@/pages/home/children/search-mix';
@@ -31,6 +31,7 @@ import Log from '@/pages/home/children/log';
 import Tools from '@/pages/home/children/tools';
 import Link from '@/pages/home/children/link';
 import NetworkTest from '@/pages/home/children/network-test';
+import LoginMTeam from '@/pages/home/children/login-mteam';
 
 Vue.use(Router);
 
@@ -131,6 +132,18 @@ const tools = {
   component: Tools,
   children: [
     {
+      path: 'login-mteam',
+      component: LoginMTeam,
+      meta: {
+        title: 'MTeam 登录'
+      }
+    }, {
+      path: 'network-test',
+      component: NetworkTest,
+      meta: {
+        title: '网络测试'
+      }
+    }, {
       path: 'link',
       component: Link,
       meta: {
@@ -155,12 +168,6 @@ const _global = {
       component: Push,
       meta: {
         title: '通知工具'
-      }
-    }, {
-      path: 'network-test',
-      component: NetworkTest,
-      meta: {
-        title: '网络测试'
       }
     }, {
       path: 'about',
@@ -201,8 +208,8 @@ const bingeWatching = {
         title: '豆瓣账号'
       }
     }, {
-      path: 'wishes',
-      component: Wishes,
+      path: 'douban-history',
+      component: DoubanHistory,
       meta: {
         title: '任务历史'
       }

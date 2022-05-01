@@ -53,6 +53,7 @@ body {
 
 .el-tabs--card>.el-tabs__header {
   border-bottom: none;
+  margin: 0 2px;
 }
 
 .el-tabs__item {
