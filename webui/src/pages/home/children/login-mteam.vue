@@ -3,10 +3,10 @@
     <div class="radius-div" style="margin: 20px 0;">
       <el-form label-width="160px" style="width: fit-content; text-align: left; padding: 20px 0;" size="mini">
         <el-form-item label="Cookie">
-          <el-input v-model="cookie" style="width: 350px;"></el-input>
+          <el-input v-model="cookie" style="width: 350px;" placeholder="tp=xxxx;"></el-input>
         </el-form-item>
         <el-form-item label="二步验证码">
-          <el-input v-model="otp" style="width: 350px;"></el-input>
+          <el-input v-model="otp" style="width: 350px;" placeholder="若没有可填写123456"></el-input>
         </el-form-item>
         <el-form-item size="small">
           <el-button type="primary" @click="doLogin">执行</el-button>

@@ -417,11 +417,14 @@ class Client {
     }
     const trackerSet = {};
     for (const torrent of this.maindata.torrents) {
-      if (!await redis.get('vertex:torrent:' + torrent.hash)) {
+      const cache = await redis.get('vertex:torrent:' + torrent.hash);
+      // 0 无记录  1 种子存在  2 种子不存在
+      if (!cache) {
         const sqlRes = await util.getRecord('SELECT * FROM torrents WHERE hash = ?', [torrent.hash]);
-        await redis.set('vertex:torrent:' + torrent.hash, 1);
+        await redis.set('vertex:torrent:' + torrent.hash, sqlRes ? 1 : 2);
         if (!sqlRes) continue;
       }
+      if (cache === 2) continue;
       await util.runRecord('update torrents set size = ?, tracker = ?, upload = ?, download = ? where hash = ?',
         [torrent.size, torrent.tracker, torrent.uploaded, torrent.downloaded, torrent.hash]);
       await util.runRecord('insert into torrent_flow (hash, upload, download, time) values (?, ?, ?, ?)',
