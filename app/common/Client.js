@@ -424,7 +424,7 @@ class Client {
         await redis.set('vertex:torrent:' + torrent.hash, sqlRes ? 1 : 2);
         if (!sqlRes) continue;
       }
-      if (cache === 2) continue;
+      if (+cache === 2) continue;
       await util.runRecord('update torrents set size = ?, tracker = ?, upload = ?, download = ? where hash = ?',
         [torrent.size, torrent.tracker, torrent.uploaded, torrent.downloaded, torrent.hash]);
       await util.runRecord('insert into torrent_flow (hash, upload, download, time) values (?, ?, ?, ?)',
