@@ -35,9 +35,11 @@ class RaceRuleMod {
 
   list () {
     const raceRuleList = util.listRaceRule();
+    const raceRuleSetList = util.listRaceSetRule();
     const doubanList = util.listDouban();
     for (const raceRule of raceRuleList) {
-      raceRule.used = !!doubanList.some(item => item.raceRules.concat(item => item.rejectRules).indexOf(raceRule.id) !== -1);
+      raceRule.used = !!doubanList.some(item => item.raceRules.concat(item => item.rejectRules).indexOf(raceRule.id) !== -1) ||
+        !!raceRuleSetList.some(item => item.raceRules.indexOf(raceRule.id) !== -1);
     }
     return raceRuleList;
   };

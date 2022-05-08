@@ -110,7 +110,7 @@ export default {
       });
     },
     async deleteRaceRuleSet (row) {
-      const url = '/api/raceRule/delete';
+      const url = '/api/raceRuleSet/delete';
       const res = await this.$axiosPost(url, {
         id: row.id
       });
