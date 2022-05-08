@@ -177,7 +177,9 @@ module.exports = function (app, express, router) {
   router.post('/douban/delete', ctrl.Douban.delete);
   router.get('/douban/listHistory', ctrl.Douban.listHistory);
   router.get('/douban/listWishes', ctrl.Douban.listWishes);
-  router.post('/douban/deleteItem', ctrl.Douban.deleteItem);
+  router.get('/douban/deleteWish', ctrl.Douban.deleteWish);
+  router.get('/douban/refreshWish', ctrl.Douban.refreshWish);
+  router.post('/douban/editWish', ctrl.Douban.editWish);
   router.get('/douban/deleteRecord', ctrl.Douban.deleteRecord);
   router.post('/douban/refreshWishes', ctrl.Douban.refreshWishes);
   router.get('/douban/relink', ctrl.Douban.relink);
@@ -191,6 +193,11 @@ module.exports = function (app, express, router) {
   router.post('/raceRule/add', ctrl.RaceRule.add);
   router.post('/raceRule/modify', ctrl.RaceRule.modify);
   router.post('/raceRule/delete', ctrl.RaceRule.delete);
+
+  router.get('/raceRuleSet/list', ctrl.RaceRuleSet.list);
+  router.post('/raceRuleSet/add', ctrl.RaceRuleSet.add);
+  router.post('/raceRuleSet/modify', ctrl.RaceRuleSet.modify);
+  router.post('/raceRuleSet/delete', ctrl.RaceRuleSet.delete);
 
   router.get('/rssRule/list', ctrl.RssRule.list);
   router.post('/rssRule/add', ctrl.RssRule.add);

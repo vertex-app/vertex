@@ -84,6 +84,7 @@ tr.hover-row>td.el-table__cell {
 }
 
 .el-dialog {
+  width: 960px;
   border-radius: 8px;
 }
 

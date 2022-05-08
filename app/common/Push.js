@@ -209,7 +209,7 @@ class Push {
 
   async startRefreshWish (key) {
     const text = '刷新想看任务 ' + moment().format('YYYY-MM-DD HH:mm:ss');
-    let desp = `账号 / 关键词: ${key}\n`;
+    let desp = `信息: ${key}\n`;
     if (this.type === 'telegram') {
       desp = '```\n' + desp + '\n```';
       desp = '\\#刷新想看任务\n' + desp;

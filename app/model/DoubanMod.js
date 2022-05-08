@@ -38,13 +38,47 @@ class DoubanMod {
     return doubanList;
   };
 
-  listWishes () {
+  listWishes (options) {
+    const index = options.length * (options.page - 1);
     const doubanList = util.listDouban();
     const doubanSet = util.listDoubanSet()
       .map(item => item.wishes.map(i => { return { ...i, doubanId: item.id, doubanAlias: doubanList.filter(ii => ii.id === item.id)[0].alias }; }))
-      .flat();
-    return doubanSet || [];
+      .flat().reverse();
+    return {
+      wishes: doubanSet.slice(index, index + options.length) || [],
+      total: doubanSet.length
+    };
   };
+
+  deleteWish (options) {
+    if (!global.runningDouban[options.douban]) {
+      throw new Error('豆瓣账号未启用');
+    }
+    if (global.runningDouban[options.douban].deleteWish(options.id)) {
+      return '删除想看项目成功';
+    } else {
+      return '删除失败, 项目不存在?';
+    }
+  }
+
+  editWish (options) {
+    if (!global.runningDouban[options.doubanId]) {
+      throw new Error('豆瓣账号未启用');
+    }
+    if (global.runningDouban[options.doubanId].updateWish(options)) {
+      return '修改想看项目成功';
+    } else {
+      return '修改失败, 项目不存在?';
+    }
+  }
+
+  refreshWish (options) {
+    if (!global.runningDouban[options.douban]) {
+      throw new Error('豆瓣账号未启用');
+    }
+    global.runningDouban[options.douban].refreshWish(options.id);
+    return '已启动刷新任务';
+  }
 
   async listHistory (options) {
     const index = options.length * (options.page - 1);
@@ -65,16 +99,8 @@ class DoubanMod {
     return '删除成功';
   };
 
-  deleteItem (options) {
-    const doubanSet = util.listDoubanSet().filter(item => item.id === options.id)[0];
-    doubanSet.wishes = doubanSet.wishes.filter(item => item.id !== options.doubanId);
-    global.runningDouban[options.id].wishes = doubanSet.wishes;
-    fs.writeFileSync(path.join(__dirname, '../data/douban/set', options.id + '.json'), JSON.stringify(doubanSet, null, 2));
-    return '删除想看记录成功';
-  }
-
   async refreshWishes (options) {
-    global.runningDouban[options.id].refreshWish(false, true);
+    global.runningDouban[options.id].refreshWishList();
     return '已启动刷新豆瓣任务, 稍后将接收到通知';
   }
 

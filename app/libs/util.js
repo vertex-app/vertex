@@ -275,6 +275,17 @@ exports.listRaceRule = function () {
   return raceRuleList;
 };
 
+exports.listRaceRuleSet = function () {
+  const files = fs.readdirSync(path.join(__dirname, '../data/rule/raceSet'));
+  const raceRuleSetList = [];
+  for (const file of files) {
+    if (path.extname(file) === '.json') {
+      raceRuleSetList.push(_importJson(path.join(__dirname, '../data/rule/raceSet', file)));
+    }
+  }
+  return raceRuleSetList;
+};
+
 exports.listDouban = function () {
   const files = fs.readdirSync(path.join(__dirname, '../data/douban'));
   const DoubanList = [];

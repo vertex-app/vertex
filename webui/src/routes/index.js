@@ -15,8 +15,10 @@ import Global from '@/pages/home/children/global';
 import Point from '@/pages/home/children/point';
 import BingeWatching from '@/pages/home/children/binge-watching';
 import RaceRule from '@/pages/home/children/race-rule';
+import RaceRuleSet from '@/pages/home/children/race-rule-set';
 import LinkRule from '@/pages/home/children/link-rule';
 import Douban from '@/pages/home/children/douban';
+import DoubanWishes from '@/pages/home/children/douban-wishes';
 import DoubanHistory from '@/pages/home/children/douban-history';
 import Server from '@/pages/home/children/server';
 import Client from '@/pages/home/children/client';
@@ -196,6 +198,12 @@ const bingeWatching = {
         title: '选种规则'
       }
     }, {
+      path: 'race-rule-set',
+      component: RaceRuleSet,
+      meta: {
+        title: '选种规则'
+      }
+    }, {
       path: 'link-rule',
       component: LinkRule,
       meta: {
@@ -206,6 +214,12 @@ const bingeWatching = {
       component: Douban,
       meta: {
         title: '豆瓣账号'
+      }
+    }, {
+      path: 'douban-wishes',
+      component: DoubanWishes,
+      meta: {
+        title: '想看列表'
       }
     }, {
       path: 'douban-history',

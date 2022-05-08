@@ -103,9 +103,41 @@ class Douban {
     }
   };
 
-  async deleteItem (req, res) {
+  async deleteWish (req, res) {
     try {
-      const r = doubanMod.deleteItem(req.body);
+      const r = doubanMod.deleteWish(req.query);
+      res.send({
+        success: true,
+        message: r
+      });
+    } catch (e) {
+      logger.error(e);
+      res.send({
+        success: false,
+        message: e.message
+      });
+    }
+  };
+
+  async editWish (req, res) {
+    try {
+      const r = doubanMod.editWish(req.body);
+      res.send({
+        success: true,
+        message: r
+      });
+    } catch (e) {
+      logger.error(e);
+      res.send({
+        success: false,
+        message: e.message
+      });
+    }
+  };
+
+  async refreshWish (req, res) {
+    try {
+      const r = doubanMod.refreshWish(req.query);
       res.send({
         success: true,
         message: r

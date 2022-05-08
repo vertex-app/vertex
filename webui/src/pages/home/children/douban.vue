@@ -36,36 +36,6 @@
     </div>
     <div class="radius-div">
       <el-collapse  class="collapse" v-model="doubanCollapse">
-        <el-collapse-item title="想看列表" name="0">
-          <div style="width: 100%; text-align: center; margin: 6px 0 12px 20px">
-            <el-tag type="info">可以点击标签后的 x 删除系统记录, 刷新后会尝试再一次选种推送</el-tag>
-          </div>
-          <div style="width: 100%; text-align: center; margin: 6px 0 12px 20px">
-            <el-tag
-              :color="`${$colors[item.doubanId.charCodeAt(0) % 9][0]}`"
-              closable
-              :style="`color: ${$colors[item.doubanId.charCodeAt(0) % 9][1]}`"
-              v-for="item in wishList.filter(item => (!item.downloaded && !item.episodes) || (item.episodes && item.episodes !== item.episodeNow))"
-              :key="item.id + item.doubanId"
-              @close="deleteItem(item)"
-              style="margin-left: 24px; margin-top: 16px">
-              {{`${item.doubanAlias}: ${item.name} / ${!item.episodes ? item.downloaded ? '已下载' : '未下载' : item.episodes === item.episodeNow ? '已追完' : item.episodeNow + ' / ' + item.episodes}`}}
-            </el-tag>
-          </div>
-          <el-divider/>
-          <div style="width: 100%; margin: 6px 0 12px 20px">
-            <el-tag
-              :color="`${$colors[item.doubanId.charCodeAt(0) % 9][0]}`"
-              closable
-              :style="`color: ${$colors[item.doubanId.charCodeAt(0) % 9][1]}`"
-              v-for="item in wishList.filter(item => (!item.episodes && item.downloaded) || (item.episodes && item.episodes === item.episodeNow))"
-              :key="item.id + item.doubanId"
-              @close="deleteItem(item)"
-              style="margin-left: 24px; margin-top: 16px">
-              {{`${item.doubanAlias}: ${item.name} / ${!item.episodes ? item.downloaded ? '已下载' : '未下载' : item.episodes === item.episodeNow ? '已追完' : item.episodeNow + ' / ' + item.episodes}`}}
-            </el-tag>
-          </div>
-        </el-collapse-item>
         <el-collapse-item title="新增 | 编辑豆瓣账号" name="1">
           <div style="width: fit-content; margin: 6px 0 12px 20px">
             <el-tag size="small">豆瓣账号 ID: {{douban.id || '新增'}}</el-tag>
@@ -84,22 +54,24 @@
             <el-form-item label="排除规则" prop="rejectRules">
               <el-checkbox :indeterminate="rejectRuleIndeterminate" v-model="rejectRuleCheckAll" @change="handleRejectRuleCheckAllChange">全选</el-checkbox>
               <el-checkbox-group v-model="douban.rejectRules">
-                <el-checkbox v-for="rule of raceRuleList" :key="rule.id" :label="rule.id">{{rule.alias}}</el-checkbox>
+                <el-checkbox v-for="rule of raceRuleList.filter(item => item.priority === '0')" :key="rule.id" :label="rule.id">{{rule.alias}}</el-checkbox>
               </el-checkbox-group>
-              <div><el-tag type="info">选择排除规则, 符合这些规则的种子都会被拒绝, 可前往选种规则分页添加</el-tag></div>
+              <div><el-tag type="info">选择排除规则, 符合这些规则的种子都会被拒绝, 可前往选种规则分页添加, 仅显示优先级为 0 的规则</el-tag></div>
             </el-form-item>
             <el-form-item required label="选择规则" prop="raceRules">
-              <el-checkbox :indeterminate="raceRuleIndeterminate" v-model="raceRuleCheckAll" @change="handleRaceRuleCheckAllChange">全选</el-checkbox>
               <el-checkbox-group v-model="douban.raceRules">
-                <el-checkbox v-for="rule of raceRuleList" :key="rule.id" :label="rule.id">{{rule.alias}}</el-checkbox>
+                <div v-for="set of raceRuleSetList" :key="set.id">
+                  <el-checkbox :indeterminate="set.raceRuleIndeterminate" v-model="set.raceRuleCheckAll" @change="(v) => handleRaceRuleCheckAllChange(set, v)">{{set.alias}} 全选</el-checkbox>
+                  <div style="margin-left: 24px;"><el-checkbox v-for="rule of set.raceRules.map(i => raceRuleList.filter(item => item.id === i)[0]).sort((a, b) => a.priority - b.priority).map(item => item.id)" :key="rule" :label="rule">{{raceRuleList.filter(item => item.id === rule)[0].alias}}</el-checkbox></div>
+                </div>
               </el-checkbox-group>
               <div><el-tag type="info">选择选种规则, 符合这些规则的种子才会添加, 可前往选种规则分页添加</el-tag></div>
             </el-form-item>
-            <el-form-item label="选择链接规则" prop="linkRule">
-              <el-select v-model="douban.linkRule" placeholder="选择链接规则">
+            <el-form-item label="链接规则" prop="linkRule">
+              <el-select v-model="douban.linkRule" placeholder="链接规则">
                 <el-option v-for="rule of linkRuleList" :key="rule.id" :label="rule.alias" :value="rule.id">{{rule.alias}}</el-option>
               </el-select>
-              <div><el-tag type="info">选择链接规则, 链接规则可前往链接规则分页添加</el-tag></div>
+              <div><el-tag type="info">链接规则, 链接规则可前往链接规则分页添加</el-tag></div>
             </el-form-item>
             <el-form-item required label="下载器" prop="client">
               <el-select v-model="douban.client" placeholder="请选择下载器">
@@ -180,7 +152,11 @@
             </el-form-item>
             <el-form-item required label="刷新周期" prop="cron">
               <el-input v-model="douban.cron" type="input"></el-input>
-              <div><el-tag size="small" type="info">刷新 想看 列表的周期, 默认为每天晚上 20:35 刷新一次</el-tag></div>
+              <div><el-tag size="small" type="info">刷新 想看 列表的周期, 默认为每 4 小时刷新一次, 仅刷新列表, 不搜索资源</el-tag></div>
+            </el-form-item>
+            <el-form-item required label="资源搜索周期" prop="cron">
+              <el-input v-model="douban.defaultRefreshCron" type="input"></el-input>
+              <div><el-tag size="small" type="info">影视剧的默认搜索周期, 默认为每日晚 21:35 刷新一次</el-tag></div>
             </el-form-item>
             <el-form-item label="接收微信消息" prop="enableWechatLink">
               <el-checkbox v-model="douban.enableWechatLink">接收微信消息</el-checkbox>
@@ -203,17 +179,17 @@
           </el-form>
         </el-collapse-item>
       </el-collapse>
-      <el-dialog title="导入豆瓣" :visible.sync="importDoubanVisible" width="80%">
-        <el-form label-width="144px" size="mini" style="width: 80%;">
-          <el-form-item label="豆瓣">
-            <el-input v-model="importDoubanText" type="textarea" :rows="20" style="width: 500px;"></el-input>
-          </el-form-item>
-          <el-form-item size="mini">
-            <el-button type="primary" @click="importDouban">导入</el-button>
-          </el-form-item>
-        </el-form>
-      </el-dialog>
     </div>
+    <el-dialog title="导入豆瓣" :visible.sync="importDoubanVisible" width="80%">
+      <el-form label-width="144px" size="mini" style="width: 80%;">
+        <el-form-item label="豆瓣">
+          <el-input v-model="importDoubanText" type="textarea" :rows="20" style="width: 500px;"></el-input>
+        </el-form-item>
+        <el-form-item size="mini">
+          <el-button type="primary" @click="importDouban">导入</el-button>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
   </div>
 </template>
 
@@ -223,7 +199,8 @@ export default {
     return {
       douban: {},
       defaultDouban: {
-        cron: '35 20 * * *',
+        cron: '0 */4 * * *',
+        defaultRefreshCron: '35 21 * * *',
         sites: [],
         raceRules: [],
         rejectRules: [],
@@ -239,6 +216,7 @@ export default {
       },
       doubanList: [],
       raceRuleList: [],
+      raceRuleSetList: [],
       linkRuleList: [],
       siteList: [],
       clientList: [],
@@ -250,7 +228,7 @@ export default {
       rejectRuleCheckAll: false,
       raceRuleCheckAll: false,
       refreshStatus: '刷新想看',
-      doubanCollapse: ['0'],
+      doubanCollapse: ['1'],
       importDoubanVisible: false,
       importDoubanText: '',
       push: true
@@ -300,20 +278,7 @@ export default {
       if (!res) {
         return;
       }
-      this.listWishes();
       await this.$messageBox(res);
-    },
-    async deleteItem (row) {
-      const url = '/api/douban/deleteItem';
-      const res = await this.$axiosPost(url, {
-        doubanId: row.id,
-        id: row.doubanId
-      });
-      if (!res) {
-        return;
-      }
-      await this.$messageBox(res);
-      this.listWishes();
     },
     async clearDouban () {
       this.douban = { ...this.defaultDouban };
@@ -323,10 +288,6 @@ export default {
     async listDouban () {
       const res = await this.$axiosGet('/api/douban/list');
       this.doubanList = res ? res.data : [];
-    },
-    async listWishes () {
-      const res = await this.$axiosGet('/api/douban/listWishes');
-      this.wishList = res ? res.data.sort((a, b) => a.name > b.name ? 1 : -1) : [];
     },
     async listLinkRule () {
       const res = await this.$axiosGet('/api/linkRule/list');
@@ -340,10 +301,9 @@ export default {
       this.douban.rejectRules = value ? this.raceRuleList.map(i => i.id) : [];
       this.rejectRuleIndeterminate = false;
     },
-    handleRaceRuleCheckAllChange (value) {
-      this.douban.raceRules = value ? this.raceRuleList.map(i => i.id) : [];
-      console.log(this.douban.raceRules);
-      this.raceRuleIndeterminate = false;
+    handleRaceRuleCheckAllChange (set, v) {
+      this.douban.raceRules = v ? this.douban.raceRules.concat(set.raceRules) : this.douban.raceRules.filter(item => set.raceRules.indexOf(item) === -1);
+      set.raceRuleIndeterminate = false;
     },
     async listPush () {
       const res = await this.$axiosGet('/api/push/list');
@@ -352,6 +312,10 @@ export default {
     async listRaceRule () {
       const res = await this.$axiosGet('/api/raceRule/list');
       this.raceRuleList = res ? res.data.sort((a, b) => +b.priority > +a.priority ? 1 : -1) : [];
+    },
+    async listRaceRuleSet () {
+      const res = await this.$axiosGet('/api/raceRuleSet/list');
+      this.raceRuleSetList = res ? res.data.map(item => { return { ...item, raceRuleIndeterminate: true, raceRuleCheckAll: false}; }) : [];
     },
     async listClient () {
       const res = await this.$axiosGet('/api/client/list');
@@ -391,7 +355,7 @@ export default {
     this.listPush();
     this.listRaceRule();
     this.listLinkRule();
-    this.listWishes();
+    this.listRaceRuleSet();
   }
 };
 </script>

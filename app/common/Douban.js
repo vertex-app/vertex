@@ -30,10 +30,16 @@ class Douban {
     this._notify.push = this.push;
     this.ntf = new Push(this._notify);
     this.refreshWishJob = cron.schedule(douban.cron, () => this.refreshWish());
+    this.refreshWishJobs = [];
     this.checkFinishJob = cron.schedule(global.checkFinishCron, () => this.checkFinish());
     this.clearSelectFailedJob = cron.schedule('0 0 * * *', () => this.clearSelectFailed());
     this.selectTorrentToday = {};
     this.wishes = (util.listDoubanSet().filter(item => item.id === this.id)[0] || {}).wishes || [];
+    for (const wish of this.wishes) {
+      if (!wish.downloaded) {
+        this.refreshWishJobs[wish.id] = cron.schedule(wish.cron || this.cron, () => this.refreshWish(wish.id));
+      }
+    };
     logger.binge('豆瓣账号', this.alias, '初始化完毕');
   };
 
@@ -164,6 +170,13 @@ class Douban {
 
   destroy () {
     logger.binge('销毁豆瓣实例', this.alias);
+    for (const key of Object.keys(this.refreshWishJobs)) {
+      if (this.refreshWishJobs[key]) {
+        this.refreshWishJobs[key].stop();
+        delete this.refreshWishJobs[key];
+      }
+    }
+    delete this.refreshWishJobs;
     this.refreshWishJob.stop();
     delete this.refreshWishJob;
     this.checkFinishJob.stop();
@@ -173,16 +186,62 @@ class Douban {
     delete global.runningClient[this.id];
   };
 
-  async refreshWish (key, manual) {
-    if (!key && !manual) {
-      const refreshLog = await redis.get(`vertex:douban:refresh:${this.id}`);
-      if (refreshLog) {
-        logger.error(this.alias, '近 4 小时内刷新过豆瓣, 本次任务提前退出');
-        return;
-      } else {
-        await redis.setWithExpire(`vertex:douban:refresh:${this.id}`, moment().unix(), 3600 * 4);
+  deleteWish (id) {
+    const wishLength = this.wishes.length;
+    this.wishes = this.wishes.filter(item => item.id !== id);
+    if (this.refreshWishJobs[id]) {
+      this.refreshWishJobs[id].stop();
+      delete this.refreshWishJobs[id];
+    }
+    this._saveSet();
+    return this.wishes.length !== wishLength;
+  }
+
+  updateWish (wish) {
+    for (const [index, value] of this.wishes.entries()) {
+      if (wish.id === value.id) {
+        if (this.refreshWishJobs[wish.id]) {
+          this.refreshWishJobs[wish.id].stop();
+          delete this.refreshWishJobs[wish.id];
+        }
+        if (!wish.downloaded) {
+          this.refreshWishJobs[wish.id] = cron.schedule(wish.cron || this.cron, () => this.refreshWish(wish.id));
+        }
+        this.wishes[index] = { ...wish };
+        this._saveSet();
+        return true;
       }
     }
+  }
+
+  async refreshWish (id, manual = false) {
+    const wish = this.wishes.filter(item => item.id === id)[0];
+    if (wish.downloaded || (+wish.episodes === +wish.episodeNow)) {
+      this.ntf.startRefreshWish(`${this.alias} / ${wish.name} 已完成, 退出任务`);
+      return;
+    }
+    if (!manual && await redis.get(`vertex:douban:refresh_cache:${id}`)) {
+      logger.binge('豆瓣账号', this.alias, '近 23 小时有自动搜索记录, 退出任务');
+      this.ntf.startRefreshWish(`${this.alias} / ${wish.name} 近 23 小时有自动搜索记录, 退出任务`);
+      return;
+    }
+    this.ntf.startRefreshWish(`${this.alias} / ${wish.name}`);
+    wish.downloaded = await this.selectTorrent(wish);
+    if (await redis.get(`vertex:douban:fityear:${this.id}:${wish.id}`)) {
+      wish.downloaded = await this.selectTorrent(wish, true);
+    }
+    await redis.setWithExpire(`vertex:douban:refresh_cache:${id}`, '1', 2400 * 23);
+    this._saveSet();
+    if (!wish.downloaded) {
+      logger.binge(this.alias, '未匹配种子', wish.name);
+      if (!this.selectTorrentToday[wish.id]) {
+        this.ntf.selectTorrentError(this.alias, wish);
+        this.selectTorrentToday[wish.id] = 1;
+      }
+    }
+  }
+
+  async refreshWishList () {
     const document = await this._getDocument('https://movie.douban.com/mine?status=wish', 20);
     const items = document.querySelectorAll('.article .grid-view .item');
     if (!items.length) {
@@ -208,36 +267,9 @@ class Douban {
       this._saveSet();
       await this.ntf.addDouban(this.alias, wishes);
     } else {
-      for (const wish of this.wishes) {
-        if (key && wish.name.indexOf(key) === -1) continue;
-        if (wish.downloaded && (!wish.episodes || (wish.episodeNow === wish.episodes))) continue;
-        logger.binge('豆瓣账户:', this.alias, '想看:', wish.name, '上次未选种成功或未更新完毕, 即将重新尝试选种');
-        try {
-          if (!this.categories[wish.tag]) {
-            logger.binge('豆瓣账户', this.alias, wish.name, '标签分类', wish.tag, '未定义, 跳过');
-            continue;
-          }
-          wish.downloaded = await this.selectTorrent(wish);
-          if (await redis.get(`vertex:douban:fityear:${this.id}:${wish.id}`)) {
-            wish.downloaded = await this.selectTorrent(wish, true);
-          }
-          this._saveSet();
-          if (!wish.downloaded) {
-            logger.binge(this.alias, '未匹配种子', wish.name);
-            if (!this.selectTorrentToday[wish.id]) {
-              this.ntf.selectTorrentError(this.alias, wish);
-              this.selectTorrentToday[wish.id] = 1;
-            }
-          }
-        } catch (e) {
-          logger.error('豆瓣账户:', this.alias, '选种', wish.name, '失败:\n', e);
-          wish.downloaded = false;
-        }
-      }
       for (const wish of wishes) {
-        if (key && wish.name.indexOf(key) === -1) continue;
         if (!this.wishes.filter(item => item.id === wish.id)[0]) {
-          logger.binge('豆瓣账户', this.alias, wish.name, '已添加入想看列表, 稍后将开始处理');
+          logger.binge('豆瓣账户', this.alias, wish.name, '已添加入想看列表');
           if (!wish.tag) {
             logger.binge('豆瓣账户', this.alias, wish.name, '未识别到标签, 跳过');
             continue;
@@ -253,7 +285,7 @@ class Douban {
             doubanInfo = await this._getDoubanInfo(wish.link);
           } catch (e) {
             logger.error('豆瓣账户', this.alias, '查询影视', wish.name, '详情失败', '疑似是豆瓣 Cookie 过期', '任务退出\n', e);
-            this.ntf.selectTorrentError(this.alias, wish, ['豆瓣账户', this.alias, '查询影视', wish.name, '详情失败', '疑似是豆瓣 Cookie 过期', '任务退出'].join(' '));
+            await this.ntf.selectTorrentError(this.alias, wish, ['豆瓣账户', this.alias, '查询影视', wish.name, '详情失败', '疑似是豆瓣 Cookie 过期', '任务退出'].join(' '));
             return;
           }
           const imdb = doubanInfo.imdb;
@@ -274,26 +306,15 @@ class Douban {
             wish.episodeNow = 0;
           }
           try {
-            await this.ntf.addDoubanWish(this.alias, wish);
             this.wishes.push(wish);
-            wish.downloaded = await this.selectTorrent(wish);
-            if (await redis.get(`vertex:douban:fityear:${this.id}:${wish.id}`)) {
-              wish.downloaded = await this.selectTorrent(wish, true);
-            }
-            this._saveSet();
-            if (!wish.downloaded && key) {
-              logger.binge(this.alias, '未匹配种子', wish.name);
-              this.ntf.selectTorrentError(this.alias, wish);
-            }
+            await this.ntf.addDoubanWish(this.alias, wish);
+            await this.refreshWish(wish.id);
           } catch (e) {
-            logger.error('豆瓣账户:', this.alias, '选种', wish.name, '失败:\n', e);
-            wish.downloaded = false;
-            this.ntf.selectTorrentError(this.alias, wish, `执行报错: ${e.message}`);
+            logger.error('豆瓣账户:', this.alias, '选种报错', wish.name, ':\n', e);
           }
           this._saveSet();
         }
       };
-      this._saveSet();
     }
   }
 
@@ -666,11 +687,13 @@ class Douban {
     switch (type) {
     case 'refresh':
       this.ntf.startRefreshJob(this.alias);
-      this.refreshWish(false, true);
+      this.refreshWishList();
       break;
     case 'refreshWish':
-      this.ntf.startRefreshWish(`${this.alias} / ${options.key}`);
-      this.refreshWish(options.key);
+      const wishes = this.wishes.filter(item => item.name.indexOf(options.key) !== -1);
+      for (const wish of wishes) {
+        await this.refreshWish(wish.id, true);
+      }
       break;
     }
   }

@@ -13,12 +13,12 @@ class RaceRuleMod {
         raceRuleSet[key] = options[key];
       }
     }
-    fs.writeFileSync(path.join(__dirname, '../data/rule/race/', id + '.json'), JSON.stringify(raceRuleSet, null, 2));
+    fs.writeFileSync(path.join(__dirname, '../data/rule/raceSet/', id + '.json'), JSON.stringify(raceRuleSet, null, 2));
     return '添加规则成功';
   };
 
   delete (options) {
-    fs.unlinkSync(path.join(__dirname, '../data/rule/race/', options.id + '.json'));
+    fs.unlinkSync(path.join(__dirname, '../data/rule/raceSet/', options.id + '.json'));
     return '删除规则成功';
   };
 
@@ -29,17 +29,13 @@ class RaceRuleMod {
         raceRuleSet[key] = options[key];
       }
     }
-    fs.writeFileSync(path.join(__dirname, '../data/rule/race/', options.id + '.json'), JSON.stringify(raceRuleSet, null, 2));
+    fs.writeFileSync(path.join(__dirname, '../data/rule/raceSet/', options.id + '.json'), JSON.stringify(raceRuleSet, null, 2));
     return '修改规则成功';
   };
 
   list () {
-    const raceRuleList = util.listRaceRule();
-    const doubanList = util.listDouban();
-    for (const raceRule of raceRuleList) {
-      raceRule.used = !!doubanList.some(item => item.raceRules.concat(item => item.rejectRules).indexOf(raceRule.id) !== -1);
-    }
-    return raceRuleList;
+    const raceRuleSetList = util.listRaceRuleSet();
+    return raceRuleSetList;
   };
 }
 

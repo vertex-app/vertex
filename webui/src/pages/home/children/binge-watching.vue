@@ -5,9 +5,13 @@
       </el-tab-pane>
       <el-tab-pane label="选种规则" name="race-rule">
       </el-tab-pane>
+      <el-tab-pane label="选种规则集" name="race-rule-set">
+      </el-tab-pane>
       <el-tab-pane label="链接规则" name="link-rule">
       </el-tab-pane>
       <el-tab-pane label="豆瓣账号" name="douban">
+      </el-tab-pane>
+      <el-tab-pane label="想看列表" name="douban-wishes">
       </el-tab-pane>
       <el-tab-pane label="任务历史" name="douban-history">
       </el-tab-pane>
