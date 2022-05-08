@@ -23,6 +23,7 @@ class Douban {
     this.sites = douban.sites;
     this.client = douban.client;
     this.cron = douban.cron;
+    this.defaultRefreshCron = douban.defaultRefreshCron || '35 21 * * *';
     this.enableWechatLink = douban.enableWechatLink;
     this.notify = douban.notify;
     this._notify = util.listPush().filter(i => i.id === this.notify)[0] || {};
@@ -37,7 +38,7 @@ class Douban {
     this.wishes = (util.listDoubanSet().filter(item => item.id === this.id)[0] || {}).wishes || [];
     for (const wish of this.wishes) {
       if (!wish.downloaded) {
-        this.refreshWishJobs[wish.id] = cron.schedule(wish.cron || this.cron, () => this.refreshWish(wish.id));
+        this.refreshWishJobs[wish.id] = cron.schedule(wish.cron || this.defaultRefreshCron, () => this.refreshWish(wish.id));
       }
     };
     logger.binge('豆瓣账号', this.alias, '初始化完毕');
@@ -205,7 +206,7 @@ class Douban {
           delete this.refreshWishJobs[wish.id];
         }
         if (!wish.downloaded) {
-          this.refreshWishJobs[wish.id] = cron.schedule(wish.cron || this.cron, () => this.refreshWish(wish.id));
+          this.refreshWishJobs[wish.id] = cron.schedule(wish.cron || this.defaultRefreshCron, () => this.refreshWish(wish.id));
         }
         this.wishes[index] = { ...wish };
         this._saveSet();
