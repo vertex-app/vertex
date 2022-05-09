@@ -262,7 +262,7 @@ class Douban {
     const _doubanSet = util.listDoubanSet().filter(item => item.id === this.id)[0];
     if (!_doubanSet) {
       this.wishes = wishes.map(item => {
-        logger.binge('豆瓣账户', this.alias, '首次添加想看列表', item.name, '已设为已下载');
+        logger.binge('豆瓣账户', this.alias, '首次添加想看列表', item.name, '已设为已下载, 跳过');
         return { ...item, downloaded: true };
       });
       this._saveSet();
