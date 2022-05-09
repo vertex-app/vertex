@@ -30,7 +30,7 @@ class Douban {
     this.push = douban.push;
     this._notify.push = this.push;
     this.ntf = new Push(this._notify);
-    this.refreshWishJob = cron.schedule(douban.cron, () => this.refreshWish());
+    this.refreshWishJob = cron.schedule(douban.cron, () => this.refreshWishList());
     this.refreshWishJobs = [];
     this.checkFinishJob = cron.schedule(global.checkFinishCron, () => this.checkFinish());
     this.clearSelectFailedJob = cron.schedule('0 0 * * *', () => this.clearSelectFailed());

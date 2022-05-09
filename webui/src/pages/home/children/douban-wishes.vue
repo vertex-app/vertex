@@ -55,14 +55,17 @@
         <el-form-item required label="影视剧名" prop="name">
           <el-input v-model="wish.name" type="input"></el-input>
         </el-form-item>
+        <el-form-item label="标签">
+          <span>{{wish.tag}}</span>
+        </el-form-item>
         <el-form-item required label="年份" prop="year">
           <el-input v-model="wish.year" type="input"></el-input>
         </el-form-item>
-        <el-form-item v-if="wish.episodes !== undefined" required label="总集数" prop="episodes">
-          <el-input v-model="wish.episodes" type="number"></el-input>
+        <el-form-item label="总集数" prop="episodes">
+          <el-input v-model="wish.episodes" type="number"  placeholder="电影务必留空"></el-input>
         </el-form-item>
-        <el-form-item v-if="wish.episodeNow !== undefined" required label="当前集" prop="episodeNow">
-          <el-input v-model="wish.episodeNow" @change="() => { wish.downloaded = (+wish.episodes === +wish.episodeNow); }" type="number"></el-input>
+        <el-form-item label="当前集" prop="episodeNow">
+          <el-input v-model="wish.episodeNow" @change="() => { wish.downloaded = (+wish.episodes === +wish.episodeNow); }" type="number" placeholder="电影务必留空"></el-input>
         </el-form-item>
         <el-form-item required label="已完成" prop="downloaded">
           <el-checkbox v-model="wish.downloaded">已完成</el-checkbox>

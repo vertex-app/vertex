@@ -210,6 +210,7 @@ export default {
         doubanTag: '',
         type: '',
         category: '',
+        libraryPath: '',
         savePath: '',
         autoTMM: false,
         rejectKeys: ''
