@@ -128,7 +128,7 @@ fi
 cp /app/vertex/app/config_backup/logger.yaml /vertex/config/logger.yaml
 
 cd /app/vertex
-export PORT=3000
+export PORT=`[ $PORT ] && echo $PORT || echo 3000`
 Xvfb -ac :99 -screen 0 1280x1024x16 &
 export DISPLAY=:99
 node app/app.js > /dev/null
