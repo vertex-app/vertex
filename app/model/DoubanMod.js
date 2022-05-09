@@ -45,7 +45,7 @@ class DoubanMod {
       .map(item => item.wishes.map(i => { return { ...i, doubanId: item.id, doubanAlias: doubanList.filter(ii => ii.id === item.id)[0].alias }; }))
       .flat().reverse();
     return {
-      wishes: doubanSet.slice(index, index + options.length) || [],
+      wishes: doubanSet.slice(index, index + +options.length) || [],
       total: doubanSet.length
     };
   };

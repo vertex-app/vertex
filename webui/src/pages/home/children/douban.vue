@@ -62,7 +62,7 @@
               <el-checkbox-group v-model="douban.raceRules">
                 <div v-for="set of raceRuleSetList" :key="set.id">
                   <el-checkbox :indeterminate="set.raceRuleIndeterminate" v-model="set.raceRuleCheckAll" @change="(v) => handleRaceRuleCheckAllChange(set, v)">{{set.alias}} 全选</el-checkbox>
-                  <div style="margin-left: 24px;"><el-checkbox v-for="rule of set.raceRules.map(i => raceRuleList.filter(item => item.id === i)[0]).sort((a, b) => a.priority - b.priority).map(item => item.id)" :key="rule" :label="rule">{{raceRuleList.filter(item => item.id === rule)[0].alias}}</el-checkbox></div>
+                  <div style="margin-left: 24px;"><el-checkbox v-for="rule of set.raceRules.map(i => raceRuleList.filter(item => item.id === i)[0]).sort((a, b) => b.priority - a.priority).map(item => item.id)" :key="rule" :label="rule">{{raceRuleList.filter(item => item.id === rule)[0].alias}}</el-checkbox></div>
                 </div>
               </el-checkbox-group>
               <div><el-tag type="info">选择选种规则, 符合这些规则的种子才会添加, 可前往选种规则分页添加</el-tag></div>

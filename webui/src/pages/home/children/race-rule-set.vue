@@ -135,7 +135,7 @@ export default {
     },
     async listRaceRule () {
       const res = await this.$axiosGet('/api/raceRule/list');
-      this.raceRuleList = res ? res.data : [];
+      this.raceRuleList = res ? res.data.sort((a, b) => b.priority - a.priority) : [];
     },
     handleraceRuleCheckAllChange (value) {
       this.raceRuleSet.raceRules = value ? this.raceRuleList.map(i => i.id) : [];
