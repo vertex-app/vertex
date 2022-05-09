@@ -11,11 +11,12 @@
                 <br>
                 [{{item.tag}}] [{{item.year}}]
                 <br>
-                [{{(item.rating || '').result || '∞'}} / {{(item.rating || '').votes || '∞'}}] [{{item.episodeNow === 0 ? 0 : item.episodeNow || '∞'}} / {{item.episodes || '∞'}}]
+                [{{(item.rating || '').result || '∞'}} / {{(item.rating || '').votes || '∞'}}] [{{item.episodeNow === 0 ? 0 : item.episodeNow || '1'}} / {{item.episodes === 0 ? 0 : item.episodes || '1'}}]
                 </el-link>
             </div>
             <div style="margin: 12px auto;">
               <span style="margin-left: 10px; cursor: pointer; font-size: 10px; color: blue" @click="openEditDialog(item)"><fa style="font-size: 10px; color: green;" :icon="['fas', 'edit']"></fa> 编辑</span>
+              <span style="margin-left: 10px; cursor: pointer; font-size: 10px; color: green" @click="refreshWish(item)" v-if="item.downloaded"><fa style="font-size: 10px; color: green;" :icon="['fas', 'check']"></fa> 已完成</span>
               <span style="margin-left: 10px; cursor: pointer; font-size: 10px; color: green" @click="refreshWish(item)" v-if="!item.downloaded"><fa style="font-size: 10px; color: green;" :icon="['fas', 'redo-alt']"></fa> 刷新</span>
               <span style="margin-left: 10px; cursor: pointer; font-size: 10px; color: red" @click="deleteWish(item)"><fa style="font-size: 10px; color: red;" :icon="['fas', 'times']"></fa> 删除</span>
             </div>

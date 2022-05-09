@@ -284,7 +284,6 @@ class Douban {
       wish.desc = doubanInfo.desc;
       wish.mainCreator = doubanInfo.mainCreator;
       wish.episodes = doubanInfo.episodes;
-      logger.info(wish);
       wishes.push(wish);
     }
     const _doubanSet = util.listDoubanSet().filter(item => item.id === this.id)[0];
