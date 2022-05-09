@@ -1,40 +1,28 @@
 <template>
   <div>
     <div class="radius-div">
-      <el-table
-        :data="wishes"
-        style="font-size: 14px; margin: 20px">
-        <el-table-column
-          >
-          <template slot-scope="scope">
-            <el-row>
-              <el-col :span="8"  style="width: 220px; margin: 10px 0; line-height: 0">
-                <el-card :body-style="{ padding: '10px' }" class="radius-div">
-                  <img :src="scope.row.poster" style="width: 200px">
-                </el-card>
-              </el-col>
-              <el-col :span="16"  style="width: calc(100% - 220px); margin: 20px 0; padding-left: 20px;">
-                <el-link style="font-size: 18px; color: #000;" @click="gotoDetail(scope.row.link)">{{scope.row.name}} [{{scope.row.tag}}] [{{scope.row.year}}]</el-link>
-                <span style="margin-left: 10px; cursor: pointer; color: blue" @click="openEditDialog(scope.row)"><fa style="font-size: 12px; color: green;" :icon="['fas', 'edit']"></fa> 编辑</span>
-                <span style="margin-left: 10px; cursor: pointer; color: green" @click="refreshWish(scope.row)" v-if="!scope.row.downloaded"><fa style="font-size: 12px; color: green;" :icon="['fas', 'redo-alt']"></fa> 刷新</span>
-                <span style="margin-left: 10px; cursor: pointer; color: red" @click="deleteWish(scope.row)"><fa style="font-size: 12px; color: red;" :icon="['fas', 'times']"></fa> 删除</span>
+      <div style="margin: 20px auto; padding: 20px auto; display: block;">
+        <div style="margin: 20px auto;" >
+          <el-card v-for="item of wishes" :key="item.id" style="width: 240px; display:inline-block; margin: 20px;" class="radius-div">
+            <img :src="item.poster" style="width: 200px; height: 280px;">
+            <div style="margin: 12px auto;">
+              <el-link style="font-size: 12px; color: #000; max-height: 50px;" @click="gotoDetail(item.link)">
+                {{item.name.split('/')[0]}}
                 <br>
-                <span style="font-size: 13px">进度: </span><span :style="'font-size: 13px; color: ' + (scope.row.downloaded ? 'green' : 'blue')">{{(scope.row.episodes ? `${scope.row.episodeNow}/${scope.row.episodes}` : '') + (scope.row.downloaded ? '已完成' : '未完成')}}</span>
+                [{{item.tag}}] [{{item.year}}]
                 <br>
-                <span style="font-size: 13px">主创: {{(scope.row || {}).mainCreator || ''}}</span>
-                <br>
-                <span v-if="scope.row.rating" style="font-size: 13px">评分: {{scope.row.rating.result || ''}} / {{scope.row.rating.votes || ''}}</span>
-                <br>
-                <span font-size="13" style="font-size: 13px">分类: {{scope.row.category || ''}}</span>
-                <br>
-                <span font-size="13" style="font-size: 13px">地区: {{scope.row.area || ''}}</span>
-                <br>
-                <span font-size="13" style="font-size: 13px">简介: <br>{{scope.row.desc || ''}}</span>
-              </el-col>
-            </el-row>
-          </template>
-        </el-table-column>
-      </el-table>
+                [{{(item.rating || '').result || '∞'}} / {{(item.rating || '').votes || '∞'}}] [{{item.episodeNow === 0 ? 0 : item.episodeNow || '∞'}} / {{item.episodes || '∞'}}]
+                </el-link>
+            </div>
+            <div style="margin: 12px auto;">
+              <span style="margin-left: 10px; cursor: pointer; font-size: 10px; color: blue" @click="openEditDialog(item)"><fa style="font-size: 10px; color: green;" :icon="['fas', 'edit']"></fa> 编辑</span>
+              <span style="margin-left: 10px; cursor: pointer; font-size: 10px; color: green" @click="refreshWish(item)" v-if="!item.downloaded"><fa style="font-size: 10px; color: green;" :icon="['fas', 'redo-alt']"></fa> 刷新</span>
+              <span style="margin-left: 10px; cursor: pointer; font-size: 10px; color: red" @click="deleteWish(item)"><fa style="font-size: 10px; color: red;" :icon="['fas', 'times']"></fa> 删除</span>
+            </div>
+          </el-card>
+        </div>
+      </div>
+      <div style="clear: both;"> </div>
       <div style="margin: 0 auto; width: fit-content">
         <el-pagination
           style="padding: 24px 0 12px 0"
@@ -96,7 +84,7 @@ export default {
       total: 0,
       totalPage: 0,
       page: 1,
-      length: 5,
+      length: 20,
       paginationShow: true
     };
   },

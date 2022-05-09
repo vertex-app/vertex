@@ -134,6 +134,7 @@ class WebhookMod {
         return '';
       }
       await global.doubanPush.selectWish('添加成功: ' + movie.title);
+      global.runningDouban[movie.doubanId].refreshWishList(true);
       return '';
     }
     const doubanCache = await redis.get('vertex:select:douban');
