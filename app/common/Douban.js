@@ -208,6 +208,12 @@ class Douban {
         if (!wish.downloaded) {
           this.refreshWishJobs[wish.id] = cron.schedule(wish.cron || this.defaultRefreshCron, () => this.refreshWish(wish.id));
         }
+        if (wish.episodeNow) {
+          wish.episodeNow = +wish.episodeNow;
+        }
+        if (wish.episodes) {
+          wish.episodes = +wish.episodes;
+        }
         this.wishes[index] = { ...wish };
         this._saveSet();
         return true;
@@ -243,7 +249,7 @@ class Douban {
     this._saveSet();
   }
 
-  async refreshWishList () {
+  async refreshWishList (manual = false) {
     const document = await this._getDocument('https://movie.douban.com/mine?status=wish', 20);
     const items = document.querySelectorAll('.article .grid-view .item');
     if (!items.length) {
@@ -622,7 +628,8 @@ class Douban {
             let episodes;
             if (wish.episodes) {
               episodes = this.scrapeEpisode(torrent.subtitle);
-              episodes = episodes.filter(item => +item <= wish.episodes);
+              episodes = episodes.filter(item => +item <= wish.episodes).map(item => +item);
+              episodes = [...new Set(episodes)];
               logger.bingedebug(this.alias, '选种规则', rulesName, '种子', `[${torrent.site}]`, torrent.title, '/', torrent.subtitle, '识别到分集', episodes, '已完成至', wish.episodeNow);
               if (episodes
                 .some(item => +item < wish.episodeNow - 2) ||

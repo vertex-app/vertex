@@ -76,7 +76,7 @@ class DoubanMod {
     if (!global.runningDouban[options.douban]) {
       throw new Error('豆瓣账号未启用');
     }
-    global.runningDouban[options.douban].refreshWish(options.id);
+    global.runningDouban[options.douban].refreshWish(options.id, true);
     return '已启动刷新任务';
   }
 
