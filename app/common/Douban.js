@@ -232,7 +232,6 @@ class Douban {
       wish.downloaded = await this.selectTorrent(wish, true);
     }
     await redis.setWithExpire(`vertex:douban:refresh_cache:${id}`, '1', 2400 * 23);
-    this._saveSet();
     if (!wish.downloaded) {
       logger.binge(this.alias, '未匹配种子', wish.name);
       if (!this.selectTorrentToday[wish.id]) {
@@ -240,6 +239,8 @@ class Douban {
         this.selectTorrentToday[wish.id] = 1;
       }
     }
+    wish.downloaded = wish.downloaded && (wish.episodeNow === wish.episodes);
+    this._saveSet();
   }
 
   async refreshWishList () {
