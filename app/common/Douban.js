@@ -264,13 +264,34 @@ class Douban {
       wish.poster = item.querySelector('a[class=nbg] img').src.trim().replace(/img\d/, 'img9').replace('s_ratio', 'l_ratio').replace('webp', 'jpg');
       wish.id = wish.link.match(/\/(\d+)\//)[1];
       wish.tag = (item.querySelector('span.tags')?.innerHTML)?.replace('标签: ', '') || item.querySelector('span[class=\'comment\']')?.innerHTML;
+      let doubanInfo;
+      try {
+        doubanInfo = await this._getDoubanInfo(wish.link);
+      } catch (e) {
+        logger.error('豆瓣账户', this.alias, '查询影视', wish.name, '详情失败', '疑似是豆瓣 Cookie 过期', '任务退出\n', e);
+        await this.ntf.selectTorrentError(this.alias, wish, ['豆瓣账户', this.alias, '查询影视', wish.name, '详情失败', '疑似是豆瓣 Cookie 过期', '任务退出'].join(' '));
+        return;
+      }
+      const imdb = doubanInfo.imdb;
+      const year = doubanInfo.year;
+      wish.imdb = imdb ? imdb[1] : null;
+      wish.year = year ? year[1] : null;
+      wish.rating = doubanInfo.rating;
+      wish.length = doubanInfo.length;
+      wish.area = doubanInfo.area;
+      wish.language = doubanInfo.language;
+      wish.category = doubanInfo.category;
+      wish.desc = doubanInfo.desc;
+      wish.mainCreator = doubanInfo.mainCreator;
+      wish.episodes = doubanInfo.episodes;
+      logger.info(wish);
       wishes.push(wish);
     }
     const _doubanSet = util.listDoubanSet().filter(item => item.id === this.id)[0];
     if (!_doubanSet) {
       this.wishes = wishes.map(item => {
         logger.binge('豆瓣账户', this.alias, '首次添加想看列表', item.name, '已设为已下载, 跳过');
-        return { ...item, downloaded: true };
+        return { ...item, downloaded: true, episodes: undefined };
       });
       this._saveSet();
       await this.ntf.addDouban(this.alias, wishes);
@@ -288,27 +309,7 @@ class Douban {
             continue;
           }
           wish.tag = fitTag[0];
-          let doubanInfo;
-          try {
-            doubanInfo = await this._getDoubanInfo(wish.link);
-          } catch (e) {
-            logger.error('豆瓣账户', this.alias, '查询影视', wish.name, '详情失败', '疑似是豆瓣 Cookie 过期', '任务退出\n', e);
-            await this.ntf.selectTorrentError(this.alias, wish, ['豆瓣账户', this.alias, '查询影视', wish.name, '详情失败', '疑似是豆瓣 Cookie 过期', '任务退出'].join(' '));
-            return;
-          }
-          const imdb = doubanInfo.imdb;
-          const year = doubanInfo.year;
-          wish.imdb = imdb ? imdb[1] : null;
-          wish.year = year ? year[1] : null;
-          wish.rating = doubanInfo.rating;
-          wish.length = doubanInfo.length;
-          wish.area = doubanInfo.area;
-          wish.language = doubanInfo.language;
-          wish.length = doubanInfo.length;
-          wish.category = doubanInfo.category;
-          wish.desc = doubanInfo.desc;
-          wish.mainCreator = doubanInfo.mainCreator;
-          const episodes = doubanInfo.episodes;
+          const episodes = wish.episodes;
           if (episodes.length !== 0) {
             wish.episodes = +episodes[episodes.length - 1].href.match(/episode\/(\d+)/)[1];
             wish.episodeNow = 0;

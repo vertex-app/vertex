@@ -3,7 +3,7 @@
     <div class="radius-div">
       <div style="margin: 20px auto; padding: 20px auto; display: block;">
         <div style="margin: 20px auto;" >
-          <el-card v-for="item of wishes" :key="item.id" style="width: 240px; display:inline-block; margin: 20px;" class="radius-div">
+          <el-card v-for="item of wishes" :key="item.id + item.doubanId" style="width: 240px; display:inline-block; margin: 20px;" class="radius-div">
             <img :src="item.poster" style="width: 200px; height: 280px;">
             <div style="margin: 12px auto;">
               <el-link style="font-size: 12px; color: #000; max-height: 50px;" @click="gotoDetail(item.link)">
