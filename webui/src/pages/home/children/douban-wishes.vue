@@ -2,6 +2,15 @@
   <div>
     <div class="radius-div">
       <div style="margin: 20px auto; padding: 20px auto; display: block;">
+        <el-form class="filter-form" label-width="100px" size="mini">
+          <el-form-item label="">
+            <el-select style="width: 160px;" @change="listWishes"  v-model="downloaded" placeholder="完成状态">
+              <el-option label="已完成" :value="true"></el-option>
+              <el-option label="未完成" :value="false"></el-option>
+            </el-select>
+            <el-input style="width: 288px; padding-left: 20px;" v-model="key" type="input" placeholder="关键词" @change="listWishes"></el-input>
+          </el-form-item>
+        </el-form>
         <div style="margin: 20px auto;" >
           <el-card v-for="item of wishes" :key="item.id + item.doubanId" style="width: 240px; display:inline-block; margin: 20px;" class="radius-div">
             <img :src="item.poster" style="width: 200px; height: 280px;">
@@ -86,12 +95,20 @@ export default {
       totalPage: 0,
       page: 1,
       length: 20,
+      key: '',
+      downloaded: '',
       paginationShow: true
     };
   },
   methods: {
     async listWishes () {
-      const url = `/api/douban/listWishes?page=${this.page}&length=${this.length}`;
+      let url = `/api/douban/listWishes?page=${this.page}&length=${this.length}`;
+      if (this.downloaded !== '') {
+        url += `&downloaded=${this.downloaded}`;
+      }
+      if (this.key) {
+        url += `&key=${this.key}`;
+      }
       const res = await this.$axiosGet(url);
       this.total = res.data.total;
       this.wishes = res.data.wishes;
@@ -150,11 +167,9 @@ export default {
 </script>
 
 <style scoped>
-.torrent-history-form {
-  margin: 20px;
-  padding-top: 24px;
-  width: fit-content;
-  text-align: left;
+.filter-form {
+  margin: 20px 0;
+  padding-top: 20px;
 }
 
 .table-expand .el-form-item {

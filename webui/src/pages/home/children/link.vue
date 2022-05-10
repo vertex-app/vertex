@@ -37,8 +37,57 @@
           </el-form-item>
           <el-form-item size="small">
             <el-button type="primary" @click="startLink">执行</el-button>
+            <el-button type="primary" @click="dryrun">测试</el-button>
           </el-form-item>
         </el-form>
+      </div>
+      <div style="padding: 24px;">
+        <el-table
+          :data="fileList"
+          fit
+          size="mini">
+          <el-table-column
+            prop="file"
+            sortable
+            v-if="fileList[0].file"
+            label="文件名">
+          </el-table-column>
+          <el-table-column
+            prop="seriesName"
+            sortable
+            width="144"
+            v-if="fileList[0].seriesName"
+            label="剧集名称">
+          </el-table-column>
+          <el-table-column
+            prop="season"
+            sortable
+            width="144"
+            v-if="fileList[0].season"
+            label="季">
+          </el-table-column>
+          <el-table-column
+            prop="episode"
+            sortable
+            width="144"
+            v-if="fileList[0].episode"
+            label="集">
+          </el-table-column>
+          <el-table-column
+            prop="folderName"
+            sortable
+            width="144"
+            v-if="fileList[0].folderName"
+            label="影视名称">
+          </el-table-column>
+          <el-table-column
+            prop="linkFile"
+            sortable
+            width="144"
+            v-if="fileList[0].linkFile"
+            label="链接文件名称">
+          </el-table-column>
+        </el-table>
       </div>
     </div>
   </div>
@@ -49,6 +98,8 @@ export default {
   data () {
     return {
       linkRuleList: [],
+      fileList: [{
+      }],
       torrentInfo: {},
       hash: '',
       libraryPath: '',
@@ -83,6 +134,19 @@ export default {
         return;
       }
       await this.$messageBox(res);
+    },
+    async dryrun () {
+      const res = await this.$axiosPost('/api/torrent/link', {
+        dryrun: true,
+        hash: this.hash,
+        type: this.type,
+        mediaName: this.mediaName,
+        linkRule: this.linkRule,
+        client: this.torrentInfo.client,
+        libraryPath: this.libraryPath,
+        savePath: this.torrentInfo.savePath
+      });
+      this.fileList = res?.data;
     }
   },
   async mounted () {

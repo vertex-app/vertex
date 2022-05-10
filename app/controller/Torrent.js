@@ -59,10 +59,17 @@ class Torrent {
     const options = req.body;
     try {
       const r = await torrentMod.link(options);
-      res.send({
-        success: true,
-        message: r
-      });
+      if (options.dryrun) {
+        res.send({
+          success: true,
+          data: r
+        });
+      } else {
+        res.send({
+          success: true,
+          message: r
+        });
+      }
     } catch (e) {
       logger.error(e);
       res.send({

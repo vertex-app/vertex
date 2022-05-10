@@ -159,6 +159,7 @@ class Client {
   destroy () {
     logger.info('销毁下载器实例', this.alias);
     this.maindataJob.stop();
+    delete this.maindataJob;
     if (this.trackerSyncJob) {
       this.trackerSyncJob.stop();
       delete this.trackerSyncJob;

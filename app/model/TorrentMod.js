@@ -47,7 +47,6 @@ class TorrentMod {
       for (const torrent of clients[clientId].maindata.torrents) {
         if (torrent.hash !== torrentHash) continue;
         const _torrent = { ...torrent };
-        const files = await clients[clientId].getFiles(torrentHash);
         try {
           _torrent.scrapeName = await util.scrapeNameByFile(torrent.name);
         } catch (e) {}
@@ -59,7 +58,8 @@ class TorrentMod {
     throw new Error('not found');
   }
 
-  async _linkTorrentFiles ({ hash, savePath, client, mediaName, type, libraryPath, linkRule }) {
+  async _linkTorrentFiles ({ hash, savePath, client, mediaName, type, libraryPath, linkRule, dryrun = false }) {
+    const dryrunResult = [];
     const _linkRule = util.listLinkRule().filter(item => item.id === linkRule)[0];
     let size = 1;
     _linkRule.minFileSize.split('*').forEach(i => { size *= +i; });
@@ -111,6 +111,16 @@ class TorrentMod {
         const linkFile = path.join(linkFilePath, season + episode + fileExt).replace(/'/g, '\\\'');
         const targetFile = path.join(savePath.replace(_linkRule.targetPath.split('##')[0], _linkRule.targetPath.split('##')[1]), file.name).replace(/'/g, '\\\'');
         const command = `mkdir -p $'${linkFilePath}' && ln -sf $'${targetFile}' $'${linkFile}'`;
+        if (dryrun) {
+          dryrunResult.push({
+            file: filename,
+            episode,
+            season,
+            seriesName,
+            linkFile: season + episode + fileExt
+          });
+          continue;
+        }
         logger.binge('手动软链接', '执行软连接命令', command);
         try {
           await global.runningServer[_linkRule.server].run(command);
@@ -126,17 +136,26 @@ class TorrentMod {
         const fileExt = path.extname(file.name);
         const linkFilePath = path.join(_linkRule.linkFilePath, libraryPath, `${movieName}.${year}`).replace(/'/g, '\\\'');
         const linkFile = path.join(linkFilePath, `${movieName}.${year}${fileExt}`).replace(/'/g, '\\\'');
+        if (dryrun) {
+          dryrunResult.push({
+            file: path.basename(file.name),
+            folderName: `${movieName}.${year}`,
+            linkFile: `${movieName}.${year}${fileExt}`
+          });
+          continue;
+        }
         const targetFile = path.join(savePath.replace(_linkRule.targetPath.split('##')[0], _linkRule.targetPath.split('##')[1]), file.name).replace(/'/g, '\\\'');
         const command = `mkdir -p $'${linkFilePath}' && ln -sf $'${targetFile}' $'${linkFile}'`;
         logger.binge('手动软链接', '执行软连接命令', command);
         await global.runningServer[_linkRule.server].run(command);
       }
     }
+    return dryrunResult;
   }
 
   async link (options) {
-    await this._linkTorrentFiles(options);
-    return '软链接成功';
+    const res = await this._linkTorrentFiles(options);
+    return options.dryrun ? res : '软链接成功';
   }
 
   async listHistory (options) {

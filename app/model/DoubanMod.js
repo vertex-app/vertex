@@ -39,11 +39,18 @@ class DoubanMod {
   };
 
   listWishes (options) {
+    logger.info(options);
     const index = options.length * (options.page - 1);
     const doubanList = util.listDouban();
-    const doubanSet = util.listDoubanSet()
+    let doubanSet = util.listDoubanSet()
       .map(item => item.wishes.map(i => { return { ...i, doubanId: item.id, doubanAlias: doubanList.filter(ii => ii.id === item.id)[0].alias }; }))
       .flat().reverse();
+    if (options.downloaded) {
+      doubanSet = doubanSet.filter(item => item.downloaded === (options.downloaded === 'true'));
+    }
+    if (options.key) {
+      doubanSet = doubanSet.filter(item => item.name.includes(options.key));
+    }
     return {
       wishes: doubanSet.slice(index, index + +options.length) || [],
       total: doubanSet.length
