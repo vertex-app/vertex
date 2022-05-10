@@ -47,6 +47,7 @@ class TorrentMod {
       for (const torrent of clients[clientId].maindata.torrents) {
         if (torrent.hash !== torrentHash) continue;
         const _torrent = { ...torrent };
+        const files = await clients[clientId].getFiles(torrentHash);
         try {
           _torrent.scrapeName = await util.scrapeNameByFile(torrent.name);
         } catch (e) {}

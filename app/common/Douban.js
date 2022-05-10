@@ -314,6 +314,8 @@ class Douban {
           if (episodes.length !== 0) {
             wish.episodes = +episodes[episodes.length - 1].href.match(/episode\/(\d+)/)[1];
             wish.episodeNow = 0;
+          } else {
+            delete wish.episodes;
           }
           try {
             this.wishes.push(wish);
