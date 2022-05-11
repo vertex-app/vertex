@@ -48,6 +48,7 @@ class DoubanMod {
     if (options.downloaded) {
       doubanSet = doubanSet.filter(item => item.downloaded === (options.downloaded === 'true'));
     }
+    doubanSet.sort((a, b) => a.downloaded ? 1 : -1);
     if (options.key) {
       doubanSet = doubanSet.filter(item => item.name.includes(options.key));
     }
