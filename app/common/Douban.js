@@ -621,11 +621,27 @@ class Douban {
               }
             }
             if (fitReject) continue;
-            const fitRejectKeys = this.categories[wish.tag].rejectKeys && !!this.categories[wish.tag].rejectKeys
-              .split(',').some(item => (torrent.title.indexOf(item) !== -1 || torrent.subtitle.indexOf(item) !== -1));
+            const fitRejectKeys =
+              (this.categories[wish.tag].rejectKeys && !!this.categories[wish.tag].rejectKeys
+                .split(',').some(item => (torrent.title.indexOf(item) !== -1 || torrent.subtitle.indexOf(item) !== -1))) ||
+              (wish.rejectKeys && !!wish.rejectKeys
+                .split(',').some(item => (torrent.title.indexOf(item) !== -1 || torrent.subtitle.indexOf(item) !== -1)));
             if (fitRejectKeys) {
-              logger.bingedebug(this.alias, '选种规则', rulesName, '种子', `[${torrent.site}]`, torrent.title, '/', torrent.subtitle, '匹配成功, 同时匹配排除关键词:', this.categories[wish.tag].rejectKeys, '跳过');
+              logger.bingedebug(this.alias, '选种规则', rulesName, '种子', `[${torrent.site}]`, torrent.title, '/', torrent.subtitle, '匹配成功, 同时匹配排除关键词:', this.categories[wish.tag].rejectKeys, '/', wish.rejectKeys, '跳过');
               continue;
+            }
+            const fitAcceptKeys = wish.accpetKeys && !!wish.accpetKeys
+              .split(',').every(item => (torrent.title.indexOf(item) !== -1 || torrent.subtitle.indexOf(item) !== -1));
+            if (!fitAcceptKeys) {
+              logger.bingedebug(this.alias, '选种规则', rulesName, '种子', `[${torrent.site}]`, torrent.title, '/', torrent.subtitle, '匹配成功, 同时因为不匹配关键词:', wish.accpetKeys, '跳过');
+              continue;
+            }
+            if (wish.rejectCompleteTorrent) {
+              const episode = wish.subtitle.match(/[全]\d+[集期话]/);
+              if (episode) {
+                logger.bingedebug(this.alias, '选种规则', rulesName, '种子', `[${torrent.site}]`, torrent.title, '/', torrent.subtitle, '匹配成功, 同时识别为全集种子', '跳过');
+                continue;
+              }
             }
             let episodes;
             if (wish.episodes) {

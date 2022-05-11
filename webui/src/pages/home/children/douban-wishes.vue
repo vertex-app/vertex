@@ -71,8 +71,17 @@
         <el-form-item label="刷新周期" prop="cron">
           <el-input v-model="wish.cron" type="input" placeholder="留空使用账号设置"></el-input>
         </el-form-item>
+        <el-form-item label="包含关键词" prop="acceptkeys">
+          <el-input v-model="wish.acceptkeys" type="input" placeholder="排除关键词"></el-input>
+          <div><el-tag type="info">以 , 为分割, 各个关键词间为 且 的关系</el-tag></div>
+        </el-form-item>
         <el-form-item label="排除关键词" prop="rejectKeys">
-          <el-input v-model="wish.rejectKeys" type="input" placeholder="暂不生效"></el-input>
+          <el-input v-model="wish.rejectKeys" type="input" placeholder="排除关键词"></el-input>
+          <div><el-tag type="info">以 , 为分割, 各个关键词间为 或 的关系</el-tag></div>
+        </el-form-item>
+        <el-form-item label="禁止下载全集" prop="rejectKeys">
+          <el-checkbox v-model="wish.rejectCompleteTorrent">禁止下载全集</el-checkbox>
+          <div><el-tag type="info">如果当前集不为零, 且勾选禁止下载全集, 则在选择种子时排除全集种子</el-tag></div>
         </el-form-item>
         <el-form-item size="mini">
           <el-button @click="editWish" type="primary">编辑</el-button>

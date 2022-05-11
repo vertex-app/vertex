@@ -39,7 +39,6 @@ class DoubanMod {
   };
 
   listWishes (options) {
-    logger.info(options);
     const index = options.length * (options.page - 1);
     const doubanList = util.listDouban();
     let doubanSet = util.listDoubanSet()
