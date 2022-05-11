@@ -100,7 +100,7 @@ class Douban {
     const dom = await this._getDocument(url);
     const info = {};
     // poster
-    info.poster = dom.querySelector('img[title="点击看更多海报"]').getAttribute('src').replace(/img\d/, 'img9').replace('s_ratio', 'l_ratio').replace('webp', 'jpg');
+    info.poster = (dom.querySelector('img[title="点击看更多海报"]') || dom.querySelector('img[title="点击看大图"]')).getAttribute('src').replace(/img\d/, 'img9').replace('s_ratio', 'l_ratio').replace('webp', 'jpg');
 
     // span info
     const spans = dom.querySelectorAll('#info > span');
