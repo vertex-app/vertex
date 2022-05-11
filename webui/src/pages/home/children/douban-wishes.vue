@@ -71,8 +71,8 @@
         <el-form-item label="刷新周期" prop="cron">
           <el-input v-model="wish.cron" type="input" placeholder="留空使用账号设置"></el-input>
         </el-form-item>
-        <el-form-item label="包含关键词" prop="acceptkeys">
-          <el-input v-model="wish.acceptkeys" type="input" placeholder="包含关键词"></el-input>
+        <el-form-item label="包含关键词" prop="acceptKeys">
+          <el-input v-model="wish.acceptKeys" type="input" placeholder="包含关键词"></el-input>
           <div><el-tag type="info">以 , 为分割, 各个关键词间为 且 的关系</el-tag></div>
         </el-form-item>
         <el-form-item label="排除关键词" prop="rejectKeys">
