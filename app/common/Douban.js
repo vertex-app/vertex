@@ -630,10 +630,10 @@ class Douban {
               logger.bingedebug(this.alias, '选种规则', rulesName, '种子', `[${torrent.site}]`, torrent.title, '/', torrent.subtitle, '匹配成功, 同时匹配排除关键词:', this.categories[wish.tag].rejectKeys, '/', wish.rejectKeys, '跳过');
               continue;
             }
-            const fitAcceptKeys = wish.accpetKeys && !!wish.accpetKeys
+            const fitAcceptKeys = !wish.accpetKeys || !!wish.accpetKeys
               .split(',').every(item => (torrent.title.indexOf(item) !== -1 || torrent.subtitle.indexOf(item) !== -1));
             if (!fitAcceptKeys) {
-              logger.bingedebug(this.alias, '选种规则', rulesName, '种子', `[${torrent.site}]`, torrent.title, '/', torrent.subtitle, '匹配成功, 同时因为不匹配关键词:', wish.accpetKeys, '跳过');
+              logger.bingedebug(this.alias, '选种规则', rulesName, '种子', `[${torrent.site}]`, torrent.title, '/', torrent.subtitle, '匹配成功, 同时不匹配关键词:', wish.accpetKeys, '跳过');
               continue;
             }
             if (wish.rejectCompleteTorrent) {
