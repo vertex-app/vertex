@@ -320,7 +320,8 @@ class Douban {
           try {
             this.wishes.push(wish);
             await this.ntf.addDoubanWish(this.alias, wish);
-            await this.refreshWish(wish.id);
+            this.updateWish(wish);
+            this.refreshWish(wish.id);
           } catch (e) {
             logger.error('豆瓣账户:', this.alias, '选种报错', wish.name, ':\n', e);
           }
