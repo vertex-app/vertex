@@ -48,7 +48,7 @@
         </el-form-item>
         <el-form-item label="TMDB ApiKey" prop="tmdbApiKey">
           <el-input v-model="setting.tmdbApiKey" style="width: 500px;"></el-input>
-          <div><el-tag type="warning">The Movie Database Api Key, 用于从文件名提取影视剧名称</el-tag></div>
+          <div><el-tag type="warning">The Movie Database Api Key, 用于从文件名提取影视剧名称, 请确保 Vertex 可以正常请求 api.themoviedb.org</el-tag></div>
         </el-form-item>
         <el-form-item label="微信 AesKey" prop="wechatAesKey">
           <el-input v-model="setting.wechatAesKey" style="width: 500px;"></el-input>
