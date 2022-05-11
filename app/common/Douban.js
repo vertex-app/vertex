@@ -234,7 +234,7 @@ class Douban {
     }
     this.ntf.startRefreshWish(`${this.alias} / ${wish.name}`);
     wish.downloaded = await this.selectTorrent(wish);
-    if (await redis.get(`vertex:douban:fityear:${this.id}:${wish.id}`)) {
+    if (!wish.downloaded) {
       wish.downloaded = await this.selectTorrent(wish, true);
     }
     await redis.setWithExpire(`vertex:douban:refresh_cache:${id}`, '1', 2400 * 23);
@@ -528,7 +528,6 @@ class Douban {
   };
 
   async selectTorrent (_wish, imdb = false) {
-    await redis.set(`vertex:douban:fityear:${this.id}:${_wish.id}`, 1);
     const wish = { ..._wish };
     wish.doubanId = this.id;
     const searchKey = wish.name.split('/')[0].replace(/[!\uff01\uff1a.。:?？，,·・]/g, ' ').replace(/([^\d]?)([\d一二三四五六七八九十]+)([^\d])/g, '$1 $2 $3').replace(/([^\d])([\d一二三四五六七八九十]+)([^\d]?)/g, '$1 $2 $3').replace(/ +/g, ' ').trim();
@@ -612,7 +611,6 @@ class Douban {
               continue;
             }
           }
-          await redis.del(`vertex:douban:fityear:${this.id}:${_wish.id}`);
           if (rules.some(item => this._fitRaceRule(item, torrent))) {
             let fitReject = false;
             for (const rejectRule of rejectRules) {
