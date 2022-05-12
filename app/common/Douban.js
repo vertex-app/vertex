@@ -474,9 +474,17 @@ class Douban {
         newEpisode = Math.max(episode, newEpisode);
         episode = 'E' + '0'.repeat(Math.max(2 - ('' + (fakeEpisode || episode)).length, 0)) + (fakeEpisode || episode);
         season = 'S' + '0'.repeat(2 - ('' + season).length) + season;
+        const prefix = linkRule.keepSeriesName ? seriesName + '.' : '';
+        let suffix = '';
+        linkRule.reservedKeys = linkRule.reservedKeys || '';
+        for (const key of linkRule.reservedKeys.split(',')) {
+          if (filename.indexOf(key) !== -1 && suffix.indexOf(key) === -1) {
+            suffix += '.' + key;
+          }
+        }
         const fileExt = path.extname(file.name);
         const linkFilePath = path.join(linkRule.linkFilePath, category.libraryPath, seriesName, season).replace(/'/g, '\\\'');
-        const linkFile = path.join(linkFilePath, season + episode + fileExt).replace(/'/g, '\\\'');
+        const linkFile = path.join(linkFilePath, prefix + season + episode + suffix + fileExt).replace(/'/g, '\\\'');
         const targetFile = path.join(torrent.savePath.replace(linkRule.targetPath.split('##')[0], linkRule.targetPath.split('##')[1]), file.name).replace(/'/g, '\\\'');
         const command = `mkdir -p $'${linkFilePath}' && ln -sf $'${targetFile}' $'${linkFile}'`;
         logger.binge(this.alias, '执行软连接命令', command);

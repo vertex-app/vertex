@@ -106,9 +106,17 @@ class TorrentMod {
         newEpisode = Math.max(episode, newEpisode);
         episode = 'E' + '0'.repeat(Math.max(0, 2 - ('' + (fakeEpisode || episode)).length)) + (fakeEpisode || episode);
         season = 'S' + '0'.repeat(2 - ('' + season).length) + season;
+        const prefix = _linkRule.keepSeriesName ? seriesName + '.' : '';
+        let suffix = '';
+        _linkRule.reservedKeys = _linkRule.reservedKeys || '';
+        for (const key of _linkRule.reservedKeys.split(',')) {
+          if (filename.indexOf(key) !== -1 && suffix.indexOf(key) === -1) {
+            suffix += '.' + key;
+          }
+        }
         const fileExt = path.extname(file.name);
         const linkFilePath = path.join(_linkRule.linkFilePath, libraryPath, seriesName, season).replace(/'/g, '\\\'');
-        const linkFile = path.join(linkFilePath, season + episode + fileExt).replace(/'/g, '\\\'');
+        const linkFile = path.join(linkFilePath, prefix + season + episode + suffix + fileExt).replace(/'/g, '\\\'');
         const targetFile = path.join(savePath.replace(_linkRule.targetPath.split('##')[0], _linkRule.targetPath.split('##')[1]), file.name).replace(/'/g, '\\\'');
         const command = `mkdir -p $'${linkFilePath}' && ln -sf $'${targetFile}' $'${linkFile}'`;
         if (dryrun) {
@@ -117,7 +125,7 @@ class TorrentMod {
             episode,
             season,
             seriesName,
-            linkFile: season + episode + fileExt
+            linkFile: prefix + season + episode + suffix + fileExt
           });
           continue;
         }

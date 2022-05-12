@@ -69,6 +69,14 @@
               <el-input v-model="rule.linkFilePath" type="input"></el-input>
               <div><el-tag type="info">标准的目录格式, 应为影视库的顶级目录</el-tag></div>
             </el-form-item>
+            <el-form-item label="剧集名" prop="keepSeriesName">
+              <el-checkbox v-model="rule.keepSeriesName">保留剧集名</el-checkbox>
+              <div><el-tag type="info">软链接时在文件名前添加剧集的名称</el-tag></div>
+            </el-form-item>
+            <el-form-item label="保留关键词" prop="reservedKeys">
+              <el-input v-model="rule.reservedKeys" type="input"></el-input>
+              <div><el-tag type="info">软链接时保留关键词, 可以用 , 分割多个关键字, 在软链接时将按照关键词的顺序检索文件名, 若存在则保留</el-tag></div>
+            </el-form-item>
             <el-form-item label="排除关键词" prop="excludeKeys">
               <el-input v-model="rule.excludeKeys" type="input"></el-input>
               <div><el-tag type="info">软链接时排除关键词, 可以用 , 分割多个关键字, 各个关键字间为 或 的关系</el-tag></div>
@@ -186,7 +194,6 @@ export default {
   },
   async mounted () {
     this.rule = { ...this.defaultRule };
-    this.rule.conditions = [{ ...this.condition }];
     this.$refs.rule.resetFields();
     this.listRule();
     this.listServer();

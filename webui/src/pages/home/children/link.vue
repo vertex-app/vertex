@@ -62,14 +62,14 @@
           <el-table-column
             prop="season"
             sortable
-            width="144"
+            width="72"
             v-if="fileList[0].season"
             label="季">
           </el-table-column>
           <el-table-column
             prop="episode"
             sortable
-            width="144"
+            width="72"
             v-if="fileList[0].episode"
             label="集">
           </el-table-column>
@@ -83,7 +83,7 @@
           <el-table-column
             prop="linkFile"
             sortable
-            width="144"
+            width="320"
             v-if="fileList[0].linkFile"
             label="链接文件名称">
           </el-table-column>
