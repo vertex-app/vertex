@@ -58,6 +58,33 @@ class TorrentMod {
     throw new Error('not found');
   }
 
+  async scrapeName (options) {
+    const { keyword, type } = options;
+    const clients = global.runningClient;
+    const torrents = [];
+    for (const clientId of Object.keys(clients)) {
+      if (!clients[clientId].maindata) continue;
+      for (const torrent of clients[clientId].maindata.torrents) {
+        if (
+          !(
+            (torrent.tags && torrent.tags.indexOf(keyword) !== -1) ||
+            (torrent.category && torrent.category.indexOf(keyword) !== -1)
+          )
+        ) {
+          continue;
+        }
+        const _torrent = { ...torrent };
+        try {
+          _torrent.scrapeName = await util.scrapeNameByFile(torrent.name);
+        } catch (e) { logger.info(e); }
+        _torrent.clientAlias = clients[clientId].alias;
+        _torrent.client = clientId;
+        torrents.push(_torrent);
+      }
+    }
+    return torrents;
+  }
+
   async _linkTorrentFiles ({ hash, savePath, client, mediaName, type, libraryPath, linkRule, dryrun = false }) {
     const dryrunResult = [];
     const _linkRule = util.listLinkRule().filter(item => item.id === linkRule)[0];

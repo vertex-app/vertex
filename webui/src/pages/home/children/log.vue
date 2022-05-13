@@ -29,7 +29,7 @@ export default {
   },
   methods: {
     async getLog () {
-      const res = await this.$axiosGet(`/api/log/get?type=${this.type}`);
+      const res = await this.$axiosGet(`/api/log/get?_=${Math.random()}&type=${this.type}`);
       this.log = res ? '[202' + res.data.split('[202').reverse().join('[202') : '';
       this.log = this.log.replace(/\[2022-/g, '[').replace(/\[[^\d]*? console\] \d*/g, '').replace(/\[202/g, '');
     },

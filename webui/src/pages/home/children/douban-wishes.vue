@@ -4,7 +4,7 @@
       <div style="margin: 20px auto; padding: 20px auto; display: block;">
         <el-form class="filter-form" label-width="100px" size="mini">
           <el-form-item label="">
-            <el-select style="width: 160px;" @change="listWishes"  v-model="downloaded" placeholder="完成状态">
+            <el-select style="width: 160px;" clearable @change="listWishes"  v-model="downloaded" placeholder="完成状态">
               <el-option label="已完成" :value="true"></el-option>
               <el-option label="未完成" :value="false"></el-option>
             </el-select>
@@ -12,22 +12,27 @@
           </el-form-item>
         </el-form>
         <div style="margin: 20px auto;" >
-          <el-card v-for="item of wishes" :key="item.id + item.doubanId" style="width: 240px; display:inline-block; margin: 20px;" class="radius-div">
-            <img :src="item.poster" style="width: 200px; height: 280px;">
+          <el-card class="radius-div" shadow="never" v-for="item of wishes" :key="item.id + item.doubanId" style="width: 240px; display:inline-block; margin: 20px;">
+            <img @click="gotoDetail(item.link)" :src="item.poster" style="cursor: pointer; width: 200px; height: 280px;">
             <div style="margin: 12px auto;">
-              <el-link style="font-size: 12px; color: #000; max-height: 50px;" @click="gotoDetail(item.link)">
-                {{item.name.split('/')[0]}}
-                <br>
-                [{{item.tag}}] [{{item.year}}]
-                <br>
-                [{{(item.rating || '').result || '∞'}} / {{(item.rating || '').votes || '∞'}}] [{{item.episodeNow === 0 ? 0 : item.episodeNow || '1'}} / {{item.episodes === 0 ? 0 : item.episodes || '1'}}]
-                </el-link>
+              <div style="font-size: 14px; color: #000; height: 42px;">
+                {{item.name.split('/')[0]}} · {{item.year}}
+              </div>
+              <div style="font-size: 13px;">
+                <span style="color: blue;">[{{item.tag}}]</span>
+                <span style="color: green;">[{{item.episodeNow === 0 ? 0 : item.episodeNow || '1'}}/{{item.episodes === 0 ? 0 : item.episodes || '1'}}]</span>
+              </div>
             </div>
             <div style="margin: 12px auto;">
+              <el-tag class="tag-margin" size="small" type="success" style="cursor: pointer;" @click="refreshWish(item)"> <fa style="font-size: 10px; color: green;" :icon="['fas', item.downloaded ? 'check' : 'redo-alt']"></fa> {{item.downloaded ? '完成' : '刷新'}}</el-tag>
+              <el-tag class="tag-margin" size="small" style="cursor: pointer;" @click="openEditDialog(item)"> <fa style="font-size: 10px; color: green;" :icon="['fas', 'edit']"></fa> 编辑</el-tag>
+              <el-tag class="tag-margin" size="small" type="danger" style="cursor: pointer;" @click="deleteWish(item)"> <fa style="font-size: 10px; color: red;" :icon="['fas', 'times']"></fa> 删除</el-tag>
+              <!--
               <span style="margin-left: 10px; cursor: pointer; font-size: 10px; color: blue" @click="openEditDialog(item)"><fa style="font-size: 10px; color: green;" :icon="['fas', 'edit']"></fa> 编辑</span>
               <span style="margin-left: 10px; cursor: pointer; font-size: 10px; color: green" @click="refreshWish(item)" v-if="item.downloaded"><fa style="font-size: 10px; color: green;" :icon="['fas', 'check']"></fa> 已完成</span>
               <span style="margin-left: 10px; cursor: pointer; font-size: 10px; color: green" @click="refreshWish(item)" v-if="!item.downloaded"><fa style="font-size: 10px; color: green;" :icon="['fas', 'redo-alt']"></fa> 刷新</span>
               <span style="margin-left: 10px; cursor: pointer; font-size: 10px; color: red" @click="deleteWish(item)"><fa style="font-size: 10px; color: red;" :icon="['fas', 'times']"></fa> 删除</span>
+              -->
             </div>
           </el-card>
         </div>
@@ -160,6 +165,7 @@ export default {
     },
 
     async refreshWish (item) {
+      if (item.downloaded) return;
       const url = `/api/douban/refreshWish?douban=${item.doubanId}&id=${item.id}`;
       const res = await this.$axiosGet(url);
       if (!res) {
@@ -193,6 +199,10 @@ export default {
 .table-expand label {
   width: 90px;
   color: #99a9bf;
+}
+
+.tag-margin {
+  margin: 0 4px;
 }
 
 </style>

@@ -7,6 +7,8 @@
       </el-tab-pane>
       <el-tab-pane label="软链接" name="link">
       </el-tab-pane>
+      <el-tab-pane label="批量软链接(暂不可用)" name="bulk-link">
+      </el-tab-pane>
     </el-tabs>
     <router-view style="height: calc(var(--vh, 1vh) * 100 - 156px); overflow: auto;"></router-view>
   </div>

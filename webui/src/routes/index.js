@@ -32,6 +32,7 @@ import Rss from '@/pages/home/children/rss';
 import Log from '@/pages/home/children/log';
 import Tools from '@/pages/home/children/tools';
 import Link from '@/pages/home/children/link';
+import BulkLink from '@/pages/home/children/bulk-link';
 import NetworkTest from '@/pages/home/children/network-test';
 import LoginMTeam from '@/pages/home/children/login-mteam';
 
@@ -150,6 +151,12 @@ const tools = {
       component: Link,
       meta: {
         title: '软链接'
+      }
+    }, {
+      path: 'bulk-link',
+      component: BulkLink,
+      meta: {
+        title: '批量软链接'
       }
     }
   ]
