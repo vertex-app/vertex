@@ -13,7 +13,10 @@
         </el-form>
         <div style="margin: 20px auto;" >
           <el-card class="radius-div" shadow="never" v-for="item of wishes" :key="item.id + item.doubanId" style="width: 240px; display:inline-block; margin: 20px;">
-            <img @click="gotoDetail(item.link)" :src="item.poster" style="cursor: pointer; width: 200px; height: 280px;">
+            <div style="width: 200px; height: 280px; position: relative;">
+              <img @click="gotoDetail(item.link)" :src="item.poster" style="cursor: pointer; width: 200px; height: 280px;">
+              <div v-if="item.cron || item.acceptKeys || item.rejectKeys || item.rejectCompleteTorrent" style="right: 6px; bottom: 6px; position: absolute; background-color: rgba(255,255,255,0.6); blur: 4px; width: 22px; height: 22px; border-radius: 4px;"><fa style="font-size: 12px; color: green;" :icon="['fas', 'pencil-alt']"></fa></div>
+            </div>
             <div style="margin: 12px auto;">
               <div style="font-size: 14px; color: #000; height: 42px;">
                 {{item.name.split('/')[0]}} · {{item.year}}

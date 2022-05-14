@@ -659,7 +659,6 @@ class Douban {
             }
             const fitAcceptKeys = !wish.acceptKeys || !!wish.acceptKeys
               .split(',').every(item => (torrent.title.indexOf(item) !== -1 || torrent.subtitle.indexOf(item) !== -1));
-            logger.info(fitAcceptKeys, wish.acceptKeys, torrent.title);
             if (!fitAcceptKeys) {
               logger.bingedebug(this.alias, '选种规则', rulesName, '种子', `[${torrent.site}]`, torrent.title, '/', torrent.subtitle, '匹配成功, 同时不匹配关键词:', wish.acceptKeys, '跳过');
               continue;
