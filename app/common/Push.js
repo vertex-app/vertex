@@ -484,7 +484,88 @@ class Push {
     if (res.body.errcode !== 0) {
       logger.error('推送失败', this.alias, text, res.body);
     }
-  }
+  };
+
+  async pushWeChatSelector (title, desc, selectors, key) {
+    if (moment().unix() - this.accessToken.refreshTime > 3600) {
+      await this._refreshWeChatAccessToken();
+    }
+    const body = {
+      touser: '@all',
+      msgtype: 'template_card',
+      agentid: this.agentid,
+      enable_id_trans: 0,
+      enable_duplicate_check: 0,
+      duplicate_check_interval: 1800
+    };
+    body.template_card = {
+      card_type: 'multiple_interaction',
+      source: {
+        icon_url: 'https://pic.lswl.in/images/2022/01/26/3d128357f09b4d44c40d5596506d1d1f.th.png',
+        desc: 'Vertex'
+      },
+      main_title: {
+        title,
+        desc
+      },
+      task_id: util.uuid.v4(),
+      select_list: selectors,
+      submit_button: {
+        text: '提交',
+        key: key
+      }
+    };
+    const option = {
+      url: `https://qyapi.weixin.qq.com/cgi-bin/message/send?access_token=${this.accessToken.token}`,
+      method: 'POST',
+      json: body
+    };
+    const res = await util.requestPromise(option);
+    logger.debug(res.body);
+    if (res.body.errcode !== 0) {
+      logger.error('推送失败', this.alias, title, desc, selectors, key, res.body);
+    }
+  };
+
+  async modifyWechatMenu () {
+    if (moment().unix() - this.accessToken.refreshTime > 3600) {
+      await this._refreshWeChatAccessToken();
+    }
+    const body = {
+      button: [
+        {
+          type: 'click',
+          name: '刷新豆瓣',
+          key: 'refreshDouban'
+        },
+        {
+          type: 'click',
+          name: '添加想看',
+          key: 'select'
+        },
+        {
+          name: '菜单',
+          sub_button: [
+            {
+              type: 'click',
+              name: '刷新剧集',
+              key: 'refreshMedia'
+            }
+          ]
+        }
+      ]
+    };
+    const option = {
+      url: `https://qyapi.weixin.qq.com/cgi-bin/menu/create?access_token=${this.accessToken.token}&agentid=${this.agentid}`,
+      method: 'POST',
+      json: body
+    };
+    const res = await util.requestPromise(option);
+    if (res.body.errcode !== 0) {
+      return logger.error('设定菜单失败\n', res.body);
+    }
+    logger.info('设定菜单成功');
+  };
 
   async edit (messageId, maindata) {
     const torrents = maindata.torrents.sort((a, b) => b.uploadSpeed - a.uploadSpeed || b.downloadSpeed - a.downloadSpeed).slice(0, 10);

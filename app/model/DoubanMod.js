@@ -57,11 +57,11 @@ class DoubanMod {
     };
   };
 
-  deleteWish (options) {
+  async deleteWish (options) {
     if (!global.runningDouban[options.douban]) {
       throw new Error('豆瓣账号未启用');
     }
-    if (global.runningDouban[options.douban].deleteWish(options.id)) {
+    if (await global.runningDouban[options.douban].deleteWish(options.id)) {
       return '删除想看项目成功';
     } else {
       return '删除失败, 项目不存在?';

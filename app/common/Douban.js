@@ -23,6 +23,7 @@ class Douban {
     this.sites = douban.sites;
     this.client = douban.client;
     this.cron = douban.cron;
+    this.cronList = douban.cronList || '';
     this.defaultRefreshCron = douban.defaultRefreshCron || '35 21 * * *';
     this.enableWechatLink = douban.enableWechatLink;
     this.notify = douban.notify;
@@ -41,6 +42,7 @@ class Douban {
         this.refreshWishJobs[wish.id] = cron.schedule(wish.cron || this.defaultRefreshCron, () => this.refreshWish(wish.id));
       }
     };
+    this.cronCache = {};
     logger.binge('豆瓣账号', this.alias, '初始化完毕');
   };
 
@@ -90,9 +92,9 @@ class Douban {
         form
       })).body;
       await redis.setWithExpire(`vertex:douban:post:${url}`, body, 30);
-      return JSON.parse(body);
+      return body;
     } else {
-      return JSON.parse(cache);
+      return cache;
     }
   };
 
@@ -187,7 +189,7 @@ class Douban {
     delete global.runningClient[this.id];
   };
 
-  deleteWish (id) {
+  async deleteWish (id) {
     const wishLength = this.wishes.length;
     this.wishes = this.wishes.filter(item => item.id !== id);
     if (this.refreshWishJobs[id]) {
@@ -195,6 +197,7 @@ class Douban {
       delete this.refreshWishJobs[id];
     }
     this._saveSet();
+    await this.delWish(id);
     return this.wishes.length !== wishLength;
   }
 
@@ -318,6 +321,7 @@ class Douban {
             delete wish.episodes;
           }
           try {
+            wish.cron = this.cronCache[wish.id] || '';
             this.wishes.push(wish);
             await this.ntf.addDoubanWish(this.alias, wish);
             this.updateWish(wish);
@@ -795,6 +799,7 @@ class Douban {
       item.title = detail.title;
       item.subtitle = detail.sub_title;
       item.link = detail.url;
+      item.poster = detail.img?.replace(/img\d/, 'img9').replace('s_ratio', 'l_ratio').replace('webp', 'jpg');
       item.id = detail.id;
       item.year = detail.year;
       result.push(item);
@@ -802,10 +807,13 @@ class Douban {
     return result;
   }
 
-  async addWish (id, tag) {
+  async addWish (id, tag, cron) {
     const ck = (this.cookie.split(';').map(item => item.trim().split('=')).filter(item => item[0] === 'ck')[0] || [])[1];
     if (!ck) {
       throw new Error('Cookie 内未包含 ck 信息');
+    }
+    if (cron) {
+      this.cronCache[id] = cron;
     }
     const res = await this._post(`https://movie.douban.com/j/subject/${id}/interest`, {
       ck,
@@ -814,9 +822,24 @@ class Douban {
       tags: tag,
       comment: tag
     });
-    if (res.r !== 0) {
-      logger.error(res);
+    if (JSON.parse(res).r !== 0) {
+      logger.error(JSON.parse(res));
       throw new Error('失败详情请查看日志');
+    }
+  }
+
+  async delWish (id) {
+    const ck = (this.cookie.split(';').map(item => item.trim().split('=')).filter(item => item[0] === 'ck')[0] || [])[1];
+    if (!ck) {
+      throw new Error('Cookie 内未包含 ck 信息');
+    }
+    const res = await this._post('https://movie.douban.com/j/mine/j_cat_ui', {
+      ck,
+      sid: `${id}:F`
+    });
+    if (res.indexOf('\'y\'') === -1) {
+      logger.error(res);
+      throw new Error('豆瓣端想看记录删除失败');
     }
   }
 }

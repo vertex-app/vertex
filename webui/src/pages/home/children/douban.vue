@@ -152,11 +152,15 @@
             </el-form-item>
             <el-form-item required label="刷新周期" prop="cron">
               <el-input v-model="douban.cron" type="input"></el-input>
-              <div><el-tag size="small" type="info">刷新 想看 列表的周期, 默认为每 4 小时刷新一次, 仅刷新列表, 不搜索资源</el-tag></div>
+              <div><el-tag size="small" type="info">刷新 想看列表 的周期, 默认为每 4 小时刷新一次, 仅刷新列表, 不搜索资源</el-tag></div>
             </el-form-item>
             <el-form-item required label="资源搜索周期" prop="cron">
               <el-input v-model="douban.defaultRefreshCron" type="input"></el-input>
               <div><el-tag size="small" type="info">影视剧的默认搜索周期, 默认为每日晚 21:35 刷新一次</el-tag></div>
+            </el-form-item>
+            <el-form-item label="搜索周期列表" prop="cronList">
+              <el-input v-model="douban.cronList" type="textarea"></el-input>
+              <div><el-tag size="small" type="info">搜索周期列表, 一行一个, 用于微信选择</el-tag></div>
             </el-form-item>
             <el-form-item label="接收微信消息" prop="enableWechatLink">
               <el-checkbox v-model="douban.enableWechatLink">接收微信消息</el-checkbox>
@@ -201,6 +205,7 @@ export default {
       defaultDouban: {
         cron: '0 */4 * * *',
         defaultRefreshCron: '35 21 * * *',
+        cronList: '',
         sites: [],
         raceRules: [],
         rejectRules: [],

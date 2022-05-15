@@ -51,6 +51,7 @@ class SettingMod {
     const doubanPush = util.listPush().filter(item => item.id === global.doubanPush)[0];
     if (doubanPush) {
       global.doubanPush = new Push({ ...doubanPush, push: true });
+      global.doubanPush.modifyWechatMenu();
     }
     return '修改全局设置成功, 部分设定需要刷新页面生效';
   };

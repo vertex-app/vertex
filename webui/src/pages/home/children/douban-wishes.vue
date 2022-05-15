@@ -76,7 +76,7 @@
         <el-form-item required label="已完成" prop="downloaded">
           <el-checkbox v-model="wish.downloaded">已完成</el-checkbox>
         </el-form-item>
-        <el-form-item label="刷新周期" prop="cron">
+        <el-form-item label="资源搜索周期" prop="cron">
           <el-input v-model="wish.cron" type="input" placeholder="留空使用账号设置"></el-input>
         </el-form-item>
         <el-form-item label="包含关键词" prop="acceptKeys">

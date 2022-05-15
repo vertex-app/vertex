@@ -105,7 +105,7 @@ class Douban {
 
   async deleteWish (req, res) {
     try {
-      const r = doubanMod.deleteWish(req.query);
+      const r = await doubanMod.deleteWish(req.query);
       res.send({
         success: true,
         message: r

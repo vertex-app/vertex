@@ -115,6 +115,75 @@ class WebhookMod {
     if (query.echostr) return content;
     content = await parseXml(content);
     logger.debug(content);
+    if (content.xml.EventKey) {
+      switch (content.xml.EventKey[0]) {
+      case 'refreshDouban':
+        for (const _douban of Object.keys(global.runningDouban)) {
+          const douban = global.runningDouban[_douban];
+          if (douban && douban.enableWechatLink) {
+            douban.wechatLink('refresh');
+          }
+        }
+        return content;
+      case 'select':
+        let note = '';
+        const doubans = Object.keys(global.runningDouban);
+        const keys = [];
+        for (const [index, _douban] of doubans.entries()) {
+          note += doubans.indexOf(_douban) + ': ' + global.runningDouban[_douban].alias + '\n';
+          keys.push({ id: index, text: `${index}: ${global.runningDouban[_douban].alias}` });
+        }
+        note += '5 分钟内输入有效';
+        const selectors = [
+          {
+            question_key: 'accountIndex',
+            title: '选择账号',
+            option_list: keys
+          }
+        ];
+        await global.doubanPush.pushWeChat('Vertex', '企业微信请进行选择\n普通微信请回复序号:\n' + note);
+        await global.doubanPush.pushWeChatSelector('选择账号', '', selectors, 'selectAccount');
+        await redis.setWithExpire('vertex:select:doubans', JSON.stringify(doubans), 300);
+        return;
+      case 'selectAccount': {
+        const text = content.xml.SelectedItems[0].SelectedItem[0].OptionIds[0].OptionId[0];
+        const doubanCache = await redis.get('vertex:select:doubans');
+        const doubans = JSON.parse(doubanCache);
+        const douban = doubans[text];
+        await redis.del('vertex:select:doubans');
+        if (+text + '' !== text || !douban) {
+          await global.doubanPush.selectWish('输入非法, 本次任务已取消');
+          return '';
+        }
+        await redis.setWithExpire('vertex:select:douban', douban, 300);
+        const _note = '已选择豆瓣账户: ' + global.runningDouban[douban].alias + '\n' +
+          '请输入希望搜索的影视剧名称, 5 分钟内输入有效';
+        await global.doubanPush.selectWish(_note);
+        return '';
+      }
+      case 'selectMedia': {
+        const moviesCache = await redis.get('vertex:select:movies');
+        const movies = JSON.parse(moviesCache);
+        const num = content.xml.SelectedItems[0].SelectedItem[0].OptionIds[0].OptionId[0];
+        const movie = movies[num];
+        await redis.del('vertex:select:movies');
+        if (+num + '' !== num || !movie) {
+          await global.doubanPush.selectWish('输入非法, 本次任务已取消');
+          return '';
+        }
+        try {
+          await global.runningDouban[movie.doubanId].addWish(movie.id, content.xml.SelectedItems[0].SelectedItem[1].OptionIds[0].OptionId[0], content.xml.SelectedItems[0].SelectedItem[2].OptionIds[0].OptionId[0]);
+        } catch (e) {
+          logger.error(e);
+          await global.doubanPush.selectWish('添加失败: ' + e.message);
+          return '';
+        }
+        await global.doubanPush.selectWish('添加成功: ' + movie.title);
+        global.runningDouban[movie.doubanId].refreshWishList(true);
+        return '';
+      }
+      }
+    }
     const text = content.xml.Content[0].trim();
     const moviesCache = await redis.get('vertex:select:movies');
     if (moviesCache) {
@@ -127,7 +196,7 @@ class WebhookMod {
         return '';
       }
       try {
-        await global.runningDouban[movie.doubanId].addWish(movie.id, text.split('/')[1] || '');
+        await global.runningDouban[movie.doubanId].addWish(movie.id, text.split('/')[1] || '', text.split('/')[2] || '');
       } catch (e) {
         logger.error(e);
         await global.doubanPush.selectWish('添加失败: ' + e.message);
@@ -146,10 +215,36 @@ class WebhookMod {
         return '';
       }
       await redis.del('vertex:select:douban');
-      let note = result.map(item => `${result.indexOf(item)}: ${item.title} / ${item.subtitle} / ${item.year}`).join('\n');
-      note += '\n输入影视剧前的序号以及标签, 格式为 序号/标签, 5 分钟内输入有效';
+      const keys = [];
+      for (const [index, value] of result.entries()) {
+        await global.doubanPush.pushWeChat(`${index}: ${value.title} - ${value.year}`, '', value.poster);
+        keys.push({ id: index, text: `${value.title} - ${value.year}` });
+      }
       await redis.setWithExpire('vertex:select:movies', JSON.stringify(result), 300);
-      await global.doubanPush.selectWish(note);
+      const selectors = [
+        {
+          question_key: 'mediaIndex',
+          title: '选择影视剧',
+          option_list: keys
+        },
+        {
+          question_key: 'tagIndex',
+          title: '选择标签',
+          option_list: Object.keys(global.runningDouban[douban].categories).map(item => { return { id: item, text: item }; })
+        },
+        {
+          question_key: 'cronIndex',
+          title: '选择 Cron',
+          option_list: [...new Set([global.runningDouban[douban].defaultRefreshCron]
+            .concat(global.runningDouban[douban].cronList.split('\n')
+              .map(item => item.trim())
+              .filter(item => item)
+            ))].map(item => { return { id: item, text: item }; })
+        }
+      ];
+      logger.info(JSON.stringify(selectors, null, 2));
+      await global.doubanPush.pushWeChat('Vertex', '企业微信请进行选择\n普通微信请回复\n序号/标签/Cron, Cron 可空, 默认为 ' + global.runningDouban[douban].defaultRefreshCron);
+      await global.doubanPush.pushWeChatSelector('选择想看', '选择以下项目添加想看项目', selectors, 'selectMedia');
       return '';
     }
     const doubansCache = await redis.get('vertex:select:doubans');
