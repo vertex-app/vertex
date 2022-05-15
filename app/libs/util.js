@@ -70,11 +70,13 @@ exports.scrapeHr = scrape.hr;
 
 exports._requestPromise = util.promisify(request);
 exports.requestPromise = async function (_options, usePuppeteer = true) {
-  let options = { ..._options };
-  if (typeof options === 'string') {
+  let options;
+  if (typeof _options === 'string') {
     options = {
-      url: options
+      url: _options
     };
+  } else {
+    options = { ..._options };
   }
   if (!options.headers) {
     options.headers = {};
