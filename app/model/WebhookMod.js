@@ -182,6 +182,29 @@ class WebhookMod {
         global.runningDouban[movie.doubanId].refreshWishList(true);
         return '';
       }
+      case 'selectRefreshMedia': {
+        const doubans = Object.keys(global.runningDouban);
+        const list = doubans.map(item => global.runningDouban[item].wishes.filter(item => !item.downloaded)).flat().map(item => { return { id: item.name, text: item.name }; });
+        const selectors = [
+          {
+            question_key: 'mediaName',
+            title: '选择剧集',
+            option_list: list
+          }
+        ];
+        await global.doubanPush.pushWeChat('Vertex', '本操作只支持企业微信, 普通微信请发送 刷新{剧集名}');
+        await global.doubanPush.pushWeChatSelector('选择剧集', '', selectors, 'refreshMedia');
+        return;
+      }
+      case 'refreshMedia': {
+        for (const _douban of Object.keys(global.runningDouban)) {
+          const douban = global.runningDouban[_douban];
+          if (douban && douban.enableWechatLink) {
+            douban.wechatLink('refreshWish', { key: content.xml.SelectedItems[0].SelectedItem[0].OptionIds[0].OptionId[0] });
+          }
+        }
+        return;
+      }
       }
     }
     const text = content.xml.Content[0].trim();

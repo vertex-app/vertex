@@ -544,14 +544,9 @@ class Push {
           key: 'select'
         },
         {
-          name: '菜单',
-          sub_button: [
-            {
-              type: 'click',
-              name: '刷新剧集',
-              key: 'refreshMedia'
-            }
-          ]
+          type: 'click',
+          name: '刷新剧集',
+          key: 'selectRefreshMedia'
         }
       ]
     };
