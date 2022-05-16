@@ -75,7 +75,7 @@ class TorrentMod {
         }
         const _torrent = { ...torrent };
         try {
-          _torrent.scrapeName = await util.scrapeNameByFile(torrent.name);
+          _torrent.scrapeName = await util.scrapeNameByFile(torrent.name, type === 'series' ? 'tv' : 'movie');
         } catch (e) { logger.info(e); }
         _torrent.clientAlias = clients[clientId].alias;
         _torrent.client = clientId;

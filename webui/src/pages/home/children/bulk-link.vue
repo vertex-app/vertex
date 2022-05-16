@@ -30,9 +30,11 @@
           </el-table-column>
           <el-table-column
             prop="scrapeName"
-            sortable
             width="216"
             label="识别名称">
+            <template slot-scope="scope">
+              <el-input v-model="scope.row.scrapeName" size="mini" placeholder="识别名称"/>
+            </template>
           </el-table-column>
         </el-table>
       </div>
@@ -45,8 +47,7 @@ export default {
   data () {
     return {
       linkRuleList: [],
-      fileList: [{
-      }],
+      fileList: [],
       keyword: '',
       type: '',
       linkRule: ''
@@ -85,7 +86,6 @@ export default {
     }
   },
   async mounted () {
-    await this.getTorrentInfo();
     await this.listLinkRule();
   }
 };

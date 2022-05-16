@@ -158,15 +158,16 @@ exports.scrapeNameByFile = async function (filename, type) {
   if (!global.tmdbApiKey) {
     throw new Error('未填写 The Movie Database Api Key');
   }
-  const url = `https://api.themoviedb.org/3/search/multi?language=zh-CN&api_key=${global.tmdbApiKey}&query=`;
+  let url = `https://api.themoviedb.org/3/search/${type}?language=zh-CN&api_key=${global.tmdbApiKey}&query=`;
   let searchKey = filename.split(/19\d\d|20\d\d|S\d\d/)[0]
     .replace(/[\u4e00-\u9fa5\uff01\uff1a]+\d+[\u4e00-\u9fa5\uff01\uff1a]+/g, '')
     .replace(/[!\u4e00-\u9fa5\uff01\uff1a。:?？，,·・]/g, '')
     .replace(/\./g, ' ').trim();
   if (filename.match(/^[\u4e00-\u9fa5\uff01\uff1a]+/)) {
-    searchKey = filename.match(/^[\u4e00-\u9fa5]+.*[\u4e00-\u9fa5]+/)[0].replace(/[^\u4e00-\u9fa5]/g, ' ').replace(/第.*季/g, '');
+    searchKey = filename.match(/^[\u4e00-\u9fa5]+[A-Za-z]*.*[A-Za-z]*[\u4e00-\u9fa5]+[A-Za-z]*/)[0].replace(/[^\u4e00-\u9fa5A-Za-z]/g, ' ').replace(/第.*季/g, '');
   }
-  const res = await exports.requestPromise(url + encodeURIComponent(searchKey));
+  url += encodeURI(searchKey);
+  const res = await exports.requestPromise(url);
   const body = JSON.parse(res.body);
   if (body.status_code === 7) {
     logger.error(filename, searchKey, body);
@@ -176,7 +177,6 @@ exports.scrapeNameByFile = async function (filename, type) {
     logger.error(filename, searchKey, body);
     throw new Error('请求 TMDB Api 返回有误, 请重试');
   }
-  body.results = body.results.filter(item => type ? item.media_type === type : true);
   logger.debug('根据文件名抓取影视剧名', filename, searchKey, body.results[0]?.name || body.results[0]?.title || '');
   return body.results[0]?.name || body.results[0]?.title || '';
 };

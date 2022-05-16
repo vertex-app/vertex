@@ -268,6 +268,9 @@ class Douban {
       wish.id = wish.link.match(/\/(\d+)\//)[1];
       wish.tag = (item.querySelector('span.tags')?.innerHTML)?.replace('标签: ', '') || item.querySelector('span[class=\'comment\']')?.innerHTML;
       let doubanInfo;
+      if (this.wishes.filter(item => item.id === wish.id).length !== 0) {
+        continue;
+      }
       try {
         doubanInfo = await this._getDoubanInfo(wish.link);
       } catch (e) {
