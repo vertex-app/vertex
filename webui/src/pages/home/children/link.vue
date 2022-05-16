@@ -48,41 +48,41 @@
           size="mini">
           <el-table-column
             prop="file"
-            sortable
             v-if="fileList[0].file"
             label="文件名">
           </el-table-column>
           <el-table-column
             prop="seriesName"
-            sortable
             width="144"
             v-if="fileList[0].seriesName"
             label="剧集名称">
           </el-table-column>
           <el-table-column
             prop="season"
-            sortable
             width="72"
             v-if="fileList[0].season"
             label="季">
+            <template slot-scope="scope">
+              <el-input v-model="scope.row.season" size="mini"/>
+            </template>
           </el-table-column>
           <el-table-column
             prop="episode"
-            sortable
             width="72"
             v-if="fileList[0].episode"
             label="集">
+            <template slot-scope="scope">
+              <el-input v-model="scope.row.episode" size="mini"/>
+            </template>
           </el-table-column>
           <el-table-column
             prop="folderName"
-            sortable
             width="144"
             v-if="fileList[0].folderName"
             label="影视名称">
           </el-table-column>
           <el-table-column
             prop="linkFile"
-            sortable
             width="320"
             v-if="fileList[0].linkFile"
             label="链接文件名称">
@@ -146,7 +146,7 @@ export default {
         libraryPath: this.libraryPath,
         savePath: this.torrentInfo.savePath
       });
-      this.fileList = res?.data;
+      this.fileList = res?.data.sort((a, b) => a.file > b.file ? 1 : -1);
     }
   },
   async mounted () {

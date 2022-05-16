@@ -265,7 +265,6 @@ class WebhookMod {
             ))].map(item => { return { id: item, text: item }; })
         }
       ];
-      logger.info(JSON.stringify(selectors, null, 2));
       await global.doubanPush.pushWeChat('Vertex', '企业微信请进行选择\n普通微信请回复\n序号/标签/Cron, Cron 可空, 默认为 ' + global.runningDouban[douban].defaultRefreshCron);
       await global.doubanPush.pushWeChatSelector('选择想看', '选择以下项目添加想看项目', selectors, 'selectMedia');
       return '';

@@ -39,12 +39,16 @@
           追剧: 926921776
         </el-descriptions-item>
         <el-descriptions-item
-          label="更新推送频道">
-          <el-link style="color: blue" @click="gotoChannel()">Telegram</el-link>
+          label="Telegram">
+          <el-link style="color: blue" @click="gotoGroup()">交流群组</el-link>
+          <br>
+          <el-link style="color: blue" @click="gotoChannel()">更新推送</el-link>
         </el-descriptions-item>
         <el-descriptions-item
-          label="Telegram 群组">
-          <el-link style="color: blue" @click="gotoGroup()">Telegram</el-link>
+          label="开源地址">
+          <el-link style="color: blue" @click="gotoGitlab()">Gitlab</el-link>
+          <br>
+          <el-link style="color: blue" @click="gotoGithub()">Github</el-link>
         </el-descriptions-item>
       </el-descriptions>
       <el-descriptions style="padding: 24px" title="任务信息" :column="3">
@@ -174,6 +178,12 @@ export default {
     },
     async gotoVersion () {
       window.open('https://lswl.in/2022/01/14/vertex-changelog');
+    },
+    async gotoGithub () {
+      window.open('https://github.com/l-s-w-l/Vertex');
+    },
+    async gotoGitlab () {
+      window.open('https://gitlab.lswl.in/lswl/vertex');
     }
   },
   mounted () {

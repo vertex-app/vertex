@@ -158,7 +158,7 @@ exports.scrapeNameByFile = async function (filename, type) {
   if (!global.tmdbApiKey) {
     throw new Error('未填写 The Movie Database Api Key');
   }
-  let url = `https://api.themoviedb.org/3/search/${type}?language=zh-CN&api_key=${global.tmdbApiKey}&query=`;
+  let url = `https://api.themoviedb.org/3/search/${type || 'multi'}?language=zh-CN&api_key=${global.tmdbApiKey}&query=`;
   let searchKey = filename.split(/19\d\d|20\d\d|S\d\d/)[0]
     .replace(/[\u4e00-\u9fa5\uff01\uff1a]+\d+[\u4e00-\u9fa5\uff01\uff1a]+/g, '')
     .replace(/[!\u4e00-\u9fa5\uff01\uff1a。:?？，,·・]/g, '')
