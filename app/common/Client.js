@@ -403,19 +403,10 @@ class Client {
     if (!this.maindata) return;
     const torrentSet = {};
     const now = moment().startOf('minute').unix();
-    const updateTrackerIncrease = moment().minute() % 10 === 0;
-    if (updateTrackerIncrease) {
-      let allTorrentLastMinute = await redis.get(`vertex:client:${this.id}:flow`);
-      if (!allTorrentLastMinute) {
-        allTorrentLastMinute = await util.getRecords('select * from torrent_flow where time = ?', [moment().startOf('minute').subtract(5, 'minute').unix()]);
-        await redis.setWithExpire(`vertex:client:${this.id}:flow`, JSON.stringify(allTorrentLastMinute), 60);
-      } else {
-        allTorrentLastMinute = JSON.parse(allTorrentLastMinute);
-      }
-      allTorrentLastMinute.forEach(i => {
-        torrentSet[i.hash] = i;
-      });
-    }
+    const allTorrentLastMinute = await util.getRecords('select * from torrent_flow where time = ?', [moment().startOf('minute').subtract(5, 'minute').unix()]);
+    allTorrentLastMinute.forEach(i => {
+      torrentSet[i.hash] = i;
+    });
     const trackerSet = {};
     for (const torrent of this.maindata.torrents) {
       const cache = await redis.get('vertex:torrent:' + torrent.hash);
@@ -430,22 +421,18 @@ class Client {
         [torrent.size, torrent.tracker, torrent.uploaded, torrent.downloaded, torrent.hash]);
       await util.runRecord('insert into torrent_flow (hash, upload, download, time) values (?, ?, ?, ?)',
         [torrent.hash, torrent.uploaded, torrent.downloaded, now]);
-      if (updateTrackerIncrease) {
-        if (!trackerSet[torrent.tracker]) trackerSet[torrent.tracker] = { upload: 0, download: 0, time: now };
-        torrentSet[torrent.hash] = torrentSet[torrent.hash] || { upload: torrent.uploaded, download: torrent.downloaded };
-        trackerSet[torrent.tracker].upload += torrent.uploaded - torrentSet[torrent.hash].upload;
-        trackerSet[torrent.tracker].download += torrent.downloaded - torrentSet[torrent.hash].download;
-      }
+      if (!trackerSet[torrent.tracker]) trackerSet[torrent.tracker] = { upload: 0, download: 0, time: now };
+      torrentSet[torrent.hash] = torrentSet[torrent.hash] || { upload: torrent.uploaded, download: torrent.downloaded };
+      trackerSet[torrent.tracker].upload += torrent.uploaded - torrentSet[torrent.hash].upload;
+      trackerSet[torrent.tracker].download += torrent.downloaded - torrentSet[torrent.hash].download;
     }
-    if (updateTrackerIncrease) {
-      for (const key of Object.keys(trackerSet)) {
-        const tracker = trackerSet[key];
-        const record = await util.getRecord('select * from tracker_flow where tracker = ? and time = ?', [key, now]);
-        if (!record) {
-          await util.runRecord('insert into tracker_flow (tracker, upload, download, time) values (?, ?, ?, ?)', [key, tracker.upload, tracker.download, now]);
-        } else {
-          await util.runRecord('update tracker_flow set upload = upload + ?, download = download + ? where tracker = ? and time = ?', [tracker.upload, tracker.download, key, now]);
-        }
+    for (const key of Object.keys(trackerSet)) {
+      const tracker = trackerSet[key];
+      const record = await util.getRecord('select * from tracker_flow where tracker = ? and time = ?', [key, now]);
+      if (!record) {
+        await util.runRecord('insert into tracker_flow (tracker, upload, download, time) values (?, ?, ?, ?)', [key, tracker.upload, tracker.download, now]);
+      } else {
+        await util.runRecord('update tracker_flow set upload = upload + ?, download = download + ? where tracker = ? and time = ?', [tracker.upload, tracker.download, key, now]);
       }
     }
   };

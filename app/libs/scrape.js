@@ -2,12 +2,12 @@ const requestPromise = require('util').promisify(require('request'));
 const { JSDOM } = require('jsdom');
 
 const getDocument = async function (url, cookie) {
-  const html = (await requestPromise({
+  const html = (await require('./util').requestPromise({
     url,
     headers: {
       cookie
     }
-  })).body;
+  }, true)).body;
   const dom = new JSDOM(html);
   return dom.window.document;
 };

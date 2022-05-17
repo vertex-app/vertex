@@ -36,6 +36,9 @@ import BulkLink from '@/pages/home/children/bulk-link';
 import NetworkTest from '@/pages/home/children/network-test';
 import LoginMTeam from '@/pages/home/children/login-mteam';
 
+import MobileIndex from '@/pages/mobile/index';
+import MobileClient from '@/pages/mobile/client';
+
 Vue.use(Router);
 
 const originalPush = Router.prototype.push;
@@ -281,6 +284,16 @@ export default new Router({
         bingeWatching,
         tools
       ]
+    }, {
+      path: '/mobile',
+      component: MobileIndex,
+      children: [{
+        path: 'client',
+        component: MobileClient,
+        meta: {
+          title: '客户端'
+        }
+      }]
     }
   ]
 });

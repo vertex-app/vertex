@@ -22,10 +22,20 @@ export default {
       document.body.style.backgroundPositionX = 'center';
       document.body.style.backgroundPositionY = 'center';
       document.body.style.backgroundSize = 'cover';
+    },
+    setViewport () {
+      const viewport = document.createElement('meta');
+      viewport.name = 'viewport';
+      viewport.content = 'width=device-width,initial-scale=1.0';
+      document.head.appendChild(viewport);
     }
   },
   created () {
-    this.getBackground();
+    if (this.$route.path.indexOf('mobile') === -1) {
+      this.getBackground();
+    } else {
+      this.setViewport();
+    }
   }
 };
 </script>
@@ -187,6 +197,10 @@ tr.hover-row>td.el-table__cell {
 
 .el-table td.el-table__cell, .el-table th.el-table__cell.is-leaf, .el-collapse-item__wrap, .el-collapse-item__header {
   border-bottom: none;
+}
+
+.mobile-client .el-card__body {
+  padding: 0;
 }
 
 *::-webkit-scrollbar-thumb {
