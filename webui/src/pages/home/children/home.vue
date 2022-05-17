@@ -40,15 +40,19 @@
         </el-descriptions-item>
         <el-descriptions-item
           label="Telegram">
-          <el-link style="color: blue" @click="gotoGroup()">交流群组</el-link>
-          <br>
-          <el-link style="color: blue" @click="gotoChannel()">更新推送</el-link>
+          <div>
+            <el-link style="color: blue" @click="gotoGroup()">交流群组</el-link>
+            <br>
+            <el-link style="color: blue" @click="gotoChannel()">更新推送</el-link>
+          </div>
         </el-descriptions-item>
         <el-descriptions-item
           label="开源地址">
-          <el-link style="color: blue" @click="gotoGitlab()">Gitlab</el-link>
-          <br>
-          <el-link style="color: blue" @click="gotoGithub()">Github</el-link>
+          <div>
+            <el-link style="color: blue" @click="gotoGitlab()">Gitlab</el-link>
+            <br>
+            <el-link style="color: blue" @click="gotoGithub()">Github</el-link>
+          </div>
         </el-descriptions-item>
       </el-descriptions>
       <el-descriptions style="padding: 24px" title="任务信息" :column="3">
