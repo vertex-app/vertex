@@ -71,6 +71,38 @@ class Client {
     }
   };
 
+  async listMainInfo (req, res) {
+    try {
+      const r = clientMod.listMainInfo();
+      res.send({
+        success: true,
+        data: r
+      });
+    } catch (e) {
+      logger.error(e);
+      res.send({
+        success: false,
+        message: e.message
+      });
+    }
+  };
+
+  async listTop10 (req, res) {
+    try {
+      const r = clientMod.listTop10(req.query);
+      res.send({
+        success: true,
+        data: r
+      });
+    } catch (e) {
+      logger.error(e);
+      res.send({
+        success: false,
+        message: e.message
+      });
+    }
+  };
+
   async getSpeedPerTracker (req, res) {
     try {
       const r = await clientMod.getSpeedPerTracker();

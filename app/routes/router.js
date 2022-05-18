@@ -161,6 +161,8 @@ module.exports = function (app, express, router) {
   router.get('/site/pushTorrent', ctrl.Site.pushTorrent);
 
   router.get('/client/list', ctrl.Client.list);
+  router.get('/client/listTop10', ctrl.Client.listTop10);
+  router.get('/client/listMainInfo', ctrl.Client.listMainInfo);
   router.get('/client/getSpeedPerTracker', ctrl.Client.getSpeedPerTracker);
   router.post('/client/add', ctrl.Client.add);
   router.post('/client/modify', ctrl.Client.modify);

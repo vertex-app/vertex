@@ -54,6 +54,43 @@ class ClientMod {
     return clientList;
   };
 
+  listMainInfo () {
+    const clientList = util.listClient();
+    const clientInfos = [];
+    for (const client of clientList) {
+      const c = {};
+      c.id = client.id;
+      c.alias = client.alias;
+      c.enable = client.enable;
+      c.autoDelete = client.autoDelete;
+      client.status = !!(client.enable && global.runningClient[client.id] && global.runningClient[client.id].status && global.runningClient[client.id].maindata);
+      c.status = client.status;
+      if (client.status) {
+        c.allTimeUpload = global.runningClient[client.id].maindata.allTimeUpload;
+        c.allTimeDownload = global.runningClient[client.id].maindata.allTimeDownload;
+        c.uploadSpeed = global.runningClient[client.id].maindata.uploadSpeed;
+        c.downloadSpeed = global.runningClient[client.id].maindata.downloadSpeed;
+        c.leechingCount = global.runningClient[client.id].maindata.leechingCount;
+        c.seedingCount = global.runningClient[client.id].maindata.seedingCount;
+      }
+      clientInfos.push(c);
+    }
+    return clientInfos;
+  }
+
+  listTop10 ({ id }) {
+    const top10 = [];
+    const client = global.runningClient[id];
+    if (!client) throw new Error('下载器未启用');
+    const top10Torrents = client.maindata.torrents.sort((a, b) => b.uploadSpeed - a.uploadSpeed || b.downloadSpeed - a.downloadSpeed).slice(0, 10);
+    for (const torrent of top10Torrents) {
+      const t = { ...torrent };
+      delete t.originProp;
+      top10.push(t);
+    }
+    return top10;
+  }
+
   async getSpeedPerTracker () {
     const clients = global.runningClient;
     const trackers = {};
