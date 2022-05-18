@@ -57,7 +57,7 @@ class Client {
         }
       }
     }
-    this.recordJob = cron.schedule('*/5 * * * *', () => this.record());
+    this.recordJob = cron.schedule('20 */5 * * * *', () => this.record());
     if (client.type === 'qBittorrent') {
       this.trackerSyncJob = cron.schedule('*/5 * * * *', () => this.trackerSync());
     }
