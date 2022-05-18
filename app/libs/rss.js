@@ -117,7 +117,7 @@ const _getTorrentsFileList = async function (rssUrl) {
     };
     const regRes = size.match(/Size: (\d*\.\d*|\d*) (GB|MB|TB|KB)/);
     torrent.size = parseFloat(regRes[1]) * map[regRes[2]];
-    torrent.name = items[i].title[0].split('\n')[0];
+    torrent.name = items[i].title[0].replace(/\n/, ' ');
     const link = items[i].link[0].match(/https:\/\/filelist.io\/download\.php\?id=\d*/)[0].replace('download', 'detailes');
     torrent.link = link;
     torrent.id = link.substring(link.indexOf('?id=') + 4);
