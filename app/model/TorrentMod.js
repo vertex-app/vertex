@@ -186,14 +186,21 @@ class TorrentMod {
         if (file.size < _linkRule.minFileSize) continue;
         const movieName = mediaName.split('/')[0].trim();
         const year = (file.name.match(/[. ](20\d\d)[. ]/) || file.name.match(/[. ](19\d\d)[. ]/) || ['', ''])[1];
+        let suffix = '';
+        _linkRule.reservedKeys = _linkRule.reservedKeys || '';
+        for (const key of _linkRule.reservedKeys.split(',')) {
+          if (file.name.indexOf(key) !== -1 && suffix.indexOf(key) === -1) {
+            suffix += '.' + key;
+          }
+        }
         const fileExt = path.extname(file.name);
         const linkFilePath = path.join(_linkRule.linkFilePath, libraryPath, `${movieName}.${year}`).replace(/'/g, '\\\'');
-        const linkFile = path.join(linkFilePath, `${movieName}.${year}${fileExt}`).replace(/'/g, '\\\'');
+        const linkFile = path.join(linkFilePath, `${movieName}.${year}${suffix}${fileExt}`).replace(/'/g, '\\\'');
         if (dryrun) {
           dryrunResult.push({
             file: path.basename(file.name),
             folderName: `${movieName}.${year}`,
-            linkFile: `${movieName}.${year}${fileExt}`
+            linkFile: `${movieName}.${year}${suffix}${fileExt}`
           });
           continue;
         }

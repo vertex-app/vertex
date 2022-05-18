@@ -527,9 +527,16 @@ class Douban {
         if (file.size < linkRule.minFileSize) continue;
         const movieName = wish.name.split('/')[0].trim();
         const year = (file.name.match(/[. ](20\d\d)[. ]/) || file.name.match(/[. ](19\d\d)[. ]/) || ['', ''])[1];
+        let suffix = '';
+        linkRule.reservedKeys = linkRule.reservedKeys || '';
+        for (const key of linkRule.reservedKeys.split(',')) {
+          if (file.name.indexOf(key) !== -1 && suffix.indexOf(key) === -1) {
+            suffix += '.' + key;
+          }
+        }
         const fileExt = path.extname(file.name);
         const linkFilePath = path.join(linkRule.linkFilePath, category.libraryPath, `${movieName}.${year}`).replace(/'/g, '\\\'');
-        const linkFile = path.join(linkFilePath, `${movieName}.${year}${fileExt}`).replace(/'/g, '\\\'');
+        const linkFile = path.join(linkFilePath, `${movieName}.${year}${suffix}${fileExt}`).replace(/'/g, '\\\'');
         const targetFile = path.join(torrent.savePath.replace(linkRule.targetPath.split('##')[0], linkRule.targetPath.split('##')[1]), file.name).replace(/'/g, '\\\'');
         const command = `mkdir -p $'${linkFilePath}' && ln -sf $'${targetFile}' $'${linkFile}'`;
         logger.binge(this.alias, '执行软连接命令', command);
