@@ -257,6 +257,7 @@ class Douban {
     const items = document.querySelectorAll('.article .grid-view .item');
     if (!items.length) {
       logger.error('豆瓣账户', this.alias, '刷新想看列表失败', '疑似是豆瓣 Cookie 过期', '任务退出');
+      await this.ntf.startRefreshWishError(this.alias, ['豆瓣账户', this.alias, '刷新想看列表失败', '疑似是豆瓣 Cookie 过期', '任务退出'].join(' '));
       return;
     }
     const wishes = [];
