@@ -115,16 +115,18 @@ exports.requestUsePuppeteer = async function (options) {
   try {
     await page.setViewport({ width: 800, height: 600 });
     await page.setUserAgent(options.headers['User-Agent']);
-    const cookieList = options.headers.cookie.split(';').map(i => i.trim())
-      .filter(i => i !== '')
-      .map(i => {
-        return {
-          name: i.split('=')[0],
-          value: i.split('=')[1],
-          domain: new url.URL(options.url).hostname
-        };
-      });
-    if (cookieList.length !== 0) await page.setCookie(...cookieList);
+    if (options.headers.cookie) {
+      const cookieList = options.headers.cookie.split(';').map(i => i.trim())
+        .filter(i => i !== '')
+        .map(i => {
+          return {
+            name: i.split('=')[0],
+            value: i.split('=')[1],
+            domain: new url.URL(options.url).hostname
+          };
+        });
+      if (cookieList.length !== 0) await page.setCookie(...cookieList);
+    }
     await page.goto(options.url, {});
     await page.waitForTimeout(10000);
     const body = await page.content();
