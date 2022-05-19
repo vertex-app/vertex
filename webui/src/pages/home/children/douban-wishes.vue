@@ -87,6 +87,10 @@
           <el-input v-model="wish.rejectKeys" type="input" placeholder="排除关键词"></el-input>
           <div><el-tag type="info">以 , 为分割, 各个关键词间为 或 的关系</el-tag></div>
         </el-form-item>
+        <el-form-item label="取消限制年份" prop="restrictYear">
+          <el-checkbox v-model="wish.restrictYear">取消限制年份</el-checkbox>
+          <div><el-tag type="info">默认限制年份, 勾选后取消限制</el-tag></div>
+        </el-form-item>
         <el-form-item label="禁止下载全集" prop="rejectKeys">
           <el-checkbox v-model="wish.rejectCompleteTorrent">禁止下载全集</el-checkbox>
           <div><el-tag type="info">如果当前集不为零, 且勾选禁止下载全集, 则在选择种子时排除全集种子</el-tag></div>

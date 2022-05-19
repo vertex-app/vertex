@@ -638,7 +638,7 @@ class Douban {
           return sortType === 'asc' ? a[sortBy] - b[sortBy] : b[sortBy] - a[sortBy];
         });
         for (const torrent of torrents) {
-          if (!imdb) {
+          if (!imdb && !wish.restrictYear) {
             const torrentYear = (torrent.title.match(/19\d{2}/g) || []).concat(torrent.title.match(/20\d{2}/g) || []);
             let fitYear = false;
             for (const year of torrentYear) {
