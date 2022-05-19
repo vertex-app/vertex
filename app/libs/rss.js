@@ -18,7 +18,7 @@ const _getRssContent = async function (rssUrl) {
   if (cache) {
     body = cache;
   } else {
-    const res = await util.requestPromise(rssUrl + (rssUrl.indexOf('?') === -1 ? '?' : '&') + '____=' + Math.random());
+    const res = await util.requestPromise(rssUrl + (rssUrl.indexOf('?') === -1 ? '?' : '&') + '____=' + Math.random(), false);
     body = res.body;
     await redis.setWithExpire(`vertex:rss:${rssUrl}`, body, 60);
   }
