@@ -414,6 +414,34 @@ const _getHDCityTorrents = async function (rssUrl) {
   return torrents;
 };
 
+const _getIPTorrentsTorrents = async function (rssUrl) {
+  const rss = await parseXml(await _getRssContent(rssUrl));
+  const torrents = [];
+  const items = rss.rss.channel[0].item;
+  for (let i = 0; i < items.length; ++i) {
+    const torrent = {
+      size: 0,
+      name: '',
+      hash: '',
+      id: 0,
+      url: '',
+      link: ''
+    };
+    const size = items[i].description[0].split(';')[0].replace('B', 'iB');
+    torrent.size = util.calSize(...size.split(' '));
+    torrent.name = items[i].title[0];
+    const link = items[i].link[0];
+    torrent.id = link.match(/\/(\d+)\//)[1];
+    torrent.link = link;
+    torrent.url = items[i].link[0];
+    torrent.hash = 'fakehashipt' + torrent.id + 'fakehashipt';
+    torrent.pubTime = moment(items[i].pubDate[0]).unix();
+    torrents.push(torrent);
+  }
+  logger.info(torrents);
+  return torrents;
+};
+
 const _getTorrentsWrapper = {
   'filelist.io': _getTorrentsFileList,
   'blutopia.xyz': _getTorrentsUnit3D,
@@ -426,7 +454,8 @@ const _getTorrentsWrapper = {
   'beyond-hd.me': _getTorrentsBeyondHD,
   'pt.sjtu.edu.cn': _getTorrentsPuTao,
   'hd-torrents.org': _getHDTorrents,
-  'hdcity.leniter.org': _getHDCityTorrents
+  'hdcity.leniter.org': _getHDCityTorrents,
+  'iptorrents.com': _getIPTorrentsTorrents
 };
 
 exports.getTorrents = async function (rssUrl) {
