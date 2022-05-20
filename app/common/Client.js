@@ -224,6 +224,7 @@ class Client {
       logger.error('下载器', this.alias, '登陆失败\n', error);
       await this.ntf.clientLoginError(this._client, error.message);
       this.status = false;
+      this.maindata = null;
       return;
     }
     try {
@@ -279,6 +280,7 @@ class Client {
     } catch (error) {
       logger.error('下载器', this.alias, '获取种子信息失败\n', error);
       this.status = false;
+      this.maindata = null;
       this.errorCount += 1;
       if (this.errorCount > 5) {
         await this.ntf.getMaindataError(this._client);
