@@ -1426,7 +1426,19 @@ class Site {
       downloadLink = downloadLinkTemplate.replace(/{ID}/, id);
     }
     const { filepath, hash, size, name } = await this._downloadTorrent(downloadLink);
-    await global.runningClient[client].addTorrentByTorrentFile(filepath, hash, false, 0, 0, savePath, category, autoTMM);
+    let tryCount = 0;
+    while (true) {
+      try {
+        await global.runningClient[client].addTorrentByTorrentFile(filepath, hash, false, 0, 0, savePath, category, autoTMM);
+        break;
+      } catch (e) {
+        tryCount += 1;
+        logger.error('推送失败第', tryCount, '次', '失败信息\n', e);
+        if (tryCount === 5) {
+          throw new Error('推送失败次数达到限制, 停止本次推送');
+        }
+      }
+    }
     // 1: 添加 2: 拒绝 3: 错误 4: 搜索推送 6: 豆瓣推送 98: 4 完成 99: 6 完成
     await util.runRecord('INSERT INTO torrents (hash, name, size, rss_id, link, record_time, add_time, record_type, record_note) values (?, ?, ?, ?, ?, ?, ?, ?, ?)',
       [hash, name, size, this.site, torrentLink, moment().unix(), moment().unix(), recordType, recordNote]);
