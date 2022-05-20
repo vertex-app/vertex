@@ -73,6 +73,10 @@
               <el-checkbox v-model="rule.keepSeriesName">保留剧集名</el-checkbox>
               <div><el-tag type="info">软链接时在文件名前添加剧集的名称</el-tag></div>
             </el-form-item>
+            <el-form-item label="制作组" prop="group">
+              <el-checkbox v-model="rule.group">保留制作组</el-checkbox>
+              <div><el-tag type="info">软链接时在文件名最后保留制作组, 以文件名最后一个 - 符号为标志, 之后的内容被判定为制作组</el-tag></div>
+            </el-form-item>
             <el-form-item label="保留关键词" prop="reservedKeys">
               <el-input v-model="rule.reservedKeys" type="input"></el-input>
               <div><el-tag type="info">软链接时保留关键词, 可以用 , 分割多个关键字, 在软链接时将按照关键词的顺序检索文件名, 若存在则保留</el-tag></div>

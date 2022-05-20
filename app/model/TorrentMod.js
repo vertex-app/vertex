@@ -159,9 +159,14 @@ class TorrentMod {
             suffix += '.' + key;
           }
         }
+        let group = '';
+        if (_linkRule.group) {
+          group = (filename.match(/-[^-]*?$/) || [''])[0];
+        }
         const fileExt = path.extname(file.name);
+        group = group.replace(fileExt, '');
         const linkFilePath = path.join(_linkRule.linkFilePath, libraryPath, seriesName, season).replace(/'/g, '\\\'');
-        const linkFile = path.join(linkFilePath, prefix + season + episode + suffix + fileExt).replace(/'/g, '\\\'');
+        const linkFile = path.join(linkFilePath, prefix + season + episode + suffix + group + fileExt).replace(/'/g, '\\\'');
         const targetFile = path.join(savePath.replace(_linkRule.targetPath.split('##')[0], _linkRule.targetPath.split('##')[1]), file.name).replace(/'/g, '\\\'');
         const command = `mkdir -p $'${linkFilePath}' && ln -sf $'${targetFile}' $'${linkFile}'`;
         if (dryrun) {
@@ -170,7 +175,7 @@ class TorrentMod {
             episode,
             season,
             seriesName,
-            linkFile: prefix + season + episode + suffix + fileExt
+            linkFile: prefix + season + episode + suffix + group + fileExt
           });
           continue;
         }
@@ -193,14 +198,19 @@ class TorrentMod {
             suffix += '.' + key;
           }
         }
+        let group = '';
+        if (_linkRule.group) {
+          group = (file.name.match(/-[^-]*?$/) || [''])[0];
+        }
         const fileExt = path.extname(file.name);
+        group = group.replace(fileExt, '');
         const linkFilePath = path.join(_linkRule.linkFilePath, libraryPath, `${movieName}.${year}`).replace(/'/g, '\\\'');
-        const linkFile = path.join(linkFilePath, `${movieName}.${year}${suffix}${fileExt}`).replace(/'/g, '\\\'');
+        const linkFile = path.join(linkFilePath, `${movieName}.${year}${suffix + group}${fileExt}`).replace(/'/g, '\\\'');
         if (dryrun) {
           dryrunResult.push({
             file: path.basename(file.name),
             folderName: `${movieName}.${year}`,
-            linkFile: `${movieName}.${year}${suffix}${fileExt}`
+            linkFile: `${movieName}.${year}${suffix + group}${fileExt}`
           });
           continue;
         }
