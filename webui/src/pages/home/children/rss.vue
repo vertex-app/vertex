@@ -60,7 +60,7 @@
           </template>
           <template slot-scope="scope">
             <div v-for="rssUrl of scope.row.rssUrls" :key="rssUrl">
-              {{ urlDisplay ? rssUrl : '**********' }}
+              {{ urlDisplay ? rssUrl.replace(/passkey=[a-z0-9A-z]*/, 'passkey=****') : '**********' }}
             </div>
           </template>
         </el-table-column>
