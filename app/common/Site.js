@@ -1243,7 +1243,7 @@ class Site {
       torrent.site = this.site;
       torrent.title = (_torrent.querySelector('div[class="name_left"] a[href*="/t/"] b font') || _torrent.querySelector('div[class="name_left"] a[href*="/t/"] b')).childNodes[0].nodeValue.trim();
       const subtitle = (_torrent.querySelector('div[class="name_left"] a[href*="/t/"] b font span') || _torrent.querySelector('div[class="name_left"] a[href*="/t/"] b span'));
-      torrent.subtitle = subtitle ? subtitle.innerHTML.trim() : '';
+      torrent.subtitle = (subtitle ? subtitle.innerHTML.trim() : '') + (subtitle.nextSibling ? subtitle.nextSibling.nodeValue.trim() : '');
       torrent.category = _torrent.querySelector('td a[href*=cat] img').alt.trim();
       torrent.link = 'https://totheglory.im/' + _torrent.querySelector('a[href*="/t/"]').href.trim();
       torrent.downloadLink = 'https://totheglory.im/' + _torrent.querySelector('a[href*="/dl/"]').href;
