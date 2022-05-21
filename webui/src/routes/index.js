@@ -37,6 +37,8 @@ import NetworkTest from '@/pages/home/children/network-test';
 import LoginMTeam from '@/pages/home/children/login-mteam';
 
 import MobileIndex from '@/pages/mobile/index';
+import MobileHome from '@/pages/mobile/home';
+import MobileSite from '@/pages/mobile/site';
 import MobileClient from '@/pages/mobile/client';
 
 Vue.use(Router);
@@ -287,11 +289,24 @@ export default new Router({
     }, {
       path: '/mobile',
       component: MobileIndex,
+      redirect: '/mobile/home',
       children: [{
+        path: 'home',
+        component: MobileHome,
+        meta: {
+          title: '首页'
+        }
+      }, {
+        path: 'site',
+        component: MobileSite,
+        meta: {
+          title: '站点数据'
+        }
+      }, {
         path: 'client',
         component: MobileClient,
         meta: {
-          title: '客户端'
+          title: '下载器'
         }
       }]
     }

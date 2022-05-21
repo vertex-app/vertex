@@ -199,7 +199,7 @@ tr.hover-row>td.el-table__cell {
   border-bottom: none;
 }
 
-.mobile-client .el-card__body {
+.mobile-client .el-card__body, .mobile-site .el-card__body {
   padding: 0;
 }
 

@@ -41,7 +41,11 @@ export default {
       this.isCollapse = !this.isCollapse;
     },
     selectMenu (idx) {
-      this.$goto(idx, this.$router);
+      if (idx === '/mobile/home') {
+        window.location.href = idx;
+      } else {
+        this.$goto(idx, this.$router);
+      }
     },
     async logout () {
       const res = await this.$axiosGet('/api/user/logout');
@@ -89,6 +93,10 @@ export default {
         icon: ['fas', 'sticky-note'],
         title: ' 系统日志',
         path: '/log'
+      }, {
+        icon: ['fas', 'mobile'],
+        title: ' 手机端',
+        path: '/mobile/home'
       }
     ];
     this.menuIndex = this.$route.path;
