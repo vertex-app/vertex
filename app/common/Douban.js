@@ -469,7 +469,7 @@ class Douban {
           continue;
         }
         let fakeEpisode = 0;
-        const part = (filename.match(/[ .]?[Pp][Aa][Rr][Tt][ .]?([abAB12])/));
+        const part = (filename.match(/[ .]?[Pp][Aa][Rr][Tt][ .]?0?([abAB12])/));
         if (part?.[1]) {
           fakeEpisode = part?.[1] === 'A' || part?.[1] === '1' ? episode * 2 - 1 : episode * 2;
         }
