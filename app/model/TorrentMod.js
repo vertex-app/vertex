@@ -100,7 +100,7 @@ class TorrentMod {
         if (_linkRule.excludeKeys && _linkRule.excludeKeys.split(',').some(item => filename.indexOf(item) !== -1)) continue;
         const seriesName = mediaName.split('/')[0].trim().replace(/ /g, '.').replace(/\.?[第][\d一二三四五六七八九十]+[季部]/, '');
         let season = (filename.match(/[. ]S(\d+)/) || [0, null])[1];
-        let episode = +(filename.match(/[Ee][Pp]?(\d+)[. ]/) || [])[1];
+        let episode = +(filename.match(/[Ee][Pp]?(\d+)[. ]?/) || [])[1];
         // 适配奇奇怪怪的命名
         if (!episode) {
           episode = +(filename.match(/\[(\d+)[Vv]*\d*\]/) || [])[1];
@@ -120,7 +120,7 @@ class TorrentMod {
           continue;
         }
         let fakeEpisode = 0;
-        const part = (filename.match(/[ .][Pp][Aa][Rr][Tt][ .]?([abAB12])/));
+        const part = (filename.match(/[ .]?[Pp][Aa][Rr][Tt][ .]?([abAB12])/));
         if (part?.[1]) {
           fakeEpisode = part?.[1] === 'A' || part?.[1] === '1' ? episode * 2 - 1 : episode * 2;
         }

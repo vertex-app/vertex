@@ -449,7 +449,7 @@ class Douban {
         if (linkRule.excludeKeys && linkRule.excludeKeys.split(',').some(item => filename.indexOf(item) !== -1)) continue;
         const seriesName = wish.name.split('/')[0].trim().replace(/ /g, '.').replace(/\.?[第].*[季部]/, '').replace(/\..*[篇]/, '');
         let season = (filename.match(/[. ]S(\d+)/) || [0, null])[1];
-        let episode = +(filename.match(/[Ee][Pp]?(\d+)[. ]/) || [])[1];
+        let episode = +(filename.match(/[Ee][Pp]?(\d+)[. ]?/) || [])[1];
         // 适配奇奇怪怪的命名
         if (!episode) {
           episode = +(filename.match(/\[(\d+)[Vv]*\d*\]/) || [])[1];
@@ -469,7 +469,7 @@ class Douban {
           continue;
         }
         let fakeEpisode = 0;
-        const part = (filename.match(/[ .][Pp][Aa][Rr][Tt][ .]?([abAB12])/));
+        const part = (filename.match(/[ .]?[Pp][Aa][Rr][Tt][ .]?([abAB12])/));
         if (part?.[1]) {
           fakeEpisode = part?.[1] === 'A' || part?.[1] === '1' ? episode * 2 - 1 : episode * 2;
         }

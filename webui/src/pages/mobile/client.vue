@@ -94,6 +94,9 @@ export default {
       this.listClient();
       this.listTop10();
     }, 5000);
+  },
+  beforeDestroy () {
+    clearInterval(this.freshData);
   }
 };
 </script>
