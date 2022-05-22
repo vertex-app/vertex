@@ -91,7 +91,6 @@ const _freeHDBits = async function (url, cookie) {
 };
 
 const freeWrapper = {
-  'pterclub.com': _free,
   'pt.btschool.club': _free,
   'club.hares.top': _freeHaresClub,
   'hdhome.org': _free,
