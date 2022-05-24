@@ -765,7 +765,7 @@ class Douban {
     logger.binge('豆瓣账号', this.alias, '接收微信消息', typeMap[type], '即将开始执行');
     switch (type) {
     case 'refresh':
-      this.ntf.startRefreshJob(this.alias);
+      // this.ntf.startRefreshJob(this.alias);
       this.refreshWishList();
       break;
     case 'refreshWish':
