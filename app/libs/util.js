@@ -132,7 +132,7 @@ exports.requestUsePuppeteer = async function (options) {
     const body = await page.content();
     await page.close();
     if ((await browser.pages()).length === 1) {
-      logger.info('Close Browser!!!');
+      logger.info('关闭浏览器....');
       await browser.close();
     }
     return {
@@ -142,7 +142,7 @@ exports.requestUsePuppeteer = async function (options) {
     logger.error('Puppeteer 报错:\n', e);
     await page.close();
     if ((await browser.pages()).length === 1) {
-      logger.info('Close Browser!!!');
+      logger.info('关闭浏览器....');
       await browser.close();
     }
     return {
