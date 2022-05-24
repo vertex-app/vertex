@@ -111,7 +111,7 @@ class Site {
     this.maxRetryCount = +site.maxRetryCount || 5;
     this.retryCount = 0;
     this.cron = site.cron || '0 */4 * * *';
-    this.refreshJob = cron.schedule(this.cron, () => { try { this.refreshInfo(); } catch (e) {} });
+    this.refreshJob = cron.schedule(this.cron, async () => { try { await this.refreshInfo(); } catch (e) { logger.error(e); } });
     this._init();
     logger.info('站点', this.site, '初始化完毕');
   };

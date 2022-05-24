@@ -100,7 +100,7 @@ exports.requestUsePuppeteer = async function (options) {
     if (!browser || browser.process().exitCode === 0) {
       browser = await puppeteer.launch({
         executablePath: '/usr/bin/chromium',
-        args: ['--remote-debugging-port=9222', '--no-sandbox'],
+        args: ['--no-sandbox'],
         headless: false
       });
     }

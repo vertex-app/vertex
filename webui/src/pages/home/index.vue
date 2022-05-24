@@ -90,13 +90,13 @@ export default {
         title: ' 全局设置',
         path: '/global/setting'
       }, {
-        icon: ['fas', 'sticky-note'],
-        title: ' 系统日志',
-        path: '/log'
-      }, {
         icon: ['fas', 'mobile'],
         title: ' 手机端',
         path: '/mobile/home'
+      }, {
+        icon: ['fas', 'sticky-note'],
+        title: ' 系统日志',
+        path: '/log'
       }
     ];
     this.menuIndex = this.$route.path;
