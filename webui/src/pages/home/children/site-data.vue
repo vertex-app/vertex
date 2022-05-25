@@ -42,7 +42,7 @@ export default {
           trigger: 'axis',
           formatter: (params) => {
             let str = params[0].axisValue + '</br>';
-            params = params.sort((a, b) => b.value - a.value);
+            params = params.sort((a, b) => b.value - a.value).slice(10);
             for (const param of params) {
               const size = this.$formatSize(param.value);
               const increase = this.$formatSize(this.upload.series[param.seriesIndex].data[param.dataIndex] - (this.upload.series[param.seriesIndex].data[param.dataIndex - 1] || 0));
@@ -106,7 +106,7 @@ export default {
           trigger: 'axis',
           formatter: (params) => {
             let str = params[0].axisValue + '</br>';
-            params = params.sort((a, b) => b.value - a.value);
+            params = params.sort((a, b) => b.value - a.value).slice(10);
             for (const param of params) {
               const size = this.$formatSize(param.value);
               const increase = this.$formatSize(this.download.series[param.seriesIndex].data[param.dataIndex] - (this.download.series[param.seriesIndex].data[param.dataIndex - 1] || 0));
