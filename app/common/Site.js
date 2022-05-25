@@ -705,7 +705,7 @@ class Site {
     const info = {};
     const document = await this._getDocument('https://greatposterwall.com/user.php', false, 10);
     // 用户名
-    info.username = document.querySelector('span[class=Header-profileName]').innerHTML;
+    info.username = document.querySelector('a[href^="user.php?id"]').innerHTML;
     // uid
     info.uid = document.querySelector('a[href^="torrents.php?type=seeding&userid="]').href.match(/userid=(\d+)/)[1];
     // 上传
