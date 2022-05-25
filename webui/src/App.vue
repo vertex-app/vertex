@@ -43,7 +43,7 @@ export default {
 <style>
 /* @import '/api/setting/getCss.css'; */
 
-body {
+body, .el-dialog {
   background: #0f0c29;  /* fallback for old browsers */
   background: -webkit-linear-gradient(to right, #24243e, #302b63, #0f0c29);  /* Chrome 10-25, Safari 5.1-6 */
   background: linear-gradient(to right, #24243e, #302b63, #0f0c29); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
@@ -58,8 +58,8 @@ body {
   src: url('/assets/fonts/consolas.woff');
 }
 
-#app {
-  font-family: consolas, "LXGW WenKai Mono", "Microsoft YaHei","微软雅黑","Hiragino Sans GB","Helvetica Neue",Helvetica,"PingFang SC",Arial,sans-serif;
+#app, #app * {
+  font-family: consolas, "LXGW WenKai Screen", "Microsoft YaHei","微软雅黑","Hiragino Sans GB","Helvetica Neue",Helvetica,"PingFang SC",Arial,sans-serif;
   /*font-family: Dosis,Open Sans,pingfang SC,-apple-system,Helvetica Neue,Helvetica,Arial,PingFang SC,PingFang TC,Hiragino Sans GB,Microsoft Yahei,Microsoft Jhenghei,sans-serif;
   */
   -webkit-font-smoothing: antialiased;
@@ -113,10 +113,10 @@ tr.hover-row>td.el-table__cell {
 }
 
 .el-textarea__inner {
-  font-family: 'consolas';
+  font-family: consolas, "LXGW WenKai Screen";
 }
 
-.el-card, .el-descriptions {
+.el-card, .el-descriptions, .el-link.el-link--default, .el-dialog__body {
   color: #fff
 }
 
@@ -185,17 +185,16 @@ tr.hover-row>td.el-table__cell {
 .el-input-group__append, .el-input-group__prepend {
   border: 1px solid #409EFF;
   color: #fff;
-  font-family: consolas;
+  font-family: consolas, "LXGW WenKai Screen";
 }
 
 .el-checkbox__inner::after {
-  border: 1px solid #000;
   border-left: 0;
   border-top: 0;
 }
 
 .el-select-dropdown__item {
-  font-family: consolas;
+  font-family: consolas, "LXGW WenKai Screen";
 }
 
 .el-tag.el-tag--info {

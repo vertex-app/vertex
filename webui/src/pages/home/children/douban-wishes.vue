@@ -3,7 +3,7 @@
     <div>
       <div style="margin: 20px auto; padding: 20px auto; display: block;">
         <el-form class="filter-form" label-width="100px" size="mini">
-          <el-form-item label="">
+          <el-form-item label="" style="text-align: left;">
             <el-select style="width: 160px;" clearable @change="listWishes"  v-model="downloaded" placeholder="完成状态">
               <el-option label="已完成" :value="true"></el-option>
               <el-option label="未完成" :value="false"></el-option>
@@ -12,21 +12,21 @@
           </el-form-item>
         </el-form>
         <div style="margin: 20px auto;" >
-          <el-card class="radius-div" shadow="never" v-for="item of wishes" :key="item.id + item.doubanId" style="width: 240px; display:inline-block; margin: 20px;">
+          <el-card class="radius-div" shadow="never" v-for="item of wishes" :key="item.id + item.doubanId" style="width: 240px; display:inline-block; margin: 16px;">
             <div style="width: 200px; height: 280px; position: relative;">
               <img @click="gotoDetail(item.link)" :src="item.poster" style="cursor: pointer; width: 200px; height: 280px;">
-              <div v-if="item.cron || item.acceptKeys || item.rejectKeys || item.rejectCompleteTorrent" style="right: 6px; bottom: 6px; position: absolute; background-color: rgba(255,255,255,0.6); blur: 4px; width: 22px; height: 22px; border-radius: 4px;"><fa style="font-size: 12px; color: green;" :icon="['fas', 'pencil-alt']"></fa></div>
+              <div v-if="item.cron || item.acceptKeys || item.rejectKeys || item.rejectCompleteTorrent" style="z-index: 1; right: 6px; bottom: 3px; position: absolute; width: 15px; height: 15px; color: lightpink;"><fa style="font-size: 15px;" :icon="['fas', 'pencil-alt']"></fa></div>
+              <div style="color: lightpink; bottom: 0px; width: 100%; font-size: 14px; position: absolute; background-color: rgba(0,0,0,0.3); backdrop-filter: blur(4px);">
+                <span>[{{item.tag}}]</span>
+                <span>[{{item.episodeNow === 0 ? 0 : item.episodeNow || '1'}}/{{item.episodes === 0 ? 0 : item.episodes || '1'}}]</span>
+              </div>
             </div>
-            <div style="margin: 12px auto;">
-              <div style="font-size: 14px; color: #000; height: 42px;">
+            <div style="margin: 6px auto;">
+              <div style="font-size: 14px; height: 32px;">
                 {{item.name.split('/')[0]}} · {{item.year}}
               </div>
-              <div style="font-size: 13px;">
-                <span style="color: #FFB6C1;">[{{item.tag}}]</span>
-                <span style="color: green;">[{{item.episodeNow === 0 ? 0 : item.episodeNow || '1'}}/{{item.episodes === 0 ? 0 : item.episodes || '1'}}]</span>
-              </div>
             </div>
-            <div style="margin: 12px auto;">
+            <div style="margin: 6px auto;">
               <el-tag class="tag-margin" size="small" type="success" style="cursor: pointer;" @click="refreshWish(item)"> <fa style="font-size: 10px; color: green;" :icon="['fas', item.downloaded ? 'check' : 'redo-alt']"></fa> {{item.downloaded ? '完成' : '刷新'}}</el-tag>
               <el-tag class="tag-margin" size="small" style="cursor: pointer;" @click="openEditDialog(item)"> <fa style="font-size: 10px; color: green;" :icon="['fas', 'edit']"></fa> 编辑</el-tag>
               <el-tag class="tag-margin" size="small" type="danger" style="cursor: pointer;" @click="deleteWish(item)"> <fa style="font-size: 10px; color: red;" :icon="['fas', 'times']"></fa> 删除</el-tag>

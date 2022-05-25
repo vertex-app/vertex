@@ -20,7 +20,11 @@ export default {
       upload: {
         title: {
           text: '上传',
-          left: 'center'
+          left: 'center',
+          textStyle: {
+            fontFamily: 'LXGW WenKai Screen',
+            color: '#ffffff'
+          }
         },
         grid: {
           top: 120,
@@ -31,11 +35,15 @@ export default {
         legend: {
           top: 64,
           left: '10%',
-          width: '80%'
+          width: '80%',
+          textStyle: {
+            fontFamily: 'LXGW WenKai Screen',
+            color: '#ffffff'
+          }
         },
         textStyle: {
           fontFamily: 'consolas',
-          color: '#000'
+          color: '#ffffff'
         },
         darkMode: true,
         tooltip: {
@@ -84,7 +92,11 @@ export default {
       download: {
         title: {
           text: '下载',
-          left: 'center'
+          left: 'center',
+          textStyle: {
+            fontFamily: 'consolas',
+            color: '#ffffff'
+          }
         },
         grid: {
           top: 120,
@@ -95,11 +107,15 @@ export default {
         legend: {
           top: 64,
           left: '10%',
-          width: '80%'
+          width: '80%',
+          textStyle: {
+            fontFamily: 'consolas',
+            color: '#ffffff'
+          }
         },
         textStyle: {
           fontFamily: 'consolas',
-          color: '#000'
+          color: '#ffffff'
         },
         darkMode: true,
         tooltip: {

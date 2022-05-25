@@ -26,7 +26,7 @@ import {
   LegendComponent, VisualMapComponent, GraphicComponent
 } from 'echarts/components';
 
-import 'lxgw-wenkai-webfont/lxgwwenkai-bold.css';
+import 'lxgw-wenkai-screen-webfont/style.css';
 
 use([CanvasRenderer, BarChart, LineChart, GridComponent, GaugeChart,
   TooltipComponent, TitleComponent, LegendComponent, VisualMapComponent,

@@ -14,13 +14,13 @@
                 </el-card>
               </el-col>
               <el-col :span="16"  style="width: calc(100% - 220px); margin: 20px 0; padding-left: 20px;">
-                <el-link style="font-size: 18px; color: #000;" @click="gotoDetail(scope.row.link || scope.row.wish.link)">{{scope.row.name || scope.row.wish.name}}</el-link>
+                <el-link style="font-size: 18px;" @click="gotoDetail(scope.row.link || scope.row.wish.link)">{{scope.row.name || scope.row.wish.name}}</el-link>
                 <span style="font-size: 13px">[推送时间: {{$moment(scope.row.recordTime * 1000).format('YYYY-MM-DD HH:mm:ss')}}]</span>
                 <el-link style="font-size: 13px; color: red;" @click="deleteRecord(scope.row)">[删除记录]</el-link>
                 <el-link style="font-size: 13px; color: red;" @click="() => { relinkVisible = true; relinkRow = scope.row }">[重新软链接]</el-link>
                 <el-link style="font-size: 13px; color: red;">[{{scope.row.recordType === 99 ? '已完成' : '未完成'}}]</el-link>
                 <br>
-                <el-link style="font-size: 15px; color: #000;" @click="gotoDetail((scope.row.torrent || {}).link)">{{(scope.row.torrent || {}).subtitle || ''}}[{{(scope.row.torrent || {}).site || ''}}]</el-link>
+                <el-link style="font-size: 15px;" @click="gotoDetail((scope.row.torrent || {}).link)">{{(scope.row.torrent || {}).subtitle || ''}}[{{(scope.row.torrent || {}).site || ''}}]</el-link>
                 <br>
                 <span style="font-size: 13px">{{(scope.row.torrent || {}).title || ''}}[{{$formatSize((scope.row.torrent || {}).size || 0)}}]</span>
                 <br>

@@ -250,7 +250,11 @@ export default {
       tracker: {
         title: {
           text: 'Tracker 速度',
-          left: 'center'
+          left: 'center',
+          textStyle: {
+            fontFamily: 'LXGW WenKai Screen',
+            color: '#ffffff'
+          }
         },
         grid: {
           top: 120,
@@ -261,7 +265,11 @@ export default {
         legend: {
           top: 64,
           left: '10%',
-          width: '80%'
+          width: '80%',
+          textStyle: {
+            fontFamily: 'consolas',
+            color: '#ffffff'
+          }
         },
         textStyle: {
           fontFamily: 'consolas',
@@ -314,7 +322,11 @@ export default {
       chart: {
         title: {
           text: '流量曲线',
-          left: 'center'
+          left: 'center',
+          textStyle: {
+            fontFamily: 'LXGW WenKai Screen',
+            color: '#ffffff'
+          }
         },
         grid: {
           top: 40,
@@ -323,7 +335,11 @@ export default {
           bottom: 40
         },
         legend: {
-          top: '7%'
+          top: '7%',
+          textStyle: {
+            fontFamily: 'consolas',
+            color: '#ffffff'
+          }
         },
         textStyle: {
           fontFamily: 'consolas',
@@ -399,7 +415,11 @@ export default {
       networkChart: {
         title: {
           text: '网络速率',
-          left: 'center'
+          left: 'center',
+          textStyle: {
+            fontFamily: 'LXGW WenKai Screen',
+            color: '#ffffff'
+          }
         },
         grid: {
           top: 40,
@@ -408,7 +428,11 @@ export default {
           bottom: 40
         },
         legend: {
-          top: '8%'
+          top: '8%',
+          textStyle: {
+            fontFamily: 'consolas',
+            color: '#ffffff'
+          }
         },
         textStyle: {
           fontFamily: 'consolas',
