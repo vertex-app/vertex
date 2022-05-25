@@ -223,22 +223,12 @@ tr.hover-row>td.el-table__cell {
 
 *::-webkit-scrollbar-thumb {
   border-radius   : 10px;
-  background-color: skyblue;
-  background-image: -webkit-linear-gradient(
-      45deg,
-      rgba(255, 255, 255, 0.2) 25%,
-      transparent 25%,
-      transparent 50%,
-      rgba(255, 255, 255, 0.2) 50%,
-      rgba(255, 255, 255, 0.2) 75%,
-      transparent 75%,
-      transparent
-  );
+  background-color: lightpink;
 }
 
 *::-webkit-scrollbar {
-  width : 7px;
-  height: 10px;
+  width : 4px;
+  height: 4px;
 }
 
 *::-webkit-scrollbar-track {

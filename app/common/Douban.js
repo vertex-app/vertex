@@ -47,7 +47,7 @@ class Douban {
   };
 
   async _getDocument (url, expire = 300) {
-    const cache = await redis.get(`vertex:document:body:${url}`);
+    const cache = await redis.get(`vertex:document:body:${url + util.md5(this.cookie)}`);
     if (!cache) {
       const html = (await util.requestPromise({
         url: url,
@@ -55,7 +55,7 @@ class Douban {
           cookie: this.cookie
         }
       })).body;
-      await redis.setWithExpire(`vertex:document:body:${url}`, html, expire);
+      await redis.setWithExpire(`vertex:document:body:${url + util.md5(this.cookie)}`, html, expire);
       const dom = new JSDOM(html);
       return dom.window.document;
     } else {
