@@ -189,10 +189,10 @@ class WebhookMod {
           {
             question_key: 'mediaName',
             title: '选择剧集',
-            option_list: list
+            option_list: list.slice(0, 10)
           }
         ];
-        await global.doubanPush.pushWeChat('Vertex', '本操作只支持企业微信, 普通微信请发送 刷新{剧集名}');
+        await global.doubanPush.pushWeChat('Vertex', '本操作只支持企业微信, 仅显示前十个, 普通微信请发送 刷新{剧集名}');
         await global.doubanPush.pushWeChatSelector('选择剧集', '', selectors, 'refreshMedia');
         return;
       }
