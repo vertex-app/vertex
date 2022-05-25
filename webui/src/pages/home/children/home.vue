@@ -5,7 +5,7 @@
         <el-descriptions-item
           label="主版本">
           <el-link
-            style="color: blue"
+            style="color: #FFB6C1"
             @click="gotoVersion">
             {{this.version.version}}
           </el-link>
@@ -13,7 +13,7 @@
         <el-descriptions-item
           label="次版本">
           <el-link
-            style="color: blue"
+            style="color: #FFB6C1"
             @click="gotoVersion">
             {{this.version.head}}
           </el-link>
@@ -30,7 +30,7 @@
       <el-descriptions style="padding: 24px" title="使用帮助" :column="4">
         <el-descriptions-item
           label="文档">
-          <el-link style="color: blue" @click="gotoDoc()">文档</el-link>
+          <el-link style="color: #FFB6C1" @click="gotoDoc()">文档</el-link>
         </el-descriptions-item>
         <el-descriptions-item
           label="QQ 交流群组">
@@ -41,17 +41,17 @@
         <el-descriptions-item
           label="Telegram">
           <div>
-            <el-link style="color: blue" @click="gotoGroup()">交流群组</el-link>
+            <el-link style="color: #FFB6C1" @click="gotoGroup()">交流群组</el-link>
             <br>
-            <el-link style="color: blue" @click="gotoChannel()">更新推送</el-link>
+            <el-link style="color: #FFB6C1" @click="gotoChannel()">更新推送</el-link>
           </div>
         </el-descriptions-item>
         <el-descriptions-item
           label="开源地址">
           <div>
-            <el-link style="color: blue" @click="gotoGitlab()">Gitlab</el-link>
+            <el-link style="color: #FFB6C1" @click="gotoGitlab()">Gitlab</el-link>
             <br>
-            <el-link style="color: blue" @click="gotoGithub()">Github</el-link>
+            <el-link style="color: #FFB6C1" @click="gotoGithub()">Github</el-link>
           </div>
         </el-descriptions-item>
       </el-descriptions>

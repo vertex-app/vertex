@@ -32,7 +32,7 @@ export default {
   },
   created () {
     if (this.$route.path.indexOf('mobile') === -1) {
-      this.getBackground();
+      // this.getBackground();
     } else {
       this.setViewport();
     }
@@ -41,12 +41,16 @@ export default {
 </script>
 
 <style>
-@import '/api/setting/getCss.css';
+/* @import '/api/setting/getCss.css'; */
 
 body {
+  background: #0f0c29;  /* fallback for old browsers */
+  background: -webkit-linear-gradient(to right, #24243e, #302b63, #0f0c29);  /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to right, #24243e, #302b63, #0f0c29); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
   height: calc(var(--vh, 1vh) * 100);
   background-position-x: center;
   background-size: cover;
+  color: #fff;
 }
 
 @font-face{
@@ -55,7 +59,9 @@ body {
 }
 
 #app {
-  font-family: consolas, "Microsoft YaHei","微软雅黑","Hiragino Sans GB","Helvetica Neue",Helvetica,"PingFang SC",Arial,sans-serif;
+  font-family: consolas, "LXGW WenKai Mono", "Microsoft YaHei","微软雅黑","Hiragino Sans GB","Helvetica Neue",Helvetica,"PingFang SC",Arial,sans-serif;
+  /*font-family: Dosis,Open Sans,pingfang SC,-apple-system,Helvetica Neue,Helvetica,Arial,PingFang SC,PingFang TC,Hiragino Sans GB,Microsoft Yahei,Microsoft Jhenghei,sans-serif;
+  */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
@@ -67,7 +73,7 @@ body {
 }
 
 .el-tabs__item {
-  color: #000;
+  color: #fff;
   border-radius: 8px !important;
 }
 
@@ -110,13 +116,25 @@ tr.hover-row>td.el-table__cell {
   font-family: 'consolas';
 }
 
+.el-card, .el-descriptions {
+  color: #fff
+}
+
 .el-table {
   width: auto;
-  color: #000
+  color: #fff
 }
 
 .el-table thead, .el-form-item__label, .el-checkbox__label, .el-table__empty-text {
-  color: #000
+  color: #fff
+}
+
+.el-tabs--card>.el-tabs__header .el-tabs__item.is-active {
+  border-bottom: none;
+}
+
+.el-tabs--card>.el-tabs__header .el-tabs__item {
+  border-left: none;
 }
 
 .el-card {
@@ -143,11 +161,11 @@ tr.hover-row>td.el-table__cell {
 }
 
 .el-menu-item {
-  color: #000;
+  color: #fff;
 }
 
 .el-descriptions__body {
-  color: #000;
+  color: #fff;
 }
 
 .el-descriptions-item__label.is-bordered-label {
@@ -166,7 +184,7 @@ tr.hover-row>td.el-table__cell {
 .el-input__inner, .el-checkbox__inner, .el-textarea__inner,
 .el-input-group__append, .el-input-group__prepend {
   border: 1px solid #409EFF;
-  color: #000;
+  color: #fff;
   font-family: consolas;
 }
 
@@ -181,7 +199,7 @@ tr.hover-row>td.el-table__cell {
 }
 
 .el-tag.el-tag--info {
-  color: #000;
+  color: #fff;
 }
 .el-input__inner::placeholder {
   color: #409EFF;

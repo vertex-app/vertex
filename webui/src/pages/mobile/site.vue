@@ -3,7 +3,7 @@
     <el-card v-for="(item, index) of siteList" :key="index" style="margin: 20px; position: relative;">
       <div style="height: 96px;">
         <div :style="`margin: 0; position: absolute; ${index % 2 === 0 ? 'left' : 'right'}: 2%; top: 0; padding: 4px; font-size: 12px;`">
-          <div style="height: 24px; font-size: 18px; color: blue"> {{item.name}}</div>
+          <div style="height: 24px; font-size: 18px; color: #FFB6C1"> {{item.name}}</div>
           <div style="height: 24px; font-size: 16px; color: green"> {{item.username}}</div>
           <div style="font-size: 13px;">{{$formatSize(item.upload)}} ↑</div>
           <div style="font-size: 13px;">{{$formatSize(item.download)}} ↓</div>
@@ -23,8 +23,8 @@
       <div :style="`transition: 0.5s; overflow-y: scroll; height: ${ expand[item.id] ? '400px;' : '0' }`">
         <div v-for="(torrent, index) of torrents[item.id]" :key="torrent.hash" style="margin: 0; font-size: 12px; width: 100%; position: relative;">
           <div :style="`transform: scale(0.8); width: 120%; left: -10%; position: absolute; top: ${64 * index}px;`">
-            <span style="color: blue">[{{ torrent.category }}] </span>
-            <span style="color: blue">[{{ torrent.tracker }}] </span>
+            <span style="color: #FFB6C1">[{{ torrent.category }}] </span>
+            <span style="color: #FFB6C1">[{{ torrent.tracker }}] </span>
             <br>
             <span style="color: green"> {{$formatSize(torrent.uploadSpeed)}}/s ↑ </span>
             <span style="color: red"> {{$formatSize(torrent.downloadSpeed)}}/s ↓ </span>

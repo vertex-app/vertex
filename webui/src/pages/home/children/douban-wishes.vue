@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="radius-div">
+    <div>
       <div style="margin: 20px auto; padding: 20px auto; display: block;">
         <el-form class="filter-form" label-width="100px" size="mini">
           <el-form-item label="">
@@ -22,7 +22,7 @@
                 {{item.name.split('/')[0]}} · {{item.year}}
               </div>
               <div style="font-size: 13px;">
-                <span style="color: blue;">[{{item.tag}}]</span>
+                <span style="color: #FFB6C1;">[{{item.tag}}]</span>
                 <span style="color: green;">[{{item.episodeNow === 0 ? 0 : item.episodeNow || '1'}}/{{item.episodes === 0 ? 0 : item.episodes || '1'}}]</span>
               </div>
             </div>
@@ -31,7 +31,7 @@
               <el-tag class="tag-margin" size="small" style="cursor: pointer;" @click="openEditDialog(item)"> <fa style="font-size: 10px; color: green;" :icon="['fas', 'edit']"></fa> 编辑</el-tag>
               <el-tag class="tag-margin" size="small" type="danger" style="cursor: pointer;" @click="deleteWish(item)"> <fa style="font-size: 10px; color: red;" :icon="['fas', 'times']"></fa> 删除</el-tag>
               <!--
-              <span style="margin-left: 10px; cursor: pointer; font-size: 10px; color: blue" @click="openEditDialog(item)"><fa style="font-size: 10px; color: green;" :icon="['fas', 'edit']"></fa> 编辑</span>
+              <span style="margin-left: 10px; cursor: pointer; font-size: 10px; color: #FFB6C1" @click="openEditDialog(item)"><fa style="font-size: 10px; color: green;" :icon="['fas', 'edit']"></fa> 编辑</span>
               <span style="margin-left: 10px; cursor: pointer; font-size: 10px; color: green" @click="refreshWish(item)" v-if="item.downloaded"><fa style="font-size: 10px; color: green;" :icon="['fas', 'check']"></fa> 已完成</span>
               <span style="margin-left: 10px; cursor: pointer; font-size: 10px; color: green" @click="refreshWish(item)" v-if="!item.downloaded"><fa style="font-size: 10px; color: green;" :icon="['fas', 'redo-alt']"></fa> 刷新</span>
               <span style="margin-left: 10px; cursor: pointer; font-size: 10px; color: red" @click="deleteWish(item)"><fa style="font-size: 10px; color: red;" :icon="['fas', 'times']"></fa> 删除</span>
@@ -212,4 +212,9 @@ export default {
   margin: 0 4px;
 }
 
+.radius-div {
+  border-radius: 8px;
+  background: rgba(255,255,255, 0.3);
+  backdrop-filter: blur(4px);
+}
 </style>

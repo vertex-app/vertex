@@ -2,8 +2,8 @@
   <div>
     <div class="radius-div">
       <div  style="margin: 20px auto; width: fit-content">
-        <div style="padding: 144px 64px; color: #000; text-align: left;">
-          <div>非常感谢您使用 Vertex, 当你看到这条消息时, Vertex 本身仍然是一款<span style="color: blue">免费</span>的软件</div>
+        <div style="padding: 144px 64px; color: #FFB6C1; text-align: left;">
+          <div>非常感谢您使用 Vertex, 当你看到这条消息时, Vertex 本身仍然是一款<span style="color: #FFB6C1; font-weight: 800;">免费</span>的软件</div>
           <div style="padding-bottom: 8px;"></div>
           <div>为了 Vertex 的稳定发展, 请不要在任何用来刷流的设备上搭建<span style="color: red">任何形式的代理工具</span>, 以免影响刷流设备与国内的网络通信</div>
           <div style="padding-bottom: 8px;"></div>

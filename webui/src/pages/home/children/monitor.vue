@@ -265,7 +265,7 @@ export default {
         },
         textStyle: {
           fontFamily: 'consolas',
-          color: '#000'
+          color: '#ffffff'
         },
         darkMode: true,
         tooltip: {
@@ -327,7 +327,7 @@ export default {
         },
         textStyle: {
           fontFamily: 'consolas',
-          color: '#000'
+          color: '#ffffff'
         },
         darkMode: true,
         tooltip: {
@@ -412,7 +412,7 @@ export default {
         },
         textStyle: {
           fontFamily: 'consolas',
-          color: '#000'
+          color: '#ffffff'
         },
         darkMode: true,
         tooltip: {

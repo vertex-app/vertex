@@ -33,8 +33,8 @@
       <div :style="`transition: 0.5s; overflow-y: scroll; height: ${ expand[item.id] ? '400px;' : '0' }`">
         <div v-for="(torrent, index) of torrents[item.id]" :key="torrent.hash" style="margin: 0; font-size: 12px; width: 100%; position: relative;">
           <div :style="`transform: scale(0.8); width: 120%; left: -10%; position: absolute; top: ${64 * index}px;`">
-            <span style="color: blue">[{{ torrent.category }}] </span>
-            <span style="color: blue">[{{ torrent.tracker }}] </span>
+            <span style="color: #FFB6C1">[{{ torrent.category }}] </span>
+            <span style="color: #FFB6C1">[{{ torrent.tracker }}] </span>
             <br>
             <span style="color: green"> {{$formatSize(torrent.uploadSpeed)}}/s ↑ </span>
             <span style="color: red"> {{$formatSize(torrent.downloadSpeed)}}/s ↓ </span>
