@@ -44,12 +44,11 @@ export default {
 /* @import '/api/setting/getCss.css'; */
 
 body, .el-dialog {
-  background: #0f0c29;  /* fallback for old browsers */
-  background: -webkit-linear-gradient(to right, #24243e, #302b63, #0f0c29);  /* Chrome 10-25, Safari 5.1-6 */
-  background: linear-gradient(to right, #24243e, #302b63, #0f0c29); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  background: #aa4b6b;  /* fallback for old browsers */
+  background: -webkit-linear-gradient(to right, #3b8d99, #6b6b83, #aa4b6b);  /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to right, #3b8d99, #6b6b83, #aa4b6b); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+
   height: calc(var(--vh, 1vh) * 100);
-  background-position-x: center;
-  background-size: cover;
   color: #fff;
 }
 
@@ -125,7 +124,7 @@ tr.hover-row>td.el-table__cell {
   color: #fff
 }
 
-.el-table thead, .el-form-item__label, .el-checkbox__label, .el-table__empty-text {
+.el-table thead, .el-form-item__label, .el-checkbox__label, .el-table__empty-text, .el-collapse-item__header {
   color: #fff
 }
 
@@ -227,7 +226,7 @@ tr.hover-row>td.el-table__cell {
 
 *::-webkit-scrollbar {
   width : 4px;
-  height: 4px;
+  height: 6px;
 }
 
 *::-webkit-scrollbar-track {

@@ -29,8 +29,8 @@
       </el-descriptions>
       <el-descriptions style="padding: 24px" title="使用帮助" :column="4">
         <el-descriptions-item
-          label="文档">
-          <el-link style="color: #FFB6C1" @click="gotoDoc()">文档</el-link>
+          label="Wiki">
+          <el-link style="color: #FFB6C1" @click="gotoWiki()">Wiki</el-link>
         </el-descriptions-item>
         <el-descriptions-item
           label="QQ 交流群组">
@@ -177,8 +177,8 @@ export default {
     async gotoGroup () {
       window.open('https://t.me/group_vertex');
     },
-    async gotoDoc () {
-      window.open('https://docs.vertex.icu');
+    async gotoWiki () {
+      window.open('https://Wiki.vertex.icu');
     },
     async gotoVersion () {
       window.open('https://lswl.in/2022/01/14/vertex-changelog');
