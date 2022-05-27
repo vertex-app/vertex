@@ -66,7 +66,7 @@ class Webhook {
       if (!global.apiKey || req.params.apiKey !== global.apiKey) {
         throw new Error('鉴权失效');
       }
-      res.send(await webhookMod.wechat(req));
+      res.send(await webhookMod.wechat(req) || '');
     } catch (e) {
       logger.error(e);
       res.send({

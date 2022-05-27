@@ -87,7 +87,7 @@ exports.requestPromise = async function (_options, usePuppeteer = true) {
   }
   const res = await exports._requestPromise(options);
   if (usePuppeteer && res.body && typeof res.body === 'string' && (res.body.indexOf('jschl-answer') !== -1 || (res.body.indexOf('cloudflare-static') !== -1 && res.body.indexOf('email-decode.min.js') === -1))) {
-    logger.debug(new url.URL(options.url).hostname, '疑似遇到 5s 盾, 启用 Puppeteer 抓取页面....');
+    logger.info(new url.URL(options.url).hostname, '疑似遇到 5s 盾, 启用 Puppeteer 抓取页面....');
     return await exports.requestUsePuppeteer(options);
   }
   return res;
@@ -132,7 +132,7 @@ exports.requestUsePuppeteer = async function (options) {
     const body = await page.content();
     await page.close();
     if ((await browser.pages()).length === 1) {
-      logger.info('关闭浏览器....');
+      logger.info('关闭 Puppeteer....');
       await browser.close();
     }
     return {
@@ -142,7 +142,7 @@ exports.requestUsePuppeteer = async function (options) {
     logger.error('Puppeteer 报错:\n', e);
     await page.close();
     if ((await browser.pages()).length === 1) {
-      logger.info('关闭浏览器....');
+      logger.info('关闭 Puppeteer....');
       await browser.close();
     }
     return {
