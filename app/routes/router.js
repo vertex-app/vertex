@@ -27,7 +27,8 @@ const checkAuth = async function (req, res, next) {
   const pathname = req._parsedOriginalUrl.pathname;
   const excludePath = [
     '/api/user/login',
-    '/api/setting/getBackground',
+    '/api/setting/getBackground.css',
+    '/api/setting/getCss.css',
     '/login'
   ];
   if (req.session.user && ['/', '/login'].includes(pathname)) {
