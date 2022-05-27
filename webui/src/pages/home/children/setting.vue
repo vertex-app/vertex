@@ -10,9 +10,9 @@
         <el-form-item label="密码" prop="password">
           <el-input v-model="setting.password"></el-input>
         </el-form-item>
-        <el-form-item label="背景图片" prop="background">
-          <el-input v-model="setting.background" style="width: 500px;"></el-input>
-          <div><el-tag type="info">图片外链</el-tag></div>
+        <el-form-item label="背景样式" prop="background">
+          <el-input type="textarea" v-model="setting.background" style="width: 640px;" rows="10"></el-input>
+          <div><el-tag type="info">背景样式, css 格式</el-tag></div>
         </el-form-item>
         <el-form-item label="白色蒙版透明度" prop="transparent">
           <el-input v-model="setting.transparent" style="width: 500px;"></el-input>

@@ -227,7 +227,7 @@ module.exports = function (app, express, router) {
   router.get('/setting/getTorrentMixSetting', ctrl.Setting.getTorrentMixSetting);
   router.get('/setting/getTorrentPushSetting', ctrl.Setting.getTorrentPushSetting);
   router.get('/setting/getSitePushSetting', ctrl.Setting.getSitePushSetting);
-  router.get('/setting/getBackground', ctrl.Setting.getBackground);
+  router.get('/setting/getBackground.css', ctrl.Setting.getBackground);
   router.post('/setting/modify', ctrl.Setting.modify);
   router.post('/setting/modifyTorrentHistorySetting', ctrl.Setting.modifyTorrentHistorySetting);
   router.post('/setting/modifyTorrentMixSetting', ctrl.Setting.modifyTorrentMixSetting);

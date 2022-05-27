@@ -23,10 +23,8 @@ class Setting {
   async getBackground (req, res) {
     try {
       const r = settingMod.getBackground();
-      res.send({
-        success: true,
-        data: r
-      });
+      res.set('content-type', 'text/css');
+      res.send(r);
     } catch (e) {
       logger.error(e);
       res.send({
