@@ -14,13 +14,9 @@
           <el-input type="textarea" v-model="setting.background" style="width: 640px;" rows="10"></el-input>
           <div><el-tag type="info">背景样式, css 格式</el-tag></div>
         </el-form-item>
-        <el-form-item label="白色蒙版透明度" prop="transparent">
-          <el-input v-model="setting.transparent" style="width: 500px;"></el-input>
-          <div><el-tag type="info">白色蒙版透明度, 范围 0-1, 1 为不透明, 默认为 0.3</el-tag></div>
-        </el-form-item>
-        <el-form-item label="模糊块大小" prop="blurSize">
-          <el-input v-model="setting.blurSize" style="width: 500px;"></el-input>
-          <div><el-tag type="info">模糊块大小, 默认为 4, 值越大, 越模糊</el-tag></div>
+        <el-form-item label="css 样式" prop="cssStyle">
+          <el-input type="textarea" v-model="setting.cssStyle" style="width: 640px;" rows="10"></el-input>
+          <div><el-tag type="info">CSS 样式代码</el-tag></div>
         </el-form-item>
         <el-form-item label="微信通知默认封面" prop="wechatCover">
           <el-input v-model="setting.wechatCover" style="width: 500px;"></el-input>

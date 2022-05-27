@@ -42,6 +42,7 @@ export default {
 
 <style>
 @import '/api/setting/getBackground.css';
+@import '/api/setting/getCss.css';
 
 @font-face{
   font-family: 'consolas';

@@ -28,6 +28,11 @@ class SettingMod {
     return 'body, .el-dialog {' + (JSON.parse(settingStr).background || style) + '\n}';
   };
 
+  getCss () {
+    const settingStr = fs.readFileSync(settingPath, { encoding: 'utf-8' });
+    return JSON.parse(settingStr).cssStyle || '';
+  };
+
   modify (options) {
     options.apiKey = options.apiKey || util.uuid.v4().replace(/-/g, '').toUpperCase();
     fs.writeFileSync(settingPath, JSON.stringify(options, null, 2));
@@ -40,8 +45,6 @@ class SettingMod {
     global.apiKey = options.apiKey;
     global.tmdbApiKey = options.tmdbApiKey;
     global.dataPath = options.dataPath || '/';
-    global.transparent = options.transparent;
-    global.blurSize = options.blurSize;
     global.wechatCover = options.wechatCover;
     global.embyCover = options.embyCover;
     global.plexCover = options.plexCover;
