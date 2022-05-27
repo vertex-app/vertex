@@ -8,7 +8,7 @@
           </div>
         </div>
         <el-menu-item v-for="(item, idx) of menus" :key="idx" :index="item.path">
-          <fa :icon="item.icon"></fa>
+          <fa :icon="item.icon" style="width: 20px;"></fa>
           <span slot="title">{{item.title}}</span>
         </el-menu-item>
       </el-menu>
