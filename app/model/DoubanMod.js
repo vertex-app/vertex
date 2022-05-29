@@ -42,8 +42,15 @@ class DoubanMod {
     const index = options.length * (options.page - 1);
     const doubanList = util.listDouban();
     let doubanSet = util.listDoubanSet()
-      .map(item => item.wishes.map(i => { return { ...i, doubanId: item.id, doubanAlias: doubanList.filter(ii => ii.id === item.id)[0].alias }; }))
-      .flat().reverse();
+      .map(item => item.wishes
+        .map(i => {
+          return {
+            ...i,
+            doubanId: item.id,
+            doubanAlias: doubanList.filter(ii => ii.id === item.id)[0].alias
+          };
+        })
+      ).flat().reverse();
     if (options.downloaded) {
       doubanSet = doubanSet.filter(item => item.downloaded === (options.downloaded === 'true'));
     }

@@ -54,7 +54,7 @@
             <el-form-item label="排除规则" prop="rejectRules">
               <el-checkbox :indeterminate="rejectRuleIndeterminate" v-model="rejectRuleCheckAll" @change="handleRejectRuleCheckAllChange">全选</el-checkbox>
               <el-checkbox-group v-model="douban.rejectRules">
-                <el-checkbox v-for="rule of raceRuleList.filter(item => item.priority === '0')" :key="rule.id" :label="rule.id">{{rule.alias}}</el-checkbox>
+                <el-checkbox v-for="rule of raceRuleList.filter(item => item.priority === '0' || douban.rejectRules.indexOf(item.id) !== -1)" :key="rule.id" :label="rule.id">{{rule.alias}}</el-checkbox>
               </el-checkbox-group>
               <div><el-tag type="info">选择排除规则, 符合这些规则的种子都会被拒绝, 可前往选种规则分页添加, 仅显示优先级为 0 的规则</el-tag></div>
             </el-form-item>
@@ -304,7 +304,7 @@ export default {
       this.siteIndeterminate = false;
     },
     handleRejectRuleCheckAllChange (value) {
-      this.douban.rejectRules = value ? this.raceRuleList.map(i => i.id) : [];
+      this.douban.rejectRules = value ? this.raceRuleList.filter(item => +item.priority === 0).map(i => i.id) : [];
       this.rejectRuleIndeterminate = false;
     },
     handleRaceRuleCheckAllChange (set, v) {
