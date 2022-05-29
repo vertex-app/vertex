@@ -47,7 +47,7 @@ const checkAuth = async function (req, res, next) {
     res.status(401);
     return res.send({
       success: false,
-      message: '鉴权失效'
+      message: '鉴权失效, 请刷新页面后重新登录'
     });
   }
   next();
