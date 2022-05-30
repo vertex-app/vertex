@@ -85,7 +85,46 @@ class TorrentMod {
     return torrents;
   }
 
-  async _linkTorrentFiles ({ hash, savePath, client, mediaName, type, libraryPath, linkRule, dryrun = false }) {
+  async _linkTorrentFiles ({ hash, savePath, client, mediaName, type, libraryPath, linkRule, files: _files }) {
+    const dryrunResult = [];
+    const _linkRule = util.listLinkRule().filter(item => item.id === linkRule)[0];
+    let size = 1;
+    _linkRule.minFileSize.split('*').forEach(i => { size *= +i; });
+    _linkRule.minFileSize = size;
+    const files = await global.runningClient[client].getFiles(hash);
+    if (type === 'series') {
+      for (const file of files) {
+        const _file = _files.filter(item => item.filepath === file.name)[0];
+        if (!_file) continue;
+        let season = _file.season;
+        season = 'S' + '0'.repeat(2 - ('' + season).length) + season;
+        const linkFilePath = path.join(_linkRule.linkFilePath, libraryPath, _file.seriesName, season).replace(/'/g, '\\\'');
+        const linkFile = path.join(linkFilePath, _file.linkFile).replace(/'/g, '\\\'');
+        const targetFile = path.join(savePath.replace(_linkRule.targetPath.split('##')[0], _linkRule.targetPath.split('##')[1]), file.name).replace(/'/g, '\\\'');
+        const command = `mkdir -p $'${linkFilePath}' && ln -sf $'${targetFile}' $'${linkFile}'`;
+        logger.binge('手动软链接', '执行软连接命令', command);
+        try {
+          await global.runningServer[_linkRule.server].run(command);
+        } catch (e) {
+          logger.error(e);
+        }
+      }
+    } else if (type === 'movie') {
+      for (const file of files) {
+        const _file = _files.filter(item => item.filepath === file.name)[0];
+        if (!_file) continue;
+        const linkFilePath = path.join(_linkRule.linkFilePath, libraryPath, _file.folderName).replace(/'/g, '\\\'');
+        const linkFile = path.join(linkFilePath, _file.linkFile).replace(/'/g, '\\\'');
+        const targetFile = path.join(savePath.replace(_linkRule.targetPath.split('##')[0], _linkRule.targetPath.split('##')[1]), file.name).replace(/'/g, '\\\'');
+        const command = `mkdir -p $'${linkFilePath}' && ln -sf $'${targetFile}' $'${linkFile}'`;
+        logger.binge('手动软链接', '执行软连接命令', command);
+        await global.runningServer[_linkRule.server].run(command);
+      }
+    }
+    return dryrunResult;
+  }
+
+  async _dryrun ({ hash, client, mediaName, type, linkRule}) {
     const dryrunResult = [];
     const _linkRule = util.listLinkRule().filter(item => item.id === linkRule)[0];
     let size = 1;
@@ -165,26 +204,13 @@ class TorrentMod {
         }
         const fileExt = path.extname(file.name);
         group = group.replace(fileExt, '');
-        const linkFilePath = path.join(_linkRule.linkFilePath, libraryPath, seriesName, season).replace(/'/g, '\\\'');
-        const linkFile = path.join(linkFilePath, prefix + season + episode + suffix + group + fileExt).replace(/'/g, '\\\'');
-        const targetFile = path.join(savePath.replace(_linkRule.targetPath.split('##')[0], _linkRule.targetPath.split('##')[1]), file.name).replace(/'/g, '\\\'');
-        const command = `mkdir -p $'${linkFilePath}' && ln -sf $'${targetFile}' $'${linkFile}'`;
-        if (dryrun) {
-          dryrunResult.push({
-            file: filename,
-            episode,
-            season,
-            seriesName,
-            linkFile: prefix + season + episode + suffix + group + fileExt
-          });
-          continue;
-        }
-        logger.binge('手动软链接', '执行软连接命令', command);
-        try {
-          await global.runningServer[_linkRule.server].run(command);
-        } catch (e) {
-          logger.error(e);
-        }
+        dryrunResult.push({
+          file: file.name,
+          episode: +episode.replace('E', ''),
+          season: +season.replace('S', ''),
+          seriesName,
+          linkFile: prefix + '{SEASON}' + '{EPISODE}' + suffix + group + fileExt
+        });
       }
     } else if (type === 'movie') {
       for (const file of files) {
@@ -204,28 +230,23 @@ class TorrentMod {
         }
         const fileExt = path.extname(file.name);
         group = group.replace(fileExt, '');
-        const linkFilePath = path.join(_linkRule.linkFilePath, libraryPath, `${movieName}.${year}`).replace(/'/g, '\\\'');
-        const linkFile = path.join(linkFilePath, `${movieName}.${year}${suffix + group}${fileExt}`).replace(/'/g, '\\\'');
-        if (dryrun) {
-          dryrunResult.push({
-            file: path.basename(file.name),
-            folderName: `${movieName}.${year}`,
-            linkFile: `${movieName}.${year}${suffix + group}${fileExt}`
-          });
-          continue;
-        }
-        const targetFile = path.join(savePath.replace(_linkRule.targetPath.split('##')[0], _linkRule.targetPath.split('##')[1]), file.name).replace(/'/g, '\\\'');
-        const command = `mkdir -p $'${linkFilePath}' && ln -sf $'${targetFile}' $'${linkFile}'`;
-        logger.binge('手动软链接', '执行软连接命令', command);
-        await global.runningServer[_linkRule.server].run(command);
+        dryrunResult.push({
+          file: path.basename(file.name),
+          folderName: `${movieName}.${year}`,
+          linkFile: `${movieName}.${year}${suffix + group}${fileExt}`
+        });
       }
     }
     return dryrunResult;
   }
 
   async link (options) {
-    const res = await this._linkTorrentFiles(options);
-    return options.dryrun ? res : '软链接成功';
+    if (options.dryrun) {
+      const res = await this._dryrun(options);
+      return res;
+    }
+    await this._linkTorrentFiles(options);
+    return '软链接成功';
   }
 
   async listHistory (options) {

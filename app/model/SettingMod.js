@@ -19,13 +19,13 @@ class SettingMod {
   };
 
   getBackground () {
-    const style = '\n  background: #aa4b6b;  /* fallback for old browsers */' +
-      '\n  background: -webkit-linear-gradient(to right, #3b8d99, #6b6b83, #aa4b6b);  /* Chrome 10-25, Safari 5.1-6 */' +
-      '\n  background: linear-gradient(to right, #3b8d99, #6b6b83, #aa4b6b); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */' +
+    const style = '\n  background: #141E30;  /* fallback for old browsers */' +
+      '\n  background: -webkit-linear-gradient(45deg, #243B55, #141E30);  /* Chrome 10-25, Safari 5.1-6 */' +
+      '\n  background: linear-gradient(45deg, #243B55, #141E30); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */' +
       '\n  height: calc(var(--vh, 1vh) * 100);' +
       '\n  color: #fff;';
     const settingStr = fs.readFileSync(settingPath, { encoding: 'utf-8' });
-    return 'body, .el-dialog {' + (JSON.parse(settingStr).background || style) + '\n}';
+    return 'body, .el-dialog, .el-table-filter {' + (JSON.parse(settingStr).background || style) + '\n}';
   };
 
   getCss () {

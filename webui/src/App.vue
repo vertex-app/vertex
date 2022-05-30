@@ -212,8 +212,8 @@ tr.hover-row>td.el-table__cell {
 }
 
 *::-webkit-scrollbar-thumb {
-  border-radius   : 10px;
-  background-color: lightpink;
+  border-radius: 10px;
+  background-color: #00BFFF;
 }
 
 *::-webkit-scrollbar {
@@ -222,8 +222,8 @@ tr.hover-row>td.el-table__cell {
 }
 
 *::-webkit-scrollbar-track {
-  box-shadow   : inset 0 0 5px rgba(0, 0, 0, 0.2);
-  background   : #ededed;
+  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+  background: #ededed;
   border-radius: 10px;
 }
 </style>

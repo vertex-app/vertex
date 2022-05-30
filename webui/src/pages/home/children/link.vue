@@ -2,7 +2,7 @@
   <div>
     <div class="radius-div">
       <div style="margin: 20px auto; padding: 20px 0;">
-        <el-form style="padding-left: 32px; color: #000; text-align: left;" label-width="160px" label-position="left" size="mini">
+        <el-form style="padding-left: 32px; text-align: left;" label-width="160px" label-position="left" size="mini">
           <el-form-item label="下载器">
             <span>{{ this.torrentInfo.clientAlias }}</span>
           </el-form-item>
@@ -36,16 +36,16 @@
             <el-input v-model="mediaName" type="input" style="width: 200px;" placeholder="影视剧名"></el-input>
           </el-form-item>
           <el-form-item size="small">
-            <el-button type="primary" @click="startLink">执行</el-button>
-            <el-button type="primary" @click="dryrun">测试</el-button>
+            <el-button type="primary" @click="dryrun">检查</el-button>
+            <el-button type="danger" @click="startLink" style="margin-left: 36px;">执行</el-button>
           </el-form-item>
         </el-form>
       </div>
-      <div style="padding: 24px;">
+      <div style="padding: 24px; font-size: 14px;">
         <el-table
           :data="fileList"
           fit
-          size="mini">
+          size="small">
           <el-table-column
             prop="file"
             v-if="fileList[0].file"
@@ -59,20 +59,24 @@
           </el-table-column>
           <el-table-column
             prop="season"
-            width="72"
+            width="114"
             v-if="fileList[0].season"
             label="季">
             <template slot-scope="scope">
-              <el-input v-model="scope.row.season" size="mini"/>
+              <el-input v-model="scope.row.season" @change="() => refreshSeason()" style="width: 64px; display: inline-block" size="mini"/>
+              <fa v-if="!scope.row.seasonUnlink" @click="() => { scope.row.seasonUnlink = true; }" :icon="['fas', 'link']" style="width: 20px; color: lightcyan; cursor: pointer;"></fa>
+              <fa v-if="scope.row.seasonUnlink" @click="() => { scope.row.seasonUnlink = false; }" :icon="['fas', 'unlink']" style="width: 20px; color: red; cursor: pointer;"></fa>
             </template>
           </el-table-column>
           <el-table-column
             prop="episode"
-            width="72"
+            width="114"
             v-if="fileList[0].episode"
             label="集">
             <template slot-scope="scope">
-              <el-input v-model="scope.row.episode" size="mini"/>
+              <el-input v-model="scope.row.episode" @change="() => refreshEpisode()" style="width: 64px; display: inline-block" size="mini"/>
+              <fa v-if="!scope.row.episodeUnlink" @click="() => { scope.row.episodeUnlink = true; }" :icon="['fas', 'link']" style="width: 20px; color: lightcyan; cursor: pointer;"></fa>
+              <fa v-if="scope.row.episodeUnlink" @click="() => { scope.row.episodeUnlink = false; }" :icon="['fas', 'unlink']" style="width: 20px; color: red; cursor: pointer;"></fa>
             </template>
           </el-table-column>
           <el-table-column
@@ -84,8 +88,19 @@
           <el-table-column
             prop="linkFile"
             width="320"
-            v-if="fileList[0].linkFile"
+            v-if="fileList[0].file"
             label="链接文件名称">
+            <template slot-scope="scope">
+              {{ scope.row.newLinkFile || scope.row.linkFile }}
+            </template>
+          </el-table-column>
+          <el-table-column
+            width="114"
+            v-if="fileList[0].file"
+            label="操作">
+            <template slot-scope="scope">
+              <fa :icon="['fas', 'times']" @click="() => { fileList = fileList.filter(item => item.file !== scope.row.file) }" style="width: 20px; color: red; cursor: pointer;"></fa>
+            </template>
           </el-table-column>
         </el-table>
       </div>
@@ -128,7 +143,16 @@ export default {
         linkRule: this.linkRule,
         client: this.torrentInfo.client,
         libraryPath: this.libraryPath,
-        savePath: this.torrentInfo.savePath
+        savePath: this.torrentInfo.savePath,
+        files: this.fileList.map(item => {
+          return {
+            season: item.season,
+            filepath: item.file,
+            folderName: item.folderName,
+            seriesName: item.seriesName,
+            linkFile: item.newLinkFile || item.linkFile
+          };
+        })
       });
       if (!res) {
         return;
@@ -146,7 +170,47 @@ export default {
         libraryPath: this.libraryPath,
         savePath: this.torrentInfo.savePath
       });
-      this.fileList = res?.data.sort((a, b) => a.file > b.file ? 1 : -1);
+      if (this.type === 'movie') {
+        this.fileList = res?.data;
+        return;
+      }
+      const maxEpisode = ('' + Math.max(...(res?.data || []).map(item => item.episode))).length;
+      this.fileList = res?.data
+        .sort((a, b) => a.file > b.file ? 1 : -1)
+        .map(item => {
+          return {
+            ...item,
+            episodeUnlink: false,
+            seasonUnlink: false,
+            newLinkFile: item.linkFile
+              .replace('{SEASON}', 'S' + '0'.repeat(2 - ('' + item.season).length) + item.season)
+              .replace('{EPISODE}', 'E' + '0'.repeat(Math.max(0, maxEpisode - ('' + item.episode).length)) + item.episode)
+          };
+        });
+    },
+    refreshSeason () {
+      const maxEpisode = ('' + Math.max(...this.fileList.map(item => item.episode))).length;
+      for (const [index, value] of this.fileList.entries()) {
+        if (value.seasonUnlink || index === 0) {
+          value.season = +value.season || 1;
+        } else {
+          value.season = +this.fileList[index - 1].season || 1;
+        }
+        value.newLinkFile = value.linkFile.replace('{SEASON}', 'S' + '0'.repeat(2 - ('' + value.season).length) + value.season)
+          .replace('{EPISODE}', 'E' + '0'.repeat(Math.max(0, maxEpisode - ('' + value.episode).length)) + value.episode);
+      }
+    },
+    refreshEpisode () {
+      const maxEpisode = ('' + Math.max(...this.fileList.map(item => item.episode))).length;
+      for (const [index, value] of this.fileList.entries()) {
+        if (value.episodeUnlink || index === 0) {
+          value.episode = +value.episode || 1;
+        } else {
+          value.episode = (+this.fileList[index - 1].episode || 1) + 1;
+        }
+        value.newLinkFile = value.linkFile.replace('{SEASON}', 'S' + '0'.repeat(2 - ('' + value.season).length) + value.season)
+          .replace('{EPISODE}', 'E' + '0'.repeat(Math.max(0, maxEpisode - ('' + value.episode).length)) + value.episode);
+      }
     }
   },
   async mounted () {
