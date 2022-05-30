@@ -122,7 +122,7 @@ class TorrentMod {
     }
   }
 
-  async _dryrun ({ hash, client, mediaName, type, linkRule}) {
+  async _dryrun ({ hash, client, mediaName, type, linkRule }) {
     const dryrunResult = [];
     const _linkRule = util.listLinkRule().filter(item => item.id === linkRule)[0];
     let size = 1;

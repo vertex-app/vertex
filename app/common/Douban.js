@@ -186,7 +186,7 @@ class Douban {
     delete this.checkFinishJob;
     this.clearSelectFailedJob.stop();
     delete this.clearSelectFailedJob;
-    delete global.runningClient[this.id];
+    delete global.runningDouban[this.id];
   };
 
   async deleteWish (id) {
