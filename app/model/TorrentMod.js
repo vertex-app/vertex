@@ -86,7 +86,6 @@ class TorrentMod {
   }
 
   async _linkTorrentFiles ({ hash, savePath, client, mediaName, type, libraryPath, linkRule, files: _files }) {
-    const dryrunResult = [];
     const _linkRule = util.listLinkRule().filter(item => item.id === linkRule)[0];
     let size = 1;
     _linkRule.minFileSize.split('*').forEach(i => { size *= +i; });
@@ -121,7 +120,6 @@ class TorrentMod {
         await global.runningServer[_linkRule.server].run(command);
       }
     }
-    return dryrunResult;
   }
 
   async _dryrun ({ hash, client, mediaName, type, linkRule}) {
@@ -231,7 +229,7 @@ class TorrentMod {
         const fileExt = path.extname(file.name);
         group = group.replace(fileExt, '');
         dryrunResult.push({
-          file: path.basename(file.name),
+          file: file.name,
           folderName: `${movieName}.${year}`,
           linkFile: `${movieName}.${year}${suffix + group}${fileExt}`
         });
