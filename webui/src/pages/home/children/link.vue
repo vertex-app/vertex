@@ -174,7 +174,7 @@ export default {
         this.fileList = res?.data;
         return;
       }
-      const maxEpisode = ('' + Math.max(...(res?.data || []).map(item => item.episode))).length;
+      const maxEpisode = ('' + Math.max(10, ...(res?.data || []).map(item => item.episode))).length;
       this.fileList = res?.data
         .sort((a, b) => a.file > b.file ? 1 : -1)
         .map(item => {
@@ -189,7 +189,7 @@ export default {
         });
     },
     refreshSeason () {
-      const maxEpisode = ('' + Math.max(...this.fileList.map(item => item.episode))).length;
+      const maxEpisode = ('' + Math.max(10, ...this.fileList.map(item => item.episode))).length;
       for (const [index, value] of this.fileList.entries()) {
         if (value.seasonUnlink || index === 0) {
           value.season = +value.season || 1;
@@ -201,7 +201,7 @@ export default {
       }
     },
     refreshEpisode () {
-      const maxEpisode = ('' + Math.max(...this.fileList.map(item => item.episode))).length;
+      const maxEpisode = ('' + Math.max(10, ...this.fileList.map(item => item.episode))).length;
       for (const [index, value] of this.fileList.entries()) {
         if (value.episodeUnlink || index === 0) {
           value.episode = +value.episode || 1;
