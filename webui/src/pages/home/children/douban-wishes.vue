@@ -87,6 +87,10 @@
           <el-input v-model="wish.rejectKeys" type="input" placeholder="排除关键词"></el-input>
           <div><el-tag type="info">以 , 为分割, 各个关键词间为 或 的关系</el-tag></div>
         </el-form-item>
+        <el-form-item label="自动软链接集数偏移" prop="episodeOffset">
+          <el-input v-model="wish.episodeOffset" type="input" placeholder="自动软链接集数偏移"></el-input>
+          <div><el-tag type="info">自动软链接时在识别集数的基础上做加减运算, 允许 -2, -1, 1, 2 等数值, 正值为加, 负值为减</el-tag></div>
+        </el-form-item>
         <el-form-item label="取消限制年份" prop="restrictYear">
           <el-checkbox v-model="wish.restrictYear">取消限制年份</el-checkbox>
           <div><el-tag type="info">默认限制年份, 勾选后取消限制</el-tag></div>

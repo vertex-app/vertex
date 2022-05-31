@@ -431,6 +431,7 @@ class Douban {
   async _linkTorrentFiles (torrent, client, recordNoteJson) {
     const wish = recordNoteJson.wish;
     const _wish = this.wishes.filter(item => item.id === wish.id)[0];
+    wish.episodeOffset = _wish?.episodeOffset || 0;
     if (_wish && _wish.cancelLink) {
       logger.binge(this.alias, '本项目已设置取消软链接操作, 跳过软链接操作');
       return;
@@ -503,7 +504,7 @@ class Douban {
         }
         season = season || 1;
         newEpisode = Math.max(episode, newEpisode);
-        episode = 'E' + '0'.repeat(Math.max(2 - ('' + (fakeEpisode || episode)).length, 0)) + (fakeEpisode || episode);
+        episode = 'E' + '0'.repeat(Math.max(2 - ('' + (fakeEpisode || episode)).length, 0)) + ((fakeEpisode || episode) + +wish.episodeOffset);
         season = 'S' + '0'.repeat(2 - ('' + season).length) + season;
         const prefix = linkRule.keepSeriesName ? seriesName + '.' : '';
         let suffix = '';
