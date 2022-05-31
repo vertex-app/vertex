@@ -218,7 +218,7 @@ tr.hover-row>td.el-table__cell {
 
 *::-webkit-scrollbar {
   width : 4px;
-  height: 6px;
+  height: 8px;
 }
 
 *::-webkit-scrollbar-track {

@@ -91,9 +91,13 @@
           <el-checkbox v-model="wish.restrictYear">取消限制年份</el-checkbox>
           <div><el-tag type="info">默认限制年份, 勾选后取消限制</el-tag></div>
         </el-form-item>
-        <el-form-item label="禁止下载全集" prop="rejectKeys">
+        <el-form-item label="禁止下载全集" prop="rejectCompleteTorrent">
           <el-checkbox v-model="wish.rejectCompleteTorrent">禁止下载全集</el-checkbox>
           <div><el-tag type="info">如果当前集不为零, 且勾选禁止下载全集, 则在选择种子时排除全集种子</el-tag></div>
+        </el-form-item>
+        <el-form-item label="取消软链接" prop="cancelLink">
+          <el-checkbox v-model="wish.cancelLink">取消软链接</el-checkbox>
+          <div><el-tag type="info">当勾选取消软链接时, 该项目在种子完成后不会执行软链接操作</el-tag></div>
         </el-form-item>
         <el-form-item size="mini">
           <el-button @click="editWish" type="primary">编辑</el-button>

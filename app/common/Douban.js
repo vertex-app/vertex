@@ -429,6 +429,12 @@ class Douban {
   }
 
   async _linkTorrentFiles (torrent, client, recordNoteJson) {
+    const wish = recordNoteJson.wish;
+    const _wish = this.wishes.filter(item => item.id === wish.id)[0];
+    if (_wish && _wish.cancelLink) {
+      logger.binge(this.alias, '本项目已设置取消软链接操作, 跳过软链接操作');
+      return;
+    }
     if (!this.linkRule) {
       logger.binge(this.alias, '本实例不含链接规则, 跳过软链接操作');
       return;
@@ -438,7 +444,6 @@ class Douban {
     linkRule.minFileSize.split('*').forEach(i => { size *= +i; });
     linkRule.minFileSize = size;
     const files = await global.runningClient[client].getFiles(torrent.hash);
-    const wish = recordNoteJson.wish;
     const _torrent = recordNoteJson.torrent;
     const category = recordNoteJson.category;
     if (category.type === 'series') {
