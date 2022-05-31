@@ -41,9 +41,25 @@
           </el-form-item>
         </el-form>
       </div>
+      <div style="padding: 24px; font-size: 14px; text-align: left;" v-if="fileList[0].file">
+        <el-select
+          size="mini"
+          style="width: calc(100% - 144px);"
+          v-model="selectFile"
+          placeholder="新增">
+          <el-option
+            v-for="item in fileList"
+            :key="item.file"
+            :disabled="item.episode !== -999"
+            :label="item.file"
+            :value="item.file">
+          </el-option>
+        </el-select>
+        <el-button size="mini" type="primary" @click="() => { fileList.filter(item => item.file === selectFile)[0].episode = 0; selectFile = '' }">新增</el-button>
+      </div>
       <div style="padding: 24px; font-size: 14px;">
         <el-table
-          :data="fileList"
+          :data="fileList.filter(item => item.episode !== -999)"
           fit
           size="small">
           <el-table-column
@@ -71,7 +87,7 @@
           <el-table-column
             prop="episode"
             width="114"
-            v-if="fileList[0].episode"
+            v-if="fileList[0].episode !== undefined"
             label="集">
             <template slot-scope="scope">
               <el-input v-model="scope.row.episode" @change="() => refreshEpisode()" style="width: 64px; display: inline-block" size="mini"/>
@@ -99,7 +115,7 @@
             v-if="fileList[0].file"
             label="操作">
             <template slot-scope="scope">
-              <fa :icon="['fas', 'times']" @click="() => { fileList = fileList.filter(item => item.file !== scope.row.file) }" style="width: 20px; color: red; cursor: pointer;"></fa>
+              <fa :icon="['fas', 'times']" @click="() => { item.episode = -999 }" style="width: 20px; color: red; cursor: pointer;"></fa>
             </template>
           </el-table-column>
         </el-table>
@@ -115,6 +131,7 @@ export default {
       linkRuleList: [],
       fileList: [{
       }],
+      selectFile: '',
       torrentInfo: {},
       hash: '',
       libraryPath: '',
@@ -144,7 +161,7 @@ export default {
         client: this.torrentInfo.client,
         libraryPath: this.libraryPath,
         savePath: this.torrentInfo.savePath,
-        files: this.fileList.map(item => {
+        files: this.fileList.filter(item => item.episode !== -999).map(item => {
           return {
             season: item.season,
             filepath: item.file,

@@ -136,6 +136,20 @@ class TorrentMod {
         if (file.size < _linkRule.minFileSize) continue;
         if (_linkRule.excludeKeys && _linkRule.excludeKeys.split(',').some(item => filename.indexOf(item) !== -1)) continue;
         const seriesName = mediaName.split('/')[0].trim().replace(/ /g, '.').replace(/\.?[第][\d一二三四五六七八九十]+[季部]/, '');
+        const prefix = _linkRule.keepSeriesName ? seriesName + '.' : '';
+        let suffix = '';
+        _linkRule.reservedKeys = _linkRule.reservedKeys || '';
+        for (const key of _linkRule.reservedKeys.split(',')) {
+          if (filename.indexOf(key) !== -1 && suffix.indexOf(key) === -1) {
+            suffix += '.' + key;
+          }
+        }
+        let group = '';
+        if (_linkRule.group) {
+          group = (filename.match(/-[^-]*?$/) || [''])[0];
+        }
+        const fileExt = path.extname(file.name);
+        group = group.replace(fileExt, '');
         let season = (filename.match(/[. ]S(\d+)/) || [0, null])[1];
         let episode = +(filename.match(/[Ee][Pp]?(\d+)[. ]?/) || [])[1];
         // 适配奇奇怪怪的命名
@@ -154,6 +168,13 @@ class TorrentMod {
           }
         }
         if (!episode) {
+          dryrunResult.push({
+            file: file.name,
+            episode: -999,
+            season: 1,
+            seriesName,
+            linkFile: prefix + '{SEASON}' + '{EPISODE}' + suffix + group + fileExt
+          });
           continue;
         }
         let fakeEpisode = 0;
@@ -188,20 +209,6 @@ class TorrentMod {
         newEpisode = Math.max(episode, newEpisode);
         episode = 'E' + '0'.repeat(Math.max(0, 2 - ('' + (fakeEpisode || episode)).length)) + (fakeEpisode || episode);
         season = 'S' + '0'.repeat(2 - ('' + season).length) + season;
-        const prefix = _linkRule.keepSeriesName ? seriesName + '.' : '';
-        let suffix = '';
-        _linkRule.reservedKeys = _linkRule.reservedKeys || '';
-        for (const key of _linkRule.reservedKeys.split(',')) {
-          if (filename.indexOf(key) !== -1 && suffix.indexOf(key) === -1) {
-            suffix += '.' + key;
-          }
-        }
-        let group = '';
-        if (_linkRule.group) {
-          group = (filename.match(/-[^-]*?$/) || [''])[0];
-        }
-        const fileExt = path.extname(file.name);
-        group = group.replace(fileExt, '');
         dryrunResult.push({
           file: file.name,
           episode: +episode.replace('E', ''),
