@@ -79,7 +79,8 @@ const clientProxy = function (req, res, next) {
       proxyReqOpts.rejectUnauthorized = false;
       return proxyReqOpts;
     },
-    reqBodyEncoding: null
+    reqBodyEncoding: null,
+    limit: '20mb'
   })(req, res, next);
 };
 
@@ -127,7 +128,7 @@ module.exports = function (app, express, router) {
     }
   }));
   app.use('/api', express.text({ type: 'text/xml' }));
-  app.use('/api', express.json());
+  app.use('/api', express.json({ limit: '50mb' }));
   app.use('/api', express.urlencoded({ extended: false }));
   app.use('/api', multipartMiddleware);
   app.use(setIp);
