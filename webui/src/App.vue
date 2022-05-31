@@ -91,6 +91,8 @@ tr.hover-row>td.el-table__cell {
 }
 
 .el-dialog {
+  background: rgba(255,255,255, 0.4);
+  backdrop-filter: blur(16px);
   width: 960px;
   border-radius: 8px;
 }

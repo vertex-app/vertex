@@ -25,7 +25,7 @@ class SettingMod {
       '\n  height: calc(var(--vh, 1vh) * 100);' +
       '\n  color: #fff;';
     const settingStr = fs.readFileSync(settingPath, { encoding: 'utf-8' });
-    return 'body, .el-dialog, .el-table-filter {' + (JSON.parse(settingStr).background || style) + '\n}';
+    return 'body {' + (JSON.parse(settingStr).background || style) + '\n}';
   };
 
   getCss () {

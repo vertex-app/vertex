@@ -115,7 +115,7 @@
             v-if="fileList[0].file"
             label="操作">
             <template slot-scope="scope">
-              <fa :icon="['fas', 'times']" @click="() => { item.episode = -999 }" style="width: 20px; color: red; cursor: pointer;"></fa>
+              <fa :icon="['fas', 'times']" @click="() => { scope.row.episode = -999 }" style="width: 20px; color: red; cursor: pointer;"></fa>
             </template>
           </el-table-column>
         </el-table>
