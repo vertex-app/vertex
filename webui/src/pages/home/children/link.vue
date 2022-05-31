@@ -207,11 +207,12 @@ export default {
     },
     refreshSeason () {
       const maxEpisode = ('' + Math.max(10, ...this.fileList.map(item => item.episode))).length;
-      for (const [index, value] of this.fileList.entries()) {
+      const fileList = this.fileList.filter(item => item.episode !== -999);
+      for (const [index, value] of fileList.entries()) {
         if (value.seasonUnlink || index === 0) {
           value.season = +value.season || 1;
         } else {
-          value.season = +this.fileList[index - 1].season || 1;
+          value.season = +fileList[index - 1].season || 1;
         }
         value.newLinkFile = value.linkFile.replace('{SEASON}', 'S' + '0'.repeat(2 - ('' + value.season).length) + value.season)
           .replace('{EPISODE}', 'E' + '0'.repeat(Math.max(0, maxEpisode - ('' + value.episode).length)) + value.episode);
@@ -219,11 +220,12 @@ export default {
     },
     refreshEpisode () {
       const maxEpisode = ('' + Math.max(10, ...this.fileList.map(item => item.episode))).length;
-      for (const [index, value] of this.fileList.entries()) {
+      const fileList = this.fileList.filter(item => item.episode !== -999);
+      for (const [index, value] of fileList.entries()) {
         if (value.episodeUnlink || index === 0) {
           value.episode = +value.episode || 1;
         } else {
-          value.episode = (+this.fileList[index - 1].episode || 1) + 1;
+          value.episode = (+fileList[index - 1].episode || 1) + 1;
         }
         value.newLinkFile = value.linkFile.replace('{SEASON}', 'S' + '0'.repeat(2 - ('' + value.season).length) + value.season)
           .replace('{EPISODE}', 'E' + '0'.repeat(Math.max(0, maxEpisode - ('' + value.episode).length)) + value.episode);

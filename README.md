@@ -14,8 +14,8 @@
 * 刷流 852643057
 * 追剧 926921776
 
-## 文档
-### [文档索引](https://lswl.in/2022/03/17/vertex-docs/)
+## Wiki
+### [Wiki](https://wiki.vertex.icu)
 
 # LICENSE
 ## MIT
