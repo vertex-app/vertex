@@ -99,6 +99,10 @@
           <el-checkbox v-model="wish.rejectCompleteTorrent">禁止下载全集</el-checkbox>
           <div><el-tag type="info">如果当前集不为零, 且勾选禁止下载全集, 则在选择种子时排除全集种子</el-tag></div>
         </el-form-item>
+        <el-form-item label="忽略集数识别" prop="ignoreEpisodes">
+          <el-checkbox v-model="wish.ignoreEpisodes">忽略集数识别</el-checkbox>
+          <div><el-tag type="info">当种子未识别到集数时, 直接认为本种是全集</el-tag></div>
+        </el-form-item>
         <el-form-item label="取消软链接" prop="cancelLink">
           <el-checkbox v-model="wish.cancelLink">取消软链接</el-checkbox>
           <div><el-tag type="info">当勾选取消软链接时, 该项目在种子完成后不会执行软链接操作</el-tag></div>

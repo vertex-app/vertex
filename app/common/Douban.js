@@ -707,17 +707,21 @@ class Douban {
               episodes = episodes.filter(item => +item <= wish.episodes).map(item => +item);
               episodes = [...new Set(episodes)];
               logger.bingedebug(this.alias, '选种规则', rulesName, '种子', `[${torrent.site}]`, torrent.title, '/', torrent.subtitle, '识别到分集', episodes, '已完成至', wish.episodeNow);
-              if (episodes
-                .some(item => +item < wish.episodeNow - 2) ||
-                !episodes.some(item => +item > wish.episodeNow) ||
-                episodes.length === 0
-              ) {
-                logger.bingedebug(this.alias, '选种规则', rulesName, '种子', `[${torrent.site}]`, torrent.title, '/', torrent.subtitle, '匹配成功, 已完成至', wish.episodeNow, '判断结果为已下载, 跳过');
-                continue;
-              }
-              if (episodes.every(item => +item > wish.episodeNow + 1) && !(episodes.length === 1 && +episodes[0] === wish.episodes)) {
-                logger.bingedebug(this.alias, '选种规则', rulesName, '种子', `[${torrent.site}]`, torrent.title, '/', torrent.subtitle, '匹配成功, 已完成至', wish.episodeNow, '剧集跨度过大, 跳过');
-                continue;
+              if (episodes.length === 0 && wish.ignoreEpisodes) {
+                logger.bingedebug(this.alias, '选种规则', rulesName, '种子', `[${torrent.site}]`, torrent.title, '/', torrent.subtitle, '匹配成功, 已完成至', wish.episodeNow, '未识别到分集, 但已设置忽略集数');
+                episodes = [wish.episodes];
+              } else {
+                if (
+                  episodes.some(item => +item < wish.episodeNow - 2) ||
+                  !episodes.some(item => +item > wish.episodeNow)
+                ) {
+                  logger.bingedebug(this.alias, '选种规则', rulesName, '种子', `[${torrent.site}]`, torrent.title, '/', torrent.subtitle, '匹配成功, 已完成至', wish.episodeNow, '判断结果为已下载, 跳过');
+                  continue;
+                }
+                if (episodes.every(item => +item > wish.episodeNow + 1) && !(episodes.length === 1 && +episodes[0] === wish.episodes)) {
+                  logger.bingedebug(this.alias, '选种规则', rulesName, '种子', `[${torrent.site}]`, torrent.title, '/', torrent.subtitle, '匹配成功, 已完成至', wish.episodeNow, '剧集跨度过大, 跳过');
+                  continue;
+                }
               }
               wish.episodeNow = Math.max(...episodes.map(i => +i));
             }
