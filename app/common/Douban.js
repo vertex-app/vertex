@@ -228,6 +228,10 @@ class Douban {
     const wish = this.wishes.filter(item => item.id === id)[0];
     if (wish.downloaded || (+wish.episodes === +wish.episodeNow)) {
       this.ntf.startRefreshWish(`${this.alias} / ${wish.name} 已完成, 退出任务`);
+      if (this.refreshWishJobs[id]) {
+        this.refreshWishJobs[id].stop();
+        delete this.refreshWishJobs[id];
+      }
       return;
     }
     if (!manual && await redis.get(`vertex:douban:refresh_cache:${id}`)) {
