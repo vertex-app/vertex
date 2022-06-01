@@ -325,8 +325,7 @@ export default {
     async filteTorrent () {
       this.refreshList();
       this.torrentList = this.torrentList.filter(i => {
-        console.log(i);
-        return i.title.indexOf(this.filterKey) !== -1 || i.subtitle.indexOf(this.filterKey) !== -1;
+        return i.title.toLowerCase().indexOf(this.filterKey.toLowerCase()) !== -1 || i.subtitle.toLowerCase().indexOf(this.filterKey.toLowerCase()) !== -1;
       });
       this.total = this.torrentList.length;
     },
