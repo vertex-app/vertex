@@ -86,8 +86,7 @@ export default {
 }
 
 tr.hover-row>td.el-table__cell {
-  background-color: rgba(255,255,255, 0.2) !important;
-  border-radius: 8px;
+  background-color: transparent !important;
 }
 
 .el-dialog {

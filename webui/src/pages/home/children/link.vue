@@ -76,7 +76,7 @@
           <el-table-column
             prop="season"
             width="114"
-            v-if="fileList[0].season"
+            v-if="fileList[0].season !== undefined"
             label="季">
             <template slot-scope="scope">
               <el-input v-model="scope.row.season" @change="() => refreshSeason()" style="width: 64px; display: inline-block" size="mini"/>
@@ -210,9 +210,9 @@ export default {
       const fileList = this.fileList.filter(item => item.episode !== -999);
       for (const [index, value] of fileList.entries()) {
         if (value.seasonUnlink || index === 0) {
-          value.season = +value.season || 1;
+          value.season = +value.season || (+value.season === 0 ? 0 : 1);
         } else {
-          value.season = +fileList[index - 1].season || 1;
+          value.season = +fileList[index - 1].season || (+fileList[index - 1].season === 0 ? 0 : 1);
         }
         value.newLinkFile = value.linkFile.replace('{SEASON}', 'S' + '0'.repeat(2 - ('' + value.season).length) + value.season)
           .replace('{EPISODE}', 'E' + '0'.repeat(Math.max(0, maxEpisode - ('' + value.episode).length)) + value.episode);
@@ -223,9 +223,9 @@ export default {
       const fileList = this.fileList.filter(item => item.episode !== -999);
       for (const [index, value] of fileList.entries()) {
         if (value.episodeUnlink || index === 0) {
-          value.episode = +value.episode || 1;
+          value.episode = +value.episode || (+value.episode === 0 ? 0 : 1);
         } else {
-          value.episode = (+fileList[index - 1].episode || 1) + 1;
+          value.episode = (+fileList[index - 1].episode || (+fileList[index - 1].episode === 0 ? 0 : 1)) + 1;
         }
         value.newLinkFile = value.linkFile.replace('{SEASON}', 'S' + '0'.repeat(2 - ('' + value.season).length) + value.season)
           .replace('{EPISODE}', 'E' + '0'.repeat(Math.max(0, maxEpisode - ('' + value.episode).length)) + value.episode);
