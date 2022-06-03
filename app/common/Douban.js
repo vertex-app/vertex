@@ -30,16 +30,16 @@ class Douban {
     this._notify = util.listPush().filter(i => i.id === this.notify)[0] || {};
     this.push = douban.push;
     this._notify.push = this.push;
+    this.refreshWishJobs = [];
     this.ntf = new Push(this._notify);
     this.refreshWishJob = cron.schedule(douban.cron, () => this.refreshWishList());
-    this.refreshWishJobs = [];
     this.checkFinishJob = cron.schedule(global.checkFinishCron, () => this.checkFinish());
     this.clearSelectFailedJob = cron.schedule('0 0 * * *', () => this.clearSelectFailed());
     this.selectTorrentToday = {};
     this.wishes = (util.listDoubanSet().filter(item => item.id === this.id)[0] || {}).wishes || [];
     for (const wish of this.wishes) {
       if (!wish.downloaded) {
-        this.refreshWishJobs[wish.id] = cron.schedule(wish.cron || this.defaultRefreshCron, () => this.refreshWish(wish.id));
+        this.refreshWishJobs[wish.id] = cron.schedule(wish.cron || this.defaultRefreshCron, () => this._refreshWish(wish.id));
       }
     };
     this.cronCache = {};
@@ -209,7 +209,7 @@ class Douban {
           delete this.refreshWishJobs[wish.id];
         }
         if (!wish.downloaded) {
-          this.refreshWishJobs[wish.id] = cron.schedule(wish.cron || this.defaultRefreshCron, () => this.refreshWish(wish.id));
+          this.refreshWishJobs[wish.id] = cron.schedule(wish.cron || this.defaultRefreshCron, () => this._refreshWish(wish.id));
         }
         if (wish.episodeNow) {
           wish.episodeNow = +wish.episodeNow;
@@ -222,6 +222,12 @@ class Douban {
         return true;
       }
     }
+  }
+
+  _refreshWish (id) {
+    const randomDelayTime = parseInt(Math.random() * 1800);
+    logger.binge('延时开启搜索资源任务, 延时时间', randomDelayTime, '秒');
+    setTimeout(() => this.refreshWish(id), randomDelayTime * 1000);
   }
 
   async refreshWish (id, manual = false) {
@@ -261,7 +267,7 @@ class Douban {
     const items = document.querySelectorAll('.article .grid-view .item');
     if (!items.length) {
       logger.error('豆瓣账户', this.alias, '刷新想看列表失败', '疑似是豆瓣 Cookie 过期', '任务退出');
-      await this.ntf.startRefreshWishError(this.alias, ['豆瓣账户', this.alias, '刷新想看列表失败', '疑似是豆瓣 Cookie 过期', '任务退出'].join(' '));
+      await this.ntf.startRefreshWishError(['豆瓣账户', this.alias, '刷新想看列表失败', '疑似是豆瓣 Cookie 过期', '任务退出'].join(' '));
       return;
     }
     const wishes = [];
