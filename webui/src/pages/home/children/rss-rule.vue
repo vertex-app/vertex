@@ -76,6 +76,8 @@
                       <el-option label="小于" value="smaller"></el-option>
                       <el-option label="包含" value="contain"></el-option>
                       <el-option label="不包含" value="notContain"></el-option>
+                      <el-option label="正则匹配" value="regExp"></el-option>
+                      <el-option label="正则不匹配" value="notRegExp"></el-option>
                     </el-select>
                   </template>
                 </el-table-column>
@@ -100,6 +102,7 @@
                 &nbsp;&nbsp;&nbsp;&nbsp;如 <el-tag>KEY,WORD</el-tag>, 表示包含 KEY 或者 WORD 两个关键词<br>
                 02: 各条件间为 且 的关系<br>
                 03. 种子大小: 单位为 字节 / Byte, 可以使用 * 做乘法运算<br>
+                04. 正则表达式不需要填写两侧的 /<br>
               </el-card>
             </el-form-item>
             <el-form-item v-if="rule.type === 'javascript'" label="自定义代码">

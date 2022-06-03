@@ -97,6 +97,12 @@ class Rss {
       case 'notIncludeIn':
         fit = fit && condition.value.split(',').indexOf(torrent[condition.key]) === -1;
         break;
+      case 'regExp':
+        fit = fit && (torrent[condition.key] + '').match(new RegExp(condition.value));
+        break;
+      case 'notRegExp':
+        fit = fit && !(torrent[condition.key] + '').match(new RegExp(condition.value));
+        break;
       }
     }
     return fit;
