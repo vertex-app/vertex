@@ -20,6 +20,7 @@ import LinkRule from '@/pages/home/children/link-rule';
 import Douban from '@/pages/home/children/douban';
 import DoubanWishes from '@/pages/home/children/douban-wishes';
 import DoubanHistory from '@/pages/home/children/douban-history';
+import WishDetail from '@/pages/home/children/wish-detail';
 import Server from '@/pages/home/children/server';
 import Client from '@/pages/home/children/client';
 import SearchMix from '@/pages/home/children/search-mix';
@@ -32,6 +33,7 @@ import Rss from '@/pages/home/children/rss';
 import Log from '@/pages/home/children/log';
 import Tools from '@/pages/home/children/tools';
 import Link from '@/pages/home/children/link';
+import Hosts from '@/pages/home/children/hosts';
 import BulkLink from '@/pages/home/children/bulk-link';
 import NetworkTest from '@/pages/home/children/network-test';
 import LoginMTeam from '@/pages/home/children/login-mteam';
@@ -158,6 +160,12 @@ const tools = {
         title: '软链接'
       }
     }, {
+      path: 'hosts',
+      component: Hosts,
+      meta: {
+        title: '修改 hosts'
+      }
+    }, {
       path: 'bulk-link',
       component: BulkLink,
       meta: {
@@ -232,6 +240,12 @@ const bingeWatching = {
       component: DoubanWishes,
       meta: {
         title: '想看列表'
+      }
+    }, {
+      path: 'wish-detail/:doubanId/:wishId',
+      component: WishDetail,
+      meta: {
+        title: '详情'
       }
     }, {
       path: 'douban-history',

@@ -14,7 +14,7 @@
         <div style="margin: 20px auto;" >
           <el-card class="radius-div" shadow="never" v-for="item of wishes" :key="item.id + item.doubanId" style="width: 240px; display:inline-block; margin: 16px;">
             <div style="width: 200px; height: 280px; position: relative;">
-              <img @click="gotoDetail(item.link)" :src="item.poster" style="cursor: pointer; width: 200px; height: 280px;">
+              <img @click="gotoDetail(item)" :src="item.poster" style="cursor: pointer; width: 200px; height: 280px;">
               <div v-if="item.cron || item.acceptKeys || item.rejectKeys || item.rejectCompleteTorrent" style="z-index: 1; right: 6px; bottom: 3px; position: absolute; width: 15px; height: 15px; color: lightpink;"><fa style="font-size: 15px;" :icon="['fas', 'pencil-alt']"></fa></div>
               <div style="color: lightpink; bottom: 0px; width: 100%; font-size: 14px; position: absolute; background-color: rgba(0,0,0,0.3); backdrop-filter: blur(4px);">
                 <span>[{{item.tag}}]</span>
@@ -39,21 +39,6 @@
             </div>
           </el-card>
         </div>
-      </div>
-      <div style="clear: both;"> </div>
-      <div style="margin: 0 auto; width: fit-content">
-        <el-pagination
-          style="padding: 24px 0 12px 0"
-          v-if="paginationShow"
-          @current-change="changePage"
-          :small="true"
-          background
-          :page-size="length"
-          :pager-count="11"
-          layout="prev, pager, next"
-          :current-page="page"
-          :total="total">
-        </el-pagination>
       </div>
     </div>
     <el-dialog :title="`修改 ${this.wish.name}`" :visible.sync="editWishVisible">
@@ -135,7 +120,7 @@ export default {
   },
   methods: {
     async listWishes () {
-      let url = `/api/douban/listWishes?page=${this.page}&length=${this.length}`;
+      let url = `/api/douban/listWishes?page=${this.page}&length=999`;
       if (this.downloaded !== '') {
         url += `&downloaded=${this.downloaded}`;
       }
@@ -152,9 +137,8 @@ export default {
       await this.listWishes();
     },
 
-    async gotoDetail (link) {
-      if (!link) return await this.$message.error('链接不存在');
-      window.open(link);
+    async gotoDetail (item) {
+      this.$goto(`/binge-watching/wish-detail/${item.doubanId}/${item.id}`, this.$router);
     },
 
     openEditDialog (row) {

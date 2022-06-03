@@ -438,7 +438,6 @@ const _getIPTorrentsTorrents = async function (rssUrl) {
     torrent.pubTime = moment(items[i].pubDate[0]).unix();
     torrents.push(torrent);
   }
-  logger.info(torrents);
   return torrents;
 };
 

@@ -240,6 +240,26 @@ class SettingMod {
       timeGroup
     };
   }
+
+  getHosts () {
+    const hosts = fs.readFileSync('/etc/hosts', { encoding: 'utf-8' });
+    return hosts;
+  };
+
+  save (options) {
+    fs.writeFileSync('/etc/hosts', options.hosts);
+    return '保存成功';
+  };
+
+  import () {
+    fs.copyFileSync(path.join(__dirname, '../data/hosts'), '/etc/hosts');
+    return '导入成功';
+  };
+
+  export () {
+    fs.copyFileSync('/etc/hosts', path.join(__dirname, '../data/hosts'));
+    return '导出成功';
+  };
 }
 
 module.exports = SettingMod;

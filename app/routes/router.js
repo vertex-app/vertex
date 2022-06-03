@@ -181,6 +181,7 @@ module.exports = function (app, express, router) {
   router.post('/douban/delete', ctrl.Douban.delete);
   router.get('/douban/listHistory', ctrl.Douban.listHistory);
   router.get('/douban/listWishes', ctrl.Douban.listWishes);
+  router.get('/douban/getWish', ctrl.Douban.getWish);
   router.get('/douban/deleteWish', ctrl.Douban.deleteWish);
   router.get('/douban/refreshWish', ctrl.Douban.refreshWish);
   router.post('/douban/editWish', ctrl.Douban.editWish);
@@ -240,6 +241,10 @@ module.exports = function (app, express, router) {
   router.get('/setting/getCss.css', ctrl.Setting.getCss);
   router.post('/setting/loginMTeam', ctrl.Setting.loginMTeam);
   router.post('/setting/networkTest', ctrl.Setting.networkTest);
+  router.get('/setting/getHosts', ctrl.Setting.getHosts);
+  router.post('/setting/save', ctrl.Setting.save);
+  router.get('/setting/export', ctrl.Setting.export);
+  router.get('/setting/import', ctrl.Setting.import);
 
   router.all('/openapi/:apiKey/plex', ctrl.Webhook.plex);
   router.all('/openapi/:apiKey/emby', ctrl.Webhook.emby);

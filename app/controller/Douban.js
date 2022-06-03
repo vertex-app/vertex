@@ -103,6 +103,22 @@ class Douban {
     }
   };
 
+  async getWish (req, res) {
+    try {
+      const r = doubanMod.getWish(req.query);
+      res.send({
+        success: true,
+        data: r
+      });
+    } catch (e) {
+      logger.error(e);
+      res.send({
+        success: false,
+        message: e.message
+      });
+    }
+  };
+
   async deleteWish (req, res) {
     try {
       const r = await doubanMod.deleteWish(req.query);

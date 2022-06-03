@@ -289,5 +289,69 @@ class Setting {
       });
     }
   }
+
+  async getHosts (req, res) {
+    try {
+      const r = settingMod.getHosts();
+      res.send({
+        success: true,
+        data: r
+      });
+    } catch (e) {
+      logger.error(e);
+      res.send({
+        success: false,
+        message: e.message
+      });
+    }
+  }
+
+  async export (req, res) {
+    try {
+      const r = settingMod.export();
+      res.send({
+        success: true,
+        message: r
+      });
+    } catch (e) {
+      logger.error(e);
+      res.send({
+        success: false,
+        message: e.message
+      });
+    }
+  }
+
+  async import (req, res) {
+    try {
+      const r = settingMod.import();
+      res.send({
+        success: true,
+        message: r
+      });
+    } catch (e) {
+      logger.error(e);
+      res.send({
+        success: false,
+        message: e.message
+      });
+    }
+  }
+
+  async save (req, res) {
+    try {
+      const r = settingMod.save(req.body);
+      res.send({
+        success: true,
+        message: r
+      });
+    } catch (e) {
+      logger.error(e);
+      res.send({
+        success: false,
+        message: e.message
+      });
+    }
+  }
 }
 module.exports = Setting;

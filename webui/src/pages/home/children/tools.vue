@@ -3,9 +3,11 @@
     <el-tabs v-model="activeName" type="card" @tab-click="handleTabsClick">
       <el-tab-pane label="网络测试" name="network-test">
       </el-tab-pane>
-      <el-tab-pane label="MT登录" name="login-mteam">
+      <el-tab-pane label="MT 登录" name="login-mteam">
       </el-tab-pane>
       <el-tab-pane label="软链接" name="link">
+      </el-tab-pane>
+      <el-tab-pane label="修改 hosts" name="hosts">
       </el-tab-pane>
       <el-tab-pane label="批量软链接(暂不可用)" name="bulk-link">
       </el-tab-pane>
