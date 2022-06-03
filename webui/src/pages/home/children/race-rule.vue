@@ -176,7 +176,7 @@ export default {
         key: 'seeders'
       }, {
         name: '下载人数',
-        key: 'leehers'
+        key: 'leechers'
       }, {
         name: '完成次数',
         key: 'snatches'
