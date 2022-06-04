@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import VueClipboard from 'vue-clipboard2';
+import VueLazyload from 'vue-lazyload';
 import {
   Button, Select, Input, Message, Image, Row, Col, Card, Link, MessageBox,
   Divider, Tag, Pagination, DatePicker, TimePicker, Upload, Checkbox, Option,
@@ -51,6 +52,9 @@ Vue.component('v-chart', ECharts);
 components.forEach((component) => Vue.use(component));
 
 Vue.use(VueClipboard);
+Vue.use(VueLazyload, {
+  loading: '/assets/images/loading.gif'
+});
 
 library.add(solid);
 library.add(brands);

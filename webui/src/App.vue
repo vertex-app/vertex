@@ -185,6 +185,12 @@ tr.hover-row>td.el-table__cell {
   border-top: 0;
 }
 
+img[lazy=loading] {
+  background-size: cover;
+  background-position-x: center;
+  background-position-y: center;
+}
+
 .el-select-dropdown__item {
   font-family: consolas, "LXGW WenKai Screen";
 }

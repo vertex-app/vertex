@@ -14,7 +14,7 @@
         <div style="margin: 20px auto;" >
           <el-card class="radius-div" shadow="never" v-for="item of wishes" :key="item.id + item.doubanId" style="width: 240px; display:inline-block; margin: 16px;">
             <div style="width: 200px; height: 280px; position: relative;">
-              <img @click="gotoDetail(item)" :src="item.poster" style="cursor: pointer; width: 200px; height: 280px;">
+              <img @click="gotoDetail(item)" v-lazy="item.poster" style="cursor: pointer; width: 200px; height: 280px;">
               <div v-if="item.cron || item.acceptKeys || item.rejectKeys || item.rejectCompleteTorrent" style="z-index: 1; right: 6px; bottom: 3px; position: absolute; width: 15px; height: 15px; color: lightpink;"><fa style="font-size: 15px;" :icon="['fas', 'pencil-alt']"></fa></div>
               <div style="color: lightpink; bottom: 0px; width: 100%; font-size: 14px; position: absolute; background-color: rgba(0,0,0,0.3); backdrop-filter: blur(4px);">
                 <span>[{{item.tag}}]</span>
