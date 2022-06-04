@@ -120,9 +120,6 @@ class Douban {
       case '单集片长:':
         info.length = span.nextSibling.nodeValue.trim();
         break;
-      case '首播:':
-        info.releaseAt = span.nextElementSibling.innerHTML;
-        break;
       }
     }
 
@@ -140,6 +137,11 @@ class Douban {
 
     // tag
     // info.tag = dom.querySelector('span.color_gray')?.innerHTML;
+
+    info.releaseAt = dom.querySelector('span[property="v:initialReleaseDate"]')?.innerHTML.match(/\d{4}-\d{2}-\d{2}/) || '';
+    if (info.releaseAt) {
+      info.releaseAt = info.releaseAt[0];
+    }
 
     try {
       // rating
@@ -232,6 +234,10 @@ class Douban {
 
   async refreshWish (id, manual = false) {
     const wish = this.wishes.filter(item => item.id === id)[0];
+    if (wish.releaseAt && moment(wish.releaseAt).unix() > moment().unix()) {
+      logger.binge('豆瓣账号', this.alias, '/', wish.name, '还未上映', wish.releaseAt, '退出任务');
+      return;
+    }
     if (wish.downloaded || (+wish.episodes === +wish.episodeNow)) {
       this.ntf.startRefreshWish(`${this.alias} / ${wish.name} 已完成, 退出任务`);
       if (this.refreshWishJobs[id]) {
@@ -241,7 +247,7 @@ class Douban {
       return;
     }
     if (!manual && await redis.get(`vertex:douban:refresh_cache:${id}`)) {
-      logger.binge('豆瓣账号', this.alias, '近 23 小时有自动搜索记录, 退出任务');
+      logger.binge('豆瓣账号', this.alias, '/', wish.name, '近 23 小时有自动搜索记录, 退出任务');
       this.ntf.startRefreshWish(`${this.alias} / ${wish.name} 近 23 小时有自动搜索记录, 退出任务`);
       return;
     }
@@ -301,6 +307,7 @@ class Douban {
       wish.desc = doubanInfo.desc;
       wish.mainCreator = doubanInfo.mainCreator;
       wish.episodes = doubanInfo.episodes;
+      wish.releaseAt = doubanInfo.releaseAt;
       wishes.push(wish);
     }
     const _doubanSet = util.listDoubanSet().filter(item => item.id === this.id)[0];

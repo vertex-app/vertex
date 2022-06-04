@@ -52,6 +52,10 @@
         <el-form-item required label="年份" prop="year">
           <el-input v-model="wish.year" type="input"></el-input>
         </el-form-item>
+        <el-form-item label="上映日期" prop="releaseAt">
+          <el-input v-model="wish.releaseAt" type="input"></el-input>
+          <div><el-tag type="info">格式为 2022-06-03</el-tag></div>
+        </el-form-item>
         <el-form-item label="总集数" prop="episodes">
           <el-input v-model="wish.episodes" type="number"  placeholder="电影务必留空"></el-input>
         </el-form-item>
