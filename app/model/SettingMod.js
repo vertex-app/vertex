@@ -4,6 +4,7 @@ const moment = require('moment');
 const util = require('../libs/util');
 const cron = require('node-cron');
 const Push = require('../common/Push');
+const redis = require('../libs/redis');
 const logger = require('../libs/logger');
 
 const settingPath = path.join(__dirname, '../data/setting.json');
@@ -127,7 +128,14 @@ class SettingMod {
     for (const torrent of torrents) {
       uploadedToday += torrent.upload;
       downloadedToday += torrent.download;
-      const _torrent = await util.getRecord('select tracker from torrents where hash = ? and tracker is not null', [torrent.hash]);
+      let _torrent;
+      const cache = await redis.get(`vertex:torrent:tracker:${torrent.hash}`);
+      if (cache) {
+        _torrent = JSON.parse(cache);
+      } else {
+        _torrent = await util.getRecord('select tracker from torrents where hash = ? and tracker is not null', [torrent.hash]);
+        await redis.setWithExpire(`vertex:torrent:tracker:${torrent.hash}`, JSON.stringify(_torrent), 3600);
+      }
       if (!_torrent) {
         continue;
       }
