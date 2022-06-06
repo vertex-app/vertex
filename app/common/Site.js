@@ -40,7 +40,8 @@ class Site {
       PTHome: this._pthome,
       HDDolby: this._hddolby,
       HDArea: this._hdarea,
-      SoulVoice: this._soulVoice
+      SoulVoice: this._soulVoice,
+      NYPT: this._nypt
     };
     this.searchWrapper = {
       HaresClub: this._searchHaresclub,
@@ -61,7 +62,8 @@ class Site {
       CHDBits: this._searchCHDBits,
       HDDolby: this._searchHDDolby,
       HDArea: this._searchHDArea,
-      SoulVoice: this._searchSoulVoice
+      SoulVoice: this._searchSoulVoice,
+      NYPT: this._searchNYPT
     };
     this.torrentDownloadLinkMap = {
       HaresClub: 'https://club.hares.top/download.php?id={ID}',
@@ -82,7 +84,8 @@ class Site {
       CHDBits: 'https://chdbits.co/download.php?id={ID}',
       HDDolby: 'https://www.hddolby.com/download.php?id={ID}',
       HDArea: 'https://www.hdarea.co/download.php?id={ID}',
-      SoulVoice: 'https://pt.soulvoice.club/download.php?id={ID}'
+      SoulVoice: 'https://pt.soulvoice.club/download.php?id={ID}',
+      NYPT: 'https://nanyangpt.com/download.php?id={ID}'
     };
     this.siteUrlMap = {
       HaresClub: 'https://club.hares.top/',
@@ -103,13 +106,15 @@ class Site {
       CHDBits: 'https://chdbits.co/',
       HDDolby: 'https://www.hddolby.com/',
       HDArea: 'https://www.hdarea.co/',
-      SoulVoice: 'https://www.soulvoice.co/'
+      SoulVoice: 'https://www.soulvoice.co/',
+      NYPT: 'https://nanyangpt.com/'
     };
     this.cookie = site.cookie;
     this.site = site.name;
     this.siteUrl = this.siteUrlMap[this.site];
     this.maxRetryCount = +site.maxRetryCount || 5;
     this.retryCount = 0;
+    this.rssUrl = site.rssUrl || '';
     this.cron = site.cron || '0 */4 * * *';
     this.refreshJob = cron.schedule(this.cron, async () => { try { await this.refreshInfo(); } catch (e) { logger.error(e); } });
     this._init();
@@ -607,6 +612,25 @@ class Site {
     info.seeding = +document.querySelector('img[class=arrowup]').nextSibling.nodeValue.trim();
     // 下载
     info.leeching = +document.querySelector('img[class=arrowdown]').nextSibling.nodeValue.trim();
+    return info;
+  };
+
+  // NYPT
+  async _nypt () {
+    const info = {};
+    const document = await this._getDocument('https://nanyangpt.com/', false, 10);
+    // 用户名
+    info.username = document.querySelector('a[href^=userdetails] b').innerHTML;
+    // 上传
+    info.upload = document.querySelector('img[class=arrowup]').nextSibling.nodeValue.trim().replace(/(\w)B/, '$1iB');
+    info.upload = util.calSize(...info.upload.split(' '));
+    // 下载
+    info.download = document.querySelector('img[class=arrowdown]').nextSibling.nodeValue.trim().replace(/(\w)B/, '$1iB');
+    info.download = util.calSize(...info.download.split(' '));
+    // 做种
+    info.seeding = +document.querySelector('img[title=当前做种]').nextSibling.nodeValue.trim();
+    // 下载
+    info.leeching = +document.querySelector('img[title=当前下载]').nextSibling.nodeValue.trim();
     return info;
   };
 
@@ -1164,6 +1188,35 @@ class Site {
       for (const tag of tagsDom) {
         torrent.tags.push(tag.innerHTML.trim());
       }
+      torrentList.push(torrent);
+    }
+    return {
+      site: this.site,
+      torrentList
+    };
+  };
+
+  // NYPT
+  async _searchNYPT (keyword) {
+    const torrentList = [];
+    const document = await this._getDocument(`https://nanyangpt.com//torrents.php?incldead=0&spstate=0&picktype=0&inclbookmarked=0&keepseed=0&search=${encodeURIComponent(keyword)}&search_area=${keyword.match(/tt\d+/) ? 4 : 0}&search_mode=0`);
+    const torrents = document.querySelectorAll('.torrents > tbody > tr:not(:first-child)');
+    for (const _torrent of torrents) {
+      const torrent = {};
+      torrent.site = this.site;
+      torrent.title = _torrent.querySelector('td[class="embedded"] > a[href*="details"]').title.trim();
+      const subtitle = _torrent.querySelector('.torrentname > tbody > tr .embedded br');
+      torrent.subtitle = subtitle ? subtitle.nextSibling.nodeValue.trim() : '';
+      torrent.category = _torrent.querySelector('td a[href*=cat] img').title.trim();
+      torrent.link = 'https://nanyangpt.com/' + _torrent.querySelector('a[href*=details]').href.trim();
+      torrent.id = +torrent.link.match(/id=(\d*)/)[1];
+      torrent.seeders = +(_torrent.querySelector('a[href*=seeders] font') || _torrent.querySelector('a[href*=seeders]') || _torrent.querySelector('span[class=red]')).innerHTML.trim();
+      torrent.leechers = +(_torrent.querySelector('a[href*=leechers]') || _torrent.childNodes[9]).innerHTML.trim();
+      torrent.snatches = +(_torrent.querySelector('a[href*=snatches] b') || _torrent.childNodes[11]).innerHTML.trim();
+      torrent.size = _torrent.childNodes[6].innerHTML.trim().replace('<br>', ' ').replace(/([KMGPT])B/, '$1iB');
+      torrent.time = moment(_torrent.childNodes[5].querySelector('span') ? _torrent.childNodes[5].querySelector('span').title : _torrent.childNodes[5].innerHTML.replace(/<br>/, ' ')).unix();
+      torrent.size = util.calSize(...torrent.size.split(' '));
+      torrent.tags = [];
       torrentList.push(torrent);
     }
     return {

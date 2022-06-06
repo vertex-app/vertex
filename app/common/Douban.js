@@ -234,7 +234,7 @@ class Douban {
 
   async refreshWish (id, manual = false) {
     const wish = this.wishes.filter(item => item.id === id)[0];
-    if (wish.releaseAt && moment(wish.releaseAt).unix() > moment().unix()) {
+    if (!manual && wish.releaseAt && moment(wish.releaseAt).unix() > moment().unix()) {
       logger.binge('豆瓣账号', this.alias, '/', wish.name, '还未上映', wish.releaseAt, '退出任务');
       return;
     }
