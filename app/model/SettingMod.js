@@ -134,9 +134,9 @@ class SettingMod {
         _torrent = JSON.parse(cache);
       } else {
         _torrent = await util.getRecord('select tracker from torrents where hash = ? and tracker is not null', [torrent.hash]);
-        await redis.setWithExpire(`vertex:torrent:tracker:${torrent.hash}`, JSON.stringify(_torrent), 3600);
+        await redis.setWithExpire(`vertex:torrent:tracker:${torrent.hash}`, JSON.stringify(_torrent || {}), 3600);
       }
-      if (!_torrent) {
+      if (!_torrent.tracker) {
         continue;
       }
       if (!perTrackerTodaySet[_torrent.tracker]) {
