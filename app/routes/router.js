@@ -54,7 +54,7 @@ const checkAuth = async function (req, res, next) {
 };
 
 const setIp = function (req, res, next) {
-  req.userIp = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.ip;
+  req.userIp = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.ip || '';
   if (req.userIp.substring(0, 7) === '::ffff:') {
     req.userIp = req.userIp.substring(7);
   }
