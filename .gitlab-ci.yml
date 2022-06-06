@@ -21,6 +21,7 @@ generate_static:
       --data-raw "{\"key\": \"$KEY\",\"time\": \"$PUSH_TIME\",\"message\": \"$COMMIT_MESSAGE\",\"branch\": \"$CI_COMMIT_BRANCH\",\"sha1\": \"${CI_COMMIT_SHA:0:12}\", \"type\": \"start\"}"
     - cd webui
     - npm i
+    - sed -i "s/require('stackframe')/require('stackframe')\.default/" node_modules/error-stack-parser/error-stack-parser.js
     - npm run build
     - cd ../app
     - tar -czvf ../static.tar.gz static
