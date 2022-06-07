@@ -130,6 +130,13 @@
                   </template>
                 </el-table-column>
                 <el-table-column
+                  label="添加自动刷新"
+                  width="144">
+                  <template slot-scope="scope">
+                    <el-checkbox v-model="scope.row.autoSearch">添加自动刷新</el-checkbox>
+                  </template>
+                </el-table-column>
+                <el-table-column
                   label="排除关键词"
                   width="144">
                   <template slot-scope="scope">
