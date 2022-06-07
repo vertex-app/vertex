@@ -98,7 +98,7 @@ else
 fi
 
 if [ -f '/vertex/data/hosts' ]; then
-  cp /vertex/data/hosts /etc/hosts
+  echo "`cat /vertex/data/hosts`" > /etc/hosts
 fi
 
 if [ ! -f '/vertex/data/setting/torrent-history-setting.json' ]; then

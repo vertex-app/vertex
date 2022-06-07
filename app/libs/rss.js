@@ -50,9 +50,14 @@ const _getTorrents = async function (rssUrl) {
       if (cache) {
         torrent.hash = cache;
       } else {
-        const { hash } = await exports.getTorrentNameByBencode(torrent.url);
-        torrent.hash = hash;
-        await redis.set(`vertex:hash:${torrent.url}`, hash);
+        try {
+          const { hash } = await exports.getTorrentNameByBencode(torrent.url);
+          torrent.hash = hash;
+          await redis.set(`vertex:hash:${torrent.url}`, hash);
+        } catch (e) {
+          await redis.set(`vertex:hash:${torrent.url}`, 'chd' + moment().unix() + 'chd');
+          throw e;
+        }
       }
     }
     torrent.pubTime = moment(items[i].pubDate[0]).unix();
@@ -249,10 +254,15 @@ const _getTorrentsUHDBits = async function (rssUrl) {
       torrent.hash = _torrent.hash;
       torrent.size = _torrent.size;
     } else {
-      const { hash, size } = await exports.getTorrentNameByBencode(torrent.url);
-      torrent.hash = hash;
-      torrent.size = size;
-      await redis.set(`vertex:hash:${torrent.url}`, JSON.stringify(torrent));
+      try {
+        const { hash, size } = await exports.getTorrentNameByBencode(torrent.url);
+        torrent.hash = hash;
+        torrent.size = size;
+        await redis.set(`vertex:hash:${torrent.url}`, JSON.stringify(torrent));
+      } catch (e) {
+        await redis.set(`vertex:hash:${torrent.url}`, JSON.stringify({ hash: 'uhd' + moment().unix() + 'uhd', size: 0 }));
+        throw e;
+      }
     }
     torrents.push(torrent);
   }
@@ -283,10 +293,15 @@ const _getTorrentsEmpornium = async function (rssUrl) {
       torrent.hash = _torrent.hash;
       torrent.size = _torrent.size;
     } else {
-      const { hash, size } = await exports.getTorrentNameByBencode(torrent.url);
-      torrent.hash = hash;
-      torrent.size = size;
-      await redis.set(`vertex:hash:${torrent.url}`, JSON.stringify(torrent));
+      try {
+        const { hash, size } = await exports.getTorrentNameByBencode(torrent.url);
+        torrent.hash = hash;
+        torrent.size = size;
+        await redis.set(`vertex:hash:${torrent.url}`, JSON.stringify(torrent));
+      } catch (e) {
+        await redis.set(`vertex:hash:${torrent.url}`, JSON.stringify({ hash: 'emp' + moment().unix() + 'emp', size: 0 }));
+        throw e;
+      }
     }
     torrent.pubTime = moment(items[i].pubDate[0]).unix();
     torrents.push(torrent);
@@ -318,9 +333,14 @@ const _getTorrentsSkyeySnow = async function (rssUrl) {
       if (cache) {
         torrent.hash = cache;
       } else {
-        const { hash } = await exports.getTorrentNameByBencode(torrent.url);
-        torrent.hash = hash;
-        await redis.set(`vertex:hash:${torrent.url}`, hash);
+        try {
+          const { hash } = await exports.getTorrentNameByBencode(torrent.url);
+          torrent.hash = hash;
+          await redis.set(`vertex:hash:${torrent.url}`, hash);
+        } catch (e) {
+          await redis.set(`vertex:hash:${torrent.url}`, 'skyey' + moment().unix() + 'skyey');
+          throw e;
+        }
       }
     }
     torrent.pubTime = moment(items[i].pubDate[0]).unix();
@@ -352,10 +372,15 @@ const _getTorrentsHDBits = async function (rssUrl) {
       if (cache) {
         torrent.hash = cache;
       } else {
-        const { hash, size } = await exports.getTorrentNameByBencode(torrent.url);
-        torrent.size = size;
-        torrent.hash = hash;
-        await redis.set(`vertex:hash:${torrent.url}`, hash);
+        try {
+          const { hash, size } = await exports.getTorrentNameByBencode(torrent.url);
+          torrent.hash = hash;
+          torrent.size = size;
+          await redis.set(`vertex:hash:${torrent.url}`, JSON.stringify(torrent));
+        } catch (e) {
+          await redis.set(`vertex:hash:${torrent.url}`, JSON.stringify({ hash: 'hdbits' + moment().unix() + 'hdbits', size: 0 }));
+          throw e;
+        }
       }
     }
     torrent.pubTime = moment(items[i].pubDate[0]).unix();
