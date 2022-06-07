@@ -97,6 +97,10 @@ else
   echo '/vertex/data/setting.json exists, continue'
 fi
 
+if [ -f '/vertex/data/hosts' ]; then
+  cp /vertex/data/hosts /etc/hosts
+fi
+
 if [ ! -f '/vertex/data/setting/torrent-history-setting.json' ]; then
   cp /app/vertex/app/config_backup/torrent-history-setting.json /vertex/data/setting/
 else

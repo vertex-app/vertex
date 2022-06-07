@@ -256,6 +256,7 @@ class SettingMod {
 
   save (options) {
     fs.writeFileSync('/etc/hosts', options.hosts);
+    fs.copyFileSync('/etc/hosts', path.join(__dirname, '../data/hosts'));
     return '保存成功';
   };
 
