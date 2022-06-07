@@ -18,7 +18,8 @@
           3. 导出是指将内容保存至 /etc/hosts 的内容复制至 vertex/data/hosts <br>
           4. 导入是指将内容保存至 vertex/data/hosts 的内容复制至 /etc/hosts <br>
           5. 内容格式同普通的 hosts <br>
-          &nbsp;&nbsp;&nbsp;例: 127.0.0.1 localhost
+          &nbsp;&nbsp;&nbsp;例: 127.0.0.1 localhost<br>
+          6. 输入框结尾至少保留一个空行 <br>
         </el-card>
       </div>
     </div>

@@ -65,6 +65,7 @@ class Client {
     this.errorCount = 0;
     this.trackerStatus = {};
     this.getMaindata();
+    this.lastCookie = 0;
     logger.info('下载器', this.alias, '初始化完毕');
   };
 
@@ -214,11 +215,12 @@ class Client {
     this.mnt = new Push(this.monitor);
   };
 
-  async login () {
+  async login (notify = true) {
     try {
       this.cookie = await this.client.login(this.username, this.clientUrl, this.password);
       this.status = true;
       this.errorCount = 0;
+      this.lastCookie = moment().unix();
       logger.info('下载器', this.alias, '登陆成功');
     } catch (error) {
       logger.error('下载器', this.alias, '登陆失败\n', error);
@@ -228,7 +230,7 @@ class Client {
       return;
     }
     try {
-      if (!this.messageId) {
+      if (!this.messageId && notify) {
         await this.ntf.connectClient(this._client);
         if (this.monitor.push) {
           this.messageId = await this.mnt.connectClient(this._client);
@@ -242,6 +244,10 @@ class Client {
   async getMaindata () {
     if (!this.cookie) {
       this.login();
+      return;
+    }
+    if (this.lastCookie < moment().unix() - 3600) {
+      await this.login(false);
       return;
     }
     const statusLeeching = ['downloading', 'stalledDL', 'Downloading'];
