@@ -225,7 +225,8 @@ export default {
         libraryPath: '',
         savePath: '',
         autoTMM: false,
-        rejectKeys: ''
+        rejectKeys: '',
+        autoSearch: true
       },
       doubanList: [],
       raceRuleList: [],
@@ -280,7 +281,7 @@ export default {
       this.doubanCollapse = ['0', '1'];
       this.douban = { ...row };
       this.douban.categories = row.categories.map(item => {
-        return { ...item };
+        return { ...item, autoSearch: item.autoSearch !== false };
       });
     },
     async refreshWishes (row) {

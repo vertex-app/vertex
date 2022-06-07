@@ -29,8 +29,8 @@
               <el-option label="剧集" value="series"></el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="媒体库文件夹">
-            <el-input v-model="libraryPath" type="input" style="width: 200px;" placeholder="媒体库文件夹"></el-input>
+          <el-form-item label="资料库文件夹">
+            <el-input v-model="libraryPath" type="input" style="width: 200px;" placeholder="资料库文件夹"></el-input>
           </el-form-item>
           <el-form-item label="影视剧名">
             <el-input v-model="mediaName" type="input" style="width: 200px;" placeholder="影视剧名"></el-input>
