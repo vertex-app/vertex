@@ -97,6 +97,12 @@ else
   echo '/vertex/data/setting.json exists, continue'
 fi
 
+if [ ! -f '/vertex/data/bulk-link-history.json' ]; then
+  echo '{}' > /vertex/data/bulk-link-history.json
+else
+  echo '/vertex/data/bulk-link-history.json exists, continue'
+fi
+
 if [ -f '/vertex/data/hosts' ]; then
   echo "`cat /vertex/data/hosts`" > /etc/hosts
 fi

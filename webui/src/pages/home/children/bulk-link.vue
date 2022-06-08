@@ -9,12 +9,21 @@
               <el-option label="剧集" value="series"></el-option>
             </el-select>
           </el-form-item>
+          <el-form-item label="选择链接规则">
+            <el-select v-model="linkRule" style="width: 200px" placeholder="选择链接规则">
+              <el-option v-for="rule of linkRuleList" :key="rule.id" :label="rule.alias" :value="rule.id">{{rule.alias}}</el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="资料库文件夹">
+            <el-input v-model="libraryPath" type="input" style="width: 200px;" placeholder="资料库文件夹"></el-input>
+          </el-form-item>
           <el-form-item label="关键词">
             <el-input v-model="keyword" type="input" style="width: 200px;" placeholder="客户端内分类或标签关键词"></el-input>
           </el-form-item>
           <el-form-item size="small">
             <el-button type="primary" @click="getBulkLinkList">检查</el-button>
             <el-button type="primary" @click="doScrape">识别</el-button>
+            <el-button type="danger" @click="doLink">执行</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -27,7 +36,7 @@
           placeholder="新增">
           <el-option
             v-for="item in torrentList"
-            :key="item.hash"
+            :key="'' + item.hash + item.client"
             :disabled="item.visible"
             :label="item.name"
             :value="item.hash">
@@ -56,6 +65,15 @@
             </template>
           </el-table-column>
           <el-table-column
+            prop="status"
+            width="144"
+            v-if="torrentList[0].hash"
+            label="状态">
+            <template slot-scope="scope">
+              <span :style="scope.row.status === '识别失败' ? 'color: red' : ''">{{scope.row.status}}</span>
+            </template>
+          </el-table-column>
+          <el-table-column
             width="114"
             v-if="torrentList[0].hash"
             label="操作">
@@ -78,27 +96,53 @@ export default {
       selectTorrent: '',
       keyword: '',
       type: '',
-      linkRule: ''
+      linkRule: '',
+      libraryPath: ''
     };
   },
   methods: {
     async getBulkLinkList () {
       const res = await this.$axiosGet(`/api/torrent/getBulkLinkList?keyword=${this.keyword}`);
-      this.torrentList = res?.data.map(item => { return { ...item, visible: true, scrapedName: '' }; });
+      this.torrentList = res?.data.map(item => { return { ...item, visible: true, scrapedName: '', status: '待识别' }; });
     },
     async scrapeName (row) {
       const res = await this.$axiosGet(`/api/torrent/scrapeName?name=${encodeURIComponent(row.name)}&type=${this.type}`);
       this.torrentList.filter(item => item.hash === row.hash)[0].scrapedName = res?.data;
     },
-    async doScrape () {
-      for (const torrent of this.torrentList) {
-        if (!torrent.visible) continue;
-        await this.scrapeName(torrent);
-      }
-    },
     async listLinkRule () {
       const res = await this.$axiosGet('/api/linkRule/list');
       this.linkRuleList = res ? res.data.sort((a, b) => a.alias > b.alias ? 1 : -1) : [];
+    },
+    async doScrape () {
+      for (const torrent of this.torrentList) {
+        if (!torrent.visible) continue;
+        torrent.status = '识别中';
+        await this.scrapeName(torrent);
+        torrent.status = torrent.scrapedName ? '已识别' : '识别失败';
+      }
+    },
+    async doLink () {
+      for (const torrent of this.torrentList) {
+        if (torrent.scrapedName !== '') {
+          torrent.status = '待软链';
+        }
+      }
+      for (const torrent of this.torrentList) {
+        if (torrent.scrapedName === '' || !torrent.visible) {
+          continue;
+        }
+        const res = await this.$axiosPost('/api/torrent/link', {
+          direct: true,
+          hash: torrent.hash,
+          type: this.type,
+          mediaName: torrent.scrapedName,
+          linkRule: this.linkRule,
+          client: torrent.client,
+          libraryPath: this.libraryPath,
+          savePath: torrent.savePath
+        });
+        torrent.status = res?.data || '软链失败';
+      }
     }
   },
   async mounted () {

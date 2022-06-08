@@ -73,7 +73,7 @@ class TorrentMod {
         ) {
           continue;
         }
-        const _torrent = { hash: torrent.hash, name: torrent.name, size: torrent.size };
+        const _torrent = { hash: torrent.hash, name: torrent.name, size: torrent.size, savePath: torrent.savePath };
         _torrent.clientAlias = clients[clientId].alias;
         _torrent.client = clientId;
         torrents.push(_torrent);
@@ -85,6 +85,124 @@ class TorrentMod {
   async scrapeName (options) {
     const { name, type } = options;
     return await util.scrapeNameByFile(name, type === 'series' ? 'tv' : type ? 'movie' : '');
+  }
+
+  async _linkTorrentFilesNotDryrun ({ hash, client, mediaName, type, linkRule, savePath, libraryPath }) {
+    const _linkRule = util.listLinkRule().filter(item => item.id === linkRule)[0];
+    let size = 1;
+    _linkRule.minFileSize.split('*').forEach(i => { size *= +i; });
+    _linkRule.minFileSize = size;
+    const files = await global.runningClient[client].getFiles(hash);
+    if (type === 'series') {
+      let newEpisode = 0;
+      for (const file of files) {
+        const filename = path.basename(file.name);
+        if (file.size < _linkRule.minFileSize) continue;
+        if (_linkRule.excludeKeys && _linkRule.excludeKeys.split(',').some(item => filename.indexOf(item) !== -1)) continue;
+        const seriesName = mediaName.split('/')[0].trim().replace(/ /g, '.').replace(/\.?[第][\d一二三四五六七八九十]+[季部]/, '');
+        const prefix = _linkRule.keepSeriesName ? seriesName + '.' : '';
+        let suffix = '';
+        _linkRule.reservedKeys = _linkRule.reservedKeys || '';
+        for (const key of _linkRule.reservedKeys.split(',')) {
+          if (filename.indexOf(key) !== -1 && suffix.indexOf(key) === -1) {
+            suffix += '.' + key;
+          }
+        }
+        let group = '';
+        if (_linkRule.group) {
+          group = (filename.match(/-[^-]*?$/) || [''])[0];
+        }
+        const fileExt = path.extname(file.name);
+        group = group.replace(fileExt, '');
+        let season = (filename.match(/[. ]S(\d+)/) || [0, null])[1];
+        let episode = +(filename.match(/[Ee][Pp]?(\d+)[. ]?/) || [])[1];
+        // 适配奇奇怪怪的命名
+        if (!episode) {
+          episode = +(filename.match(/\[(\d+)[Vv]*\d*\]/) || [])[1];
+        }
+        if (!episode) {
+          episode = +(filename.match(/第(\d+)[话話集]/) || [])[1];
+        }
+        if (!episode) {
+          const episodes = filename.match(/[^(mp)(MP)(Mp)]*\d+[^KkFfPpi]*/g)
+            ?.map(item => +item.match(/\d+/))
+            .filter(item => [0, 480, 720, 1080, 576, 2160].indexOf(item) === -1) || [];
+          if (episodes.length === 1) {
+            episode = episodes[0];
+          }
+        }
+        if (!episode) {
+          continue;
+        }
+        let fakeEpisode = 0;
+        const part = (filename.match(/[ .]?[Pp][Aa][Rr][Tt][ .]?0?([abAB12])/));
+        if (part?.[1]) {
+          fakeEpisode = part?.[1] === 'A' || part?.[1] === '1' ? episode * 2 - 1 : episode * 2;
+        }
+        if (season === null) {
+          const seasonSubtitle = mediaName.replace(/ /g, '').match(/第([一二三四五六七八九十])[季部]/);
+          if (seasonSubtitle) {
+            season = {
+              一: 1,
+              二: 2,
+              三: 3,
+              四: 4,
+              五: 5,
+              六: 6,
+              七: 7,
+              八: 8,
+              九: 9,
+              十: 10
+            }[seasonSubtitle];
+          }
+        }
+        if (season === null) {
+          const seasonSubtitle = mediaName.replace(/ /g, '').match(/第(\d+)[季部]/);
+          if (seasonSubtitle) {
+            season = +seasonSubtitle[1];
+          }
+        }
+        season = season || 1;
+        newEpisode = Math.max(episode, newEpisode);
+        episode = 'E' + '0'.repeat(Math.max(0, 2 - ('' + (fakeEpisode || episode)).length)) + (fakeEpisode || episode);
+        season = 'S' + '0'.repeat(2 - ('' + season).length) + season;
+        const linkFilePath = path.join(_linkRule.linkFilePath, libraryPath, seriesName, season).replace(/'/g, '\\\'');
+        const linkFile = path.join(linkFilePath, prefix + season + episode + suffix + group + fileExt).replace(/'/g, '\\\'');
+        const targetFile = path.join(savePath.replace(_linkRule.targetPath.split('##')[0], _linkRule.targetPath.split('##')[1]), file.name).replace(/'/g, '\\\'');
+        const command = `mkdir -p $'${linkFilePath}' && ln -sf $'${targetFile}' $'${linkFile}'`;
+        logger.binge('手动软链接', '执行软连接命令', command);
+        try {
+          await global.runningServer[_linkRule.server].run(command);
+        } catch (e) {
+          logger.error(e);
+        }
+      }
+    } else if (type === 'movie') {
+      for (const file of files) {
+        if (file.size < _linkRule.minFileSize) continue;
+        const movieName = mediaName.split('/')[0].trim();
+        const year = (file.name.match(/[. ](20\d\d)[. ]/) || file.name.match(/[. ](19\d\d)[. ]/) || ['', ''])[1];
+        let suffix = '';
+        _linkRule.reservedKeys = _linkRule.reservedKeys || '';
+        for (const key of _linkRule.reservedKeys.split(',')) {
+          if (file.name.indexOf(key) !== -1 && suffix.indexOf(key) === -1) {
+            suffix += '.' + key;
+          }
+        }
+        let group = '';
+        if (_linkRule.group) {
+          group = (file.name.match(/-[^-]*?$/) || [''])[0];
+        }
+        const fileExt = path.extname(file.name);
+        group = group.replace(fileExt, '');
+        const linkFilePath = path.join(_linkRule.linkFilePath, libraryPath, `${movieName}.${year}`).replace(/'/g, '\\\'');
+        const linkFile = path.join(linkFilePath, `${movieName}.${year}${suffix + group}${fileExt}`).replace(/'/g, '\\\'');
+        const targetFile = path.join(savePath.replace(_linkRule.targetPath.split('##')[0], _linkRule.targetPath.split('##')[1]), file.name).replace(/'/g, '\\\'');
+        const command = `mkdir -p $'${linkFilePath}' && ln -sf $'${targetFile}' $'${linkFile}'`;
+        logger.binge('手动软链接', '执行软连接命令', command);
+        await global.runningServer[_linkRule.server].run(command);
+      }
+    }
   }
 
   async _linkTorrentFiles ({ hash, savePath, client, mediaName, type, libraryPath, linkRule, files: _files }) {
@@ -251,6 +369,10 @@ class TorrentMod {
     if (options.dryrun) {
       const res = await this._dryrun(options);
       return res;
+    }
+    if (options.direct) {
+      await this._linkTorrentFilesNotDryrun(options);
+      return '软链成功';
     }
     await this._linkTorrentFiles(options);
     return '软链接成功';
