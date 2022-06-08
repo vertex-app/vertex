@@ -353,5 +353,37 @@ class Setting {
       });
     }
   }
+
+  async getProxy (req, res) {
+    try {
+      const r = settingMod.getProxy();
+      res.send({
+        success: true,
+        data: r
+      });
+    } catch (e) {
+      logger.error(e);
+      res.send({
+        success: false,
+        message: e.message
+      });
+    }
+  }
+
+  async saveProxy (req, res) {
+    try {
+      const r = settingMod.saveProxy(req.body);
+      res.send({
+        success: true,
+        message: r
+      });
+    } catch (e) {
+      logger.error(e);
+      res.send({
+        success: false,
+        message: e.message
+      });
+    }
+  }
 }
 module.exports = Setting;

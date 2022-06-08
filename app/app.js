@@ -50,6 +50,9 @@ const init = function () {
     fs.writeFileSync(path.join(__dirname, './data/password'), password);
     fs.writeFileSync(path.join(__dirname, './data/setting.json'), JSON.stringify(setting, null, 2));
   }
+  const proxySetting = JSON.parse(fs.readFileSync(path.join(__dirname, './data/setting/proxy.json')));
+  global.proxy = proxySetting.proxy;
+  global.domains = proxySetting.domains;
   global.auth = {
     username: setting.username,
     password: setting.password

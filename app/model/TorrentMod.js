@@ -84,7 +84,7 @@ class TorrentMod {
 
   async scrapeName (options) {
     const { name, type } = options;
-    return await util.scrapeNameByFile(name, type === 'series' ? 'tv' : 'movie');
+    return await util.scrapeNameByFile(name, type === 'series' ? 'tv' : type ? 'movie' : '');
   }
 
   async _linkTorrentFiles ({ hash, savePath, client, mediaName, type, libraryPath, linkRule, files: _files }) {
@@ -162,7 +162,7 @@ class TorrentMod {
           episode = +(filename.match(/第(\d+)[话話集]/) || [])[1];
         }
         if (!episode) {
-          const episodes = filename.match(/[^(mp)(MP)(Mp)]\d+[^KkFfPpi]/g)
+          const episodes = filename.match(/[^(mp)(MP)(Mp)]*\d+[^KkFfPpi]*/g)
             ?.map(item => +item.match(/\d+/))
             .filter(item => [0, 480, 720, 1080, 576, 2160].indexOf(item) === -1) || [];
           if (episodes.length === 1) {

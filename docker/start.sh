@@ -125,6 +125,12 @@ else
   echo '/vertex/data/setting/torrent-push-setting.json exists, continue'
 fi
 
+if [ ! -f '/vertex/data/setting/proxy.json' ]; then
+  cp /app/vertex/app/config_backup/proxy.json /vertex/data/setting/
+else
+  echo '/vertex/data/setting/proxy.json exists, continue'
+fi
+
 if [ -f '/tmp/.X99-lock' ]; then
   rm /tmp/.X99-lock
 fi

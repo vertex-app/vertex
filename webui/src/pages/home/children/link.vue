@@ -43,6 +43,7 @@
       </div>
       <div style="padding: 24px; font-size: 14px; text-align: left;" v-if="fileList[0].file">
         <el-select
+          filterable
           size="mini"
           style="width: calc(100% - 144px);"
           v-model="selectFile"

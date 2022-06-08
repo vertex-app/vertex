@@ -85,6 +85,12 @@ exports.requestPromise = async function (_options, usePuppeteer = true) {
   if (!options.timeout) {
     options.timeout = 120000;
   }
+  if (global.proxy) {
+    const host = new URL(options.url).host;
+    if (global.domains.split('\n').indexOf(host) !== -1) {
+      options.proxy = global.proxy;
+    }
+  }
   const res = await exports._requestPromise(options);
   if (usePuppeteer && res.body && typeof res.body === 'string' && (res.body.indexOf('jschl-answer') !== -1 || (res.body.indexOf('cloudflare-static') !== -1 && res.body.indexOf('email-decode.min.js') === -1))) {
     logger.info(new url.URL(options.url).hostname, '疑似遇到 5s 盾, 启用 Puppeteer 抓取页面....');
@@ -166,9 +172,14 @@ exports.scrapeNameByFile = async function (filename, type) {
     .replace(/[!\u4e00-\u9fa5\uff01\uff1a。:?？，,·・]/g, '')
     .replace(/\./g, ' ').trim();
   if (filename.match(/^[\u4e00-\u9fa5\uff01\uff1a]+/)) {
-    searchKey = filename.match(/^[\u4e00-\u9fa5]+[A-Za-z]*.*[A-Za-z]*[\u4e00-\u9fa5]+[A-Za-z]*/)[0].replace(/[^\u4e00-\u9fa5A-Za-z]/g, ' ').replace(/第.*季/g, '');
+    searchKey = filename.match(/^[\u4e00-\u9fa5]+[A-RT-Za-rt-z]*[\u4e00-\u9fa5]+/)[0].replace(/[^\u4e00-\u9fa5A-Za-z]/g, ' ').replace(/第.*季/g, '');
   }
   url += encodeURI(searchKey);
+  const year = filename.match(/[^d](19\d{2}|20\d{2})[^d]/);
+  const season = filename.match(/S0[^1]/);
+  if (year && !season) {
+    url += `&first_air_date_year=${year[1]}&primary_release_year=${year[1]}`;
+  }
   const res = await exports.requestPromise(url);
   const body = JSON.parse(res.body);
   if (body.status_code === 7) {
@@ -179,7 +190,9 @@ exports.scrapeNameByFile = async function (filename, type) {
     logger.error(filename, searchKey, body);
     throw new Error('请求 TMDB Api 返回有误, 请重试');
   }
+  body.results = body.results.sort((a, b) => b.popularity - a.popularity);
   logger.debug('根据文件名抓取影视剧名', filename, searchKey, body.results[0]?.name || body.results[0]?.title || '');
+  logger.debug('tmdb api url', url);
   return body.results[0]?.name || body.results[0]?.title || '';
 };
 

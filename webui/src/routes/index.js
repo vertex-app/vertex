@@ -33,6 +33,7 @@ import Rss from '@/pages/home/children/rss';
 import Log from '@/pages/home/children/log';
 import Tools from '@/pages/home/children/tools';
 import Link from '@/pages/home/children/link';
+import Proxy from '@/pages/home/children/proxy';
 import Hosts from '@/pages/home/children/hosts';
 import BulkLink from '@/pages/home/children/bulk-link';
 import NetworkTest from '@/pages/home/children/network-test';
@@ -164,6 +165,12 @@ const tools = {
       component: Hosts,
       meta: {
         title: '修改 hosts'
+      }
+    }, {
+      path: 'proxy',
+      component: Proxy,
+      meta: {
+        title: 'http 代理'
       }
     }, {
       path: 'bulk-link',

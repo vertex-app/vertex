@@ -8,6 +8,7 @@ const redis = require('../libs/redis');
 const logger = require('../libs/logger');
 
 const settingPath = path.join(__dirname, '../data/setting.json');
+const proxyPath = path.join(__dirname, '../data/setting/proxy.json');
 const torrentHistorySettingPath = path.join(__dirname, '../data/setting/torrent-history-setting.json');
 const torrentMixSettingPath = path.join(__dirname, '../data/setting/torrent-mix-setting.json');
 const sitePushSettingPath = path.join(__dirname, '../data/setting/site-push-setting.json');
@@ -268,6 +269,18 @@ class SettingMod {
   export () {
     fs.copyFileSync('/etc/hosts', path.join(__dirname, '../data/hosts'));
     return '导出成功';
+  };
+
+  getProxy () {
+    const settingStr = fs.readFileSync(proxyPath, { encoding: 'utf-8' });
+    return JSON.parse(settingStr);
+  };
+
+  saveProxy (options) {
+    fs.writeFileSync(proxyPath, JSON.stringify({ proxy: options.proxy || '', domains: options.domains || '' }, null, 2));
+    global.proxy = options.proxy || '';
+    global.domains = options.domains || '';
+    return '保存成功';
   };
 }
 
