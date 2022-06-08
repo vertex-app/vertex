@@ -21,6 +21,7 @@ class Client {
     this.status = false;
     this.client = clients[client.type];
     this.alias = client.alias;
+    this.firstLastPiecePrio = client.firstLastPiecePrio || false;
     this.password = client.password;
     this.username = client.username;
     this.clientUrl = client.clientUrl;
@@ -304,7 +305,7 @@ class Client {
     if (!this.status) {
       throw new Error('客户端' + this.alias + '当前状态为不可用');
     }
-    const { statusCode } = await this.client.addTorrent(this.clientUrl, this.cookie, torrentUrl, isSkipChecking, uploadLimit, downloadLimit, savePath, category);
+    const { statusCode } = await this.client.addTorrent(this.clientUrl, this.cookie, torrentUrl, isSkipChecking, uploadLimit, downloadLimit, savePath, category, this.firstLastPiecePrio);
     if (statusCode !== 200) {
       this.login();
       throw new Error('状态码: ' + statusCode);
@@ -314,7 +315,7 @@ class Client {
   };
 
   async addTorrentByTorrentFile (filepath, hash, isSkipChecking = false, uploadLimit = 0, downloadLimit = 0, savePath, category, autoTMM) {
-    const { statusCode } = await this.client.addTorrentByTorrentFile(this.clientUrl, this.cookie, filepath, isSkipChecking, uploadLimit, downloadLimit, savePath, category, autoTMM);
+    const { statusCode } = await this.client.addTorrentByTorrentFile(this.clientUrl, this.cookie, filepath, isSkipChecking, uploadLimit, downloadLimit, savePath, category, autoTMM, this.firstLastPiecePrio);
     if (statusCode !== 200) {
       this.login();
       throw new Error('状态码: ' + statusCode);

@@ -24,7 +24,7 @@ exports.login = async function (username, clientUrl, password) {
   }
 };
 
-exports.addTorrent = async function (clientUrl, cookie, torrentUrl, isSkipChecking, uploadLimit, downloadLimit, savePath, category) {
+exports.addTorrent = async function (clientUrl, cookie, torrentUrl, isSkipChecking, uploadLimit, downloadLimit, savePath, category, firstLastPiecePrio) {
   const message = {
     url: clientUrl + '/api/v2/torrents/add',
     method: 'POST',
@@ -35,7 +35,8 @@ exports.addTorrent = async function (clientUrl, cookie, torrentUrl, isSkipChecki
       urls: torrentUrl,
       skip_checking: isSkipChecking + '',
       upLimit: uploadLimit,
-      dlLimit: downloadLimit
+      dlLimit: downloadLimit,
+      firstLastPiecePrio: firstLastPiecePrio + ''
     }
   };
   if (savePath) {
@@ -49,7 +50,7 @@ exports.addTorrent = async function (clientUrl, cookie, torrentUrl, isSkipChecki
   return res;
 };
 
-exports.addTorrentByTorrentFile = async function (clientUrl, cookie, filepath, isSkipChecking, uploadLimit, downloadLimit, savePath, category, autoTMM) {
+exports.addTorrentByTorrentFile = async function (clientUrl, cookie, filepath, isSkipChecking, uploadLimit, downloadLimit, savePath, category, autoTMM, firstLastPiecePrio) {
   const message = {
     url: clientUrl + '/api/v2/torrents/add',
     method: 'POST',
@@ -60,7 +61,8 @@ exports.addTorrentByTorrentFile = async function (clientUrl, cookie, filepath, i
       torrents: fs.createReadStream(filepath),
       skip_checking: isSkipChecking + '',
       upLimit: uploadLimit,
-      dlLimit: downloadLimit
+      dlLimit: downloadLimit,
+      firstLastPiecePrio: firstLastPiecePrio + ''
     }
   };
   if (savePath) {

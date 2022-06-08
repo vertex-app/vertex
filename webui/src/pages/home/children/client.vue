@@ -133,6 +133,10 @@
               <el-checkbox v-model="client.autoReannounce">自动汇报</el-checkbox>
               <div><el-tag type="info">自动在种子添加后的 5 分钟内每分钟汇报一次, 获取更多 Peers</el-tag></div>
             </el-form-item>
+            <el-form-item label="先下载首尾文件块" prop="firstLastPiecePrio">
+              <el-checkbox v-model="client.firstLastPiecePrio">先下载首尾文件块</el-checkbox>
+              <div><el-tag type="info">先下载首尾文件块, 同 qBittorrent 右键菜单 - 先下载首尾文件块</el-tag></div>
+            </el-form-item>
             <el-form-item required label="空间警告" prop="spaceAlarm">
               <el-checkbox v-model="client.spaceAlarm">空间警告</el-checkbox>
               <div><el-tag type="info">下载器剩余空间小于一定值时推送警告通知, 15 分钟一次</el-tag></div>
