@@ -10,11 +10,11 @@
             </el-select>
           </el-form-item>
           <el-form-item label="关键词">
-            <el-input v-model="keyword" type="input" style="width: 200px;" placeholder="分类或标签关键词"></el-input>
+            <el-input v-model="keyword" type="input" style="width: 200px;" placeholder="客户端内分类或标签关键词"></el-input>
           </el-form-item>
           <el-form-item size="small">
-            <el-button type="primary" @click="startLink">执行</el-button>
-            <el-button type="primary" @click="dryrun">测试</el-button>
+            <el-button type="primary" @click="getBulkLinkList">检查</el-button>
+            <el-button type="primary" @click="getBulkLinkList">识别</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -54,35 +54,13 @@ export default {
     };
   },
   methods: {
-    async getTorrentInfo () {
-      const res = await this.$axiosGet(`/api/torrent/scrapeName?keyword=${this.keyword}&type=${this.type}`);
-      this.torrentInfo = res?.data;
-      if (this.torrentInfo.scrapeName) {
-        this.mediaName = this.torrentInfo.scrapeName;
-      }
+    async getBulkLinkList () {
+      const res = await this.$axiosGet(`/api/torrent/getBulkLinkList?keyword=${this.keyword}`);
+      this.fileList = res?.data;
     },
     async listLinkRule () {
       const res = await this.$axiosGet('/api/linkRule/list');
       this.linkRuleList = res ? res.data.sort((a, b) => a.alias > b.alias ? 1 : -1) : [];
-    },
-    async startLink () {
-      const res = await this.$axiosPost('/api/torrent/link', {
-        hash: this.hash,
-        type: this.type,
-        mediaName: this.mediaName,
-        linkRule: this.linkRule,
-        client: this.torrentInfo.client,
-        libraryPath: this.libraryPath,
-        savePath: this.torrentInfo.savePath
-      });
-      if (!res) {
-        return;
-      }
-      await this.$messageBox(res);
-    },
-    async dryrun () {
-      const res = await this.$axiosGet(`/api/torrent/scrapeName?keyword=${this.keyword}&type=${this.type}`);
-      this.fileList = res?.data;
     }
   },
   async mounted () {

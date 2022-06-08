@@ -485,8 +485,8 @@ class Douban {
           episode = +(filename.match(/第(\d+)[话話集]/) || [])[1];
         }
         if (!episode) {
-          const episodes = filename.match(/[^(mp)]\d+[^KkFfPpi]/g)
-            ?.map(item => +item)
+          const episodes = filename.match(/[^(mp)(MP)(Mp)]\d+[^KkFfPpi]/g)
+            ?.map(item => +item.match(/\d+/))
             .filter(item => [0, 480, 720, 1080, 576, 2160].indexOf(item) === -1) || [];
           if (episodes.length === 1) {
             episode = episodes[0];

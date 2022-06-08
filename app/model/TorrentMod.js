@@ -58,8 +58,8 @@ class TorrentMod {
     throw new Error('not found');
   }
 
-  async scrapeName (options) {
-    const { keyword, type } = options;
+  async getBulkLinkList (options) {
+    const { keyword } = options;
     const clients = global.runningClient;
     const torrents = [];
     for (const clientId of Object.keys(clients)) {
@@ -73,16 +73,18 @@ class TorrentMod {
         ) {
           continue;
         }
-        const _torrent = { ...torrent };
-        try {
-          _torrent.scrapeName = await util.scrapeNameByFile(torrent.name, type === 'series' ? 'tv' : 'movie');
-        } catch (e) { logger.info(e); }
+        const _torrent = { hash: torrent.hash, name: torrent.name, size: torrent.size };
         _torrent.clientAlias = clients[clientId].alias;
         _torrent.client = clientId;
         torrents.push(_torrent);
       }
     }
     return torrents;
+  }
+
+  async scrapeName (options) {
+    const { name, type } = options;
+    return await util.scrapeNameByFile(name, type === 'series' ? 'tv' : 'movie');
   }
 
   async _linkTorrentFiles ({ hash, savePath, client, mediaName, type, libraryPath, linkRule, files: _files }) {
@@ -160,8 +162,8 @@ class TorrentMod {
           episode = +(filename.match(/第(\d+)[话話集]/) || [])[1];
         }
         if (!episode) {
-          const episodes = filename.match(/[^(mp)]\d+[^KkFfPpi]/g)
-            ?.map(item => +item)
+          const episodes = filename.match(/[^(mp)(MP)(Mp)]\d+[^KkFfPpi]/g)
+            ?.map(item => +item.match(/\d+/))
             .filter(item => [0, 480, 720, 1080, 576, 2160].indexOf(item) === -1) || [];
           if (episodes.length === 1) {
             episode = episodes[0];

@@ -38,6 +38,23 @@ class Torrent {
     }
   };
 
+  async getBulkLinkList (req, res) {
+    const options = req.query;
+    try {
+      const r = await torrentMod.getBulkLinkList(options);
+      res.send({
+        success: true,
+        data: r
+      });
+    } catch (e) {
+      logger.error(e);
+      res.send({
+        success: false,
+        message: e.message
+      });
+    }
+  };
+
   async scrapeName (req, res) {
     const options = req.query;
     try {
