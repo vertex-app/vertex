@@ -66,6 +66,7 @@ class TorrentMod {
     const clients = global.runningClient;
     const torrents = [];
     for (const clientId of Object.keys(clients)) {
+      if (options.client && clientId !== options.client) continue;
       if (!clients[clientId].maindata) continue;
       for (const torrent of clients[clientId].maindata.torrents) {
         if (

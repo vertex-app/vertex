@@ -3,6 +3,11 @@
     <div class="radius-div">
       <div style="margin: 20px auto; padding: 20px 0;">
         <el-form style="padding-left: 32px; color: #000; text-align: left;" label-width="160px" label-position="left" size="mini">
+          <el-form-item label="下载器 (可选)">
+          <el-select v-model="client" placeholder="选择下载器" style="width: 200px;" clearable>
+            <el-option v-for="client of clientList" :disabled="!client.status" :key="client.id" :label="client.alias" :value="client.id"></el-option>
+          </el-select>
+        </el-form-item>
           <el-form-item label="分类">
             <el-select v-model="type" style="width: 200px" placeholder="分类" clearable>
               <el-option label="电影" value="movie"></el-option>
@@ -97,12 +102,14 @@ export default {
       keyword: '',
       type: '',
       linkRule: '',
+      clientList: [],
+      client: '',
       libraryPath: ''
     };
   },
   methods: {
     async getBulkLinkList () {
-      const res = await this.$axiosGet(`/api/torrent/getBulkLinkList?keyword=${this.keyword}`);
+      const res = await this.$axiosGet(`/api/torrent/getBulkLinkList?keyword=${this.keyword}&client=${this.client}`);
       this.torrentList = res?.data.map(item => { return { ...item, visible: true, scrapedName: '', status: '待识别' }; });
     },
     async scrapeName (row) {
@@ -112,6 +119,10 @@ export default {
     async listLinkRule () {
       const res = await this.$axiosGet('/api/linkRule/list');
       this.linkRuleList = res ? res.data.sort((a, b) => a.alias > b.alias ? 1 : -1) : [];
+    },
+    async listClient () {
+      const res = await this.$axiosGet('/api/client/list');
+      this.clientList = res ? res.data : [];
     },
     async doScrape () {
       for (const torrent of this.torrentList) {
@@ -147,6 +158,7 @@ export default {
   },
   async mounted () {
     await this.listLinkRule();
+    await this.listClient();
   }
 };
 </script>
