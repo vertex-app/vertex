@@ -125,26 +125,18 @@ class SettingMod {
     const perTrackerTodaySet = {};
     let uploadedToday = 0;
     let downloadedToday = 0;
-    const torrents = await util.getRecords('select hash, max(upload) - min(upload) as upload,  max(download) - min(download) as download from torrent_flow where time >= ? group by hash', [moment().startOf('day').unix()]);
+    const torrents = await util.getRecords('select a.hash as hash, max(a.upload) - min(a.upload) as upload,  max(a.download) - min(a.download) as download, b.tracker as trakcer from torrent_flow a left join torrents b on a.hash = b.hash where a.time >= ? group by a.hash', [moment().startOf('day').unix()]);
     for (const torrent of torrents) {
       uploadedToday += torrent.upload;
       downloadedToday += torrent.download;
-      let _torrent;
-      const cache = await redis.get(`vertex:torrent:tracker:${torrent.hash}`);
-      if (cache) {
-        _torrent = JSON.parse(cache);
-      } else {
-        _torrent = await util.getRecord('select tracker from torrents where hash = ? and tracker is not null', [torrent.hash]);
-        await redis.setWithExpire(`vertex:torrent:tracker:${torrent.hash}`, JSON.stringify(_torrent || {}), 3600);
-      }
-      if (!_torrent || !_torrent.tracker) {
+      if (!torrent.trakcer) {
         continue;
       }
-      if (!perTrackerTodaySet[_torrent.tracker]) {
-        perTrackerTodaySet[_torrent.tracker] = { uploaded: 0, downloaded: 0 };
+      if (!perTrackerTodaySet[torrent.tracker]) {
+        perTrackerTodaySet[torrent.tracker] = { uploaded: 0, downloaded: 0 };
       }
-      perTrackerTodaySet[_torrent.tracker].uploaded += torrent.upload;
-      perTrackerTodaySet[_torrent.tracker].downloaded += torrent.download;
+      perTrackerTodaySet[torrent.tracker].uploaded += torrent.upload;
+      perTrackerTodaySet[torrent.tracker].downloaded += torrent.download;
     }
     const perTrackerToday = [];
     for (const tracker of Object.keys(perTrackerTodaySet)) {
