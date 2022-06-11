@@ -871,7 +871,7 @@ class Site {
       const torrent = {};
       torrent.site = this.site;
       torrent.title = _torrent.querySelector('td[class="embedded"] > a[href*="details"]').title.trim();
-      torrent.subtitle = _torrent.querySelector('.torrentname > tbody > tr .embedded').lastChild.nodeValue;
+      torrent.subtitle = _torrent.querySelector('.torrentname > tbody > tr .embedded').lastChild.nodeValue || '';
       torrent.category = _torrent.querySelector('td a[href*=cat] img').title.trim();
       torrent.link = 'https://kp.m-team.cc/' + _torrent.querySelector('a[href*=details]').href.trim();
       torrent.id = +torrent.link.match(/id=(\d*)/)[1];
