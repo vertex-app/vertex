@@ -83,7 +83,7 @@
               <el-table
                 size="mini"
                 :data="douban.categories"
-                style="width: 1200px">
+                style="width: 1440px">
                 <el-table-column
                   label="豆瓣标签"
                   width="144">
@@ -109,10 +109,10 @@
                   </template>
                 </el-table-column>
                 <el-table-column
-                  label="资料库路径"
+                  label="资料库文件夹"
                   width="144">
                   <template slot-scope="scope">
-                    <el-input v-model="scope.row.libraryPath" placeholder="资料库路径"/>
+                    <el-input v-model="scope.row.libraryPath" placeholder="资料库文件夹"/>
                   </template>
                 </el-table-column>
                 <el-table-column
@@ -241,7 +241,7 @@ export default {
       siteCheckAll: false,
       rejectRuleCheckAll: false,
       raceRuleCheckAll: false,
-      refreshStatus: '刷新想看',
+      refreshStatus: '刷新账号',
       doubanCollapse: ['1'],
       importDoubanVisible: false,
       importDoubanText: '',

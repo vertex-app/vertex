@@ -125,11 +125,11 @@ class SettingMod {
     const perTrackerTodaySet = {};
     let uploadedToday = 0;
     let downloadedToday = 0;
-    const torrents = await util.getRecords('select a.hash as hash, max(a.upload) - min(a.upload) as upload,  max(a.download) - min(a.download) as download, b.tracker as trakcer from torrent_flow a left join torrents b on a.hash = b.hash where a.time >= ? group by a.hash', [moment().startOf('day').unix()]);
+    const torrents = await util.getRecords('select a.hash as hash, max(a.upload) - min(a.upload) as upload,  max(a.download) - min(a.download) as download, b.tracker as tracker from torrent_flow a left join torrents b on a.hash = b.hash where a.time >= ? group by a.hash', [moment().startOf('day').unix()]);
     for (const torrent of torrents) {
       uploadedToday += torrent.upload;
       downloadedToday += torrent.download;
-      if (!torrent.trakcer) {
+      if (!torrent.tracker) {
         continue;
       }
       if (!perTrackerTodaySet[torrent.tracker]) {
