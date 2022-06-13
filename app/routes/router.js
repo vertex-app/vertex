@@ -90,13 +90,15 @@ const siteProxy = function (req, res, next) {
   const site = siteList.filter(item => item.name === siteId)[0];
   if (!site || !global.runningSite[siteId] || !global.runningSite[siteId].siteUrl) {
     res.status(404);
-    res.end('Not Found');
+    res.end('暂不支持 ' + 'siteId' + ' 代理登录, 请直接打开');
     return;
   }
   const siteUrl = global.runningSite[siteId].siteUrl;
   proxy(siteUrl, {
     proxyReqOptDecorator (proxyReqOpts, srcReq) {
       proxyReqOpts.headers.cookie = global.runningSite[siteId] ? global.runningSite[siteId].cookie : '';
+      proxyReqOpts.headers['user-agent'] = global.userAgent || 'Vertex';
+      delete proxyReqOpts.headers['x-forwarded-for'];
       proxyReqOpts.headers.Referer = siteUrl;
       if (proxyReqOpts.headers['content-type'] && proxyReqOpts.headers['content-type'].indexOf('application/x-www-form-urlencoded') !== -1) {
         proxyReqOpts.headers['content-type'] = 'application/x-www-form-urlencoded';
