@@ -180,7 +180,7 @@ export default {
       this.$message.error(e.message);
     },
     gotoDocument () {
-      window.open('https://lswl.in/2022/03/04/vertex-binge-watching/');
+      window.open('https://wiki.vertex.icu/zh/binge-watching/newbie');
     },
     importRule () {
       this.clearRule();

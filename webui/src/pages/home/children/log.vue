@@ -34,7 +34,7 @@ export default {
       this.log = this.log.replace(/\[2022-/g, '[').replace(/\[[^\d]*? console\] \d*/g, '').replace(/\[202/g, '');
     },
     async gotoFAQ () {
-      window.open('https://lswl.in/2022/03/19/vertex-faq/');
+      window.open('https://wiki.vertex.icu/zh/misc/faq');
     },
     async clearLogFiles () {
       const res = await this.$axiosGet('/api/log/clear');
