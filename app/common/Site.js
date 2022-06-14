@@ -111,6 +111,7 @@ class Site {
     };
     this.cookie = site.cookie;
     this.site = site.name;
+    this.adult = site.adult;
     this.siteUrl = this.siteUrlMap[this.site];
     this.maxRetryCount = +site.maxRetryCount || 5;
     this.retryCount = 0;
@@ -866,6 +867,40 @@ class Site {
   async _searchMTeam (keyword) {
     const torrentList = [];
     const document = await this._getDocument(`https://kp.m-team.cc/torrents.php?incldead=1&spstate=0&inclbookmarked=0&search=${encodeURIComponent(keyword)}&search_area=${keyword.match(/tt\d+/) ? 4 : 0}&search_mode=0`);
+    const torrents = document.querySelectorAll('.torrents tbody tr:not(:first-child)');
+    for (const _torrent of torrents) {
+      const torrent = {};
+      torrent.site = this.site;
+      torrent.title = _torrent.querySelector('td[class="embedded"] > a[href*="details"]').title.trim();
+      torrent.subtitle = _torrent.querySelector('.torrentname > tbody > tr .embedded').lastChild.nodeValue || '';
+      torrent.category = _torrent.querySelector('td a[href*=cat] img').title.trim();
+      torrent.link = 'https://kp.m-team.cc/' + _torrent.querySelector('a[href*=details]').href.trim();
+      torrent.id = +torrent.link.match(/id=(\d*)/)[1];
+      torrent.seeders = +(_torrent.querySelector('a[href*=seeders] font') || _torrent.querySelector('a[href*=seeders]') || _torrent.querySelector('span[class=red]')).innerHTML.trim();
+      torrent.leechers = +(_torrent.querySelector('a[href*=leechers]') || _torrent.childNodes[9]).innerHTML.trim();
+      torrent.snatches = +(_torrent.querySelector('a[href*=snatches] b') || _torrent.childNodes[11]).innerHTML.trim();
+      torrent.size = _torrent.childNodes[6].innerHTML.trim().replace('<br>', ' ').replace(/([KMGPT])B/, '$1iB');
+      torrent.time = moment(_torrent.childNodes[5].querySelector('span') ? _torrent.childNodes[5].querySelector('span').title : _torrent.childNodes[5].innerHTML.replace(/<br>/, ' ')).unix();
+      torrent.size = util.calSize(...torrent.size.split(' '));
+      torrent.tags = [];
+      const tagsDom = _torrent.querySelectorAll('img[class*=label]');
+      for (const tag of tagsDom) {
+        torrent.tags.push(tag.alt.trim());
+      }
+      torrentList.push(torrent);
+    }
+    if (this.adult) {
+      torrentList.push(...(await this._searchMTeamAdult(keyword)).torrentList);
+    }
+    return {
+      site: this.site,
+      torrentList
+    };
+  }
+
+  async _searchMTeamAdult (keyword) {
+    const torrentList = [];
+    const document = await this._getDocument(`https://kp.m-team.cc/adult.php?incldead=1&spstate=0&inclbookmarked=0&search=${encodeURIComponent(keyword)}&search_area=${keyword.match(/tt\d+/) ? 4 : 0}&search_mode=0`);
     const torrents = document.querySelectorAll('.torrents tbody tr:not(:first-child)');
     for (const _torrent of torrents) {
       const torrent = {};

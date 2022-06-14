@@ -162,7 +162,8 @@ exports.uuid = uuid;
 exports.md5 = md5;
 exports.tar = tar;
 
-exports.scrapeNameByFile = async function (filename, type) {
+exports.scrapeNameByFile = async function (_filename, type) {
+  const filename = _filename.replace(/[[\]]/g, '');
   if (!global.tmdbApiKey) {
     throw new Error('未填写 The Movie Database Api Key');
   }

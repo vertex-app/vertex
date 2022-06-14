@@ -25,6 +25,7 @@ class SiteMod {
     const set = { ...options };
     fs.writeFileSync(path.join(__dirname, '../data/site', options.name + '.json'), JSON.stringify(set, null, 2));
     if (global.runningSite[options.name]) {
+      global.runningSite[options.name].adult = set.adult;
       global.runningSite[options.name].cookie = set.cookie;
       logger.info('站点', set.name, '重新加载 Cookie');
       if (!set.enable) global.runningSite[options.name].destroy();
