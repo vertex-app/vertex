@@ -243,7 +243,6 @@ class WebhookMod {
         await global.doubanPush.pushWeChat(`${index}: ${value.title} - ${value.year}`, '', value.poster);
         keys.push({ id: index, text: `${value.title} - ${value.year}` });
       }
-      await redis.setWithExpire('vertex:select:movies', JSON.stringify(result), 300);
       const selectors = [
         {
           question_key: 'mediaIndex',
@@ -267,6 +266,7 @@ class WebhookMod {
       ];
       await global.doubanPush.pushWeChat('Vertex', '企业微信请进行选择\n普通微信请回复\n序号/标签/Cron, Cron 可空, 默认为 ' + global.runningDouban[douban].defaultRefreshCron);
       await global.doubanPush.pushWeChatSelector('选择想看', '选择以下项目添加想看项目', selectors, 'selectMedia');
+      await redis.setWithExpire('vertex:select:movies', JSON.stringify(result), 300);
       return '';
     }
     const doubansCache = await redis.get('vertex:select:doubans');
