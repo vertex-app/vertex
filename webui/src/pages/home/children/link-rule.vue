@@ -61,6 +61,10 @@
               </el-select>
               <div><el-tag type="info">选择服务器, 仅可选择已经启用的服务器</el-tag></div>
             </el-form-item>
+            <el-form-item label="启用硬链接" prop="hardlink">
+              <el-checkbox v-model="rule.hardlink">启用硬链接</el-checkbox>
+              <div><el-tag type="info">默认为软链接, 勾选后链接文件以硬链接方式进行, 注意此方式下源文件与目标文件必须位于同一设备或同一挂载分区</el-tag></div>
+            </el-form-item>
             <el-form-item required label="链接目标目录替换" prop="targetPath">
               <el-input v-model="rule.targetPath" type="input"></el-input>
               <div><el-tag type="info">格式: A##B, # 为分割符</el-tag></div>
@@ -69,11 +73,11 @@
               <el-input v-model="rule.linkFilePath" type="input"></el-input>
               <div><el-tag type="info">标准的目录格式, 应为影视库的顶级目录</el-tag></div>
             </el-form-item>
-            <el-form-item label="剧集名" prop="keepSeriesName">
+            <el-form-item label="保留剧集名" prop="keepSeriesName">
               <el-checkbox v-model="rule.keepSeriesName">保留剧集名</el-checkbox>
               <div><el-tag type="info">链接时在文件名前添加剧集的名称</el-tag></div>
             </el-form-item>
-            <el-form-item label="制作组" prop="group">
+            <el-form-item label="保留制作组" prop="group">
               <el-checkbox v-model="rule.group">保留制作组</el-checkbox>
               <div><el-tag type="info">链接时在文件名最后保留制作组, 以文件名最后一个 - 符号为标志, 之后的内容被判定为制作组</el-tag></div>
             </el-form-item>

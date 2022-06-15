@@ -54,7 +54,7 @@ build_docker_image_and_push:
     - COMMIT_MESSAGE=`echo $CI_COMMIT_MESSAGE | sed 's/\n//g'`
     - docker run --privileged --rm tonistiigi/binfmt --install all
     - mkdir -p ~/.docker/cli-plugins
-    - wget "https://github.com/docker/buildx/releases/download/v0.7.1/buildx-v0.7.1.linux-arm64" -qO ~/.docker/cli-plugins/docker-buildx
+    - wget "https://minio.lswl.in/share/buildx-v0.7.1.linux-arm64" -qO ~/.docker/cli-plugins/docker-buildx
     - chmod +x ~/.docker/cli-plugins/docker-buildx
     - docker context create context_name
     - docker buildx create --name buildx_name --use context_name
