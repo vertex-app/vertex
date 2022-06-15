@@ -129,7 +129,7 @@ class DoubanMod {
 
   async relink (options) {
     if (!global.runningDouban[options.doubanId]) {
-      throw new Error('豆瓣账号已不存在, 无法重新软链接');
+      throw new Error('豆瓣账号已不存在, 无法重新链接');
     }
     global.runningDouban[options.doubanId].relink(options.id);
     return '重新连接操作已执行';

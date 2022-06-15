@@ -76,9 +76,9 @@
           <el-input v-model="wish.rejectKeys" type="input" placeholder="排除关键词"></el-input>
           <div><el-tag type="info">以 , 为分割, 各个关键词间为 或 的关系</el-tag></div>
         </el-form-item>
-        <el-form-item label="自动软链接集数偏移" prop="episodeOffset">
-          <el-input v-model="wish.episodeOffset" type="input" placeholder="自动软链接集数偏移"></el-input>
-          <div><el-tag type="info">自动软链接时在识别集数的基础上做加减运算, 允许 -2, -1, 1, 2 等数值, 正值为加, 负值为减</el-tag></div>
+        <el-form-item label="自动链接集数偏移" prop="episodeOffset">
+          <el-input v-model="wish.episodeOffset" type="input" placeholder="自动链接集数偏移"></el-input>
+          <div><el-tag type="info">自动链接时在识别集数的基础上做加减运算, 允许 -2, -1, 1, 2 等数值, 正值为加, 负值为减</el-tag></div>
         </el-form-item>
         <el-form-item label="取消限制年份" prop="restrictYear">
           <el-checkbox v-model="wish.restrictYear">取消限制年份</el-checkbox>
@@ -92,9 +92,9 @@
           <el-checkbox v-model="wish.ignoreEpisodes">忽略集数识别</el-checkbox>
           <div><el-tag type="info">当种子未识别到集数时, 直接认为本种是全集</el-tag></div>
         </el-form-item>
-        <el-form-item label="取消软链接" prop="cancelLink">
-          <el-checkbox v-model="wish.cancelLink">取消软链接</el-checkbox>
-          <div><el-tag type="info">当勾选取消软链接时, 该项目在种子完成后不会执行软链接操作</el-tag></div>
+        <el-form-item label="取消链接" prop="cancelLink">
+          <el-checkbox v-model="wish.cancelLink">取消链接</el-checkbox>
+          <div><el-tag type="info">当勾选取消链接时, 该项目在种子完成后不会执行链接操作</el-tag></div>
         </el-form-item>
         <el-form-item size="mini">
           <el-button @click="editWish" type="primary">编辑</el-button>

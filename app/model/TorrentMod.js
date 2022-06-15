@@ -174,7 +174,7 @@ class TorrentMod {
         const linkFile = path.join(linkFilePath, prefix + season + episode + suffix + group + fileExt).replace(/'/g, '\\\'');
         const targetFile = path.join(savePath.replace(_linkRule.targetPath.split('##')[0], _linkRule.targetPath.split('##')[1]), file.name).replace(/'/g, '\\\'');
         const command = `mkdir -p $'${linkFilePath}' && ln -sf $'${targetFile}' $'${linkFile}'`;
-        logger.binge('手动软链接', '执行软连接命令', command);
+        logger.binge('手动链接', '执行链接命令', command);
         try {
           await global.runningServer[_linkRule.server].run(command);
         } catch (e) {
@@ -203,7 +203,7 @@ class TorrentMod {
         const linkFile = path.join(linkFilePath, `${movieName}.${year}${suffix + group}${fileExt}`).replace(/'/g, '\\\'');
         const targetFile = path.join(savePath.replace(_linkRule.targetPath.split('##')[0], _linkRule.targetPath.split('##')[1]), file.name).replace(/'/g, '\\\'');
         const command = `mkdir -p $'${linkFilePath}' && ln -sf $'${targetFile}' $'${linkFile}'`;
-        logger.binge('手动软链接', '执行软连接命令', command);
+        logger.binge('手动链接', '执行链接命令', command);
         await global.runningServer[_linkRule.server].run(command);
       }
     }
@@ -225,7 +225,7 @@ class TorrentMod {
         const linkFile = path.join(linkFilePath, _file.linkFile).replace(/'/g, '\\\'');
         const targetFile = path.join(savePath.replace(_linkRule.targetPath.split('##')[0], _linkRule.targetPath.split('##')[1]), file.name).replace(/'/g, '\\\'');
         const command = `mkdir -p $'${linkFilePath}' && ln -sf $'${targetFile}' $'${linkFile}'`;
-        logger.binge('手动软链接', '执行软连接命令', command);
+        logger.binge('手动链接', '执行链接命令', command);
         try {
           await global.runningServer[_linkRule.server].run(command);
         } catch (e) {
@@ -240,7 +240,7 @@ class TorrentMod {
         const linkFile = path.join(linkFilePath, _file.linkFile).replace(/'/g, '\\\'');
         const targetFile = path.join(savePath.replace(_linkRule.targetPath.split('##')[0], _linkRule.targetPath.split('##')[1]), file.name).replace(/'/g, '\\\'');
         const command = `mkdir -p $'${linkFilePath}' && ln -sf $'${targetFile}' $'${linkFile}'`;
-        logger.binge('手动软链接', '执行软连接命令', command);
+        logger.binge('手动链接', '执行链接命令', command);
         await global.runningServer[_linkRule.server].run(command);
       }
     }
@@ -379,7 +379,7 @@ class TorrentMod {
       return '软链成功';
     }
     await this._linkTorrentFiles(options);
-    return '软链接成功';
+    return '链接成功';
   }
 
   async listHistory (options) {

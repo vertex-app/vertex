@@ -1077,7 +1077,8 @@ class Site {
       const torrent = {};
       torrent.site = this.site;
       torrent.title = _torrent.querySelector('td[class="embedded"] > a[href*="details"]').title.trim();
-      torrent.subtitle = (_torrent.querySelector('.torrentname > tbody > tr .embedded span[class*=label]:last-of-type') || _torrent.querySelector('.torrentname > tbody > tr .embedded br')).nextSibling.nodeValue.trim();
+      torrent.subtitle = (_torrent.querySelector('.torrentname > tbody > tr .embedded span[class*=label]:last-of-type') || _torrent.querySelector('.torrentname > tbody > tr .embedded br')).nextSibling.nodeValue;
+      torrent.subtitle = torrent.subtitle ? torrent.subtitle.trim() : '';
       torrent.category = _torrent.querySelector('td a[href*=cat] img').title.trim();
       torrent.link = 'https://pt.btschool.club/' + _torrent.querySelector('a[href*=details]').href.trim();
       torrent.id = +torrent.link.match(/id=(\d*)/)[1];
@@ -1174,7 +1175,7 @@ class Site {
       const torrent = {};
       torrent.site = this.site;
       torrent.title = _torrent.querySelector('td[class="embedded"] > a[href*="details"]').title.trim();
-      torrent.subtitle = _torrent.querySelector('.torrentname > tbody > tr .embedded').lastChild.innerHTML.trim();
+      torrent.subtitle = _torrent.querySelector('.torrentname > tbody > tr .embedded').lastChild.nodeValue.trim();
       if (torrent.subtitle.indexOf('span') !== -1) torrent.subtitle = '';
       torrent.category = _torrent.querySelector('td a[href*=cat] img').title.trim();
       torrent.link = 'https://pt.soulvoice.club/' + _torrent.querySelector('a[href*=details]').href.trim();
@@ -1331,7 +1332,18 @@ class Site {
       torrent.site = this.site;
       torrent.title = (_torrent.querySelector('div[class="name_left"] a[href*="/t/"] b font') || _torrent.querySelector('div[class="name_left"] a[href*="/t/"] b')).childNodes[0].nodeValue.trim();
       const subtitle = (_torrent.querySelector('div[class="name_left"] a[href*="/t/"] b font span') || _torrent.querySelector('div[class="name_left"] a[href*="/t/"] b span'));
-      torrent.subtitle = (subtitle ? subtitle.innerHTML.trim() : '') + (subtitle.nextSibling ? subtitle.nextSibling.nodeValue.trim() : '');
+      torrent.subtitle = (subtitle ? subtitle.innerHTML.trim() : '');
+      if (subtitle.nextSibling) {
+        let node = subtitle.nextSibling;
+        while (node) {
+          if (node.nodeName === 'BR' || !node.nodeValue) {
+            node = node.nextSibling;
+          } else {
+            torrent.subtitle += ' ' + node.nodeValue.trim();
+            node = node.nextSibling;
+          }
+        }
+      }
       torrent.category = _torrent.querySelector('td a[href*=cat] img').alt.trim();
       torrent.link = 'https://totheglory.im/' + _torrent.querySelector('a[href*="/t/"]').href.trim();
       torrent.downloadLink = 'https://totheglory.im/' + _torrent.querySelector('a[href*="/dl/"]').href;

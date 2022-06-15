@@ -71,23 +71,23 @@
             </el-form-item>
             <el-form-item label="剧集名" prop="keepSeriesName">
               <el-checkbox v-model="rule.keepSeriesName">保留剧集名</el-checkbox>
-              <div><el-tag type="info">软链接时在文件名前添加剧集的名称</el-tag></div>
+              <div><el-tag type="info">链接时在文件名前添加剧集的名称</el-tag></div>
             </el-form-item>
             <el-form-item label="制作组" prop="group">
               <el-checkbox v-model="rule.group">保留制作组</el-checkbox>
-              <div><el-tag type="info">软链接时在文件名最后保留制作组, 以文件名最后一个 - 符号为标志, 之后的内容被判定为制作组</el-tag></div>
+              <div><el-tag type="info">链接时在文件名最后保留制作组, 以文件名最后一个 - 符号为标志, 之后的内容被判定为制作组</el-tag></div>
             </el-form-item>
             <el-form-item label="保留关键词" prop="reservedKeys">
               <el-input v-model="rule.reservedKeys" type="input"></el-input>
-              <div><el-tag type="info">软链接时保留关键词, 可以用 , 分割多个关键字, 在软链接时将按照关键词的顺序检索文件名, 若存在则保留</el-tag></div>
+              <div><el-tag type="info">链接时保留关键词, 可以用 , 分割多个关键字, 在链接时将按照关键词的顺序检索文件名, 若存在则保留</el-tag></div>
             </el-form-item>
             <el-form-item label="排除关键词" prop="excludeKeys">
               <el-input v-model="rule.excludeKeys" type="input"></el-input>
-              <div><el-tag type="info">软链接时排除关键词, 可以用 , 分割多个关键字, 各个关键字间为 或 的关系</el-tag></div>
+              <div><el-tag type="info">链接时排除关键词, 可以用 , 分割多个关键字, 各个关键字间为 或 的关系</el-tag></div>
             </el-form-item>
             <el-form-item required label="单文件最小体积" prop="minFileSize">
               <el-input v-model="rule.minFileSize" type="input"></el-input>
-              <div><el-tag type="info">单个文件的最小体积, 若文件体积小于本值, 将不对本文件进行软连接操作, 例: 5*1024*1024 表示 5MiB</el-tag></div>
+              <div><el-tag type="info">单个文件的最小体积, 若文件体积小于本值, 将不对本文件进行链接操作, 例: 5*1024*1024 表示 5MiB</el-tag></div>
             </el-form-item>
             <el-form-item size="small">
               <el-button type="primary" @click="handleRuleClick">新增 | 编辑</el-button>

@@ -182,7 +182,7 @@
             fixed="right"
             width="144">
             <template slot-scope="scope">
-              <el-button type="primary" size="mini" @click="link(scope.row.hash)">软连接</el-button>
+              <el-button type="primary" size="mini" @click="link(scope.row.hash)">链接</el-button>
             </template>
           </el-table-column>
         </el-table>

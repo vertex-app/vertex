@@ -454,11 +454,11 @@ class Douban {
     const _wish = this.wishes.filter(item => item.id === wish.id)[0];
     wish.episodeOffset = _wish?.episodeOffset || 0;
     if (_wish && _wish.cancelLink) {
-      logger.binge(this.alias, '本项目已设置取消软链接操作, 跳过软链接操作');
+      logger.binge(this.alias, '本项目已设置取消链接操作, 跳过链接操作');
       return;
     }
     if (!this.linkRule) {
-      logger.binge(this.alias, '本实例不含链接规则, 跳过软链接操作');
+      logger.binge(this.alias, '本实例不含链接规则, 跳过链接操作');
       return;
     }
     const linkRule = util.listLinkRule().filter(item => item.id === this.linkRule)[0];
@@ -545,7 +545,7 @@ class Douban {
         const linkFile = path.join(linkFilePath, prefix + season + episode + suffix + group + fileExt).replace(/'/g, '\\\'');
         const targetFile = path.join(torrent.savePath.replace(linkRule.targetPath.split('##')[0], linkRule.targetPath.split('##')[1]), file.name).replace(/'/g, '\\\'');
         const command = `mkdir -p $'${linkFilePath}' && ln -sf $'${targetFile}' $'${linkFile}'`;
-        logger.binge(this.alias, '执行软连接命令', command);
+        logger.binge(this.alias, '执行链接命令', command);
         try {
           await global.runningServer[linkRule.server].run(command);
         } catch (e) {
@@ -577,7 +577,7 @@ class Douban {
         const linkFile = path.join(linkFilePath, `${movieName}.${year}${suffix + group}${fileExt}`).replace(/'/g, '\\\'');
         const targetFile = path.join(torrent.savePath.replace(linkRule.targetPath.split('##')[0], linkRule.targetPath.split('##')[1]), file.name).replace(/'/g, '\\\'');
         const command = `mkdir -p $'${linkFilePath}' && ln -sf $'${targetFile}' $'${linkFile}'`;
-        logger.binge(this.alias, '执行软连接命令', command);
+        logger.binge(this.alias, '执行链接命令', command);
         await global.runningServer[linkRule.server].run(command);
       }
     }
@@ -817,7 +817,7 @@ class Douban {
         if (torrent.hash !== _torrent.hash) continue;
         if (_torrent.completed === _torrent.size) {
           const recordNoteJson = JSON.parse(torrent.record_note);
-          logger.binge('种子', _torrent.name, '已完成, 稍后将进行软链接操作');
+          logger.binge('种子', _torrent.name, '已完成, 稍后将进行链接操作');
           await this.ntf.torrentFinish(recordNoteJson);
           try {
             await this._linkTorrentFiles(_torrent, this.client, recordNoteJson);
@@ -836,7 +836,7 @@ class Douban {
 
   async relink (id) {
     if (!this.linkRule) {
-      logger.binge(this.alias, '本实例不含链接规则, 跳过软链接操作');
+      logger.binge(this.alias, '本实例不含链接规则, 跳过链接操作');
       return;
     }
     await util.runRecord('update torrents set record_type = 6 where id = ?', [id]);

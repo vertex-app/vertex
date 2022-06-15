@@ -158,7 +158,7 @@ const tools = {
       path: 'link',
       component: Link,
       meta: {
-        title: '软链接'
+        title: '链接'
       }
     }, {
       path: 'hosts',
@@ -176,7 +176,7 @@ const tools = {
       path: 'bulk-link',
       component: BulkLink,
       meta: {
-        title: '批量软链接'
+        title: '批量链接'
       }
     }
   ]
