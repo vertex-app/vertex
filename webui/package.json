@@ -1,6 +1,6 @@
 {
   "name": "vertex",
-  "version": "1.0.0",
+  "version": "0.0.12.0",
   "private": true,
   "scripts": {
     "serve": "BROWSER=false vue-cli-service serve",
