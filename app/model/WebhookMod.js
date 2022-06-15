@@ -164,6 +164,10 @@ class WebhookMod {
       case 'selectMedia': {
         const moviesCache = await redis.get('vertex:select:movies');
         const movies = JSON.parse(moviesCache);
+        if (!movies) {
+          await global.doubanPush.selectWish('任务已超时, 退出');
+          return '';
+        }
         const num = content.xml.SelectedItems[0].SelectedItem[0].OptionIds[0].OptionId[0];
         const movie = movies[num];
         await redis.del('vertex:select:movies');
