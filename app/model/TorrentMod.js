@@ -217,7 +217,7 @@ class TorrentMod {
     }
   }
 
-  async _linkTorrentFilesKeepStruct ({ hash, savePath, client, mediaName, type, libraryPath, linkRule }) {
+  async _linkTorrentFilesKeepStruct ({ hash, savePath, client, mediaName, libraryPath, linkRule }) {
     const _linkRule = util.listLinkRule().filter(item => item.id === linkRule)[0];
     const files = await global.runningClient[client].getFiles(hash);
     for (const file of files) {

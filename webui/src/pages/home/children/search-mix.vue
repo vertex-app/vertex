@@ -390,19 +390,19 @@ export default {
     async getTorrentPushSetting () {
       const url = '/api/setting/getTorrentPushSetting';
       const res = await this.$axiosGet(url);
-      this.client = res ? res.data.client : '';
-      this.autoTMM = res ? res.data.autoTMM : '';
-      this.category = res ? res.data.category : '';
-      this.savePath = res ? res.data.savePath : '';
+      this.client = res ? res.data.client || '' : '';
+      this.autoTMM = res ? res.data.autoTMM || '' : '';
+      this.category = res ? res.data.category || '' : '';
+      this.savePath = res ? res.data.savePath || '' : '';
     },
 
     async modifyTorrentPushSetting () {
       const url = '/api/setting/modifyTorrentPushSetting';
       const res = await this.$axiosPost(url, {
-        client: this.client,
-        autoTMM: this.autoTMM,
-        category: this.category,
-        savePath: this.savePath
+        client: this.client || '',
+        autoTMM: this.autoTMM || '',
+        category: this.category || '',
+        savePath: this.savePath || ''
       });
       if (!res) {
         return;
