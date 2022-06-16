@@ -135,7 +135,7 @@ export default {
     async doLink () {
       for (const torrent of this.torrentList) {
         if (torrent.scrapedName !== '') {
-          torrent.status = '待软链';
+          torrent.status = '待链接';
         }
       }
       for (const torrent of this.torrentList) {
@@ -152,7 +152,7 @@ export default {
           libraryPath: this.libraryPath,
           savePath: torrent.savePath
         });
-        torrent.status = res?.data || '软链失败';
+        torrent.status = res?.data || '链接失败';
       }
     }
   },

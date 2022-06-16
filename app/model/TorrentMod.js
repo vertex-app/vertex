@@ -217,6 +217,26 @@ class TorrentMod {
     }
   }
 
+  async _linkTorrentFilesKeepStruct ({ hash, savePath, client, mediaName, type, libraryPath, linkRule }) {
+    const _linkRule = util.listLinkRule().filter(item => item.id === linkRule)[0];
+    const files = await global.runningClient[client].getFiles(hash);
+    for (const file of files) {
+      const filePathname = path.join(savePath.replace(..._linkRule.targetPath.split('##')), file.name);
+      const fileBasename = path.basename(filePathname);
+      const linkFilePath = path.join(_linkRule.linkFilePath, libraryPath, mediaName, path.dirname(file.name)).replace(/'/g, '\\\'');
+      const linkFile = path.join(linkFilePath, fileBasename).replace(/'/g, '\\\'');
+      const targetFile = filePathname.replace(/'/g, '\\\'');
+      const linkMode = _linkRule.hardlink ? 'f' : 'sf';
+      const command = `mkdir -p $'${linkFilePath}' && ln -${linkMode} $'${targetFile}' $'${linkFile}'`;
+      logger.binge('手动链接', '执行链接命令', command);
+      try {
+        await global.runningServer[_linkRule.server].run(command);
+      } catch (e) {
+        logger.error(e);
+      }
+    }
+  }
+
   async _linkTorrentFiles ({ hash, savePath, client, mediaName, type, libraryPath, linkRule, files: _files }) {
     const _linkRule = util.listLinkRule().filter(item => item.id === linkRule)[0];
     let size = 1;
@@ -390,7 +410,11 @@ class TorrentMod {
     }
     if (options.direct) {
       await this._linkTorrentFilesNotDryrun(options);
-      return '软链成功';
+      return '链接成功';
+    }
+    if (options.keepStruct) {
+      await this._linkTorrentFilesKeepStruct(options);
+      return '链接成功';
     }
     await this._linkTorrentFiles(options);
     return '链接成功';

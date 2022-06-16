@@ -38,6 +38,7 @@
           <el-form-item size="small">
             <el-button type="primary" @click="dryrun">检查</el-button>
             <el-button type="danger" @click="startLink" style="margin-left: 36px;">执行</el-button>
+            <el-button type="danger" @click="keepStructLink" style="margin-left: 36px;">保留目录结构链接</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -155,6 +156,31 @@ export default {
     },
     async startLink () {
       const res = await this.$axiosPost('/api/torrent/link', {
+        hash: this.hash,
+        type: this.type,
+        mediaName: this.mediaName,
+        linkRule: this.linkRule,
+        client: this.torrentInfo.client,
+        libraryPath: this.libraryPath,
+        savePath: this.torrentInfo.savePath,
+        files: this.fileList.filter(item => item.episode !== -999).map(item => {
+          return {
+            season: item.season,
+            filepath: item.file,
+            folderName: item.folderName,
+            seriesName: item.seriesName,
+            linkFile: item.newLinkFile || item.linkFile
+          };
+        })
+      });
+      if (!res) {
+        return;
+      }
+      await this.$messageBox(res);
+    },
+    async keepStructLink () {
+      const res = await this.$axiosPost('/api/torrent/link', {
+        keepStruct: true,
         hash: this.hash,
         type: this.type,
         mediaName: this.mediaName,

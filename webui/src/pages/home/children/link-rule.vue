@@ -63,7 +63,7 @@
             </el-form-item>
             <el-form-item label="启用硬链接" prop="hardlink">
               <el-checkbox v-model="rule.hardlink">启用硬链接</el-checkbox>
-              <div><el-tag type="info">默认为软链接, 勾选后链接文件以硬链接方式进行, 注意此方式下源文件与目标文件必须位于同一设备或同一挂载分区</el-tag></div>
+              <div><el-tag type="info">默认为链接接, 勾选后链接文件以硬链接方式进行, 注意此方式下源文件与目标文件必须位于同一设备或同一挂载分区</el-tag></div>
             </el-form-item>
             <el-form-item required label="链接目标目录替换" prop="targetPath">
               <el-input v-model="rule.targetPath" type="input"></el-input>
