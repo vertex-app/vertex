@@ -31,7 +31,7 @@ const checkAuth = async function (req, res, next) {
     '/api/setting/getCss.css',
     '/login'
   ];
-  if (req.session.user && ['/', '/login'].includes(pathname)) {
+  if (req.session?.user && ['/', '/login'].includes(pathname)) {
     return res.redirect(302, '/home');
   }
   if (excludePath.includes(pathname) ||

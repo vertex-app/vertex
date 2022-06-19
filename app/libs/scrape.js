@@ -27,7 +27,7 @@ const _freeOpencd = async function (url, cookie) {
     throw new Error('疑似登陆状态失效, 请检查 Cookie');
   }
   const state = d.querySelector('div[class=title] img[class]');
-  return state && ['pro_free', 'pro_twoupfree'].indexOf(state.className) !== -1;
+  return state && ['pro_free', 'pro_free2up'].indexOf(state.className) !== -1;
 };
 
 const _freeHDChina = async function (url, cookie) {
