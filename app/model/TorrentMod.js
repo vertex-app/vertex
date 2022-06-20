@@ -396,6 +396,7 @@ class TorrentMod {
         group = group.replace(fileExt, '');
         dryrunResult.push({
           file: file.name,
+          episode: 1,
           folderName: `${movieName}.${year}`,
           linkFile: `${movieName}.${year}${suffix + group}${fileExt}`
         });
