@@ -66,7 +66,8 @@ exports.getMaindata = async function (clientUrl, cookie) {
         [
           'id', 'name', 'status', 'hashString', 'totalSize', 'percentDone',
           'addedDate', 'trackers', 'leftUntilDone', 'rateDownload', 'rateUpload',
-          'uploadRatio', 'uploadedEver', 'downloadedEver', 'downloadDir', 'doneDate'
+          'uploadRatio', 'uploadedEver', 'downloadedEver', 'downloadDir', 'doneDate',
+          'labels'
         ]
       },
       tag: ''

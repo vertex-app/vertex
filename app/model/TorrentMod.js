@@ -72,7 +72,8 @@ class TorrentMod {
         if (
           !(
             (torrent.tags && torrent.tags.indexOf(keyword) !== -1) ||
-            (torrent.category && torrent.category.indexOf(keyword) !== -1)
+            (torrent.category && torrent.category.indexOf(keyword) !== -1) ||
+            (torrent.savePath && torrent.savePath.indexOf(keyword) !== -1)
           )
         ) {
           continue;

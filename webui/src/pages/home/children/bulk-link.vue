@@ -23,7 +23,7 @@
             <el-input v-model="libraryPath" type="input" style="width: 200px;" placeholder="资料库文件夹"></el-input>
           </el-form-item>
           <el-form-item label="关键词">
-            <el-input v-model="keyword" type="input" style="width: 200px;" placeholder="客户端内分类或标签关键词"></el-input>
+            <el-input v-model="keyword" type="input" style="width: 300px;" placeholder="客户端内 分类 / 标签 / 保存路径 关键词"></el-input>
           </el-form-item>
           <el-form-item size="small">
             <el-button type="primary" @click="getBulkLinkList">检查</el-button>
