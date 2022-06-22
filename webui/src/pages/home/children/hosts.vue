@@ -36,7 +36,7 @@ export default {
   methods: {
     async getHosts () {
       const res = await this.$axiosGet('/api/setting/getHosts');
-      this.hosts = res?.data;
+      this.hosts = (res ? res.data : '');
     },
     async save () {
       const res = await this.$axiosPost('/api/setting/save', {

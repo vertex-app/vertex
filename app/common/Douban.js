@@ -170,7 +170,7 @@ class Douban {
     logger.binge('豆瓣账号', this.alias, '重新载入推送方式');
     this._notify = util.listPush().filter(item => item.id === this.notify)[0] || {};
     this._notify.push = true;
-    this.ntf = new Push(this.notify);
+    this.ntf = new Push(this._notify);
   }
 
   destroy () {

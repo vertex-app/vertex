@@ -21,7 +21,7 @@ export default {
     async getWish () {
       const url = `/api/douban/getWish?doubanId=${this.doubanId}&wishId=${this.wishId}`;
       const res = await this.$axiosGet(url);
-      this.wish = res?.data;
+      this.wish = (res ? res.data : '');
       document.getElementById('wish-detail').setAttribute('style', `background: url(${this.wish.poster}); background-position-x: center; background-position-y: center; background-size: cover; height: calc(100% - 20px); border-radius: 16px;`);
       document.getElementById('wish-detail-container').setAttribute('style', 'background: rgba(0,0,0,0.5); backdrop-filter: blur(8px); margin: 20px auto; height: 100%; border-radius: 16px;');
     }

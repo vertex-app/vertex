@@ -110,11 +110,11 @@ export default {
   methods: {
     async getBulkLinkList () {
       const res = await this.$axiosGet(`/api/torrent/getBulkLinkList?keyword=${this.keyword}&client=${this.client}`);
-      this.torrentList = res?.data.map(item => { return { ...item, visible: true, scrapedName: '', status: '待识别' }; });
+      this.torrentList = (res ? res.data : '').map(item => { return { ...item, visible: true, scrapedName: '', status: '待识别' }; });
     },
     async scrapeName (row) {
       const res = await this.$axiosGet(`/api/torrent/scrapeName?name=${encodeURIComponent(row.name)}&type=${this.type}`);
-      this.torrentList.filter(item => item.hash === row.hash)[0].scrapedName = res?.data;
+      this.torrentList.filter(item => item.hash === row.hash)[0].scrapedName = (res ? res.data : '');
     },
     async listLinkRule () {
       const res = await this.$axiosGet('/api/linkRule/list');
@@ -152,7 +152,7 @@ export default {
           libraryPath: this.libraryPath,
           savePath: torrent.savePath
         });
-        torrent.status = res?.data || '链接失败';
+        torrent.status = (res ? res.data : '') || '链接失败';
       }
     }
   },

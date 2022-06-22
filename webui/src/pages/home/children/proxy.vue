@@ -33,8 +33,8 @@ export default {
   methods: {
     async getProxy () {
       const res = await this.$axiosGet('/api/setting/getProxy');
-      this.domains = res?.data.domains || '';
-      this.proxy = res?.data.proxy || '';
+      this.domains = (res ? res.data : '').domains || '';
+      this.proxy = (res ? res.data : '').proxy || '';
     },
     async save () {
       const res = await this.$axiosPost('/api/setting/saveProxy', {

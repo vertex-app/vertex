@@ -145,7 +145,7 @@ export default {
   methods: {
     async getTorrentInfo () {
       const res = await this.$axiosGet('/api/torrent/info?hash=' + this.hash);
-      this.torrentInfo = res?.data;
+      this.torrentInfo = (res ? res.data : '');
       if (this.torrentInfo.scrapeName) {
         this.mediaName = this.torrentInfo.scrapeName;
       }
@@ -215,11 +215,11 @@ export default {
         savePath: this.torrentInfo.savePath
       });
       if (this.type === 'movie') {
-        this.fileList = res?.data;
+        this.fileList = (res ? res.data : '');
         return;
       }
-      const maxEpisode = ('' + Math.max(10, ...(res?.data || []).map(item => item.episode))).length;
-      this.fileList = res?.data
+      const maxEpisode = ('' + Math.max(10, ...((res ? res.data : '') || []).map(item => item.episode))).length;
+      this.fileList = (res ? res.data : '')
         .sort((a, b) => a.file > b.file ? 1 : -1)
         .map(item => {
           return {
