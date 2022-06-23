@@ -63,6 +63,10 @@
             <el-form-item v-if="this.set.type === 'wechat'" :required="this.set.type === 'wechat'" label="Secret" prop="corpsecret">
               <el-input v-model="set.corpsecret" type="input"></el-input>
             </el-form-item>
+            <el-form-item v-if="this.set.type === 'wechat'" label="ProxyKey" prop="proxyKey">
+              <el-input v-model="set.proxyKey" type="input"></el-input>
+              <div><el-tag type="info">用于通过中转代理发送请求, 不填写则不启用中转代理</el-tag></div>
+            </el-form-item>
             <el-form-item v-if="this.set.type === 'telegram'" :required="this.set.type === 'telegram'" label="机器人 Token" prop="telegramBotToken">
               <el-input v-model="set.telegramBotToken" type="input"></el-input>
             </el-form-item>
