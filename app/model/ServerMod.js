@@ -3,6 +3,7 @@ const util = require('../libs/util');
 const fs = require('fs');
 const path = require('path');
 const Server = require('../common/Server');
+const { Client } = require('ssh2');
 
 class ServerMod {
   add (options) {
@@ -136,6 +137,37 @@ class ServerMod {
       logger.error(e);
       throw e.message;
     }
+  }
+
+  async shell (ws, req) {
+    const serverId = req.params.serverId;
+    const server = global.runningServer[serverId].server;
+    const ssh = new Client();
+    ssh.on('ready', () => {
+      logger.info(`[${serverId}]`, server.alias, 'shell 已开始连接');
+      ssh.shell({ term: 'xterm-256color' }, function (err, stream) {
+        if (err) {
+          return ws.send('\r\n*** SSH SHELL ERROR: ' + err.message + ' ***\r\n');
+        }
+        ws.on('message', function (data) {
+          data = data || '';
+          if (data.startsWith('setWindow')) {
+            stream.setWindow(data.split(':')[1], data.split(':')[2]);
+            return;
+          }
+          stream.write(data);
+        });
+        stream.on('close', () => {
+          ws.send('\r\n*** SSH SHELL DISCONNECTED ***\r\n');
+        }).on('data', (data) => {
+          ws.send(data.toString());
+        });
+      });
+    }).connect(server);
+    ws.on('close', () => {
+      logger.info(`[${serverId}]`, server.alias, 'shell 已断开连接');
+      ssh.end();
+    });
   }
 }
 

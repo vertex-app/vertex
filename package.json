@@ -17,6 +17,7 @@
     "express": "^4.17.1",
     "express-http-proxy": "^1.6.3",
     "express-session": "^1.17.2",
+    "express-ws": "^5.0.2",
     "feed": "^4.2.2",
     "form-data": "^4.0.0",
     "got": "^11.8.2",

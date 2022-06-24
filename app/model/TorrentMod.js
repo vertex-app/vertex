@@ -106,13 +106,14 @@ class TorrentMod {
         if (_linkRule.excludeKeys && _linkRule.excludeKeys.split(',').some(item => filename.indexOf(item) !== -1)) continue;
         const seriesName = mediaName.split('/')[0].trim().replace(/ /g, '.').replace(/\.?[第][\d一二三四五六七八九十]+[季部]/, '');
         const prefix = _linkRule.keepSeriesName ? seriesName + '.' : '';
-        let suffix = '';
-        _linkRule.reservedKeys = _linkRule.reservedKeys || '';
-        for (const key of _linkRule.reservedKeys.split(',')) {
-          if (filename.indexOf(key) !== -1 && suffix.indexOf(key) === -1) {
-            suffix += '.' + key;
+        const suffixKeys = [];
+        const reservedKeys = (_linkRule.reservedKeys || '').split(',');
+        for (const key of reservedKeys) {
+          if (filename.indexOf(key) !== -1) {
+            suffixKeys.push(key);
           }
         }
+        const suffix = suffixKeys[0] ? '-' + suffixKeys.filter(key => !suffixKeys.some(item => item.indexOf(key) !== -1 && item !== key)).join('.') : '';
         let group = '';
         if (_linkRule.group) {
           group = (filename.match(/-[^-]*?$/) || [''])[0];
@@ -188,19 +189,21 @@ class TorrentMod {
       for (const file of files) {
         if (file.size < _linkRule.minFileSize) continue;
         const movieName = mediaName.split('/')[0].trim();
-        const year = (file.name.match(/[. ](20\d\d)[. ]/) || file.name.match(/[. ](19\d\d)[. ]/) || ['', ''])[1];
-        let suffix = '';
-        _linkRule.reservedKeys = _linkRule.reservedKeys || '';
-        for (const key of _linkRule.reservedKeys.split(',')) {
-          if (file.name.indexOf(key) !== -1 && suffix.indexOf(key) === -1) {
-            suffix += '.' + key;
+        const filename = file.name;
+        const year = (filename.match(/[. ](20\d\d)[. ]/) || filename.match(/[. ](19\d\d)[. ]/) || ['', ''])[1];
+        const suffixKeys = [];
+        const reservedKeys = (_linkRule.reservedKeys || '').split(',');
+        for (const key of reservedKeys) {
+          if (filename.indexOf(key) !== -1) {
+            suffixKeys.push(key);
           }
         }
+        const suffix = suffixKeys[0] ? '-' + suffixKeys.filter(key => !suffixKeys.some(item => item.indexOf(key) !== -1 && item !== key)).join('.') : '';
         let group = '';
         if (_linkRule.group) {
-          group = (file.name.match(/-[^-]*?$/) || [''])[0];
+          group = (filename.match(/-[^-]*?$/) || [''])[0];
         }
-        const fileExt = path.extname(file.name);
+        const fileExt = path.extname(filename);
         group = group.replace(fileExt, '');
         const linkFilePath = path.join(_linkRule.linkFilePath, libraryPath, `${movieName}.${year}`).replace(/'/g, '\\\'');
         const linkFile = path.join(linkFilePath, `${movieName}.${year}${suffix + group}${fileExt}`).replace(/'/g, '\\\'');
@@ -296,13 +299,14 @@ class TorrentMod {
         if (_linkRule.excludeKeys && _linkRule.excludeKeys.split(',').some(item => filename.indexOf(item) !== -1)) continue;
         const seriesName = mediaName.split('/')[0].trim().replace(/ /g, '.').replace(/\.?[第][\d一二三四五六七八九十]+[季部]/, '');
         const prefix = _linkRule.keepSeriesName ? seriesName + '.' : '';
-        let suffix = '';
-        _linkRule.reservedKeys = _linkRule.reservedKeys || '';
-        for (const key of _linkRule.reservedKeys.split(',')) {
-          if (filename.indexOf(key) !== -1 && suffix.indexOf(key) === -1) {
-            suffix += '.' + key;
+        const suffixKeys = [];
+        const reservedKeys = (_linkRule.reservedKeys || '').split(',');
+        for (const key of reservedKeys) {
+          if (filename.indexOf(key) !== -1) {
+            suffixKeys.push(key);
           }
         }
+        const suffix = suffixKeys[0] ? '-' + suffixKeys.filter(key => !suffixKeys.some(item => item.indexOf(key) !== -1 && item !== key)).join('.') : '';
         let group = '';
         if (_linkRule.group) {
           group = (filename.match(/-[^-]*?$/) || [''])[0];
@@ -380,22 +384,24 @@ class TorrentMod {
       for (const file of files) {
         if (file.size < _linkRule.minFileSize) continue;
         const movieName = mediaName.split('/')[0].trim();
+        const filename = file.name;
         const year = (file.name.match(/[. ](20\d\d)[. ]/) || file.name.match(/[. ](19\d\d)[. ]/) || ['', ''])[1];
-        let suffix = '';
-        _linkRule.reservedKeys = _linkRule.reservedKeys || '';
-        for (const key of _linkRule.reservedKeys.split(',')) {
-          if (file.name.indexOf(key) !== -1 && suffix.indexOf(key) === -1) {
-            suffix += '.' + key;
+        const suffixKeys = [];
+        const reservedKeys = (_linkRule.reservedKeys || '').split(',');
+        for (const key of reservedKeys) {
+          if (filename.indexOf(key) !== -1) {
+            suffixKeys.push(key);
           }
         }
+        const suffix = suffixKeys[0] ? '-' + suffixKeys.filter(key => !suffixKeys.some(item => item.indexOf(key) !== -1 && item !== key)).join('.') : '';
         let group = '';
         if (_linkRule.group) {
-          group = (file.name.match(/-[^-]*?$/) || [''])[0];
+          group = (filename.match(/-[^-]*?$/) || [''])[0];
         }
-        const fileExt = path.extname(file.name);
+        const fileExt = path.extname(filename);
         group = group.replace(fileExt, '');
         dryrunResult.push({
-          file: file.name,
+          file: filename,
           episode: 1,
           folderName: `${movieName}.${year}`,
           linkFile: `${movieName}.${year}${suffix + group}${fileExt}`

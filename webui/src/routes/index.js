@@ -22,6 +22,7 @@ import DoubanWishes from '@/pages/home/children/douban-wishes';
 import DoubanHistory from '@/pages/home/children/douban-history';
 import WishDetail from '@/pages/home/children/wish-detail';
 import Server from '@/pages/home/children/server';
+import Shell from '@/pages/home/children/shell';
 import Client from '@/pages/home/children/client';
 import SearchMix from '@/pages/home/children/search-mix';
 import TorrentMix from '@/pages/home/children/torrent-mix';
@@ -131,6 +132,12 @@ const point = {
     }, {
       path: 'server',
       component: Server,
+      meta: {
+        title: '服务器'
+      }
+    }, {
+      path: 'shell/:serverId',
+      component: Shell,
       meta: {
         title: '服务器'
       }

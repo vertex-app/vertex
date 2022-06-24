@@ -1,5 +1,6 @@
 const Multipart = require('connect-multiparty');
 const session = require('express-session');
+const ws = require('express-ws');
 const proxy = require('express-http-proxy');
 const redis = require('redis');
 const path = require('path');
@@ -118,6 +119,7 @@ const siteProxy = function (req, res, next) {
 };
 
 module.exports = function (app, express, router) {
+  ws(app);
   app.use(session({
     genid: () => util.uuid.v4().replace(/-/g, ''),
     resave: false,
@@ -135,7 +137,6 @@ module.exports = function (app, express, router) {
   app.use('/api', multipartMiddleware);
   app.use(setIp);
   app.use(checkAuth);
-
   router.get('/user/login', ctrl.User.login);
   router.get('/user/logout', ctrl.User.logout);
 
@@ -149,6 +150,7 @@ module.exports = function (app, express, router) {
   router.post('/server/modify', ctrl.Server.modify);
   router.post('/server/delete', ctrl.Server.delete);
   router.get('/server/reload', ctrl.Server.reload);
+  router.ws('/server/shell/:serverId', ctrl.Server.shell);
 
   router.post('/push/add', ctrl.Push.add);
   router.get('/push/list', ctrl.Push.list);
@@ -260,6 +262,7 @@ module.exports = function (app, express, router) {
   app.use('/proxy/client/:client', clientProxy);
   app.use('/proxy/site/:site', siteProxy);
   app.use('*', (req, res, next) => {
+    console.log(req);
     const pathname = req._parsedOriginalUrl.pathname;
     if (pathname === '/favicon.ico') {
       return res.download(path.join(__dirname, '../static', pathname));

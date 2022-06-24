@@ -168,5 +168,9 @@ class Server {
       });
     }
   };
+
+  async shell (ws, req) {
+    serverMod.shell(ws, req);
+  };
 }
 module.exports = Server;

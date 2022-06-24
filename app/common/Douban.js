@@ -528,13 +528,14 @@ class Douban {
         episode = 'E' + '0'.repeat(Math.max(2 - ('' + (fakeEpisode || episode)).length, 0)) + ((fakeEpisode || episode) + +wish.episodeOffset);
         season = 'S' + '0'.repeat(2 - ('' + season).length) + season;
         const prefix = linkRule.keepSeriesName ? seriesName + '.' : '';
-        let suffix = '';
-        linkRule.reservedKeys = linkRule.reservedKeys || '';
-        for (const key of linkRule.reservedKeys.split(',')) {
-          if (filename.indexOf(key) !== -1 && suffix.indexOf(key) === -1) {
-            suffix += '.' + key;
+        const suffixKeys = [];
+        const reservedKeys = (linkRule.reservedKeys || '').split(',');
+        for (const key of reservedKeys) {
+          if (filename.indexOf(key) !== -1) {
+            suffixKeys.push(key);
           }
         }
+        const suffix = suffixKeys[0] ? '-' + suffixKeys.filter(key => !suffixKeys.some(item => item.indexOf(key) !== -1 && item !== key)).join('.') : '';
         let group = '';
         if (linkRule.group) {
           group = (filename.match(/-[^-]*?$/) || [''])[0];
@@ -560,19 +561,21 @@ class Douban {
       for (const file of files) {
         if (file.size < linkRule.minFileSize) continue;
         const movieName = wish.name.split('/')[0].trim();
-        const year = (file.name.match(/[. ](20\d\d)[. ]/) || file.name.match(/[. ](19\d\d)[. ]/) || ['', ''])[1];
-        let suffix = '';
-        linkRule.reservedKeys = linkRule.reservedKeys || '';
-        for (const key of linkRule.reservedKeys.split(',')) {
-          if (file.name.indexOf(key) !== -1 && suffix.indexOf(key) === -1) {
-            suffix += '.' + key;
+        const filename = file.name;
+        const year = (filename.match(/[. ](20\d\d)[. ]/) || filename.match(/[. ](19\d\d)[. ]/) || ['', ''])[1];
+        const suffixKeys = [];
+        const reservedKeys = (linkRule.reservedKeys || '').split(',');
+        for (const key of reservedKeys) {
+          if (filename.indexOf(key) !== -1) {
+            suffixKeys.push(key);
           }
         }
+        const suffix = suffixKeys[0] ? '-' + suffixKeys.filter(key => !suffixKeys.some(item => item.indexOf(key) !== -1 && item !== key)).join('.') : '';
         let group = '';
         if (linkRule.group) {
-          group = (file.name.match(/-[^-]*?$/) || [''])[0];
+          group = (filename.match(/-[^-]*?$/) || [''])[0];
         }
-        const fileExt = path.extname(file.name);
+        const fileExt = path.extname(filename);
         group = group.replace(fileExt, '');
         const linkFilePath = path.join(linkRule.linkFilePath, category.libraryPath, `${movieName}.${year}`).replace(/'/g, '\\\'');
         const linkFile = path.join(linkFilePath, `${movieName}.${year}${suffix + group}${fileExt}`).replace(/'/g, '\\\'');
