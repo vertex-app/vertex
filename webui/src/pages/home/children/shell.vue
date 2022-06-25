@@ -27,9 +27,12 @@ export default {
       const term = new Terminal({
         fontFamily: 'consolas',
         fontSize: 16,
+        cols: parseInt((window.document.body.clientWidth - 200) / 6),
+        rows: parseInt((window.document.body.clientHeight - 196) / 16),
         cursorBlink: true,
-        theme: 'light',
-        rendererType: 'dom',
+        customGlyphs: false,
+        // theme: 'light',
+        // rendererType: 'dom',
         cursorStyle: 'bar'
       });
       const websocket = this.socket;
@@ -42,8 +45,17 @@ export default {
       term.focus();
       this.term = term;
       setTimeout(() => {
+        fitAddon.fit();
         websocket.send(`setWindow:${term.rows}:${term.cols}`);
-      }, 1500);
+      }, 1000);
+      setTimeout(() => {
+        fitAddon.fit();
+        websocket.send(`setWindow:${term.rows}:${term.cols}`);
+      }, 3000);
+      setTimeout(() => {
+        fitAddon.fit();
+        websocket.send(`setWindow:${term.rows}:${term.cols}`);
+      }, 5000);
       term.onResize(function (evt) {
         websocket.send(`setWindow:${evt.rows}:${evt.cols}`);
       });
@@ -79,9 +91,14 @@ export default {
 </script>
 <style scoped>
 .xterm {
+  padding: 20px;
   height: 100%;
   text-align: left;
   border-radius: 4px;
+}
+
+.xterm, .xterm >>> * {
+  font-family: consolas !important;
 }
 
 .xterm >>> .xterm {

@@ -57,7 +57,7 @@
           label="操作"
           width="350">
           <template slot-scope="scope">
-            <el-button @click="$goto('/point/shell/' + scope.row.id, $router)" :disabled="!scope.row.status" type="primary" size="small">shell</el-button>
+            <el-button @click="goto('/point/shell/' + scope.row.id, $router)" :disabled="!scope.row.status" type="primary" size="small">shell</el-button>
             <el-button @click="reloadServer(scope.row)" type="warning" size="small">重置连接</el-button>
             <el-button @click="modifyServer(scope.row)" type="warning" size="small">编辑</el-button>
             <el-button @click="deleteServer(scope.row)" :disabled="scope.row.used" type="danger" size="small">删除</el-button>
@@ -192,6 +192,9 @@ export default {
     async listClient () {
       const res = await this.$axiosGet('/api/client/list');
       this.clientList = res ? res.data : [];
+    },
+    goto (link) {
+      window.open(link);
     }
   },
   async mounted () {
