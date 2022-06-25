@@ -20,7 +20,11 @@ const _getRssContent = async function (rssUrl) {
   } else {
     const res = await util.requestPromise(rssUrl + (rssUrl.indexOf('?') === -1 ? '?' : '&') + '____=' + Math.random(), false);
     body = res.body;
-    await redis.setWithExpire(`vertex:rss:${rssUrl}`, body, 60);
+    const isHTML = body.indexOf('xml-viewer-style') !== -1;
+    if (isHTML) {
+      body = '<?xml version="1.0" encoding="utf-8"?>\n' + res.body.match(/<rss[\s\S]*<\/rss>/)[0];
+    }
+    await redis.setWithExpire(`vertex:rss:${rssUrl}`, body, isHTML ? 290 : 40);
   }
   return body;
 };
