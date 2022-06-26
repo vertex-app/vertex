@@ -18,7 +18,7 @@ const _getRssContent = async function (rssUrl) {
   if (cache) {
     body = cache;
   } else {
-    const res = await util.requestPromise(rssUrl + (rssUrl.indexOf('?') === -1 ? '?' : '&') + '____=' + Math.random(), false);
+    const res = await util.requestPromise(rssUrl + (rssUrl.indexOf('?') === -1 ? '?' : '&') + '____=' + Math.random(), true);
     body = res.body;
     const isHTML = body.indexOf('xml-viewer-style') !== -1;
     if (isHTML) {
