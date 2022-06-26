@@ -646,7 +646,7 @@ class Douban {
     torrents = torrents.filter(item => {
       let subtitle = item.subtitle;
       const name = wish.name.split('/')[0].replace(/[!\uff01\uff1a.。:?？，,·・]/g, ' ').trim();
-      const serachKeys = name.split(' ').filter(item => item);
+      const serachKeys = name.split(/[^0-9a-zA-Z\u4e00-\u9fa5*]|丨/g).filter(item => item);
       if (!subtitle) return false;
       subtitle = subtitle.replace(/(第[\d一二三四五六七八九十]+季)([第全][\d一二三四五六七八九十]+[集话期])/, '$1 $2');
       const keys = subtitle.split(/[^0-9a-zA-Z\u4e00-\u9fa5*]|丨/g).filter(item => item);
