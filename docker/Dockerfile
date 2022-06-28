@@ -17,6 +17,7 @@ RUN \
   ln -s /usr/bin/chromium-browser /usr/bin/chromium && \
   chmod +x /usr/bin/chromium && \
   apk del gcc g++ && \
+  echo 'bind 127.0.0.1' >> /app/redis.conf && \
   echo 'daemonize yes' >> /app/redis.conf
 COPY src/static /app/vertex/app/static
 ENV TZ=Asia/Shanghai
