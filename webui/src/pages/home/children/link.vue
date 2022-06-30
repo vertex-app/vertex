@@ -89,7 +89,7 @@
           <el-table-column
             prop="episode"
             width="114"
-            v-if="fileList[0].episode !== -999 && fileList[0].episode"
+            v-if="!fileList[0].folderName && fileList[0].episode !== undefined"
             label="集">
             <template slot-scope="scope">
               <el-input v-model="scope.row.episode" @change="() => refreshEpisode()" style="width: 64px; display: inline-block" size="mini"/>
