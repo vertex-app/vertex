@@ -116,7 +116,7 @@ class TorrentMod {
         const suffix = suffixKeys[0] ? '-' + suffixKeys.filter(key => !suffixKeys.some(item => item.indexOf(key) !== -1 && item !== key)).join('.') : '';
         let group = '';
         if (_linkRule.group) {
-          group = (filename.match(/-[^-]*?$/) || [''])[0];
+          group = (filename.match(/[-￡][^-￡]*?$/) || [''])[0].replace(/[-￡]/, '-');
         }
         const fileExt = path.extname(file.name);
         group = group.replace(fileExt, '');
@@ -201,7 +201,7 @@ class TorrentMod {
         const suffix = suffixKeys[0] ? '-' + suffixKeys.filter(key => !suffixKeys.some(item => item.indexOf(key) !== -1 && item !== key)).join('.') : '';
         let group = '';
         if (_linkRule.group) {
-          group = (filename.match(/-[^-]*?$/) || [''])[0];
+          group = (filename.match(/[-￡][^-￡]*?$/) || [''])[0].replace(/[-￡]/, '-');
         }
         const fileExt = path.extname(filename);
         group = group.replace(fileExt, '');
@@ -309,7 +309,7 @@ class TorrentMod {
         const suffix = suffixKeys[0] ? '-' + suffixKeys.filter(key => !suffixKeys.some(item => item.indexOf(key) !== -1 && item !== key)).join('.') : '';
         let group = '';
         if (_linkRule.group) {
-          group = (filename.match(/-[^-]*?$/) || [''])[0];
+          group = (filename.match(/[-￡][^-￡]*?$/) || [''])[0].replace(/[-￡]/, '-');
         }
         const fileExt = path.extname(file.name);
         group = group.replace(fileExt, '');
@@ -396,7 +396,7 @@ class TorrentMod {
         const suffix = suffixKeys[0] ? '-' + suffixKeys.filter(key => !suffixKeys.some(item => item.indexOf(key) !== -1 && item !== key)).join('.') : '';
         let group = '';
         if (_linkRule.group) {
-          group = (filename.match(/-[^-]*?$/) || [''])[0];
+          group = (filename.match(/[-￡][^-￡]*?$/) || [''])[0].replace(/[-￡]/, '-');
         }
         const fileExt = path.extname(filename);
         group = group.replace(fileExt, '');
