@@ -262,7 +262,6 @@ module.exports = function (app, express, router) {
   app.use('/proxy/client/:client', clientProxy);
   app.use('/proxy/site/:site', siteProxy);
   app.use('*', (req, res, next) => {
-    console.log(req);
     const pathname = req._parsedOriginalUrl.pathname;
     if (pathname === '/favicon.ico') {
       return res.download(path.join(__dirname, '../static', pathname));
