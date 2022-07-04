@@ -606,8 +606,8 @@ class Douban {
       九: 9,
       十: 10
     };
-    const episodeTypeA = (subtitle.match(/[第]E?\d{1,3}-E?\d{1,3}[集期]/g) || []).map(item => item.replace(/[E第集期]/g, '').split('-'))[0] || [];
-    const episodeTypeB = (subtitle.match(/[第全]E?\d{2,3}[^\d帧部季Ff]/g) || []).map(item => item.match(/\d{2,3}/g)).flat() || [];
+    const episodeTypeA = (subtitle.match(/[第]E?\d{1,4}-E?\d{1,4}[集期]/g) || []).map(item => item.replace(/[E第集期]/g, '').split('-'))[0] || [];
+    const episodeTypeB = (subtitle.match(/[第全]E?\d{2,4}[^\d帧部季Ff]/g) || []).map(item => item.match(/\d{2,4}/g)).flat() || [];
     const episodeTypeC = (subtitle.match(/[第全]E?\d[^\d帧部季Kk]/g) || []).map(item => item.match(/\d/g)).flat() || [];
     const episodeTypeD = ((subtitle.match(/全[一二三四五六七八九十]集/g) || []).map(item => item.match(/[一二三四五六七八九十]/g)).flat() || []).map(item => episodeMap[item]);
     const episodeTypeE = ((subtitle.match(/[^\d][第全][一二三四五六七八九十][集期话]/g) || []).map(item => item.match(/[一二三四五六七八九十]/g)).flat() || []).map(item => episodeMap[item]);
