@@ -217,6 +217,10 @@
               <el-checkbox v-model="rss.skipSameTorrent">跳过大小相同种子</el-checkbox>
               <div><el-tag type="info">跳过所有下载器内存在大小相同种子的种子</el-tag></div>
             </el-form-item>
+            <el-form-item label="推送种子文件" prop="pushTorrentFile">
+              <el-checkbox v-model="rss.pushTorrentFile">推送种子文件</el-checkbox>
+              <div><el-tag type="info">是否直接推送种子文件, 默认推送种子下载链接至下载器</el-tag></div>
+            </el-form-item>
             <el-form-item label="拒绝规则">
               <el-checkbox-group v-model="rss.rejectRules">
                 <el-checkbox v-for="rule of rssRuleList" :key="rule.id" :label="rule.id">{{rule.alias}}</el-checkbox>

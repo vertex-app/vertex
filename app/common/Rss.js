@@ -3,6 +3,10 @@ const util = require('../libs/util');
 const logger = require('../libs/logger');
 const redis = require('../libs/redis');
 const cron = require('node-cron');
+const bencode = require('bencode');
+const crypto = require('crypto');
+const fs = require('fs');
+const path = require('path');
 const moment = require('moment');
 const Push = require('./Push');
 
@@ -29,6 +33,7 @@ class Rss {
     this.category = rss.category;
     this.addCountPerHour = +rss.addCountPerHour || 20;
     this.addCount = 0;
+    this.pushTorrentFile = rss.pushTorrentFile;
     this.notify = util.listPush().filter(item => item.id === rss.notify)[0] || {};
     this.notify.push = rss.pushNotify;
     this.ntf = new Push(this.notify);
@@ -61,6 +66,39 @@ class Rss {
     }
     return sum;
   }
+
+  _getSum (a, b) {
+    return a + b;
+  };
+
+  async _downloadTorrent (url) {
+    const res = await util.requestPromise({
+      url: url,
+      method: 'GET',
+      encoding: null,
+      headers: {
+        cookie: this.cookie
+      }
+    });
+    const buffer = Buffer.from(res.body, 'utf-8');
+    const torrent = bencode.decode(buffer);
+    const size = torrent.info.length || torrent.info.files.map(i => i.length).reduce(this._getSum, 0);
+    const fsHash = crypto.createHash('sha1');
+    fsHash.update(bencode.encode(torrent.info));
+    const md5 = fsHash.digest('md5');
+    let hash = '';
+    for (const v of md5) {
+      hash += v < 16 ? '0' + v.toString(16) : v.toString(16);
+    };
+    const filepath = path.join(__dirname, '../../torrents', hash + '.torrent');
+    fs.writeFileSync(filepath, buffer);
+    return {
+      filepath,
+      hash,
+      size,
+      name: torrent.info.name.toString()
+    };
+  };
 
   _fitConditions (_torrent, conditions) {
     let fit = true;
@@ -284,7 +322,12 @@ class Rss {
       if (fitRules.length !== 0 || this.acceptRules.length === 0) {
         try {
           this.addCount += 1;
-          await _client.addTorrent(torrent.url, torrent.hash, false, this.uploadLimit, this.downloadLimit, this.savePath, this.category);
+          if (this.pushTorrentFile) {
+            const { filepath, hash } = await this._downloadTorrent(torrent.url);
+            await _client.addTorrentByTorrentFile(filepath, hash, false, this.uploadLimit, this.downloadLimit, this.savePath, this.category);
+          } else {
+            await _client.addTorrent(torrent.url, torrent.hash, false, this.uploadLimit, this.downloadLimit, this.savePath, this.category);
+          }
           await this.ntf.addTorrent(this._rss, _client, torrent);
           await util.runRecord('INSERT INTO torrents (hash, name, size, rss_id, link, category, record_time, add_time, record_type, record_note) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
             [torrent.hash, torrent.name, torrent.size, this.id, torrent.link, this.category, moment().unix(), moment().unix(), 1, '添加种子']);
