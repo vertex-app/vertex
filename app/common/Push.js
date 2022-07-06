@@ -20,7 +20,7 @@ class Push {
       token: '',
       refreshTime: 0
     };
-    this.WechatUrl = this.proxyKey ? 'proxy-wechat.vertex.icu/' + this.proxyKey + '/' : 'qyapi.weixin.qq.com/';
+    this.WechatUrl = this.proxyKey ? 'dash.vertex-app.top/proxy/' + this.proxyKey + '/' : 'qyapi.weixin.qq.com/';
     this.pushType = this.pushType || [];
     this.markdown = ['telegram', 'wechat'].indexOf(this.type) !== -1;
     logger.info('通知工具', this.alias, '初始化成功');
