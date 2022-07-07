@@ -306,6 +306,10 @@ class WebhookMod {
         }
       }
       const key = text.replace('刷新', '');
+      if (key === '') {
+        await global.doubanPush.selectWish('输入非法, 本次任务已取消');
+        return '';
+      }
       for (const _douban of Object.keys(global.runningDouban)) {
         const douban = global.runningDouban[_douban];
         if (douban && douban.enableWechatLink) {

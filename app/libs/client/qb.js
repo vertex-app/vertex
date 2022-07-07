@@ -79,6 +79,17 @@ exports.addTorrentByTorrentFile = async function (clientUrl, cookie, filepath, i
   return res;
 };
 
+exports.addTorrentTag = async function (clientUrl, cookie, hash, tag) {
+  const message = {
+    url: clientUrl + `/api/v2/torrents/addTags?hashes=${hash}&tags=${encodeURIComponent(tag)}`,
+    headers: {
+      cookie
+    }
+  };
+  const res = await util.requestPromise(message);
+  return res;
+};
+
 exports.deleteTorrent = async function (clientUrl, cookie, hash, isDeleteFiles) {
   const message = {
     url: clientUrl + `/api/v2/torrents/delete?hashes=${hash}${isDeleteFiles ? '&deleteFiles=true' : '&deleteFiles=false'}`,

@@ -219,6 +219,11 @@ class TorrentMod {
         }
       }
     }
+    try {
+      await global.runningClient[client].addTorrentTag(hash, '已链接-' + mediaName.split('/')[0].replace(/ /g, '-'));
+    } catch (e) {
+      logger.error('添加种子标签失败', e);
+    }
   }
 
   async _linkTorrentFilesKeepStruct ({ hash, savePath, client, mediaName, libraryPath, linkRule }) {
@@ -238,6 +243,11 @@ class TorrentMod {
       } catch (e) {
         logger.error(e);
       }
+    }
+    try {
+      await global.runningClient[client].addTorrentTag(hash, '已链接-' + mediaName.split('/')[0].replace(/ /g, '-'));
+    } catch (e) {
+      logger.error('添加种子标签失败', e);
     }
   }
 
@@ -281,6 +291,11 @@ class TorrentMod {
           logger.error(e);
         }
       }
+    }
+    try {
+      await global.runningClient[client].addTorrentTag(hash, '已链接-' + mediaName.split('/')[0].replace(/ /g, '-'));
+    } catch (e) {
+      logger.error('添加种子标签失败', e);
     }
   }
 

@@ -590,6 +590,11 @@ class Douban {
         }
       }
     }
+    try {
+      await global.runningClient[client].addTorrentTag(torrent.hash, '已链接-' + wish.name.split('/')[0].replace(/ /g, '-'));
+    } catch (e) {
+      logger.error('添加种子标签失败', e);
+    }
   }
 
   scrapeEpisode (_subtitle = '') {

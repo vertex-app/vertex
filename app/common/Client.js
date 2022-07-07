@@ -314,6 +314,12 @@ class Client {
       [hash, 0, 0, moment().unix() - moment().unix() % 300]);
   };
 
+  async addTorrentTag (hash, tag) {
+    if (this._client.type === 'qBittorrent') {
+      await this.client.addTorrentTag(this.clientUrl, this.cookie, hash, tag);
+    }
+  }
+
   async addTorrentByTorrentFile (filepath, hash, isSkipChecking = false, uploadLimit = 0, downloadLimit = 0, savePath, category, autoTMM) {
     const { statusCode } = await this.client.addTorrentByTorrentFile(this.clientUrl, this.cookie, filepath, isSkipChecking, uploadLimit, downloadLimit, savePath, category, autoTMM, this.firstLastPiecePrio);
     if (statusCode !== 200) {
