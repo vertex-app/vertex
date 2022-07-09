@@ -95,7 +95,7 @@
                 <el-option label="Transmission" value="Transmission"></el-option>
                 <el-option disabled label="Deluge" value="deluge"></el-option>
               </el-select>
-              <div><el-tag type="info">下载器类型, 目前仅支持 qBittorrent</el-tag></div>
+              <div><el-tag type="info">下载器类型, 目前仅支持 qBittorrent 与 Transmission</el-tag></div>
             </el-form-item>
             <el-form-item v-if="client.type !== 'deluge'" required label="用户名" prop="username">
               <el-input v-model="client.username"></el-input>

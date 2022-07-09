@@ -10,7 +10,7 @@
   "license": "MIT",
   "dependencies": {
     "bencode": "^2.0.1",
-    "better-sqlite3": "^7.1.2",
+    "better-sqlite3": "~7.5.3",
     "body-parser": "^1.19.0",
     "connect-multiparty": "^2.2.0",
     "connect-redis": "^6.0.0",
