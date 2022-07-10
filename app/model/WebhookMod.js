@@ -239,6 +239,7 @@ class WebhookMod {
       const result = await global.runningDouban[douban].search(text);
       if (result.length === 0) {
         await global.doubanPush.selectWish('无搜索结果');
+        await redis.del('vertex:select:douban');
         return '';
       }
       await redis.del('vertex:select:douban');
