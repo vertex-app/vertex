@@ -80,7 +80,7 @@ export default {
             bounding: 'raw',
             origin: [125, 125],
             style: {
-              image: '/assets/images/Vertex.svg',
+              image: '/assets/images/logo.svg',
               width: 64,
               height: 64,
               opacity: 0.8
@@ -152,7 +152,7 @@ export default {
             bounding: 'raw',
             origin: [125, 125],
             style: {
-              image: '/assets/images/Vertex.svg',
+              image: '/assets/images/logo.svg',
               width: 64,
               height: 64,
               opacity: 0.8

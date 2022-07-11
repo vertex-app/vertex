@@ -460,7 +460,7 @@ class Push {
     if (text.indexOf('Jellyfin') !== -1) {
       _poster = poster || global.jellyfinCover;
     }
-    _poster = _poster || poster || global.wechatCover || 'https://pic.lswl.in/images/2022/01/25/52c3764f3357e87f494c50f2d720e899.png';
+    _poster = _poster || poster || global.wechatCover || 'https://pic.lswl.in/images/2022/07/10/5ae104f82f39eb4059861393ef24d440.png';
     const body = {
       touser: '@all',
       msgtype: 'news',
@@ -512,7 +512,7 @@ class Push {
     body.template_card = {
       card_type: 'multiple_interaction',
       source: {
-        icon_url: 'https://pic.lswl.in/images/2022/01/26/3d128357f09b4d44c40d5596506d1d1f.th.png',
+        icon_url: 'https://pic.lswl.in/images/2022/07/10/5ae104f82f39eb4059861393ef24d440.th.png',
         desc: 'Vertex'
       },
       main_title: {
