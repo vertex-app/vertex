@@ -188,6 +188,7 @@ class TorrentMod {
     } else if (type === 'movie') {
       for (const file of files) {
         if (file.size < _linkRule.minFileSize) continue;
+        if (_linkRule.excludeKeys && _linkRule.excludeKeys.split(',').some(item => file.name.indexOf(item) !== -1)) continue;
         const movieName = mediaName.split('/')[0].trim();
         const filename = file.name;
         const year = (filename.match(/[. ](20\d\d)[. ]/) || filename.match(/[. ](19\d\d)[. ]/) || ['', ''])[1];
@@ -253,9 +254,6 @@ class TorrentMod {
 
   async _linkTorrentFiles ({ hash, savePath, client, mediaName, type, libraryPath, linkRule, files: _files }) {
     const _linkRule = util.listLinkRule().filter(item => item.id === linkRule)[0];
-    let size = 1;
-    _linkRule.minFileSize.split('*').forEach(i => { size *= +i; });
-    _linkRule.minFileSize = size;
     const files = await global.runningClient[client].getFiles(hash);
     if (type === 'series') {
       for (const file of files) {
@@ -398,6 +396,7 @@ class TorrentMod {
     } else if (type === 'movie') {
       for (const file of files) {
         if (file.size < _linkRule.minFileSize) continue;
+        if (_linkRule.excludeKeys && _linkRule.excludeKeys.split(',').some(item => file.name.indexOf(item) !== -1)) continue;
         const movieName = mediaName.split('/')[0].trim();
         const filename = file.name;
         const year = (file.name.match(/[. ](20\d\d)[. ]/) || file.name.match(/[. ](19\d\d)[. ]/) || ['', ''])[1];

@@ -560,6 +560,7 @@ class Douban {
     } else if (category.type === 'movie') {
       for (const file of files) {
         if (file.size < linkRule.minFileSize) continue;
+        if (linkRule.excludeKeys && linkRule.excludeKeys.split(',').some(item => file.name.indexOf(item) !== -1)) continue;
         const movieName = wish.name.split('/')[0].trim();
         const filename = file.name;
         const year = (filename.match(/[. ](20\d\d)[. ]/) || filename.match(/[. ](19\d\d)[. ]/) || ['', ''])[1];
