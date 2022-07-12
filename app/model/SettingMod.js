@@ -53,6 +53,7 @@ class SettingMod {
     global.wechatToken = options.wechatToken;
     global.wechatAesKey = options.wechatAesKey;
     global.doubanPush = options.doubanPush;
+    global.panelKey = options.panelKey;
     global.telegramProxy = options.telegramProxy || 'https://api.telegram.org';
     const webhookPush = util.listPush().filter(item => item.id === global.webhookPushTo)[0];
     if (webhookPush) {

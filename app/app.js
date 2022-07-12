@@ -71,6 +71,7 @@ const init = function () {
   global.plexCover = setting.plexCover;
   global.wechatToken = setting.wechatToken;
   global.wechatAesKey = setting.wechatAesKey;
+  global.panelKey = setting.panelKey;
   global.jellyfinCover = setting.jellyfinCover;
   global.dataPath = setting.dataPath || '/';
   global.runningClient = {};

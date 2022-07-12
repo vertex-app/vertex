@@ -109,6 +109,17 @@ class Site {
       SoulVoice: 'https://www.soulvoice.co/',
       NYPT: 'https://nanyangpt.com/'
     };
+    this.siteIdMap = {
+      HaresClub: 1,
+      LemonHD: 2,
+      MTeam: 3,
+      HDSky: 4,
+      OurBits: 5,
+      HDHome: 6,
+      PTerClub: 7,
+      BTSchool: 8
+    };
+    this.siteId = this.siteIdMap[site.name];
     this.cookie = site.cookie;
     this.site = site.name;
     this.adult = site.adult;
@@ -795,6 +806,24 @@ class Site {
       */
       this.retryCount = 0;
       throw new Error('站点数据抓取失败 (疑似是 Cookie 失效, 或绕过 CloudFlare 5s 盾失效)');
+    }
+    if (this.pullRemoteTorrent && global.panelKey) {
+      const res = await util.requestPromise({
+        url: 'https://dash.vertex-app.top/api/user/activatingSite',
+        method: 'POST',
+        json: {
+          apiKey: global.panelKey,
+          siteId: this.siteId
+        }
+      });
+      try {
+        const resStatus = res.body.success;
+        if (!resStatus) {
+          logger.error('激活站点失败: ', res);
+        }
+      } catch (e) {
+        logger.error(res.body);
+      }
     }
   };
 
