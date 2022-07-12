@@ -27,6 +27,7 @@ class SiteMod {
     if (global.runningSite[options.name]) {
       global.runningSite[options.name].adult = set.adult;
       global.runningSite[options.name].cookie = set.cookie;
+      global.runningSite[options.name].pullRemoteTorrent = set.pullRemoteTorrent;
       logger.info('站点', set.name, '重新加载 Cookie');
       if (!set.enable) global.runningSite[options.name].destroy();
     } else {

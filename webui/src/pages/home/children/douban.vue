@@ -169,6 +169,10 @@
               <el-input v-model="douban.cronList" type="textarea"></el-input>
               <div><el-tag size="small" type="info">搜索周期列表, 一行一个, 用于微信选择</el-tag></div>
             </el-form-item>
+            <el-form-item label="超级模式" prop="advancedMode">
+              <el-checkbox v-model="douban.advancedMode">超级模式</el-checkbox>
+              <div><el-tag size="small" type="info">超级模式, 除了定期搜索站内种子外, 每十分钟向 Vertex Panel 搜索种子</el-tag></div>
+            </el-form-item>
             <el-form-item label="接收微信消息" prop="enableWechatLink">
               <el-checkbox v-model="douban.enableWechatLink">接收微信消息</el-checkbox>
               <div><el-tag type="info">接收微信消息, 需要在全局设置内设置对应的微信 Token 以及 AesKey</el-tag></div>
