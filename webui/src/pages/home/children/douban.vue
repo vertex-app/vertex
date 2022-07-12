@@ -217,6 +217,7 @@ export default {
         cron: '0 */4 * * *',
         defaultRefreshCron: '35 21 * * *',
         cronList: '',
+        advancedMode: false,
         sites: [],
         raceRules: [],
         rejectRules: [],

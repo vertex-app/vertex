@@ -119,6 +119,10 @@ class Site {
       PTerClub: 7,
       BTSchool: 8
     };
+    this.siteNameMap = {};
+    Object.keys(this.siteIdMap).forEach(item => {
+      this.siteNameMap[this.siteIdMap[item]] = item;
+    });
     this.siteId = this.siteIdMap[site.name];
     this.cookie = site.cookie;
     this.site = site.name;

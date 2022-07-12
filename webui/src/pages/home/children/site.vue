@@ -169,7 +169,9 @@ export default {
         name: '',
         cookie: '',
         cron: '55 11,23 * * *',
-        enable: true
+        enable: true,
+        adult: false,
+        pullRemoteTorrent: false
       },
       setting: {},
       siteInfo: {},

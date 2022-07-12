@@ -24,13 +24,15 @@ class Douban {
     this.client = douban.client;
     this.cron = douban.cron;
     this.cronList = douban.cronList || '';
+    this.advancedMode = douban.advancedMode;
     this.defaultRefreshCron = douban.defaultRefreshCron || '35 21 * * *';
     this.enableWechatLink = douban.enableWechatLink;
     this.notify = douban.notify;
     this._notify = util.listPush().filter(i => i.id === this.notify)[0] || {};
     this.push = douban.push;
     this._notify.push = this.push;
-    this.refreshWishJobs = [];
+    this.refreshWishJobs = {};
+    this.searchRemoteTorrentJobs = {};
     this.ntf = new Push(this._notify);
     this.refreshWishJob = cron.schedule(douban.cron, () => this.refreshWishList());
     this.checkFinishJob = cron.schedule(global.checkFinishCron, () => this.checkFinish());
@@ -40,6 +42,9 @@ class Douban {
     for (const wish of this.wishes) {
       if (!wish.downloaded) {
         this.refreshWishJobs[wish.id] = cron.schedule(wish.cron || this.defaultRefreshCron, () => this._refreshWish(wish.id));
+        if (this.advancedMode) {
+          this.searchRemoteTorrentJobs[wish.id] = cron.schedule('*/2 * * * *', () => this._refreshWish(wish.id, true));
+        }
       }
     };
     this.cronCache = {};
@@ -62,6 +67,13 @@ class Douban {
       const dom = new JSDOM(cache);
       return dom.window.document;
     }
+  };
+
+  async _searchRemoteTorrents (keyword) {
+    const result = (await util.requestPromise({
+      url: `https://dash.vertex-app.top/api/torrent/search?keyword=${encodeURIComponent(keyword)}&apiKey=${global.panelKey}`
+    })).body;
+    return result;
   };
 
   async _getJson (url) {
@@ -181,7 +193,14 @@ class Douban {
         delete this.refreshWishJobs[key];
       }
     }
+    for (const key of Object.keys(this.searchRemoteTorrentJobs)) {
+      if (this.searchRemoteTorrentJobs[key]) {
+        this.searchRemoteTorrentJobs[key].stop();
+        delete this.searchRemoteTorrentJobs[key];
+      }
+    }
     delete this.refreshWishJobs;
+    delete this.searchRemoteTorrentJobs;
     this.refreshWishJob.stop();
     delete this.refreshWishJob;
     this.checkFinishJob.stop();
@@ -198,6 +217,10 @@ class Douban {
       this.refreshWishJobs[id].stop();
       delete this.refreshWishJobs[id];
     }
+    if (this.searchRemoteTorrentJobs[id]) {
+      this.searchRemoteTorrentJobs[id].stop();
+      delete this.searchRemoteTorrentJobs[id];
+    }
     this._saveSet();
     await this.delWish(id);
     return this.wishes.length !== wishLength;
@@ -210,8 +233,13 @@ class Douban {
           this.refreshWishJobs[wish.id].stop();
           delete this.refreshWishJobs[wish.id];
         }
+        if (this.searchRemoteTorrentJobs[wish.id]) {
+          this.searchRemoteTorrentJobs[wish.id].stop();
+          delete this.searchRemoteTorrentJobs[wish.id];
+        }
         if (!wish.downloaded) {
           this.refreshWishJobs[wish.id] = cron.schedule(wish.cron || this.defaultRefreshCron, () => this._refreshWish(wish.id));
+          this.searchRemoteTorrentJobs[wish.id] = cron.schedule('*/2 * * * *', () => this._refreshWish(wish.id, true));
         }
         if (wish.episodeNow) {
           wish.episodeNow = +wish.episodeNow;
@@ -226,13 +254,13 @@ class Douban {
     }
   }
 
-  _refreshWish (id) {
-    const randomDelayTime = parseInt(Math.random() * 1800);
+  _refreshWish (id, remote = false) {
+    const randomDelayTime = parseInt(Math.random() * (remote ? 30 : 1800));
     logger.binge('延时开启搜索资源任务, 延时时间', randomDelayTime, '秒');
-    setTimeout(() => this.refreshWish(id), randomDelayTime * 1000);
+    setTimeout(() => this.refreshWish(id, false, remote), randomDelayTime * 1000);
   }
 
-  async refreshWish (id, manual = false) {
+  async refreshWish (id, manual = false, remote) {
     const wish = this.wishes.filter(item => item.id === id)[0];
     if (!manual && wish.releaseAt && moment(wish.releaseAt).unix() > moment().unix()) {
       logger.binge('豆瓣账号', this.alias, '/', wish.name, '还未上映', wish.releaseAt, '退出任务');
@@ -244,19 +272,27 @@ class Douban {
         this.refreshWishJobs[id].stop();
         delete this.refreshWishJobs[id];
       }
+      if (this.searchRemoteTorrentJobs[id]) {
+        this.searchRemoteTorrentJobs[id].stop();
+        delete this.searchRemoteTorrentJobs[id];
+      }
+      wish.downloaded = wish.downloaded || (+wish.episodeNow === +wish.episodes);
+      this._saveSet();
       return;
     }
-    if (!manual && await redis.get(`vertex:douban:refresh_cache:${id}`)) {
+    if (!remote && !manual && await redis.get(`vertex:douban:refresh_cache:${id}`)) {
       logger.binge('豆瓣账号', this.alias, '/', wish.name, '近 23 小时有自动搜索记录, 退出任务');
       this.ntf.startRefreshWish(`${this.alias} / ${wish.name} 近 23 小时有自动搜索记录, 退出任务`);
       return;
     }
-    this.ntf.startRefreshWish(`${this.alias} / ${wish.name}`);
-    wish.downloaded = await this.selectTorrent(wish);
-    if (!wish.downloaded) {
-      wish.downloaded = await this.selectTorrent(wish, true);
+    if (!remote) this.ntf.startRefreshWish(`${this.alias} / ${wish.name}`);
+    wish.downloaded = await this.selectTorrent(wish, false, remote);
+    if (!remote) {
+      if (!wish.downloaded) {
+        wish.downloaded = await this.selectTorrent(wish, true);
+      }
+      await redis.setWithExpire(`vertex:douban:refresh_cache:${id}`, '1', 2400 * 23);
     }
-    await redis.setWithExpire(`vertex:douban:refresh_cache:${id}`, '1', 2400 * 23);
     if (!wish.downloaded) {
       logger.binge(this.alias, '未匹配种子', wish.name);
       if (!this.selectTorrentToday[wish.id]) {
@@ -621,7 +657,7 @@ class Douban {
     return episodes;
   };
 
-  async selectTorrent (_wish, imdb = false) {
+  async selectTorrent (_wish, imdb = false, remote = false) {
     const wish = { ..._wish };
     wish.doubanId = this.id;
     const searchKey = wish.name.split('/')[0].replace(/[!\uff01\uff1a.。:?？，,·・]/g, ' ').replace(/([^\d]?)([\d一二三四五六七八九十]+)([^\d])/g, '$1 $2 $3').replace(/([^\d])([\d一二三四五六七八九十]+)([^\d]?)/g, '$1 $2 $3').replace(/ +/g, ' ').trim();
@@ -629,9 +665,35 @@ class Douban {
       logger.binge(this.alias, '无 IMDB 编号, 跳过搜索种子');
       return false;
     }
-    logger.binge(this.alias, '启动搜索任务, 搜索类型:', imdb ? 'imdb,' : '关键词,', '名称', wish.name, '豆瓣ID', wish.id, 'imdb', wish.imdb, '开始搜索以下站点', this.sites.join(', '));
-    const result = await Promise.all(this.sites.map(i => global.runningSite[i].search(imdb ? wish.imdb : searchKey)));
-    let torrents = result.map(i => i.torrentList).flat();
+    let torrents = [];
+    if (remote) {
+      const result = JSON.parse(await this._searchRemoteTorrents(searchKey));
+      if (result.success) {
+        torrents = result.data.map(item => {
+          return {
+            site: item.site,
+            title: item.title,
+            subtitle: item.subtitle,
+            category: item.category,
+            link: item.link,
+            id: item.id,
+            seeders: 999,
+            leechers: 999,
+            snatches: 999,
+            size: item.size,
+            time: item.time,
+            tags: (item.tags || '').split(',')
+          };
+        });
+      } else {
+        logger.info(result);
+        torrents = [];
+      }
+    } else {
+      logger.binge(this.alias, '启动搜索任务, 搜索类型:', imdb ? 'imdb,' : '关键词,', '名称', wish.name, '豆瓣ID', wish.id, 'imdb', wish.imdb, '开始搜索以下站点', this.sites.join(', '));
+      const result = await Promise.all(this.sites.map(i => global.runningSite[i].search(imdb ? wish.imdb : searchKey)));
+      torrents = result.map(i => i.torrentList).flat();
+    }
     logger.binge(this.alias, '种子搜索已完成, 共计查找到', torrents.length, '个种子');
     const raceRuleList = util.listRaceRule();
     const rejectRules = this.rejectRules
