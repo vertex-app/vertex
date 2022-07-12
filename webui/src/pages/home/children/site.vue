@@ -132,6 +132,10 @@
               <el-input v-model="site.maxRetryCount" style="width: 200px;"></el-input>
               <div><el-tag type="info">数据刷新失败时自动重试次数, 留空则默认为 5</el-tag></div>
             </el-form-item>
+            <el-form-item label="拉取远程种子" prop="pullRemoteTorrent">
+              <el-checkbox v-model="site.pullRemoteTorrent">启用</el-checkbox>
+              <div><el-tag type="info">豆瓣任务启动超级模式时, 将使用本站点拉取远程种子</el-tag></div>
+            </el-form-item>
             <el-form-item v-if="site.name === 'MTeam'" label="搜索 R18 分区" prop="adult">
               <el-checkbox v-model="site.adult">启用</el-checkbox>
             </el-form-item>

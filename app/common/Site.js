@@ -114,6 +114,7 @@ class Site {
     this.adult = site.adult;
     this.siteUrl = this.siteUrlMap[this.site];
     this.maxRetryCount = +site.maxRetryCount || 5;
+    this.pullRemoteTorrent = site.pullRemoteTorrent;
     this.retryCount = 0;
     this.rssUrl = site.rssUrl || '';
     this.cron = site.cron || '0 */4 * * *';

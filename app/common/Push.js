@@ -460,7 +460,7 @@ class Push {
     if (text.indexOf('Jellyfin') !== -1) {
       _poster = poster || global.jellyfinCover;
     }
-    _poster = _poster || poster || global.wechatCover || 'https://pic.lswl.in/images/2022/07/10/5ae104f82f39eb4059861393ef24d440.png';
+    _poster = _poster || poster || global.wechatCover || 'https://pic.lswl.in/images/2022/07/11/bf4eabf1afa841f4527db4d207d265c3.png';
     const body = {
       touser: '@all',
       msgtype: 'news',

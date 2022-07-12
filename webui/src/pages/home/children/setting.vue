@@ -42,6 +42,10 @@
           <el-input v-model="setting.apiKey" disabled style="width: 500px;"></el-input>
           <div><el-tag type="warning">ApiKey 用于请求接口, 第一次保存全局设置后生成</el-tag></div>
         </el-form-item>
+        <el-form-item label="PanelKey" prop="panelKey">
+          <el-input v-model="setting.panelKey" style="width: 500px;"></el-input>
+          <div><el-tag type="warning">在 Vertex Panel 注册账号得到的 ApiKey, 用于与 Vertex Panel 通信</el-tag></div>
+        </el-form-item>
         <el-form-item label="TMDB ApiKey" prop="tmdbApiKey">
           <el-input v-model="setting.tmdbApiKey" style="width: 500px;"></el-input>
           <div><el-tag type="warning">The Movie Database Api Key, 用于从文件名提取影视剧名称, 请确保 Vertex 可以正常请求 api.themoviedb.org</el-tag></div>
