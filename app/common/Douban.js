@@ -256,7 +256,7 @@ class Douban {
 
   _refreshWish (id, remote = false) {
     const randomDelayTime = parseInt(Math.random() * (remote ? 30 : 1800));
-    logger.binge('延时开启搜索资源任务, 延时时间', randomDelayTime, '秒');
+    logger.debug('延时开启搜索资源任务, 延时时间', randomDelayTime, '秒');
     setTimeout(() => this.refreshWish(id, false, remote), randomDelayTime * 1000);
   }
 
@@ -295,7 +295,7 @@ class Douban {
     }
     if (!wish.downloaded) {
       logger.binge(this.alias, '未匹配种子', wish.name);
-      if (!this.selectTorrentToday[wish.id]) {
+      if (!this.selectTorrentToday[wish.id] && !remote) {
         this.ntf.selectTorrentError(this.alias, wish);
         this.selectTorrentToday[wish.id] = 1;
       }
@@ -690,7 +690,7 @@ class Douban {
         torrents = [];
       }
     } else {
-      logger.binge(this.alias, '启动搜索任务, 搜索类型:', imdb ? 'imdb,' : '关键词,', '名称', wish.name, '豆瓣ID', wish.id, 'imdb', wish.imdb, '开始搜索以下站点', this.sites.join(', '));
+      logger.binge(this.alias, '启动搜索任务, 搜索类型: 远程搜索', '名称', wish.name, '豆瓣ID', wish.id, 'imdb', wish.imdb, '开始搜索以下站点', this.sites.join(', '));
       const result = await Promise.all(this.sites.map(i => global.runningSite[i].search(imdb ? wish.imdb : searchKey)));
       torrents = result.map(i => i.torrentList).flat();
     }
@@ -716,7 +716,8 @@ class Douban {
       const name = wish.name.split('/')[0].replace(/[!\uff01\uff1a.。:?？，,·・]/g, ' ').trim();
       const serachKeys = name.split(/[^0-9a-zA-Z\u4e00-\u9fa5*]|丨/g).filter(item => item);
       if (!subtitle) return false;
-      subtitle = subtitle.replace(/(第[\d一二三四五六七八九十]+季)([第全][\d一二三四五六七八九十]+[集话期])/, '$1 $2');
+      subtitle = subtitle.replace(/(第[\d一二三四五六七八九十]+季)/g, ' $1 ');
+      subtitle = subtitle.replace(/([第全][\d一二三四五六七八九十]+[集话期])/, ' $1 ');
       const keys = subtitle.split(/[^0-9a-zA-Z\u4e00-\u9fa5*]|丨/g).filter(item => item);
       const result = serachKeys.every(i => keys.indexOf(i) !== -1) || keys.indexOf(name.replace(' ', '')) !== -1;
       if (!result) logger.bingedebug(this.alias, '想看', JSON.stringify(serachKeys), '种子', item.subtitle, '提取分词', JSON.stringify(keys), '未匹配 提前拒绝');
@@ -738,7 +739,7 @@ class Douban {
         const rules = raceRuleArrs[priority];
         const rule = rules[0];
         const rulesName = rules.map(item => item.alias).join('/');
-        logger.binge(this.alias, '选种规则', rulesName, '开始匹配');
+        logger.debug(this.alias, '选种规则', rulesName, '开始匹配');
         const sortType = rule.sortType || 'desc';
         const sortBy = rule.sortBy || 'time';
         const numberSet = {
