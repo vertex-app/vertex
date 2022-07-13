@@ -823,7 +823,7 @@ class Site {
       try {
         const resStatus = res.body.success;
         if (!resStatus) {
-          logger.error('激活站点失败: ', res);
+          logger.error('激活站点失败: ', res.body);
         }
       } catch (e) {
         logger.error(res.body);
