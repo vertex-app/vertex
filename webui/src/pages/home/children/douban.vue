@@ -284,7 +284,7 @@ export default {
     },
     async modifyDouban (row) {
       this.doubanCollapse = ['0', '1'];
-      this.douban = { ...row };
+      this.douban = { ...row, advancedMode: row.advancedMode === true };
       this.douban.categories = row.categories.map(item => {
         return { ...item, autoSearch: item.autoSearch !== false };
       });
@@ -334,7 +334,7 @@ export default {
     },
     async listRaceRuleSet () {
       const res = await this.$axiosGet('/api/raceRuleSet/list');
-      this.raceRuleSetList = res ? res.data.map(item => { return { ...item, raceRuleIndeterminate: true, raceRuleCheckAll: false}; }) : [];
+      this.raceRuleSetList = res ? res.data.map(item => { return { ...item, raceRuleIndeterminate: true, raceRuleCheckAll: false }; }) : [];
     },
     async listClient () {
       const res = await this.$axiosGet('/api/client/list');

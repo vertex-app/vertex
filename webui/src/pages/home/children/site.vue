@@ -211,8 +211,9 @@ export default {
       this.clearSite();
     },
     async modifySite (row) {
+      console.log(this.site);
       this.siteCollapse = ['1'];
-      this.site = { ...row };
+      this.site = { ...row, pullRemoteTorrent: row.pullRemoteTorrent === true };
     },
     async clearSite () {
       this.site = { ...this.defaultSite };
