@@ -65,6 +65,9 @@ class Site {
       SoulVoice: this._searchSoulVoice,
       NYPT: this._searchNYPT
     };
+    this.scrapeDownloadLinkWrapper = {
+      HDChina: this._scrapeDownloadLinkHDChina,
+    };
     this.torrentDownloadLinkMap = {
       HaresClub: 'https://club.hares.top/download.php?id={ID}',
       LemonHD: 'https://lemonhd.org/download.php?id={ID}',
@@ -77,8 +80,6 @@ class Site {
       TJUPT: 'https://www.tjupt.org/download.php?id={ID}',
       KeepFriends: 'https://pt.keepfrds.com/download.php?id={ID}',
       SpringSunDay: 'https://springsunday.net/download.php?id={ID}',
-      ToTheGlory: 'https://totheglory.im/dl/{ID}/{NUMBER}',
-      HDChina: 'https://hdchina.org/download.php?hash={HASH}',
       Audiences: 'https://audiences.me/download.php?id={ID}',
       PTHome: 'https://pthome.net/download.php?id={ID}',
       CHDBits: 'https://chdbits.co/download.php?id={ID}',
@@ -118,6 +119,7 @@ class Site {
       HDHome: 6,
       PTerClub: 7,
       BTSchool: 8,
+      HDChina: 13,
       CHDBits: 16
     };
     this.siteNameMap = {};
@@ -1533,6 +1535,14 @@ class Site {
     };
   };
 
+  // scrape HDChina
+  async _scrapeDownloadLinkHDChina (link) {
+    const document = await this._getDocument(link);
+    const url = document.querySelector('a[title="下载种子"]').href;
+    const downloadLink = url.startsWith('http') ? url : this.siteUrl + url;
+    return downloadLink;
+  }
+
   async search (keyword) {
     try {
       if (!this.searchWrapper[this.site]) {
@@ -1557,8 +1567,12 @@ class Site {
     recordNote = recordNote || `搜索推送, 站点: ${this.id}`;
     if (!downloadLink) {
       const downloadLinkTemplate = this.torrentDownloadLinkMap[this.site];
-      if (!downloadLinkTemplate) throw new Error(`站点 ${this.site} 暂时不支持推送种子!`);
-      downloadLink = downloadLinkTemplate.replace(/{ID}/, id);
+      if (this.scrapeDownloadLinkWrapper[this.site]) {
+        downloadLink = await this.scrapeDownloadLinkWrapper[this.site].call(this, torrentLink);
+      } else {
+        if (!downloadLinkTemplate) throw new Error(`站点 ${this.site} 暂时不支持推送种子!`);
+        downloadLink = downloadLinkTemplate.replace(/{ID}/, id);
+      }
     }
     const { filepath, hash, size, name } = await this._downloadTorrent(downloadLink);
     let tryCount = 0;
