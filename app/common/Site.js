@@ -67,12 +67,12 @@ class Site {
     };
     this.scrapeDownloadLinkWrapper = {
       HDChina: this._scrapeDownloadLinkHDChina,
+      HDSky: this._scrapeDownloadLinkHDSky
     };
     this.torrentDownloadLinkMap = {
       HaresClub: 'https://club.hares.top/download.php?id={ID}',
       LemonHD: 'https://lemonhd.org/download.php?id={ID}',
       MTeam: 'https://kp.m-team.cc/download.php?id={ID}&https=1',
-      HDSky: 'https://hdsky.me/download.php?id={ID}',
       OurBits: 'https://ourbits.club/download.php?id={ID}',
       HDHome: 'https://hdhome.org/download.php?id={ID}',
       PTerClub: 'https://pterclub.com/download.php?id={ID}',
@@ -1539,6 +1539,14 @@ class Site {
   async _scrapeDownloadLinkHDChina (link) {
     const document = await this._getDocument(link);
     const url = document.querySelector('a[title="下载种子"]').href;
+    const downloadLink = url.startsWith('http') ? url : this.siteUrl + url;
+    return downloadLink;
+  }
+
+  // scrape HDSky
+  async _scrapeDownloadLinkHDSky (link) {
+    const document = await this._getDocument(link);
+    const url = document.querySelector('form[title="下载种子"]').action;
     const downloadLink = url.startsWith('http') ? url : this.siteUrl + url;
     return downloadLink;
   }
