@@ -117,7 +117,8 @@ class Site {
       OurBits: 5,
       HDHome: 6,
       PTerClub: 7,
-      BTSchool: 8
+      BTSchool: 8,
+      CHDBits: 16
     };
     this.siteNameMap = {};
     Object.keys(this.siteIdMap).forEach(item => {
