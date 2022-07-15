@@ -287,10 +287,8 @@ class Douban {
     }
     if (!remote) this.ntf.startRefreshWish(`${this.alias} / ${wish.name}`);
     wish.downloaded = await this.selectTorrent(wish, false, remote);
-    if (!remote) {
-      if (!wish.downloaded) {
-        wish.downloaded = await this.selectTorrent(wish, true);
-      }
+    if (!remote && !wish.downloaded) {
+      wish.downloaded = await this.selectTorrent(wish, true);
       await redis.setWithExpire(`vertex:douban:refresh_cache:${id}`, '1', 2400 * 23);
     }
     if (!wish.downloaded) {
@@ -667,6 +665,7 @@ class Douban {
     }
     let torrents = [];
     if (remote) {
+      logger.binge(this.alias, '启动搜索任务, 搜索类型: 远程搜索', '名称', wish.name, '豆瓣ID', wish.id, 'imdb', wish.imdb);
       const result = JSON.parse(await this._searchRemoteTorrents(searchKey));
       if (result.success) {
         torrents = result.data.map(item => {
@@ -690,7 +689,7 @@ class Douban {
         torrents = [];
       }
     } else {
-      logger.binge(this.alias, '启动搜索任务, 搜索类型: 远程搜索', '名称', wish.name, '豆瓣ID', wish.id, 'imdb', wish.imdb, '开始搜索以下站点', this.sites.join(', '));
+      logger.binge(this.alias, '启动搜索任务, 搜索类型:', imdb ? 'imdb' : '名称', '名称', wish.name, '豆瓣ID', wish.id, 'imdb', wish.imdb, '开始搜索以下站点', this.sites.join(', '));
       const result = await Promise.all(this.sites.map(i => global.runningSite[i].search(imdb ? wish.imdb : searchKey)));
       torrents = result.map(i => i.torrentList).flat();
     }
