@@ -120,6 +120,7 @@ class Site {
       PTerClub: 7,
       BTSchool: 8,
       HDChina: 13,
+      Audiences: 14,
       CHDBits: 16
     };
     this.siteNameMap = {};
