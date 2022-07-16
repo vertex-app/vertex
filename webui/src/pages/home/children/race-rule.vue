@@ -169,6 +169,12 @@ export default {
         name: '种子大小',
         key: 'size'
       }, {
+        name: '影视语言',
+        key: 'language'
+      }, {
+        name: '影视地区',
+        key: 'area'
+      }, {
         name: '资源分类',
         key: 'category'
       }, {

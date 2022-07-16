@@ -402,10 +402,12 @@ class Douban {
     fs.writeFileSync(path.join(__dirname, '../data/douban/set', this.id + '.json'), JSON.stringify(set, null, 2));
   };
 
-  _fitConditions (_torrent, conditions) {
+  _fitConditions (_torrent, conditions, wish) {
     let fit = true;
     const torrent = { ..._torrent };
     torrent.time = moment().unix() - torrent.time;
+    torrent.area = wish.area || '';
+    torrent.language = wish.language || '';
     torrent.tags = torrent.tags.join(',');
     torrent.subtitle = torrent.subtitle + torrent.tags;
     for (const condition of conditions) {
@@ -451,7 +453,7 @@ class Douban {
     return fit;
   }
 
-  _fitRaceRule (_rule, torrent) {
+  _fitRaceRule (_rule, torrent, wish) {
     const rule = { ..._rule };
     let fit;
     if (rule.type === 'javascript') {
@@ -464,7 +466,7 @@ class Douban {
       }
     } else {
       try {
-        fit = rule.conditions.length !== 0 && this._fitConditions(torrent, rule.conditions);
+        fit = rule.conditions.length !== 0 && this._fitConditions(torrent, rule.conditions, wish);
       } catch (e) {
         logger.error('下载器', this.alias, '选种规则', rule.alias, '遇到错误\n', e);
         return false;
@@ -767,10 +769,10 @@ class Douban {
               continue;
             }
           }
-          if (rules.some(item => this._fitRaceRule(item, torrent))) {
+          if (rules.some(item => this._fitRaceRule(item, torrent, wish))) {
             let fitReject = false;
             for (const rejectRule of rejectRules) {
-              if (this._fitRaceRule(rejectRule, torrent)) {
+              if (this._fitRaceRule(rejectRule, torrent, wish)) {
                 fitReject = true;
                 logger.bingedebug(this.alias, '选种规则', rulesName, '种子', `[${torrent.site}]`, torrent.title, '/', torrent.subtitle, '匹配成功, 同时匹配拒绝规则成功:', rejectRule.alias, '跳过');
                 break;
