@@ -98,7 +98,6 @@ const freeWrapper = {
   'springsunday.net': _free,
   'hdsky.me': _free,
   'ourbits.club': _free,
-  'chdbits.co': _free,
   'audiences.me': _free,
   'www.hddolby.com': _free,
   'pthome.net': _free,
@@ -132,22 +131,11 @@ const _hrToTheGlory = async function (url, cookie) {
   return hr;
 };
 
-const _hrToCHDBits = async function (url, cookie) {
-  const d = await getDocument(url, cookie);
-  if (d.body.innerHTML.indexOf('userdetails') === -1) {
-    throw new Error('疑似登陆状态失效, 请检查 Cookie');
-  }
-  const hr5 = d.body.innerHTML.indexOf('<b>H&amp;R:&nbsp;</b>5day</td></tr>');
-  const hr3 = d.body.innerHTML.indexOf('<b>H&amp;R:&nbsp;</b>3day</td></tr>');
-  return hr3 !== -1 || hr5 !== -1;
-};
-
 const hrWrapper = {
   'www.hddolby.com': _hr,
   'hdhome.org': _hr,
   'ourbits.club': _hr,
-  'totheglory.im': _hrToTheGlory,
-  'chdbits.co': _hrToCHDBits
+  'totheglory.im': _hrToTheGlory
 };
 
 exports.free = async (url, cookie) => {

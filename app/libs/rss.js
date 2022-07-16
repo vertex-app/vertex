@@ -24,7 +24,9 @@ const _getRssContent = async function (rssUrl) {
     if (isHTML) {
       body = '<?xml version="1.0" encoding="utf-8"?>\n' + res.body.match(/<rss[\s\S]*<\/rss>/)[0];
     }
-    await redis.setWithExpire(`vertex:rss:${rssUrl}`, body, isHTML ? 290 : 40);
+    const host = new URL(rssUrl).host;
+    const cacheTime = host.indexOf('lemon') !== -1 ? 150 : 40;
+    await redis.setWithExpire(`vertex:rss:${rssUrl}`, body, isHTML ? 290 : cacheTime);
   }
   return body;
 };

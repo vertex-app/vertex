@@ -14,7 +14,6 @@ class Site {
     this.ssh = null;
     this.refreshWrapper = {
       HaresClub: this._haresclub,
-      CHDBits: this._chdbits,
       LemonHD: this._lemonhd,
       HDChina: this._hdchina,
       HDSky: this._hdsky,
@@ -59,7 +58,6 @@ class Site {
       HDChina: this._searchHDChina,
       Audiences: this._searchAudiences,
       PTHome: this._searchPTHome,
-      CHDBits: this._searchCHDBits,
       HDDolby: this._searchHDDolby,
       HDArea: this._searchHDArea,
       SoulVoice: this._searchSoulVoice,
@@ -82,7 +80,6 @@ class Site {
       SpringSunDay: 'https://springsunday.net/download.php?id={ID}',
       Audiences: 'https://audiences.me/download.php?id={ID}',
       PTHome: 'https://pthome.net/download.php?id={ID}',
-      CHDBits: 'https://chdbits.co/download.php?id={ID}',
       HDDolby: 'https://www.hddolby.com/download.php?id={ID}',
       HDArea: 'https://www.hdarea.co/download.php?id={ID}',
       SoulVoice: 'https://pt.soulvoice.club/download.php?id={ID}',
@@ -104,7 +101,6 @@ class Site {
       HDChina: 'https://hdchina.org/',
       Audiences: 'https://audiences.me/',
       PTHome: 'https://pthome.net/',
-      CHDBits: 'https://chdbits.co/',
       HDDolby: 'https://www.hddolby.com/',
       HDArea: 'https://www.hdarea.co/',
       SoulVoice: 'https://www.soulvoice.co/',
@@ -122,8 +118,7 @@ class Site {
       TJUPT: 9,
       SpringSunDay: 11,
       HDChina: 13,
-      Audiences: 14,
-      CHDBits: 16
+      Audiences: 14
     };
     this.siteNameMap = {};
     Object.keys(this.siteIdMap).forEach(item => {
