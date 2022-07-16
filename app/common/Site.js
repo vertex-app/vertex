@@ -119,6 +119,8 @@ class Site {
       HDHome: 6,
       PTerClub: 7,
       BTSchool: 8,
+      TJUPT: 9,
+      SpringSunDay: 11,
       HDChina: 13,
       Audiences: 14,
       CHDBits: 16
