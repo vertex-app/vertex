@@ -489,6 +489,7 @@ class Douban {
     const wish = recordNoteJson.wish;
     const _wish = this.wishes.filter(item => item.id === wish.id)[0];
     wish.episodeOffset = _wish?.episodeOffset || 0;
+    wish.fixedSeason = (_wish.fixedSeason + '' === +_wish.fixedSeason + '') ? +_wish.fixedSeason : undefined;
     if (_wish && _wish.cancelLink) {
       logger.binge(this.alias, '本项目已设置取消链接操作, 跳过链接操作');
       return;
@@ -559,9 +560,13 @@ class Douban {
             season = +seasonSubtitle[1];
           }
         }
-        season = season || 1;
+        season = wish.fixedSeason;
+        if (season === undefined) {
+          season = season || 1;
+        }
         newEpisode = Math.max(episode, newEpisode);
-        episode = 'E' + '0'.repeat(Math.max(2 - ('' + (fakeEpisode || episode)).length, 0)) + ((fakeEpisode || episode) + +wish.episodeOffset);
+        episode = (fakeEpisode || episode) + +wish.episodeOffset;
+        episode = 'E' + '0'.repeat(Math.max(2 - ('' + episode).length, 0)) + (episode);
         season = 'S' + '0'.repeat(2 - ('' + season).length) + season;
         const prefix = linkRule.keepSeriesName ? seriesName + '.' : '';
         const suffixKeys = [];

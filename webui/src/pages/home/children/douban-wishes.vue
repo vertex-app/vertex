@@ -86,6 +86,10 @@
           <el-input v-model="wish.episodeOffset" type="input" placeholder="自动链接集数偏移"></el-input>
           <div><el-tag type="info">自动链接时在识别集数的基础上做加减运算, 允许 -2, -1, 1, 2 等数值, 正值为加, 负值为减</el-tag></div>
         </el-form-item>
+        <el-form-item label="固定季" prop="fixedSeason">
+          <el-input v-model="wish.fixedSeason" type="input" placeholder="固定季"></el-input>
+          <div><el-tag type="info">适用于特别篇等内容, 设置固定季后按照设置项软链接, 如 特别篇, 此处填 0</el-tag></div>
+        </el-form-item>
         <el-form-item label="取消限制年份" prop="restrictYear">
           <el-checkbox v-model="wish.restrictYear">取消限制年份</el-checkbox>
           <div><el-tag type="info">默认限制年份, 勾选后取消限制</el-tag></div>
