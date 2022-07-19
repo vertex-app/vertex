@@ -5,7 +5,14 @@ const path = require('path');
 const app = express();
 const router = express.Router();
 const cron = require('node-cron');
+
 const Push = require('./common/Push');
+const Script = require('./common/Script');
+const Client = require('./common/Client');
+const Rss = require('./common/Rss');
+const Server = require('./common/Server');
+const Douban = require('./common/Douban');
+const Site = require('./common/Site');
 
 const logger = require('./libs/logger');
 const util = require('./libs/util');
@@ -84,31 +91,31 @@ const init = function () {
   initPush();
   for (const client of util.listClient()) {
     if (client.enable) {
-      const Client = require('./common/Client');
       global.runningClient[client.id] = new Client(client);
     }
   }
   for (const rss of util.listRss()) {
     if (rss.enable) {
-      const Rss = require('./common/Rss');
       global.runningRss[rss.id] = new Rss(rss);
     }
   }
   for (const server of util.listServer()) {
     if (server.enable) {
-      const Server = require('./common/Server');
       global.runningServer[server.id] = new Server(server);
     }
   }
   for (const site of util.listSite()) {
     if (site.enable) {
-      const Site = require('./common/Site');
       global.runningSite[site.name] = new Site(site);
     }
   }
   for (const douban of util.listDouban()) {
-    const Douban = require('./common/Douban');
     global.runningDouban[douban.id] = new Douban(douban);
+  }
+  for (const script of util.listCrontabJavaScript()) {
+    if (script.enable) {
+      global.runningDouban[script.id] = new Script(script);
+    }
   }
 };
 

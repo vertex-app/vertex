@@ -333,6 +333,17 @@ exports.listDoubanSet = function () {
   return doubanSetList;
 };
 
+exports.listCrontabJavaScript = function () {
+  const files = fs.readdirSync(path.join(__dirname, '../data/scripts'));
+  const doubanSetList = [];
+  for (const file of files) {
+    if (path.extname(file) === '.json') {
+      doubanSetList.push(_importJson(path.join(__dirname, '../data/scripts', file)));
+    }
+  }
+  return doubanSetList;
+};
+
 exports.formatSize = function (size) {
   if (size < 1024) {
     return `${size.toFixed(2)} Byte`;
