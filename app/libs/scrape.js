@@ -92,7 +92,6 @@ const _freeHDBits = async function (url, cookie) {
 
 const freeWrapper = {
   'pt.btschool.club': _free,
-  'gainbound.net': _free,
   'club.hares.top': _freeHaresClub,
   'hdhome.org': _free,
   'springsunday.net': _free,
