@@ -560,9 +560,11 @@ class Douban {
             season = +seasonSubtitle[1];
           }
         }
-        season = wish.fixedSeason;
-        if (season === undefined) {
+        const _season = wish.fixedSeason;
+        if (_season === undefined) {
           season = season || 1;
+        } else {
+          season = _season;
         }
         newEpisode = Math.max(episode, newEpisode);
         episode = (fakeEpisode || episode) + +wish.episodeOffset;
