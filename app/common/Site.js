@@ -116,6 +116,7 @@ class Site {
       PTerClub: 7,
       BTSchool: 8,
       TJUPT: 9,
+      KeepFriends: 10,
       SpringSunDay: 11,
       HDChina: 13,
       Audiences: 14
