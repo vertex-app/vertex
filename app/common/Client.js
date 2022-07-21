@@ -353,7 +353,7 @@ class Client {
       await this.ntf.deleteTorrent(this._client, torrent, rule, isDeleteFiles);
     } catch (error) {
       logger.error('下载器', this.alias, '删除种子失败:', torrent.name, '\n', error);
-      await this.ntf.deleteTorrent(this._client, torrent, rule);
+      await this.ntf.deleteTorrentError(this._client, torrent, rule);
     }
     return isDeleteFiles;
   };
