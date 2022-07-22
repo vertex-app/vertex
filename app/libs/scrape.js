@@ -15,7 +15,7 @@ const getDocument = async function (url, cookie) {
 const _free = async function (url, cookie) {
   const d = await getDocument(url, cookie);
   if (d.body.innerHTML.indexOf('userdetails') === -1) {
-    throw new Error('疑似登陆状态失效, 请检查 Cookie');
+    throw new Error('疑似登录状态失效, 请检查 Cookie');
   }
   const state = d.querySelector('#top font[class]');
   return state && ['free', 'twoupfree'].indexOf(state.className) !== -1;
@@ -24,7 +24,7 @@ const _free = async function (url, cookie) {
 const _freeOpencd = async function (url, cookie) {
   const d = await getDocument(url, cookie);
   if (d.body.innerHTML.indexOf('userdetails') === -1) {
-    throw new Error('疑似登陆状态失效, 请检查 Cookie');
+    throw new Error('疑似登录状态失效, 请检查 Cookie');
   }
   const state = d.querySelector('div[class=title] img[class]');
   return state && ['pro_free', 'pro_free2up'].indexOf(state.className) !== -1;
@@ -33,7 +33,7 @@ const _freeOpencd = async function (url, cookie) {
 const _freeHDChina = async function (url, cookie) {
   const d = await getDocument(url, cookie);
   if (d.body.innerHTML.indexOf('userdetails') === -1) {
-    throw new Error('疑似登陆状态失效, 请检查 Cookie');
+    throw new Error('疑似登录状态失效, 请检查 Cookie');
   }
   const tid = url.match(/id=(\d*)/)[1];
   const csrf = d.querySelector('meta[name=x-csrf]').content;
@@ -55,7 +55,7 @@ const _freeHDChina = async function (url, cookie) {
 const _freeToTheGlory = async function (url, cookie) {
   const d = await getDocument(url, cookie);
   if (d.body.innerHTML.indexOf('userdetails') === -1) {
-    throw new Error('疑似登陆状态失效, 请检查 Cookie');
+    throw new Error('疑似登录状态失效, 请检查 Cookie');
   }
   const state = d.querySelector('img[src="/pic/ico_free.gif"][class="topic"]');
   return state;
@@ -64,7 +64,7 @@ const _freeToTheGlory = async function (url, cookie) {
 const _freeDmhy = async function (url, cookie) {
   const d = await getDocument(url, cookie);
   if (d.body.innerHTML.indexOf('userdetails') === -1) {
-    throw new Error('疑似登陆状态失效, 请检查 Cookie');
+    throw new Error('疑似登录状态失效, 请检查 Cookie');
   }
   const state = d.querySelector('td[valign=top] img[class=pro_free2up]') ||
     d.querySelector('td[valign=top] img[class=pro_free]') ||
@@ -75,7 +75,7 @@ const _freeDmhy = async function (url, cookie) {
 const _freeHaresClub = async function (url, cookie) {
   const d = await getDocument(url, cookie);
   if (d.body.innerHTML.indexOf('userdetails') === -1) {
-    throw new Error('疑似登陆状态失效, 请检查 Cookie');
+    throw new Error('疑似登录状态失效, 请检查 Cookie');
   }
   const state = d.querySelector('b font[class]');
   return state && ['free', 'twoupfree'].indexOf(state.className) !== -1;
@@ -84,7 +84,7 @@ const _freeHaresClub = async function (url, cookie) {
 const _freeHDBits = async function (url, cookie) {
   const d = await getDocument(url, cookie);
   if (d.body.innerHTML.indexOf('userdetails') === -1) {
-    throw new Error('疑似登陆状态失效, 请检查 Cookie');
+    throw new Error('疑似登录状态失效, 请检查 Cookie');
   }
   const state = d.querySelector('span[class="tag freeleech"]');
   return state;
@@ -115,7 +115,7 @@ const freeWrapper = {
 const _hr = async function (url, cookie) {
   const d = await getDocument(url, cookie);
   if (d.body.innerHTML.indexOf('userdetails') === -1) {
-    throw new Error('疑似登陆状态失效, 请检查 Cookie');
+    throw new Error('疑似登录状态失效, 请检查 Cookie');
   }
   const hr = d.querySelector('img[class=hitandrun]');
   return hr;
@@ -124,7 +124,7 @@ const _hr = async function (url, cookie) {
 const _hrToTheGlory = async function (url, cookie) {
   const d = await getDocument(url, cookie);
   if (d.body.innerHTML.indexOf('userdetails') === -1) {
-    throw new Error('疑似登陆状态失效, 请检查 Cookie');
+    throw new Error('疑似登录状态失效, 请检查 Cookie');
   }
   const hr = d.querySelector('img[src="/pic/hit_run.gif"][alt="Hit & Run"]');
   return hr;

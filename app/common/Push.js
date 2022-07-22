@@ -360,14 +360,14 @@ class Push {
 
   async clientLoginError (client, message) {
     this.errorCount += 1;
-    const text = '下载器登陆失败 ' + moment().format('YYYY-MM-DD HH:mm:ss');
+    const text = '下载器登录失败 ' + moment().format('YYYY-MM-DD HH:mm:ss');
     let desp = `下载器名: ${client.alias}\n` +
       `附加信息: ${message}`;
     if (this.markdown) {
       desp = '```\n' + desp + '\n```';
     }
     if (this.type === 'telegram') {
-      desp = '\\#下载器登陆失败\n' + desp;
+      desp = '\\#下载器登录失败\n' + desp;
     }
     await this._push(this.pushType.indexOf('clientLoginError') !== -1, text, desp);
   }

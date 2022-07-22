@@ -222,9 +222,9 @@ class Client {
       this.status = true;
       this.errorCount = 0;
       this.lastCookie = moment().unix();
-      logger.info('下载器', this.alias, '登陆成功');
+      logger.info('下载器', this.alias, '登录成功');
     } catch (error) {
-      logger.error('下载器', this.alias, '登陆失败\n', error);
+      logger.error('下载器', this.alias, '登录失败\n', error);
       await this.ntf.clientLoginError(this._client, error.message);
       this.status = false;
       this.maindata = null;

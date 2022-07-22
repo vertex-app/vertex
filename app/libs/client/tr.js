@@ -15,7 +15,7 @@ exports.login = async function (username, clientUrl, password) {
   const res = await util.requestPromise(message);
   const sessionId = res.headers['x-transmission-session-id'];
   if (!sessionId) {
-    throw new Error('下载器' + clientUrl + '登陆失败, 请检查账号密码是否正确');
+    throw new Error('下载器' + clientUrl + '登录失败, 请检查账号密码是否正确');
   }
   return {
     sessionId,

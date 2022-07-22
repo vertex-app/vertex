@@ -32,6 +32,6 @@ const request = require('util').promisify(require('request'));
   if (headers.location === 'https://kp.m-team.cc/') {
     console.log('登录成功');
   } else {
-    console.log('登陆失败, 请重试');
+    console.log('登录失败, 请重试');
   }
 })();

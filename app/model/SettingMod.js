@@ -216,7 +216,7 @@ class SettingMod {
     if (headers.location === 'https://kp.m-team.cc/') {
       return '登录成功';
     } else {
-      throw new Error('登陆失败, 请重试');
+      throw new Error('登录失败, 请重试');
     }
   }
 
