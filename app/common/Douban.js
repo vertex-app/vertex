@@ -239,7 +239,9 @@ class Douban {
         }
         if (!wish.downloaded) {
           this.refreshWishJobs[wish.id] = cron.schedule(wish.cron || this.defaultRefreshCron, () => this._refreshWish(wish.id));
-          this.searchRemoteTorrentJobs[wish.id] = cron.schedule('*/2 * * * *', () => this._refreshWish(wish.id, true));
+          if (this.advancedMode) {
+            this.searchRemoteTorrentJobs[wish.id] = cron.schedule('*/2 * * * *', () => this._refreshWish(wish.id, true));
+          }
         }
         if (wish.episodeNow) {
           wish.episodeNow = +wish.episodeNow;
