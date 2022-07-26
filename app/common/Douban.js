@@ -16,6 +16,7 @@ class Douban {
     this.raceRules = douban.raceRules;
     this.rejectRules = douban.rejectRules;
     this.categories = {};
+    this.failedList = {};
     for (const category of douban.categories) {
       this.categories[category.doubanTag] = { ...category };
     }
@@ -763,6 +764,10 @@ class Douban {
           return sortType === 'asc' ? a[sortBy] - b[sortBy] : b[sortBy] - a[sortBy];
         });
         for (const torrent of torrents) {
+          if (this.failedList[`${torrent.site}-${torrent.id}`]) {
+            logger.bingedebug(this.alias, '种子', `[${torrent.site}]`, torrent.title, '/', torrent.subtitle, '存在推送错误历史', '跳过');
+            continue;
+          }
           if (!imdb && !wish.restrictYear) {
             const torrentYear = (torrent.title.match(/19\d{2}/g) || []).concat(torrent.title.match(/20\d{2}/g) || []);
             let fitYear = false;
@@ -856,6 +861,7 @@ class Douban {
             } catch (e) {
               logger.error(this.alias, '选种规则', rulesName, '种子', `[${torrent.site}]`, torrent.title, '/', torrent.subtitle, '推送至下载器', global.runningClient[this.client].alias, '失败, 报错如下:\n', e);
               await this.ntf.addDoubanTorrentError(global.runningClient[this.client], torrent, rule, wish);
+              this.failedList[`${torrent.site}-${torrent.id}`] = 1;
               throw (e);
             }
             logger.binge(this.alias, '选种规则', rulesName, '种子', `[${torrent.site}]`, torrent.title, '/', torrent.subtitle, '推送至下载器', global.runningClient[this.client].alias, '成功');
