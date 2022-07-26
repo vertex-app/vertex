@@ -744,7 +744,11 @@ class Douban {
     let _matched = false;
     let matchFailed = false;
     logger.binge(this.alias, '选种规则总计:', raceRules.length, ' 开始按照优先级查找');
-    while (!matchFailed || !wish.episodes || wish.episodeNow < maxEpisode) {
+    while (!matchFailed || wish.episodeNow < maxEpisode) {
+      if (wish.episodes && +wish.episodeNow >= +wish.episodes) {
+        logger.binge(this.alias, wish.name, `${wish.episodeNow}/${wish.episodes}`, '已完成');
+        break;
+      }
       matched = false;
       for (const priority of Object.keys(raceRuleArrs).sort((a, b) => +b - +a)) {
         const rules = raceRuleArrs[priority];
