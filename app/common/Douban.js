@@ -26,7 +26,7 @@ class Douban {
     this.cron = douban.cron;
     this.cronList = douban.cronList || '';
     this.advancedMode = douban.advancedMode;
-    this.defaultRefreshCron = douban.defaultRefreshCron || '35 21 * * *';
+    this.defaultRefreshCron = '30 1 * * *';
     this.enableWechatLink = douban.enableWechatLink;
     this.notify = douban.notify;
     this._notify = util.listPush().filter(i => i.id === this.notify)[0] || {};
@@ -258,7 +258,7 @@ class Douban {
   }
 
   _refreshWish (id, remote = false) {
-    const randomDelayTime = parseInt(Math.random() * (remote ? 30 : 1800));
+    const randomDelayTime = parseInt(Math.random() * (remote ? 30 : 3600 * 4));
     logger.debug('延时开启搜索资源任务, 延时时间', randomDelayTime, '秒');
     setTimeout(() => this.refreshWish(id, false, remote), randomDelayTime * 1000);
   }
