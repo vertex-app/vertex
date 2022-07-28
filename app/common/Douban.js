@@ -768,7 +768,7 @@ class Douban {
           return sortType === 'asc' ? a[sortBy] - b[sortBy] : b[sortBy] - a[sortBy];
         });
         for (const torrent of torrents) {
-          if (this.failedList[`${torrent.site}-${torrent.id}`]) {
+          if (this.failedList[`${torrent.site}-${torrent.id}`] > 2) {
             logger.bingedebug(this.alias, '种子', `[${torrent.site}]`, torrent.title, '/', torrent.subtitle, '存在推送错误历史', '跳过');
             continue;
           }
@@ -865,8 +865,11 @@ class Douban {
             } catch (e) {
               logger.error(this.alias, '选种规则', rulesName, '种子', `[${torrent.site}]`, torrent.title, '/', torrent.subtitle, '推送至下载器', global.runningClient[this.client].alias, '失败, 报错如下:\n', e);
               await this.ntf.addDoubanTorrentError(global.runningClient[this.client], torrent, rule, wish);
-              this.failedList[`${torrent.site}-${torrent.id}`] = 1;
-              throw (e);
+              if (this.failedList[`${torrent.site}-${torrent.id}`]) {
+                this.failedList[`${torrent.site}-${torrent.id}`] = this.failedList[`${torrent.site}-${torrent.id}`] + 1;
+              } else {
+                this.failedList[`${torrent.site}-${torrent.id}`] = 1;
+              }
             }
             logger.binge(this.alias, '选种规则', rulesName, '种子', `[${torrent.site}]`, torrent.title, '/', torrent.subtitle, '推送至下载器', global.runningClient[this.client].alias, '成功');
             await this.ntf.addDoubanTorrent(global.runningClient[this.client], torrent, rule, wish);
