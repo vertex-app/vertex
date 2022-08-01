@@ -870,6 +870,7 @@ class Douban {
               } else {
                 this.failedList[`${torrent.site}-${torrent.id}`] = 1;
               }
+              throw (e);
             }
             logger.binge(this.alias, '选种规则', rulesName, '种子', `[${torrent.site}]`, torrent.title, '/', torrent.subtitle, '推送至下载器', global.runningClient[this.client].alias, '成功');
             await this.ntf.addDoubanTorrent(global.runningClient[this.client], torrent, rule, wish);
