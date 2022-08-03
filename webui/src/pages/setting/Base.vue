@@ -1,0 +1,97 @@
+<template>
+  <div style="font-size: 24px; font-weight: bold;">基础设置</div>
+  <a-divider></a-divider>
+  <div class="base-setting" >
+    <div style="text-align: left; ">
+      <a-form
+        labelAlign="right"
+        :labelWrap="true"
+        :model="setting"
+        size="small"
+        @finish="modify"
+        :labelCol="{ span: 3 }"
+        :wrapperCol="{ span: 21 }"
+        autocomplete="off"
+        class='base-setting-form'>
+        <a-form-item
+          label="User-Agent"
+          name="userAgent"
+          extra="所有网络请求所用的 User-Agent, 默认为 Vertex">
+          <a-input size="small" v-model:value="setting.userAgent"/>
+        </a-form-item>
+        <a-form-item
+          label="日志级别"
+          name="loggerLevel"
+          extra="选择日志记录的最低级别, 默认情况下建议仅选择 INFO, 重启后生效">
+          <a-select size="small" v-model:value="setting.loggerLevel" style="width: 144px" >
+            <a-select-option value="info">INFO</a-select-option>
+            <a-select-option value="debug">DEBUG</a-select-option>
+            <a-select-option value="trace">TRACE</a-select-option>
+            <a-select-option value="all">ALL</a-select-option>
+          </a-select>
+        </a-form-item>
+        <a-form-item
+          label="Telegram 代理"
+          name="telegramProxy"
+          extra="用于 Vertex 环境不方便访问 Telegram 的情况">
+          <a-input size="small" v-model:value="setting.telegramProxy"/>
+        </a-form-item>
+        <a-form-item
+          :wrapperCol="isMobile() ? { span:24 } : { span: 20, offset: 4 }">
+          <a-button type="primary" html-type="submit" style="margin-top: 24px; margin-bottom: 48px;">保存</a-button>
+        </a-form-item>
+      </a-form>
+    </div>
+  </div>
+</template>
+<script>
+export default {
+  data () {
+    return {
+      setting: {}
+    };
+  },
+  methods: {
+    isMobile () {
+      if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+    async get () {
+      try {
+        const s = (await this.$api().setting.get()).data;
+        this.setting = {
+          userAgent: s.userAgent,
+          loggerLevel: s.loggerLevel,
+          telegramProxy: s.telegramProxy
+        };
+      } catch (e) {
+        await this.$message().error(e.message);
+      }
+    },
+    async modify () {
+      try {
+        await this.$api().setting.modify(this.setting);
+        await this.$message().success('修改成功, 部分设置可能需要刷新页面生效.');
+        this.get();
+      } catch (e) {
+        await this.$message().error(e.message);
+      }
+    }
+  },
+  async mounted () {
+    await this.get();
+  }
+};
+</script>
+<style scoped>
+.base-setting {
+  height: calc(100% - 92px);
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  text-align: center;
+}
+</style>

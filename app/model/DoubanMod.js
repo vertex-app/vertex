@@ -67,9 +67,9 @@ class DoubanMod {
   getWish (options) {
     const doubanList = util.listDouban();
     const doubanSetList = util.listDoubanSet();
-    console.log(options, doubanSetList);
     const wish = doubanSetList.filter(item => item.id === options.doubanId)[0].wishes.filter(item => item.id === options.wishId)[0];
     wish.doubanAlias = doubanList.filter(item => item.id === options.doubanId)[0].alias;
+    wish.doubanId = options.doubanId;
     return wish;
   };
 

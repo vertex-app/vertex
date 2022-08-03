@@ -35,7 +35,11 @@ class SettingMod {
     return JSON.parse(settingStr).cssStyle || '';
   };
 
-  modify (options) {
+  modify (_options) {
+    if (_options.password === '') {
+      delete _options.password;
+    }
+    const options = Object.assign(JSON.parse(fs.readFileSync(settingPath, { encoding: 'utf-8' })), _options);
     options.apiKey = options.apiKey || util.uuid.v4().replace(/-/g, '').toUpperCase();
     fs.writeFileSync(settingPath, JSON.stringify(options, null, 2));
     global.auth = {
@@ -45,6 +49,7 @@ class SettingMod {
     global.webhookPushTo = options.webhookPushTo;
     global.userAgent = options.userAgent;
     global.apiKey = options.apiKey;
+    global.theme = options.theme;
     global.tmdbApiKey = options.tmdbApiKey;
     global.dataPath = options.dataPath || '/';
     global.wechatCover = options.wechatCover;

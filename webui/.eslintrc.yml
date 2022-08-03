@@ -3,11 +3,14 @@ env:
   es2021: true
 extends:
   - 'eslint:recommended'
-  - 'plugin:vue/essential'
+  - 'plugin:vue/vue3-essential'
 parserOptions:
+  parser: '@babel/eslint-parser'
   ecmaVersion: 12
   sourceType: module
+  requireConfigFile: false
 plugins:
+  - '@babel'
   - vue
 rules:
   indent:
@@ -22,5 +25,6 @@ rules:
   semi:
     - error
     - always
+  'vue/no-v-model-argument': 0
   no-throw-literal: 0
   no-case-declarations: 0

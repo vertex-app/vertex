@@ -1,0 +1,307 @@
+<template>
+  <div style="font-size: 24px; font-weight: bold;">种子搜索</div>
+  <a-divider></a-divider>
+  <div class="mix-search" >
+    <div style="text-align: left; ">
+      <a-form
+        labelAlign="right"
+        :labelWrap="true"
+        :model="qs"
+        size="small"
+        @finish="search"
+        :labelCol="{ span: 3 }"
+        :wrapperCol="{ span: 21 }"
+        autocomplete="off"
+        class='mix-search-form'>
+        <a-form-item
+          label="指定客户端"
+          name="sites">
+          <a-checkbox-group style="width: 100%;" v-model:value="qs.sites">
+            <a-row>
+              <a-col v-for="site of sites" :span="isMobile() ? 8 : 6" :key="site.name">
+                <a-checkbox  v-model:value="site.name">{{ site.name }}</a-checkbox>
+              </a-col>
+            </a-row>
+          </a-checkbox-group>
+        </a-form-item>
+        <a-form-item
+          label="搜索关键词"
+          name="keword">
+          <a-input size="small" v-model:value="qs.keyword" style="width: 240px"/>
+          <a-button size="small" type="primary" style="margin-left: 24px;" html-type="submit">搜索</a-button>
+        </a-form-item>
+      </a-form>
+    </div>
+    <a-divider></a-divider>
+    <a-table
+      :style="`font-size: ${isMobile() ? '12px': '14px'};`"
+      :columns="columns"
+      size="small"
+      :loading="loading"
+      :data-source="torrents"
+      :pagination="pagination"
+      @change="handleChange"
+      :scroll="{ x: 960 }"
+    >
+      <template #title>
+        <span style="font-size: 16px; font-weight: bold;">种子搜索</span>
+      </template>
+      <template #bodyCell="{ column, record }">
+        <template v-if="['size'].indexOf(column.dataIndex) !== -1">
+          {{ $formatSize(record[column.dataIndex]) }}
+        </template>
+        <template v-if="column.dataIndex === 'title'">
+          <a @click="gotoDetail(record)">{{ record.title }}</a>
+          <br>
+          <span style="font-size: 12px;">{{ record.subtitle }}</span><a style="font-size: 12px;" @click="gotoDetail(record, true)">[代理打开]</a>
+        </template>
+        <template v-if="column.dataIndex === 'seeder'">
+          {{[record.seeders, record.leechers, record.snatches].join(' / ')}}
+        </template>
+        <template v-if="column.dataIndex === 'time'">
+          <div style="text-align: center">
+            {{ $moment(record.time * 1000).format('YYYY-MM-DD')}}
+            <br>
+            {{ $moment(record.time * 1000).format('HH:mm:ss')}}
+          </div>
+        </template>
+        <template v-if="column.title === '操作'">
+          <a @click="openModal(record)">推送</a>
+        </template>
+      </template>
+    </a-table>
+  </div>
+  <a-modal
+    v-model:visible="modalVisible"
+    title="推送种子"
+    :footer="null">
+    <div style="text-align: left; ">
+      <a-form
+        labelAlign="right"
+        :labelWrap="true"
+        :model="modalInfo"
+        size="small"
+        @finish="push"
+        :labelCol="{ span: 6 }"
+        :wrapperCol="{ span: 18 }"
+        autocomplete="off">
+        <a-form-item
+          :wrapperCol="{ span:24 }">
+          <span>
+            {{ torrent.title }}
+          </span>
+        </a-form-item>
+        <a-form-item
+          label="下载器"
+          name="client">
+          <a-select size="small" v-model:value="modalInfo.client">
+            <template v-for="downloader of downloaders" :key="downloader.id">
+              <a-select-option
+                :value="downloader.id">
+                {{ downloader.alias }}
+              </a-select-option>
+            </template>
+          </a-select>
+        </a-form-item>
+        <a-form-item
+          label="分类"
+          name="category">
+          <a-select size="small" v-model:value="modalInfo.category">
+            <template v-for="subscribe of subscribes" :key="subscribe.id">
+              <a-select-option
+                v-for="category of subscribe.categories"
+                :value="category.category"
+                :key="subscribe.id + category.category">
+                {{ category.category }}
+              </a-select-option>
+            </template>
+          </a-select>
+        </a-form-item>
+        <a-form-item
+          label="保存路径"
+          name="savePath">
+          <a-select size="small" v-model:value="modalInfo.savePath">
+            <template v-for="subscribe of subscribes" :key="subscribe.id">
+              <a-select-option
+                v-for="category of subscribe.categories"
+                :value="category.savePath"
+                :key="subscribe.id + category.savePath">
+                {{ category.savePath }}
+              </a-select-option>
+            </template>
+          </a-select>
+        </a-form-item>
+        <a-form-item
+          label="自动管理"
+          name="autoTMM">
+          <a-checkbox v-model:value="modalInfo.autoTMM">自动管理</a-checkbox>
+        </a-form-item>
+        <a-form-item
+          :wrapperCol="isMobile() ? { span:24 } : { span: 18, offset: 6 }">
+          <a-button size="small" @click="() => modalVisible = false">取消</a-button>
+          <a-button size="small" type="primary" style="margin-left: 24px;" html-type="submit">推送</a-button>
+        </a-form-item>
+      </a-form>
+    </div>
+  </a-modal>
+</template>
+<script>
+export default {
+  data () {
+    const columns = [
+      {
+        title: '站点',
+        dataIndex: 'site',
+        width: 32,
+        fixed: true
+      }, {
+        title: '种子名称',
+        dataIndex: 'title',
+        resizable: true,
+        width: 180
+      }, {
+        title: '分类',
+        dataIndex: 'category',
+        width: 32
+      }, {
+        title: '种子大小',
+        dataIndex: 'size',
+        sorter: (a, b) => a.size - b.size,
+        width: 32
+      }, {
+        title: '做种 / 下载 / 完成',
+        dataIndex: 'seeder',
+        sorter: (a, b) => a.seeders - b.seeders,
+        width: 44
+      }, {
+        title: '发布时间',
+        dataIndex: 'time',
+        sorter: (a, b) => a.time - b.time,
+        width: 32
+      }, {
+        title: '操作',
+        width: 24
+      }
+    ];
+    const qs = {
+      page: 1,
+      length: 20,
+      sites: [],
+      keyword: '小黄人'
+    };
+    const pagination = {
+      position: ['topRight', 'bottomRight'],
+      total: 0,
+      pageSize: qs.length,
+      showSizeChanger: false
+    };
+    return {
+      modalVisible: true,
+      loading: false,
+      pagination,
+      columns,
+      qs,
+      torrents: [],
+      subscribes: [],
+      downloaders: [],
+      torrent: {},
+      modalInfo: {
+        category: '',
+        savePath: '',
+        client: '',
+        autoTMM: false
+      },
+      sites: []
+    };
+  },
+  methods: {
+    isMobile () {
+      if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+    async search () {
+      this.loading = true;
+      try {
+        const res = (await this.$api().site.search(this.qs.keyword, this.qs.sites)).data;
+        this.torrents = res.map(item => [...item.torrentList.map(i => ({ ...i, site: item.site }))]).flat();
+        this.pagination.total = res.total;
+      } catch (e) {
+        await this.$message().error(e.message);
+      }
+      this.loading = false;
+    },
+    async push () {
+      try {
+        const qs = {
+          ...this.modalInfo,
+          id: this.torrent.id,
+          link: this.torrent.link,
+          site: this.torrent.site
+        };
+        const res = (await this.$api().site.pushTorrent(qs)).message;
+        await this.$message().success(res);
+      } catch (e) {
+        await this.$message().error(e.message);
+      }
+    },
+    async listSite () {
+      try {
+        const res = await this.$api().site.list();
+        this.sites = res.data.siteList;
+        this.qs.sites = this.sites.map(item => item.name);
+      } catch (e) {
+        this.$message().error(e.message);
+      }
+    },
+    async gotoDetail (record, proxy) {
+      if (!record.link) return await this.$message().error('链接不存在');
+      window.open(proxy ? record.link.replace(/https:\/\/.*?\//, `/proxy/site/${record.site}/`) : record.link);
+    },
+    async handleChange (pagination) {
+      this.qs.page = pagination.current;
+    },
+    async listSubscribe () {
+      try {
+        const res = await this.$api().subscribe.list();
+        this.subscribes = res.data;
+      } catch (e) {
+        this.$message().error(e.message);
+      }
+    },
+    async listDownloader () {
+      try {
+        const res = await this.$api().downloader.list();
+        this.downloaders = res.data;
+      } catch (e) {
+        this.$message().error(e.message);
+      }
+    },
+    openModal (record) {
+      this.torrent = { ...record };
+      this.modalVisible = true;
+    }
+  },
+  async mounted () {
+    this.listSite();
+    this.listSubscribe();
+    this.listDownloader();
+  }
+};
+</script>
+<style scoped>
+.mix-search {
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+}
+
+.mix-search-form {
+  width: min(calc(100vw - 32px), 1440px);
+  border-radius: 4px;
+  padding: 12px;
+  transition: all 0.5s;
+}
+</style>

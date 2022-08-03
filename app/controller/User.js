@@ -5,7 +5,7 @@ const userMod = new UserMod();
 
 class User {
   async login (req, res) {
-    const options = req.query;
+    const options = req.body;
     try {
       const r = userMod.login(options);
       req.session.user = r;
@@ -27,6 +27,13 @@ class User {
     req.session.destroy();
     res.send({
       success: true
+    });
+  };
+
+  async get (req, res) {
+    res.send({
+      success: true,
+      data: await userMod.get()
     });
   }
 }

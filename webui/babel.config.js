@@ -4,10 +4,11 @@ module.exports = {
   ],
   plugins: [
     [
-      'component',
+      'import',
       {
-        libraryName: 'element-ui',
-        styleLibraryName: 'theme-chalk'
+        libraryName: 'ant-design-vue',
+        libraryDirectory: 'es',
+        style: 'css'
       }
     ]
   ]

@@ -5,30 +5,15 @@ module.exports = {
   devServer: {
     port: '8080',
     host: '0.0.0.0',
-    disableHostCheck: true,
     https: false,
     open: true,
     proxy: {
       '/api/': {
-        target: 'http://172.20.99.3:3000',
+        target: 'http://172.20.99.3:4000',
         changeOrigin: true,
         ws: true,
         pathRewrite: { '^/api': '/api' },
         secure: false
-      },
-      '/proxy/': {
-        target: 'http://172.20.99.3:3000',
-        changeOrigin: true,
-        ws: false,
-        pathRewrite: { '^/proxy': '/proxy' },
-        secure: false
-      }
-    }
-  },
-  css: {
-    loaderOptions: {
-      less: {
-        javascriptEnabled: true
       }
     }
   },

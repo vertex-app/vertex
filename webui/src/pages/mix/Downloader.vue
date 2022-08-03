@@ -1,0 +1,186 @@
+<template>
+  <div style="font-size: 24px; font-weight: bold;">种子聚合</div>
+  <a-divider></a-divider>
+  <div class="mix-torrent" >
+    <div style="text-align: left; ">
+      <a-form
+        labelAlign="right"
+        :labelWrap="true"
+        :model="qs"
+        size="small"
+        @finish="listTorrent"
+        :labelCol="{ span: 3 }"
+        :wrapperCol="{ span: 21 }"
+        autocomplete="off"
+        class='mix-torrent-form'>
+        <a-form-item
+          label="指定客户端"
+          name="downloaders">
+          <a-checkbox-group style="width: 100%;" v-model:value="qs.downloaders">
+            <a-row>
+              <a-col v-for="downloader of downloaders" :span="isMobile() ? 8 : 6" :key="downloader.id">
+                <a-checkbox  v-model:value="downloader.id">{{ downloader.alias }}</a-checkbox>
+              </a-col>
+            </a-row>
+          </a-checkbox-group>
+        </a-form-item>
+        <a-form-item
+          label="搜索关键词"
+          name="keword">
+          <a-input size="small" v-model:value="qs.keyword" style="width: 240px"/>
+          <a-button size="small" type="primary" style="margin-left: 24px;" html-type="submit">搜索</a-button>
+        </a-form-item>
+      </a-form>
+    </div>
+    <a-divider></a-divider>
+    <a-table
+      :style="`font-size: ${isMobile() ? '12px': '14px'};`"
+      :columns="columns"
+      size="small"
+      :loading="loading"
+      :data-source="torrents"
+      :pagination="pagination"
+      @change="handleChange"
+      :scroll="{ x: 960 }"
+    >
+      <template #title>
+        <span style="font-size: 16px; font-weight: bold;">种子聚合</span>
+      </template>
+      <template #bodyCell="{ column, record }">
+        <template v-if="['size', 'uploaded', 'downloaded'].indexOf(column.dataIndex) !== -1">
+          {{ $formatSize(record[column.dataIndex]) }}
+        </template>
+        <template v-if="['recordTime', 'deleteTime'].indexOf(column.dataIndex) !== -1 && record[column.dataIndex]">
+          {{ $moment(record[column.dataIndex] * 1000).format('YYYY-MM-DD HH:mm:ss') }}
+        </template>
+        <template v-if="column.title === '操作'">
+          <a @click="gotoLink(record)">链接</a>
+          <a-divider type="vertical" />
+          <a @click="gotoDetail(record)">打开</a>
+        </template>
+      </template>
+    </a-table>
+  </div>
+</template>
+<script>
+export default {
+  data () {
+    const columns = [
+      {
+        title: '客户端',
+        dataIndex: 'clientAlias',
+        width: 32,
+        fixed: true
+      }, {
+        title: '种子名称',
+        dataIndex: 'name',
+        resizable: true,
+        width: 180
+      }, {
+        title: '分类',
+        dataIndex: 'category',
+        width: 40
+      }, {
+        title: '种子大小',
+        dataIndex: 'size',
+        width: 32
+      }, {
+        title: '上传流量',
+        dataIndex: 'uploaded',
+        width: 32
+      }, {
+        title: '下载流量',
+        dataIndex: 'downloaded',
+        width: 32
+      }, {
+        title: '操作',
+        width: 40
+      }
+    ];
+    const qs = {
+      page: 1,
+      length: 20,
+      downloaders: [],
+      keyword: ''
+    };
+    const pagination = {
+      position: ['topRight', 'bottomRight'],
+      total: 0,
+      pageSize: qs.length,
+      showSizeChanger: false
+    };
+    return {
+      loading: true,
+      pagination,
+      columns,
+      qs,
+      torrents: [],
+      downloaders: []
+    };
+  },
+  methods: {
+    isMobile () {
+      if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+    async listTorrent () {
+      this.loading = true;
+      try {
+        const qs = {
+          clientList: JSON.stringify(this.qs.downloaders),
+          page: this.qs.page,
+          length: this.qs.length,
+          searchKey: this.qs.keyword
+        };
+        const res = (await this.$api().torrent.list(qs)).data;
+        this.torrents = res.torrents;
+        this.pagination.total = res.total;
+      } catch (e) {
+        await this.$message().error(e.message);
+      }
+      this.loading = false;
+    },
+    async listDownloader () {
+      try {
+        const res = await this.$api().downloader.list();
+        this.downloaders = res.data;
+        this.qs.downloaders = this.downloaders.map(item => item.id);
+      } catch (e) {
+        this.$message().error(e.message);
+      }
+    },
+    async gotoDetail (record) {
+      if (!record.link) return await this.$message().error('链接不存在');
+      window.open(record.link);
+    },
+    async gotoLink (record) {
+      window.open('/task/link?hash=' + record.hash);
+    },
+    async handleChange (pagination) {
+      this.qs.page = pagination.current;
+      this.listTorrent();
+    }
+  },
+  async mounted () {
+    await this.listDownloader();
+    this.listTorrent();
+  }
+};
+</script>
+<style scoped>
+.mix-torrent {
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+}
+
+.mix-torrent-form {
+  width: min(calc(100vw - 32px), 1440px);
+  border-radius: 4px;
+  padding: 12px;
+  transition: all 0.5s;
+}
+</style>

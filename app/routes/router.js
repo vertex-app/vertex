@@ -30,10 +30,10 @@ const checkAuth = async function (req, res, next) {
     '/api/user/login',
     '/api/setting/getBackground.css',
     '/api/setting/getCss.css',
-    '/login'
+    '/user/login'
   ];
-  if (req.session?.user && ['/', '/login'].includes(pathname)) {
-    return res.redirect(302, '/home');
+  if (req.session?.user && ['/', '/user/login'].includes(pathname)) {
+    return res.redirect(302, '/index');
   }
   if (excludePath.includes(pathname) ||
     pathname.startsWith('/assets') ||
@@ -42,7 +42,7 @@ const checkAuth = async function (req, res, next) {
     return next();
   }
   if (!req.session.user && !pathname.startsWith('/api')) {
-    return res.redirect(302, '/login');
+    return res.redirect(302, '/user/login');
   }
   if (!req.session.user) {
     res.status(401);
@@ -137,8 +137,9 @@ module.exports = function (app, express, router) {
   app.use('/api', multipartMiddleware);
   app.use(setIp);
   app.use(checkAuth);
-  router.get('/user/login', ctrl.User.login);
+  router.post('/user/login', ctrl.User.login);
   router.get('/user/logout', ctrl.User.logout);
+  router.get('/user/get', ctrl.User.get);
 
   router.get('/server/netSpeed', ctrl.Server.netSpeed);
   router.get('/server/cpuUse', ctrl.Server.cpuUse);
@@ -152,10 +153,10 @@ module.exports = function (app, express, router) {
   router.get('/server/reload', ctrl.Server.reload);
   router.ws('/server/shell/:serverId', ctrl.Server.shell);
 
-  router.post('/push/add', ctrl.Push.add);
-  router.get('/push/list', ctrl.Push.list);
-  router.post('/push/modify', ctrl.Push.modify);
-  router.post('/push/delete', ctrl.Push.delete);
+  router.post('/notification/add', ctrl.Push.add);
+  router.get('/notification/list', ctrl.Push.list);
+  router.post('/notification/modify', ctrl.Push.modify);
+  router.post('/notification/delete', ctrl.Push.delete);
 
   router.post('/site/add', ctrl.Site.add);
   router.get('/site/list', ctrl.Site.list);
@@ -164,44 +165,44 @@ module.exports = function (app, express, router) {
   router.post('/site/delete', ctrl.Site.delete);
   router.get('/site/refresh', ctrl.Site.refresh);
   router.get('/site/search', ctrl.Site.search);
-  router.get('/site/pushTorrent', ctrl.Site.pushTorrent);
+  router.post('/site/pushTorrent', ctrl.Site.pushTorrent);
 
-  router.get('/client/list', ctrl.Client.list);
-  router.get('/client/listTop10', ctrl.Client.listTop10);
-  router.get('/client/listMainInfo', ctrl.Client.listMainInfo);
-  router.get('/client/getSpeedPerTracker', ctrl.Client.getSpeedPerTracker);
-  router.post('/client/add', ctrl.Client.add);
-  router.post('/client/modify', ctrl.Client.modify);
-  router.post('/client/delete', ctrl.Client.delete);
+  router.get('/downloader/list', ctrl.Client.list);
+  router.get('/downloader/listTop10', ctrl.Client.listTop10);
+  router.get('/downloader/listMainInfo', ctrl.Client.listMainInfo);
+  router.get('/downloader/getSpeedPerTracker', ctrl.Client.getSpeedPerTracker);
+  router.post('/downloader/add', ctrl.Client.add);
+  router.post('/downloader/modify', ctrl.Client.modify);
+  router.post('/downloader/delete', ctrl.Client.delete);
 
   router.get('/rss/list', ctrl.Rss.list);
   router.post('/rss/add', ctrl.Rss.add);
   router.post('/rss/modify', ctrl.Rss.modify);
   router.post('/rss/delete', ctrl.Rss.delete);
 
-  router.get('/douban/list', ctrl.Douban.list);
-  router.post('/douban/add', ctrl.Douban.add);
-  router.post('/douban/modify', ctrl.Douban.modify);
-  router.post('/douban/delete', ctrl.Douban.delete);
-  router.get('/douban/listHistory', ctrl.Douban.listHistory);
-  router.get('/douban/listWishes', ctrl.Douban.listWishes);
-  router.get('/douban/getWish', ctrl.Douban.getWish);
-  router.get('/douban/deleteWish', ctrl.Douban.deleteWish);
-  router.get('/douban/refreshWish', ctrl.Douban.refreshWish);
-  router.post('/douban/editWish', ctrl.Douban.editWish);
-  router.get('/douban/deleteRecord', ctrl.Douban.deleteRecord);
-  router.post('/douban/refreshWishes', ctrl.Douban.refreshWishes);
-  router.get('/douban/relink', ctrl.Douban.relink);
+  router.get('/subscribe/list', ctrl.Douban.list);
+  router.post('/subscribe/add', ctrl.Douban.add);
+  router.post('/subscribe/modify', ctrl.Douban.modify);
+  router.post('/subscribe/delete', ctrl.Douban.delete);
+  router.get('/subscribe/listHistory', ctrl.Douban.listHistory);
+  router.get('/subscribe/listWishes', ctrl.Douban.listWishes);
+  router.get('/subscribe/getWish', ctrl.Douban.getWish);
+  router.get('/subscribe/deleteWish', ctrl.Douban.deleteWish);
+  router.get('/subscribe/refreshWish', ctrl.Douban.refreshWish);
+  router.post('/subscribe/editWish', ctrl.Douban.editWish);
+  router.get('/subscribe/deleteRecord', ctrl.Douban.deleteRecord);
+  router.post('/subscribe/refresh', ctrl.Douban.refreshWishes);
+  router.get('/subscribe/relink', ctrl.Douban.relink);
 
   router.get('/deleteRule/list', ctrl.DeleteRule.list);
   router.post('/deleteRule/add', ctrl.DeleteRule.add);
   router.post('/deleteRule/modify', ctrl.DeleteRule.modify);
   router.post('/deleteRule/delete', ctrl.DeleteRule.delete);
 
-  router.get('/raceRule/list', ctrl.RaceRule.list);
-  router.post('/raceRule/add', ctrl.RaceRule.add);
-  router.post('/raceRule/modify', ctrl.RaceRule.modify);
-  router.post('/raceRule/delete', ctrl.RaceRule.delete);
+  router.get('/selectRule/list', ctrl.RaceRule.list);
+  router.post('/selectRule/add', ctrl.RaceRule.add);
+  router.post('/selectRule/modify', ctrl.RaceRule.modify);
+  router.post('/selectRule/delete', ctrl.RaceRule.delete);
 
   router.get('/raceRuleSet/list', ctrl.RaceRuleSet.list);
   router.post('/raceRuleSet/add', ctrl.RaceRuleSet.add);
@@ -261,6 +262,9 @@ module.exports = function (app, express, router) {
   app.use('/api', router);
   app.use('/proxy/client/:client', clientProxy);
   app.use('/proxy/site/:site', siteProxy);
+  app.use('/assets/styles/theme.less', (req, res) => {
+    return res.download(path.join(__dirname, '../static/assets/styles/' + (global.theme || 'dark') + '.less'));
+  });
   app.use('*', (req, res, next) => {
     const pathname = req._parsedOriginalUrl.pathname;
     if (pathname === '/favicon.ico') {

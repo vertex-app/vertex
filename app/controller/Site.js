@@ -124,7 +124,7 @@ class Site {
   };
 
   async pushTorrent (req, res) {
-    const options = req.query;
+    const options = req.body;
     try {
       const r = await siteMod.pushTorrent(options);
       res.send({

@@ -20,7 +20,7 @@ generate_static:
       --header 'Content-Type: application/json' \
       --data-raw "{\"key\": \"$KEY\",\"time\": \"$PUSH_TIME\",\"message\": \"$COMMIT_MESSAGE\",\"branch\": \"$CI_COMMIT_BRANCH\",\"sha1\": \"${CI_COMMIT_SHA:0:12}\", \"type\": \"start\"}"
     - cd webui
-    - npm i
+    - npm i --legacy-peer-deps
     - npm run build
     - cd ../app
     - tar -czvf ../static.tar.gz static

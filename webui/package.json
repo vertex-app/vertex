@@ -3,45 +3,41 @@
   "version": "0.0.14.0",
   "private": true,
   "scripts": {
-    "serve": "BROWSER=false vue-cli-service serve",
-    "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@babel/eslint-parser": "^7.18.2",
+    "@babel/eslint-plugin": "^7.17.7",
+    "eslint": "^7.30.0",
+    "eslint-plugin-vue": "^7.13.0"
   },
   "dependencies": {
-    "@fortawesome/fontawesome-free-brands": "^5.0.13",
-    "@fortawesome/fontawesome-free-solid": "^5.0.13",
-    "@fortawesome/fontawesome-svg-core": "^1.2.36",
-    "@fortawesome/vue-fontawesome": "^2.0.6",
-    "axios": "^0.21.1",
-    "core-js": "^3.6.5",
-    "echarts": "^5.2.2",
-    "element-ui": "^2.15.3",
-    "highlight.js": "^10.7.3",
-    "lxgw-wenkai-screen-webfont": "^1.6.0",
-    "lxgw-wenkai-webfont": "^1.6.0",
+    "@fortawesome/fontawesome-svg-core": "^6.1.1",
+    "@fortawesome/free-brands-svg-icons": "^6.1.1",
+    "@fortawesome/free-solid-svg-icons": "^6.1.1",
+    "@fortawesome/vue-fontawesome": "^3.0.0-5",
+    "@vue/cli-plugin-babel": "^5.0.6",
+    "@vue/cli-service": "^5.0.6",
+    "ant-design-vue": "^3.2.9",
+    "antd-theme-generator": "^1.2.11",
+    "axios": "^0.27.2",
+    "babel-plugin-import": "^1.13.5",
+    "babel-polyfill": "^6.26.0",
+    "echarts": "^5.3.3",
+    "es6-promise": "^4.2.8",
+    "less": "^2.7.2",
+    "less-loader": "^11.0.0",
     "md5-node": "^1.0.1",
     "moment": "^2.29.1",
-    "vue": "~2.6.11",
-    "vue-clipboard2": "^0.3.3",
-    "vue-echarts": "^6.0.0",
-    "vue-lazyload": "~1.3.4",
-    "vue-router": "^3.5.2",
-    "xterm": "^4.18.0",
+    "vue": "^3.2.36",
+    "vue-echarts": "^6.2.3",
+    "vue-router": "^4.0.16",
+    "vue3-lazyload": "^0.3.6",
+    "xterm": "^4.19.0",
     "xterm-addon-attach": "^0.6.0",
     "xterm-addon-fit": "^0.5.0"
-  },
-  "devDependencies": {
-    "@vue/cli-plugin-babel": "~4.5.0",
-    "@vue/cli-service": "~4.5.0",
-    "@vue/composition-api": "^1.4.3",
-    "babel-plugin-component": "^1.1.1",
-    "eslint": "^7.30.0",
-    "eslint-plugin-vue": "^7.13.0",
-    "vue-template-compiler": "~2.6.11"
-  },
-  "browserslist": [
-    "> 1%",
-    "last 2 versions",
-    "not dead"
-  ]
+  }
 }

@@ -1,342 +1,433 @@
-import Vue from 'vue';
-import Router from 'vue-router';
+import { createRouter, createWebHistory } from 'vue-router';
 
-import Login from '@/pages/login/index';
-import Index from '@/pages/home/index';
-import Home from '@/pages/home/children/home';
-import Monitor from '@/pages/home/children/monitor';
-import Site from '@/pages/home/children/site';
-import SiteData from '@/pages/home/children/site-data';
-import SiteMix from '@/pages/home/children/site-mix';
-import Setting from '@/pages/home/children/setting';
-import About from '@/pages/home/children/about';
-import HitAndRun from '@/pages/home/children/hit-and-run';
-import Global from '@/pages/home/children/global';
-import Point from '@/pages/home/children/point';
-import BingeWatching from '@/pages/home/children/binge-watching';
-import RaceRule from '@/pages/home/children/race-rule';
-import RaceRuleSet from '@/pages/home/children/race-rule-set';
-import LinkRule from '@/pages/home/children/link-rule';
-import Douban from '@/pages/home/children/douban';
-import DoubanWishes from '@/pages/home/children/douban-wishes';
-import DoubanHistory from '@/pages/home/children/douban-history';
-import WishDetail from '@/pages/home/children/wish-detail';
-import Server from '@/pages/home/children/server';
-import Shell from '@/pages/home/children/shell';
-import Client from '@/pages/home/children/client';
-import SearchMix from '@/pages/home/children/search-mix';
-import TorrentMix from '@/pages/home/children/torrent-mix';
-import TorrentHistory from '@/pages/home/children/torrent-history';
-import DeleteRule from '@/pages/home/children/delete-rule';
-import RssRule from '@/pages/home/children/rss-rule';
-import Push from '@/pages/home/children/push';
-import Rss from '@/pages/home/children/rss';
-import Log from '@/pages/home/children/log';
-import Tools from '@/pages/home/children/tools';
-import Link from '@/pages/home/children/link';
-import Proxy from '@/pages/home/children/proxy';
-import Hosts from '@/pages/home/children/hosts';
-import BulkLink from '@/pages/home/children/bulk-link';
-import NetworkTest from '@/pages/home/children/network-test';
-import LoginMTeam from '@/pages/home/children/login-mteam';
+import Index from '@/pages/Index';
 
-import MobileIndex from '@/pages/mobile/index';
-import MobileHome from '@/pages/mobile/home';
-import MobileSite from '@/pages/mobile/site';
-import MobileClient from '@/pages/mobile/client';
+import Layout from '@/pages/Layout';
 
-Vue.use(Router);
+import DashboardIndex from '@/pages/dashboard/Index';
 
-const originalPush = Router.prototype.push;
-Router.prototype.push = function goto (location) {
-  return originalPush.call(this, location).catch(err => err);
-};
+import BaseServer from '@/pages/base/Server';
+import BaseDownloader from '@/pages/base/Downloader';
+import BaseSite from '@/pages/base/Site';
+import BaseNotification from '@/pages/base/Notification';
 
-const hitAndRun = {
-  path: 'hit-and-run',
-  component: HitAndRun,
-  meta: {
-    title: '刷流工具'
-  },
+import MetricServer from '@/pages/metric/Server';
+import MetricDownloader from '@/pages/metric/Downloader';
+import MetricSite from '@/pages/metric/Site';
+
+import RuleDelete from '@/pages/rule/Delete';
+import RuleLink from '@/pages/rule/Link';
+import RuleRss from '@/pages/rule/Rss';
+import RuleSelect from '@/pages/rule/Select';
+
+import TaskRss from '@/pages/task/Rss';
+import TaskSubscribe from '@/pages/task/Subscribe';
+import TaskLink from '@/pages/task/Link';
+import TaskBulkLink from '@/pages/task/BulkLink';
+import TaskWatchCategory from '@/pages/task/WatchCategory';
+
+import GuideRss from '@/pages/guide/Rss';
+import GuideSubsribe from '@/pages/guide/Subscribe';
+
+import ToolNetworkTest from '@/pages/tool/NetworkTest';
+import ToolMTeamLogin from '@/pages/tool/MTeamLogin';
+import ToolHosts from '@/pages/tool/Hosts';
+import ToolProxy from '@/pages/tool/Proxy';
+import ToolShell from '@/pages/tool/Shell';
+
+import InfoInfo from '@/pages/info/Info';
+import InfoLog from '@/pages/info/Log';
+import InfoAbout from '@/pages/info/About';
+
+import SettingBase from '@/pages/setting/Base';
+import SettingStyle from '@/pages/setting/Style';
+import SettingSecurity from '@/pages/setting/Security';
+import SettingInteraction from '@/pages/setting/Interaction';
+import SettingBackup from '@/pages/setting/Backup';
+
+import SubscribeList from '@/pages/subscribe/List';
+import SubscribeDetail from '@/pages/subscribe/Detail';
+
+import HistoryRss from '@/pages/history/Rss';
+import HistorySubsribe from '@/pages/history/Subscribe';
+
+import MixSearch from '@/pages/mix/Search';
+import MixDownloader from '@/pages/mix/Downloader';
+
+import Login from '@/pages/user/Login';
+
+const user = {
+  path: 'user',
+  component: Index,
   children: [
     {
-      path: 'rss',
-      component: Rss,
+      path: 'login',
+      component: Login,
       meta: {
-        title: 'Rss'
-      }
-    }, {
-      path: 'rss-rule',
-      component: RssRule,
-      meta: {
-        title: 'Rss 规则'
-      }
-    }, {
-      path: 'client',
-      component: Client,
-      meta: {
-        title: '下载器'
-      }
-    }, {
-      path: 'delete-rule',
-      component: DeleteRule,
-      meta: {
-        title: '删种规则'
-      }
-    }, {
-      path: 'torrent-mix',
-      component: TorrentMix,
-      meta: {
-        title: '种子聚合'
-      }
-    }, {
-      path: 'torrent-history',
-      component: TorrentHistory,
-      meta: {
-        title: '种子历史'
+        title: '用户登录'
       }
     }
   ]
 };
 
-const siteMix = {
-  path: 'site-mix',
-  component: SiteMix,
+const index = {
+  path: 'index',
+  component: Layout,
+  redirect: '/index',
   children: [
     {
-      path: 'site-list',
-      component: Site,
+      path: '',
+      component: DashboardIndex,
       meta: {
-        title: '站点列表'
-      }
-    }, {
-      path: 'site-data',
-      component: SiteData,
-      meta: {
-        title: '增长记录'
+        title: '首页'
       }
     }
   ]
 };
 
-const point = {
-  path: 'point',
-  component: Point,
+const metric = {
+  path: 'metric',
+  component: Layout,
+  redirect: '/metric/server',
   children: [
     {
-      path: 'client',
-      component: Client,
-      meta: {
-        title: '下载器'
-      }
-    }, {
       path: 'server',
-      component: Server,
+      component: MetricServer,
       meta: {
-        title: '服务器'
+        title: '服务器 - 数据监控'
       }
     }, {
-      path: 'shell/:serverId',
-      component: Shell,
+      path: 'downloader',
+      component: MetricDownloader,
       meta: {
-        title: '服务器'
+        title: '下载器 - 数据监控'
+      }
+    }, {
+      path: 'site',
+      component: MetricSite,
+      meta: {
+        title: '站点 - 数据监控'
       }
     }
   ]
 };
 
-const tools = {
-  path: 'tools',
-  component: Tools,
+const rule = {
+  path: 'rule',
+  component: Layout,
+  redirect: '/rule/delete',
   children: [
     {
-      path: 'login-mteam',
-      component: LoginMTeam,
+      path: 'delete',
+      component: RuleDelete,
       meta: {
-        title: 'MTeam 登录'
+        title: '删种规则 - 规则组件'
       }
     }, {
-      path: 'network-test',
-      component: NetworkTest,
+      path: 'rss',
+      component: RuleRss,
       meta: {
-        title: '网络测试'
+        title: 'RSS 规则 - 规则组件'
+      }
+    }, {
+      path: 'select',
+      component: RuleSelect,
+      meta: {
+        title: '选种规则 - 规则组件'
       }
     }, {
       path: 'link',
-      component: Link,
+      component: RuleLink,
       meta: {
-        title: '链接'
-      }
-    }, {
-      path: 'hosts',
-      component: Hosts,
-      meta: {
-        title: '修改 hosts'
-      }
-    }, {
-      path: 'proxy',
-      component: Proxy,
-      meta: {
-        title: 'http 代理'
-      }
-    }, {
-      path: 'bulk-link',
-      component: BulkLink,
-      meta: {
-        title: '批量链接'
+        title: '链接规则 - 规则组件'
       }
     }
   ]
 };
 
-const _global = {
-  path: 'global',
-  component: Global,
+const base = {
+  path: 'base',
+  component: Layout,
+  redirect: '/base/server',
   children: [
     {
-      path: 'setting',
-      component: Setting,
+      path: 'server',
+      component: BaseServer,
       meta: {
-        title: '全局设置'
+        title: '服务器 - 基础组件'
       }
     }, {
-      path: 'push',
-      component: Push,
+      path: 'downloader',
+      component: BaseDownloader,
       meta: {
-        title: '通知工具'
+        title: '下载器 - 基础组件'
+      }
+    }, {
+      path: 'site',
+      component: BaseSite,
+      meta: {
+        title: '站点 - 基础组件'
+      }
+    }, {
+      path: 'notification',
+      component: BaseNotification,
+      meta: {
+        title: '通知工具 - 基础组件'
+      }
+    }
+  ]
+};
+
+const info = {
+  path: 'info',
+  component: Layout,
+  redirect: '/info/about',
+  children: [
+    {
+      path: 'info',
+      component: InfoInfo,
+      meta: {
+        title: '系统信息 - 系统信息'
+      }
+    }, {
+      path: 'log',
+      component: InfoLog,
+      meta: {
+        title: '系统日志 - 系统信息'
       }
     }, {
       path: 'about',
-      component: About,
+      component: InfoAbout,
       meta: {
-        title: '关于'
+        title: '关于 - 系统信息'
       }
     }
   ]
 };
 
-const bingeWatching = {
-  path: 'binge-watching',
-  component: BingeWatching,
+const setting = {
+  path: 'setting',
+  component: Layout,
+  redirect: '/setting/base',
   children: [
     {
-      path: 'search-mix',
-      component: SearchMix,
+      path: 'base',
+      component: SettingBase,
       meta: {
-        title: '聚合搜索'
+        title: '基础设置 - 系统设置'
       }
     }, {
-      path: 'race-rule',
-      component: RaceRule,
+      path: 'style',
+      component: SettingStyle,
       meta: {
-        title: '选种规则'
+        title: '主题设置 - 系统设置'
       }
     }, {
-      path: 'race-rule-set',
-      component: RaceRuleSet,
+      path: 'security',
+      component: SettingSecurity,
       meta: {
-        title: '选种规则'
+        title: '安全设置 - 系统设置'
       }
     }, {
-      path: 'link-rule',
-      component: LinkRule,
+      path: 'interaction',
+      component: SettingInteraction,
       meta: {
-        title: '链接规则'
+        title: '交互设置 - 系统设置'
       }
     }, {
-      path: 'douban',
-      component: Douban,
+      path: 'backup',
+      component: SettingBackup,
       meta: {
-        title: '豆瓣账号'
-      }
-    }, {
-      path: 'douban-wishes',
-      component: DoubanWishes,
-      meta: {
-        title: '想看列表'
-      }
-    }, {
-      path: 'wish-detail/:doubanId/:wishId',
-      component: WishDetail,
-      meta: {
-        title: '详情'
-      }
-    }, {
-      path: 'douban-history',
-      component: DoubanHistory,
-      meta: {
-        title: '任务历史'
+        title: '备份还原 - 系统设置'
       }
     }
   ]
 };
 
-export default new Router({
-  mode: 'history',
-  routes: [
+const task = {
+  path: 'task',
+  component: Layout,
+  redirect: '/task/rss',
+  children: [
     {
-      path: '/',
-      redirect: '/home'
-    }, {
-      path: '/login',
-      component: Login,
+      path: 'rss',
+      component: TaskRss,
       meta: {
-        title: '登录'
+        title: 'Rss 任务 - 任务配置'
       }
     }, {
-      path: '/',
-      component: Index,
-      children: [
-        {
-          path: 'home',
-          component: Home,
-          meta: {
-            title: '主页'
-          }
-        },
-        hitAndRun,
-        {
-          path: 'monitor',
-          component: Monitor,
-          meta: {
-            title: '监控信息'
-          }
-        }, {
-          path: 'log',
-          component: Log,
-          meta: {
-            title: '系统日志'
-          }
-        },
-        _global,
-        siteMix,
-        point,
-        bingeWatching,
-        tools
-      ]
+      path: 'subscribe',
+      component: TaskSubscribe,
+      meta: {
+        title: '订阅任务 - 任务配置'
+      }
     }, {
-      path: '/mobile',
-      component: MobileIndex,
-      redirect: '/mobile/home',
-      children: [{
-        path: 'home',
-        component: MobileHome,
-        meta: {
-          title: '首页'
-        }
-      }, {
-        path: 'site',
-        component: MobileSite,
-        meta: {
-          title: '站点数据'
-        }
-      }, {
-        path: 'client',
-        component: MobileClient,
-        meta: {
-          title: '下载器'
-        }
-      }]
+      path: 'link',
+      component: TaskLink,
+      meta: {
+        title: '链接文件 - 任务配置'
+      }
+    }, {
+      path: 'bulkLink',
+      component: TaskBulkLink,
+      meta: {
+        title: '批量链接 - 任务配置'
+      }
+    }, {
+      path: 'watchCategory',
+      component: TaskWatchCategory,
+      meta: {
+        title: '监控分类 - 任务配置'
+      }
     }
   ]
+};
+
+const history = {
+  path: 'history',
+  component: Layout,
+  redirect: '/history/rss',
+  children: [
+    {
+      path: 'rss',
+      component: HistoryRss,
+      meta: {
+        title: 'RSS 历史 - 任务历史'
+      }
+    }, {
+      path: 'subscribe',
+      component: HistorySubsribe,
+      meta: {
+        title: '订阅历史 - 任务历史'
+      }
+    }
+  ]
+};
+
+const mix = {
+  path: 'mix',
+  component: Layout,
+  redirect: '/mix/search',
+  children: [
+    {
+      path: 'search',
+      component: MixSearch,
+      meta: {
+        title: '种子搜索 - 聚合操作'
+      }
+    }, {
+      path: 'downloader',
+      component: MixDownloader,
+      meta: {
+        title: '种子聚合 - 聚合操作'
+      }
+    }
+  ]
+};
+
+const guide = {
+  path: 'guide',
+  component: Layout,
+  redirect: '/guide/rss',
+  children: [
+    {
+      path: 'rss',
+      component: GuideRss,
+      meta: {
+        title: 'RSS 引导 - 任务引导'
+      }
+    }, {
+      path: 'subscribe',
+      component: GuideSubsribe,
+      meta: {
+        title: '订阅引导 - 任务引导'
+      }
+    }
+  ]
+};
+
+const tool = {
+  path: 'tool',
+  component: Layout,
+  redirect: '/tool/networkTest',
+  children: [
+    {
+      path: 'networkTest',
+      component: ToolNetworkTest,
+      meta: {
+        title: '网络测试 - 常用工具'
+      }
+    }, {
+      path: 'mteamLogin',
+      component: ToolMTeamLogin,
+      meta: {
+        title: 'MTEAM 登录 - 常用工具'
+      }
+    }, {
+      path: 'hosts',
+      component: ToolHosts,
+      meta: {
+        title: '修改 HOSTS - 常用工具'
+      }
+    }, {
+      path: 'proxy',
+      component: ToolProxy,
+      meta: {
+        title: 'HTTP 代理 - 常用工具'
+      }
+    }, {
+      path: 'shell/:id',
+      component: ToolShell,
+      meta: {
+        title: 'Shell - 常用工具'
+      }
+    }
+  ]
+};
+
+const subscribe = {
+  path: 'subscribe',
+  component: Layout,
+  redirect: '/subscribe/list',
+  children: [
+    {
+      path: 'list',
+      component: SubscribeList,
+      meta: {
+        title: '订阅列表 - 订阅详情'
+      }
+    }, {
+      path: 'detail/:douban/:id',
+      component: SubscribeDetail,
+      meta: {
+        title: '详情 - 订阅详情'
+      }
+    }
+  ]
+};
+
+const routes = [{
+  path: '/',
+  component: Index,
+  redirect: '/index',
+  children: [
+    user,
+    index,
+    metric,
+    rule,
+    base,
+    task,
+    tool,
+    info,
+    guide,
+    subscribe,
+    setting,
+    history,
+    mix
+  ]
+}];
+
+export default createRouter({
+  history: createWebHistory(),
+  routes
 });

@@ -1,0 +1,28 @@
+import { get, post } from '../util/axios';
+
+export default {
+  list: async () => {
+    const url = '/api/site/list';
+    return await get(url);
+  },
+  modify: async (site) => {
+    const url = '/api/site/' + (site.id ? 'modify' : 'add');
+    return await post(url, site);
+  },
+  delete: async (id) => {
+    const url = '/api/site/delete';
+    return await post(url, { id });
+  },
+  refresh: async (name) => {
+    const url = `/api/site/refresh${name ? '?name=' + name : ''}`;
+    return await get(url);
+  },
+  search: async (keyword, sites) => {
+    const url = `/api/site/search?keyword=${keyword}&sites=${encodeURIComponent(JSON.stringify(sites))}`;
+    return await get(url);
+  },
+  pushTorrent: async (body) => {
+    const url = '/api/site/pushTorrent';
+    return await post(url, body);
+  }
+};

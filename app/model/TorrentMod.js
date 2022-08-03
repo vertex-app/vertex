@@ -16,11 +16,17 @@ class TorrentMod {
         const _torrent = { ...torrent };
         _torrent.clientAlias = clients[clientId].alias;
         _torrent.client = clientId;
-        const res = await util.getRecord('select link from torrents where hash = ?', [_torrent.hash]);
-        _torrent.link = res ? res.link : false;
         if (options.searchKey && !options.searchKey.split(' ').every(item => _torrent.name.indexOf(item) !== -1)) continue;
         torrentList.push(_torrent);
       }
+    }
+    const res = await util.getRecords(`select link, hash from torrents where hash in ('${torrentList.map(item => item.hash).join('\',\'')}')`);
+    const hashMap = {};
+    for (const r of res) {
+      hashMap[r.hash] = r.link;
+    }
+    for (const torrent of torrentList) {
+      torrent.link = hashMap[torrent.hash] || false;
     }
     if (options.sortKey) {
       const sortType = options.sortType || 'desc';

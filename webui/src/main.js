@@ -1,112 +1,80 @@
-import Vue from 'vue';
-import VueClipboard from 'vue-clipboard2';
-import VueLazyload from 'vue-lazyload';
-import {
-  Button, Select, Input, Message, Image, Row, Col, Card, Link, MessageBox,
-  Divider, Tag, Pagination, DatePicker, TimePicker, Upload, Checkbox, Option,
-  Icon, Table, TableColumn, Backtop, Tabs, TabPane, Container, Header, Main, Aside,
-  Menu, MenuItem, MenuItemGroup, Descriptions, DescriptionsItem, Progress, Dropdown,
-  DropdownMenu, DropdownItem, Collapse, CollapseItem, Form, FormItem, Radio, RadioGroup,
-  CheckboxGroup, Switch, Dialog, PageHeader, Drawer, Loading
-} from 'element-ui';
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import solid from '@fortawesome/fontawesome-free-solid';
-import brands from '@fortawesome/fontawesome-free-brands';
-import App from '@/App.vue';
-import router from '@/routes/index';
-import axios from 'axios';
+import api from './api';
 import moment from 'moment';
-import md5 from 'md5-node';
-import ECharts from 'vue-echarts';
+import 'less';
+import { createApp, ref, defineComponent } from 'vue';
+import {
+  Button, Form, Input, Message, Menu, Layout,
+  Drawer, Table, Divider, Descriptions, Col, Row, Tag,
+  Checkbox, Select, Dropdown, Switch, Upload, Modal
+} from 'ant-design-vue';
+import App from './App';
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { fas } from '@fortawesome/free-solid-svg-icons';
+import { fab } from '@fortawesome/free-brands-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { use } from 'echarts/core';
 import { CanvasRenderer } from 'echarts/renderers';
-import { BarChart, GaugeChart, LineChart } from 'echarts/charts';
+import { PieChart, LineChart, BarChart } from 'echarts/charts';
 import {
-  GridComponent, TooltipComponent, TitleComponent,
-  LegendComponent, VisualMapComponent, GraphicComponent
+  TitleComponent,
+  TooltipComponent,
+  LegendComponent,
+  GridComponent,
+  GraphicComponent
 } from 'echarts/components';
+import VChart from 'vue-echarts';
+import VueLazyLoad from 'vue3-lazyload';
+import md5 from 'md5-node';
 
-import 'lxgw-wenkai-screen-webfont/style.css';
+import router from './routes';
 
-use([CanvasRenderer, BarChart, LineChart, GridComponent, GaugeChart,
-  TooltipComponent, TitleComponent, LegendComponent, VisualMapComponent,
-  GraphicComponent]);
+library.add(fas);
+library.add(fab);
 
-Vue.prototype.$message = Message;
-Vue.prototype.$moment = moment;
-Vue.prototype.$md5 = md5;
-Vue.prototype.$messageBox = MessageBox;
+use([
+  CanvasRenderer,
+  PieChart,
+  LineChart,
+  BarChart,
+  TitleComponent,
+  TooltipComponent,
+  LegendComponent,
+  GridComponent,
+  GraphicComponent
+]);
 
-Vue.config.productionTip = false;
+const app = createApp(App);
 const components = [
-  Button, Input, Select, Image, Row, Col, Card, Link, Divider, Tag, Pagination,
-  DatePicker, TimePicker, Upload, Checkbox, Option, Icon, Table, TableColumn,
-  Backtop, Tabs, TabPane, Container, Header, Main, Aside, Menu, MenuItem, MenuItemGroup,
-  Progress, Dropdown, DropdownMenu, DropdownItem, Collapse, CollapseItem, Form, FormItem, Radio,
-  RadioGroup, CheckboxGroup, Switch, Dialog, PageHeader, Drawer, Loading,
-  Descriptions, DescriptionsItem
+  Button, Form, Input, Menu, Layout, Drawer,
+  Table, Divider, Descriptions, Col, Row, Tag,
+  Checkbox, Select, Dropdown, Switch, Upload, Modal
 ];
 
-Vue.component('v-chart', ECharts);
-components.forEach((component) => Vue.use(component));
+for (const component of components) {
+  app.use(component);
+}
 
-Vue.use(VueClipboard);
-Vue.use(VueLazyload, {
+app.use(VueLazyLoad, {
   loading: '/assets/images/loading.gif'
 });
 
-library.add(solid);
-library.add(brands);
-Vue.component('fa', FontAwesomeIcon);
+app.component('v-chart', VChart);
 
-Vue.prototype.$colors = [
-  ['#00BFFF', '#FFFFFF'],
-  ['#FFCC00', '#009966'],
-  ['#336699', '#FFFFFF'],
-  ['#CC3366', '#FFFFFF'],
-  ['#009966', '#FFFFFF'],
-  ['#FA8072', '#FFFFFF'],
-  ['#F0FFFF', '#409EFF'],
-  ['#FAFAD2', '#409EFF'],
-  ['#FFC0CB', '#409EFF']
-];
+app.component('fa', FontAwesomeIcon);
 
-Vue.prototype.$axiosGet = async (url) => {
-  try {
-    const res = await axios.get(url, {
-      validateStatus: () => true
-    });
-    if (!res.data.success) {
-      throw new Error(res.data.message);
-    }
-    return res.data;
-  } catch (error) {
-    Vue.prototype.$message.error(error.message);
+router.beforeEach((to, from) => {
+  if (to.meta.title) {
+    document.title = to.meta.title + ' :: Vertex';
   }
-  return undefined;
+});
+
+app.use(router);
+
+const message = () => {
+  return Message;
 };
 
-Vue.prototype.$goto = (url, router) => {
-  router.push(url);
-};
-
-Vue.prototype.$axiosPost = async (url, json, lang = 'zh-cn') => {
-  try {
-    const res = await axios.post(url, json, {
-      validateStatus: () => true
-    });
-    if (!res.data.success) {
-      throw new Error(res.data.message);
-    }
-    return res.data;
-  } catch (error) {
-    Vue.prototype.$message.error(error.message);
-  }
-  return undefined;
-};
-
-Vue.prototype.$formatSize = (_size) => {
+const formatSize = (_size) => {
   const tag = _size < 0;
   const size = Math.abs(_size);
   if (size < 1024) {
@@ -130,26 +98,19 @@ Vue.prototype.$formatSize = (_size) => {
   return '0 Byte';
 };
 
-const formatTime = (s) => s === 0 ? '00' : s < 10 ? '0' + s : s;
-
-Vue.prototype.$formatTime = (time) => {
-  const day = formatTime(Math.floor(time / 86400));
-  const hour = formatTime(Math.floor(time % 86400 / 3600));
-  const minite = formatTime(Math.floor(time % 3600 / 60));
-  const second = formatTime(time % 60);
-  return [day, hour, minite, second].join(':');
-};
-
-router.beforeEach((to, from, next) => {
-  if (to.meta.title) {
-    document.title = to.meta.title + ' :: Vertex';
+app.mixin({
+  methods: {
+    $goto: (a, b) => {
+      b.push(a);
+    },
+    $api: api,
+    $moment: moment,
+    $message: message,
+    $defineComponent: defineComponent,
+    $formatSize: formatSize,
+    $ref: ref,
+    $md5: md5
   }
-  next();
 });
 
-// eslint-disable-next-line no-new
-new Vue({
-  el: '#app',
-  router,
-  render: h => h(App)
-});
+app.mount('#app');
