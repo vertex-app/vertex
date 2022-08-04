@@ -215,15 +215,13 @@
         <a-form-item
           label="保存路径"
           name="savePath"
-          extra="推送种子至下载器时的保存路径"
-          :rules="[{ required: true, message: '${label}不可为空! ' }]">
+          extra="推送种子至下载器时的保存路径">
           <a-input size="small" v-model:value="rss.savePath"/>
         </a-form-item>
         <a-form-item
           label="分类"
           name="category"
-          extra="推送种子至下载器时的分类"
-          :rules="[{ required: true, message: '${label}不可为空! ' }]">
+          extra="推送种子至下载器时的分类">
           <a-input size="small" v-model:value="rss.category"/>
         </a-form-item>
         <a-form-item

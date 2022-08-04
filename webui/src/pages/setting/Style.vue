@@ -76,7 +76,7 @@ export default {
       try {
         const s = (await this.$api().setting.get()).data;
         this.setting = {
-          theme: s.theme || 'light',
+          theme: s.theme || 'dark',
           wechatCover: s.wechatCover,
           embyCover: s.embyCover,
           plexCover: s.plexCover,

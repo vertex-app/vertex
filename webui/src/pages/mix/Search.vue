@@ -196,7 +196,7 @@ export default {
       showSizeChanger: false
     };
     return {
-      modalVisible: true,
+      modalVisible: false,
       loading: false,
       pagination,
       columns,
@@ -243,6 +243,7 @@ export default {
         };
         const res = (await this.$api().site.pushTorrent(qs)).message;
         await this.$message().success(res);
+        this.modalVisible = false;
       } catch (e) {
         await this.$message().error(e.message);
       }
