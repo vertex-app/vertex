@@ -19,7 +19,10 @@ export default {
   }
 };
 </script>
-<style>
+<style lang="less">
+@import '../public/assets/styles/light.less';
+@import '../public/assets/styles/dark.less' (prefers-color-scheme: dark);
+
 @font-face {
   font-family: 'consolas';
   src: url('../public/assets/fonts/consolas.woff');

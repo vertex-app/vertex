@@ -5,7 +5,8 @@ import { createApp, ref, defineComponent } from 'vue';
 import {
   Button, Form, Input, Message, Menu, Layout,
   Drawer, Table, Divider, Descriptions, Col, Row, Tag,
-  Checkbox, Select, Dropdown, Switch, Upload, Modal
+  Checkbox, Select, Dropdown, Switch, Upload, Modal,
+  Radio
 } from 'ant-design-vue';
 import App from './App';
 import { library } from '@fortawesome/fontawesome-svg-core';
@@ -47,7 +48,8 @@ const app = createApp(App);
 const components = [
   Button, Form, Input, Menu, Layout, Drawer,
   Table, Divider, Descriptions, Col, Row, Tag,
-  Checkbox, Select, Dropdown, Switch, Upload, Modal
+  Checkbox, Select, Dropdown, Switch, Upload, Modal,
+  Radio
 ];
 
 for (const component of components) {

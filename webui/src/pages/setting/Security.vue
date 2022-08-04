@@ -32,6 +32,12 @@
           <a-input disabled size="small" v-model:value="setting.apiKey"/>
         </a-form-item>
         <a-form-item
+          label="PanelKey"
+          name="panelKey"
+          extra="在 Vertex Panel 注册账号得到的 ApiKey, 用于与 Vertex Panel 通信">
+          <a-input size="small" v-model:value="setting.panelKey"/>
+        </a-form-item>
+        <a-form-item
           :wrapperCol="isMobile() ? { span:24 } : { span: 20, offset: 4 }">
           <a-button type="primary" html-type="submit" style="margin-top: 24px; margin-bottom: 48px;">保存</a-button>
         </a-form-item>
@@ -60,7 +66,8 @@ export default {
         this.setting = {
           apiKey: s.apiKey,
           username: s.username,
-          password: ''
+          password: '',
+          panelKey: s.panelKey
         };
       } catch (e) {
         await this.$message().error(e.message);

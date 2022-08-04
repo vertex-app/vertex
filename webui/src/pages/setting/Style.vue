@@ -17,13 +17,11 @@
           label="主题色"
           name="theme"
           :rules="[{ required: true, message: '${label}不可为空! ' }]">
-          <a-switch
-            v-model:checked="setting.theme"
-            checked-children="亮色"
-            un-checked-children="暗色"
-            checkedValue="light"
-            unCheckedValue="dark"
-          />
+          <a-radio-group v-model:value="setting.theme" name="theme">
+            <a-radio value="light">亮色</a-radio>
+            <a-radio value="dark">暗色</a-radio>
+            <a-radio value="follow">跟随系统</a-radio>
+          </a-radio-group>
         </a-form-item>
         <a-form-item
           label="微信通知默认封面"
@@ -76,7 +74,7 @@ export default {
       try {
         const s = (await this.$api().setting.get()).data;
         this.setting = {
-          theme: s.theme || 'dark',
+          theme: s.theme || 'follow',
           wechatCover: s.wechatCover,
           embyCover: s.embyCover,
           plexCover: s.plexCover,

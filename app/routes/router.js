@@ -263,7 +263,7 @@ module.exports = function (app, express, router) {
   app.use('/proxy/client/:client', clientProxy);
   app.use('/proxy/site/:site', siteProxy);
   app.use('/assets/styles/theme.less', (req, res) => {
-    return res.download(path.join(__dirname, '../static/assets/styles/' + (global.theme || 'dark') + '.less'));
+    return res.download(path.join(__dirname, '../static/assets/styles/' + (global.theme || 'follow') + '.less'));
   });
   app.use('*', (req, res, next) => {
     const pathname = req._parsedOriginalUrl.pathname;
