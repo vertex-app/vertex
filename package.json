@@ -1,6 +1,6 @@
 {
   "name": "vertex",
-  "version": "0.0.12.0",
+  "version": "0.0.14.0",
   "description": "",
   "main": "app/app.js",
   "scripts": {
