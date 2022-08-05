@@ -6,7 +6,7 @@ import {
   Button, Form, Input, Message, Menu, Layout,
   Drawer, Table, Divider, Descriptions, Col, Row, Tag,
   Checkbox, Select, Dropdown, Switch, Upload, Modal,
-  Radio
+  Radio, Popover
 } from 'ant-design-vue';
 import App from './App';
 import { library } from '@fortawesome/fontawesome-svg-core';
@@ -49,7 +49,7 @@ const components = [
   Button, Form, Input, Menu, Layout, Drawer,
   Table, Divider, Descriptions, Col, Row, Tag,
   Checkbox, Select, Dropdown, Switch, Upload, Modal,
-  Radio
+  Radio, Popover
 ];
 
 for (const component of components) {

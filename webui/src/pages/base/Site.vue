@@ -103,7 +103,7 @@
           name="adult"
           v-if="site.name === 'MTeam'"
           :rules="[{ required: true, message: '${label}不可为空! ' }]">
-          <a-checkbox :disable="site.used" v-model:checked="site.pullRemoteTorrent">搜索 R18 分区</a-checkbox>
+          <a-checkbox :disable="site.used" v-model:checked="site.adult">搜索 R18 分区</a-checkbox>
         </a-form-item>
         <a-form-item
           label="Cookie"
