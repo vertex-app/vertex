@@ -82,7 +82,7 @@
           name="type"
           extra="下载器类型, 目前仅支持 qBittorrent 与 Transmission"
           :rules="[{ required: true, message: '${label}不可为空! ' }]">
-          <a-select size="small" v-model:value="downloader.type" style="width: 144px" >
+          <a-select size="small" v-model:value="downloader.type"  >
             <a-select-option value="qBittorrent">qBittorrent</a-select-option>
             <a-select-option value="Transmission">Transmission</a-select-option>
           </a-select>

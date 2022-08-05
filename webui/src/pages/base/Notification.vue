@@ -67,7 +67,7 @@
           label="类型"
           name="type"
           :rules="[{ required: true, message: '${label}不可为空! ' }]">
-          <a-select size="small" v-model:value="notification.type" style="width: 144px" >
+          <a-select size="small" v-model:value="notification.type"  >
             <a-select-option value="telegram">Telegram</a-select-option>
             <a-select-option value="wechat">WeChat</a-select-option>
           </a-select>

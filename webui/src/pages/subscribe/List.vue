@@ -11,7 +11,7 @@
         <div style="color: lightpink; bottom: 0px; width: 100%; position: absolute; background-color: rgba(0,0,0,0.3); backdrop-filter: blur(4px);">
           <span>[{{item.tag}}]</span>
           <span>[{{item.episodeNow === 0 ? 0 : item.episodeNow || '1'}}/{{item.episodes === 0 ? 0 : item.episodes || '1'}}]</span>
-          <a-popover title="删除?" :overlayStyle="{ width: '96px', overflow: 'hidden' }">
+          <a-popover title="删除?" :overlayStyle="{ width: '84px', overflow: 'hidden' }">
             <template #content>
               <a-button type="primary" danger @click="del(item)" size="small">删除</a-button>
             </template>

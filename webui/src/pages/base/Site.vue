@@ -73,8 +73,8 @@
           label="站点"
           name="name"
           :rules="[{ required: true, message: '${label}不可为空! ' }]">
-          <a-select size="small" v-model:value="site.name" style="width: 144px" >
-            <a-select-option v-for="site of sites" :key="site" :value="site">{{ site }}</a-select-option>
+          <a-select size="small" v-model:value="site.name"  >
+            <a-select-option :disabled="siteList.filter(item => item.name === site)[0]" v-for="site of sites" :key="site" :value="site">{{ site }}</a-select-option>
           </a-select>
         </a-form-item>
         <a-form-item
@@ -167,7 +167,7 @@ export default {
         pullRemoteTorrent: false
       },
       site: {},
-      sites: ['HaresClub', 'CHDBits', 'LemonHD', 'HDChina',
+      sites: ['HaresClub', 'LemonHD', 'HDChina',
         'HDSky', 'HDHome', 'PTerClub', 'Audiences', 'OurBits',
         'SpringSunDay', 'MTeam', 'OpenCD', 'U2', 'BeiTai',
         'TCCF', 'TLFBits', 'PTMSG', 'HDFans', 'DICMusic', 'GPW',

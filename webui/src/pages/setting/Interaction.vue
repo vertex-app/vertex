@@ -29,7 +29,7 @@
           label="交互方式"
           name="doubanPush"
           extra="微信内交互时使用的通知方式">
-          <a-select size="small" v-model:value="setting.doubanPush" style="width: 144px" >
+          <a-select size="small" v-model:value="setting.doubanPush"  >
             <a-select-option v-for="notification of notifications" :key="notification.id" v-model:value="notification.id">{{ notification.alias }}</a-select-option>
           </a-select>
         </a-form-item>
@@ -37,7 +37,7 @@
           label="媒体服务通知"
           name="webhookPushTo"
           extra="Plex 等信息的通知方式">
-          <a-select size="small" v-model:value="setting.webhookPushTo" style="width: 144px" >
+          <a-select size="small" v-model:value="setting.webhookPushTo"  >
             <a-select-option v-for="notification of notifications" :key="notification.id" v-model:value="notification.id">{{ notification.alias }}</a-select-option>
           </a-select>
         </a-form-item>

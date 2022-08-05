@@ -14,7 +14,7 @@
         <a-form-item
           label="日志等级"
           name="type">
-          <a-select size="small" v-model:value="type" style="width: 144px" >
+          <a-select size="small" v-model:value="type"  >
             <a-select-option value="info">信息</a-select-option>
             <a-select-option value="binge">豆瓣</a-select-option>
             <a-select-option value="binge-debug">豆瓣调试</a-select-option>

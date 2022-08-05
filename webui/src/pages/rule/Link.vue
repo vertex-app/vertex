@@ -53,7 +53,7 @@
           label="服务器"
           name="server"
           :rules="[{ required: true, message: '${label}不可为空! ' }]">
-          <a-select size="small" v-model:value="linkRule.server" style="width: 144px" >
+          <a-select size="small" v-model:value="linkRule.server"  >
             <a-select-option v-for="server of serverList" v-model:value="server.id" :key="server.id">{{ server.alias }}</a-select-option>
           </a-select>
         </a-form-item>

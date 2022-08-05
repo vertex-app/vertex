@@ -68,7 +68,7 @@
           label="类型"
           name="type"
           :rules="[{ required: true, message: '${label}不可为空! ' }]">
-          <a-select size="small" v-model:value="deleteRule.type" style="width: 144px" >
+          <a-select size="small" v-model:value="deleteRule.type"  >
             <a-select-option value="normal">普通</a-select-option>
             <a-select-option value="javascript">JavaScript</a-select-option>
           </a-select>
@@ -88,12 +88,12 @@
           >
             <template #bodyCell="{ column, record }">
               <template v-if="column.dataIndex === 'key'">
-                <a-select size="small" v-model:value="record.key" style="width: 144px" >
+                <a-select size="small" v-model:value="record.key"  >
                   <a-select-option v-for="conditionKey of conditionKeys" :key="conditionKey.key" :value="conditionKey.key">{{ conditionKey.name }}</a-select-option>
                 </a-select>
               </template>
               <template v-if="column.dataIndex === 'compareType'">
-                <a-select size="small" v-model:value="record.compareType" style="width: 144px" >
+                <a-select size="small" v-model:value="record.compareType"  >
                   <a-select-option value="equals">等于</a-select-option>
                   <a-select-option value="bigger">大于</a-select-option>
                   <a-select-option value="smaller">小于</a-select-option>
@@ -171,8 +171,7 @@ export default {
       {
         title: '选项',
         dataIndex: 'key',
-        width: 18,
-        fixed: true
+        width: 18
       }, {
         title: '比较类型',
         dataIndex: 'compareType',
