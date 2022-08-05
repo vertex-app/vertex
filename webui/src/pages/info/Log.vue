@@ -10,7 +10,7 @@
         :labelCol="{ span: 3 }"
         :wrapperCol="{ span: 21 }"
         autocomplete="off"
-        class='log-form'>
+        :class="`container-form-${ isMobile() ? 'mobile' : 'pc' }`">
         <a-form-item
           label="日志等级"
           name="type">

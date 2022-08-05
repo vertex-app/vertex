@@ -33,6 +33,20 @@ body {
     'Microsoft YaHei', '\u5fae\u8f6f\u96c5\u9ed1', '微软雅黑', Arial, sans-serif;
 }
 
+.container-form-mobile {
+//  width: min(calc(100vw - 32px), 1440px);
+  border-radius: 4px;
+  padding: 12px;
+  transition: all 0.5s;
+}
+
+.container-form-pc {
+//  width: min(calc(100vw - 220px), 1440px);
+  border-radius: 4px;
+  padding: 12px;
+  transition: all 0.5s;
+}
+
 /*
 html {
   overflow-y: scroll;

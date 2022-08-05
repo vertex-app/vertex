@@ -12,7 +12,7 @@
         :labelCol="{ span: 3 }"
         :wrapperCol="{ span: 21 }"
         autocomplete="off"
-        class='subscribe-detail-form'>
+        :class="`container-form-${ isMobile() ? 'mobile' : 'pc' }`">
         <a-form-item
           label="操作">
           <a-button type="primary" @click="refreshItem()">刷新</a-button>

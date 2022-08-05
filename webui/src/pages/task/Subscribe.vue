@@ -50,7 +50,7 @@
         :labelCol="{ span: 3 }"
         :wrapperCol="{ span: 21 }"
         autocomplete="off"
-        class='subscribe-form'>
+        :class="`container-form-${ isMobile() ? 'mobile' : 'pc' }`">
         <a-form-item
           label="别名"
           name="alias"
@@ -420,12 +420,5 @@ export default {
   width: 100%;
   max-width: 1440px;
   margin: 0 auto;
-}
-
-.subscribe-form {
-  width: min(calc(100vw - 32px), 1440px);
-  border-radius: 4px;
-  padding: 12px;
-  transition: all 0.5s;
 }
 </style>

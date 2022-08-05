@@ -12,7 +12,7 @@
         :labelCol="{ span: 3 }"
         :wrapperCol="{ span: 21 }"
         autocomplete="off"
-        class='interaction-setting-form'>
+        :class="`container-form-${ isMobile() ? 'mobile' : 'pc' }`">
         <a-form-item
           label="微信 Token"
           name="wechatToken"

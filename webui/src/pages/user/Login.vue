@@ -17,7 +17,7 @@
         :labelCol="{ span: 6 }"
         :wrapperCol="{ span: 16 }"
         autocomplete="off"
-        class='login-form'>
+        class="login-form">
         <div style="margin: 32px auto 6px; font-size: 32px; width: fit-content; font-weight: bold;">
           <span>Vertex</span>
         </div>

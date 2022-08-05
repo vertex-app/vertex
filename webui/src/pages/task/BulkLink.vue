@@ -13,7 +13,7 @@
         :labelCol="{ span: 3 }"
         :wrapperCol="{ span: 21 }"
         autocomplete="off"
-        class='bulk-link-form'>
+        :class="`container-form-${ isMobile() ? 'mobile' : 'pc' }`">
         <a-form-item
           label="下载器"
           name="client">
@@ -75,7 +75,7 @@
         :labelCol="{ span: 3 }"
         :wrapperCol="{ span: 21 }"
         autocomplete="off"
-        class='bulk-link-form'>
+        :class="`container-form-${ isMobile() ? 'mobile' : 'pc' }`">
         <a-form-item
           :wrapperCol="isMobile() ? { span:24 } : { span: 20, offset: 4 }">
           <a-select size="small" v-model:value="selectTorrent" style="width: calc(100% - 80px);">

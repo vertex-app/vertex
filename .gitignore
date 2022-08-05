@@ -1,5 +1,6 @@
 node_modules
 app/static
+webui/public/assets/styles
 logs
 package-lock.json
 app/data

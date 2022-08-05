@@ -10,7 +10,7 @@
         :labelCol="{ span: 3 }"
         :wrapperCol="{ span: 21 }"
         autocomplete="off"
-        class='backup-form'>
+        :class="`container-form-${ isMobile() ? 'mobile' : 'pc' }`">
         <a-form-item
           label="备份">
           <a-button size="small" type="primary" @click="backupVertex">下载备份</a-button>

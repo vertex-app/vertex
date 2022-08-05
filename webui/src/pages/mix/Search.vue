@@ -12,7 +12,7 @@
         :labelCol="{ span: 3 }"
         :wrapperCol="{ span: 21 }"
         autocomplete="off"
-        class='mix-search-form'>
+        :class="`container-form-${ isMobile() ? 'mobile' : 'pc' }`">
         <a-form-item
           label="指定客户端"
           name="sites">
@@ -297,12 +297,5 @@ export default {
   width: 100%;
   max-width: 1440px;
   margin: 0 auto;
-}
-
-.mix-search-form {
-  width: min(calc(100vw - 32px), 1440px);
-  border-radius: 4px;
-  padding: 12px;
-  transition: all 0.5s;
 }
 </style>

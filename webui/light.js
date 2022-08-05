@@ -18,7 +18,6 @@ const paths = [
 (async () => {
   for (const p of paths) {
     const lessPath = path.join(__dirname, p.path);
-    console.log(lessPath);
     await generateTheme({
       antDir: path.join(__dirname, './node_modules/ant-design-vue'), // node_modules中antd的路径
       stylesDir: path.join(__dirname, './src/style/styles'), // styles对应的目录路径

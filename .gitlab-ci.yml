@@ -21,6 +21,10 @@ generate_static:
       --data-raw "{\"key\": \"$KEY\",\"time\": \"$PUSH_TIME\",\"message\": \"$COMMIT_MESSAGE\",\"branch\": \"$CI_COMMIT_BRANCH\",\"sha1\": \"${CI_COMMIT_SHA:0:12}\", \"type\": \"start\"}"
     - cd webui
     - npm i --legacy-peer-deps
+    - mkdir ./public/assets/styles
+    - node dark
+    - node light
+    - echo '' > ./public/assets/styles/follow.less
     - npm run build
     - cd ../app
     - tar -czvf ../static.tar.gz static

@@ -13,7 +13,7 @@
         :labelCol="{ span: 3 }"
         :wrapperCol="{ span: 21 }"
         autocomplete="off"
-        class='link-form'>
+        :class="`container-form-${ isMobile() ? 'mobile' : 'pc' }`">
         <a-form-item
           label="下载器">
           <span>{{ this.torrentInfo.clientAlias }}</span>
@@ -88,7 +88,7 @@
         :labelCol="{ span: 3 }"
         :wrapperCol="{ span: 21 }"
         autocomplete="off"
-        class='link-form'>
+        :class="`container-form-${ isMobile() ? 'mobile' : 'pc' }`">
         <a-form-item
           :wrapperCol="isMobile() ? { span:24 } : { span: 20, offset: 4 }">
           <a-select size="small" v-model:value="selectFile" style="width: calc(100% - 80px);">
@@ -339,12 +339,5 @@ export default {
   width: 100%;
   max-width: 1440px;
   margin: 0 auto;
-}
-
-.link-form {
-  width: min(calc(100vw - 32px), 1440px);
-  border-radius: 4px;
-  padding: 12px;
-  transition: all 0.5s;
 }
 </style>
