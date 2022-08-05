@@ -697,7 +697,7 @@ class Douban {
           };
         });
       } else {
-        logger.info(result);
+        logger.error('远程请求种子失败:\n', result.message);
         torrents = [];
       }
     } else {

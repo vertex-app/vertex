@@ -21,6 +21,13 @@
       <a-descriptions-item label="刷流交流群">852643057</a-descriptions-item>
       <a-descriptions-item label="追剧交流群">926921776</a-descriptions-item>
     </a-descriptions>
+    <a-divider></a-divider>
+    <a-descriptions
+      title="开源代码"
+      :column="{ xxl: 4, xl: 3, lg: 3, md: 3, sm: 2, xs: 1 }"
+      >
+      <a-descriptions-item label="开源代码"><a @click="gotoGithub">GITHUB</a></a-descriptions-item>
+    </a-descriptions>
   </div>
 </template>
 <script>
