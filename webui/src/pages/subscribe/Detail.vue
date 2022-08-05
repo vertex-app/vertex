@@ -68,9 +68,9 @@
         </a-form-item>
         <a-form-item
           label="排除关键词"
-          name="episodeNow"
+          name="rejectKeys"
           extra="以 , 为分割, 各个关键词间为 或 的关系">
-          <a-input size="small" v-model:value="item.episodeNow"/>
+          <a-input size="small" v-model:value="item.rejectKeys"/>
         </a-form-item>
         <a-form-item
           label="固定季"

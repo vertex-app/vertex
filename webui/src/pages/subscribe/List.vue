@@ -109,20 +109,21 @@ export default {
   position: absolute;
   border-top: rgba(255,255,255,0.8) solid 1px;
   border-left: transparent solid;
-  border-width: 64px;
+  border-width: 32px;
 }
 
 .top-right::after {
-  content: '删除';
+  content: 'X';
   transform: rotate(45deg);
   font-size: 16px;
   color: #E87A90;
   right: 0px;
   top: 0px;
-  width: 64px;
+  width: 32px;
   height: 20px;
-  margin-top: 10px;
-  margin-right: -12px;
+  margin-top: 0;
+  margin-right: -7px;
+  font-weight: bold;
   position: absolute;
   pointer-events: auto;
   cursor: pointer;
