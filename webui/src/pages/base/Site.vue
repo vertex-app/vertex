@@ -34,6 +34,8 @@
           <span>
             <a @click="goto(record)">打开</a>
             <a-divider type="vertical" />
+            <a @click="refresh(record)">刷新</a>
+            <a-divider type="vertical" />
             <a-dropdown>
               <a class="ant-dropdown-link" @click.prevent>
                 操作
@@ -41,9 +43,6 @@
               </a>
               <template #overlay>
                 <a-menu>
-                  <a-menu-item>
-                    <a @click="refresh(record)">刷新</a>
-                  </a-menu-item>
                   <a-menu-item>
                     <a @click="modifyClick(record)">编辑</a>
                   </a-menu-item>

@@ -14,7 +14,7 @@
         autocomplete="off"
         :class="`container-form-${ isMobile() ? 'mobile' : 'pc' }`">
         <a-form-item
-          label="指定客户端"
+          label="指定站点"
           name="sites">
           <a-checkbox-group style="width: 100%;" v-model:value="qs.sites">
             <a-row>

@@ -394,13 +394,13 @@ const subscribe = {
       path: 'list',
       component: SubscribeList,
       meta: {
-        title: '订阅列表 - 订阅详情'
+        title: '订阅列表 - 影视订阅'
       }
     }, {
       path: 'detail/:douban/:id',
       component: SubscribeDetail,
       meta: {
-        title: '详情 - 订阅详情'
+        title: '详情 - 影视订阅'
       }
     }
   ]

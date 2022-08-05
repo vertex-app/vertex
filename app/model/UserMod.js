@@ -100,7 +100,7 @@ class UserMod {
           icon: ['fas', 'link']
         }]
       }, {
-        title: '订阅详情',
+        title: '影视订阅',
         path: '/subscribe',
         icon: ['fas', 'tv'],
         sub: [{

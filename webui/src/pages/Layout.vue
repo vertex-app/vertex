@@ -18,7 +18,7 @@
           </span>
         </div>
         <template v-for="item of menu">
-          <a-menu-item v-if="!item.sub"  :key="item.path" @click="$goto(item.path, $router)">
+          <a-menu-item v-if="!item.sub"  :key="item.path" @click="goto(item.path)">
             <template #icon>
               <fa :icon="item.icon" style="width: 32px;"></fa>
             </template>
@@ -31,7 +31,7 @@
             <template #title>
               {{ item.title }}
             </template>
-            <a-menu-item v-for="subItem of item.sub" :key="subItem.path" @click="$goto(subItem.path, $router)">
+            <a-menu-item v-for="subItem of item.sub" :key="subItem.path" @click="goto(subItem.path)">
               <template #icon>
                 <fa :icon="subItem.icon" style="width: 32px;"></fa>
               </template>
@@ -57,7 +57,7 @@
           </span>
         </div>
         <template v-for="item of menu">
-          <a-menu-item v-if="!item.sub" :key="item.path" @click="$goto(item.path, $router); visible = false;">
+          <a-menu-item v-if="!item.sub" :key="item.path" @click="goto(item.path); visible = false;">
             <template #icon>
               <fa :icon="item.icon" style="width: 32px;"></fa>
             </template>
@@ -70,7 +70,7 @@
             <template #title>
               {{ item.title }}
             </template>
-            <a-menu-item v-for="subItem of item.sub" :key="subItem.path" @click="$goto(subItem.path, $router); visible = false;">
+            <a-menu-item v-for="subItem of item.sub" :key="subItem.path" @click="goto(subItem.path); visible = false;">
               <template #icon>
                 <fa :icon="subItem.icon" style="width: 32px;"></fa>
               </template>
@@ -118,6 +118,19 @@ export default {
       } else {
         return false;
       }
+    },
+    async goto (to) {
+      this.$goto(to, this.$router);
+      setTimeout(() => {
+        this.selectedKeys = [this.$route.path];
+        const keys = [];
+        for (const item of this.menu.filter(item => item.sub)) {
+          if (this.$route.path.startsWith(item.path)) {
+            keys.push(item.path);
+          }
+        }
+        this.openKeys = keys;
+      }, 100);
     }
   },
   async mounted () {

@@ -54,9 +54,11 @@
           {{ $moment(record[column.dataIndex] * 1000).format('YYYY-MM-DD HH:mm:ss') }}
         </template>
         <template v-if="column.title === '操作'">
-          <a @click="gotoLink(record)">链接</a>
-          <a-divider type="vertical" />
           <a @click="gotoDetail(record)">打开</a>
+          <a-divider type="vertical" />
+          <a @click="gotoDetail(record)">代理</a>
+          <a-divider type="vertical" />
+          <a @click="gotoLink(record)">软/硬链接</a>
         </template>
       </template>
     </a-table>
@@ -79,7 +81,7 @@ export default {
       }, {
         title: '分类',
         dataIndex: 'category',
-        width: 40
+        width: 32
       }, {
         title: '种子大小',
         dataIndex: 'size',
@@ -94,7 +96,7 @@ export default {
         width: 32
       }, {
         title: '操作',
-        width: 40
+        width: this.isMobile() ? 72 : 48
       }
     ];
     const qs = {
