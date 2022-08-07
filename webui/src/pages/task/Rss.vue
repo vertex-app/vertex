@@ -253,8 +253,7 @@
         <a-form-item
           label="推送种子文件"
           name="pushTorrentFile"
-          extra="是否直接推送种子文件, 默认推送种子下载链接至下载器"
-          :rules="[{ required: true, message: '${label}不可为空! ' }]">
+          extra="是否直接推送种子文件, 默认推送种子下载链接至下载器">
           <a-checkbox v-model:checked="rss.pushTorrentFile">推送种子文件</a-checkbox>
         </a-form-item>
         <a-form-item

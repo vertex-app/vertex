@@ -345,6 +345,7 @@ class Douban {
       wish.mainCreator = doubanInfo.mainCreator;
       wish.episodes = doubanInfo.episodes;
       wish.releaseAt = doubanInfo.releaseAt;
+      wish.searchKey = '';
       wishes.push(wish);
     }
     const _doubanSet = util.listDoubanSet().filter(item => item.id === this.id)[0];
@@ -670,14 +671,14 @@ class Douban {
   async selectTorrent (_wish, imdb = false, remote = false) {
     const wish = { ..._wish };
     wish.doubanId = this.id;
-    const searchKey = wish.name.split('/')[0].replace(/[!\uff01\uff1a.。:?？，,·・]/g, ' ').replace(/([^\d]?)([\d一二三四五六七八九十]+)([^\d])/g, '$1 $2 $3').replace(/([^\d])([\d一二三四五六七八九十]+)([^\d]?)/g, '$1 $2 $3').replace(/ +/g, ' ').trim();
+    const searchKey = (wish.searchKey || wish.name.split('/')[0]).replace(/[!\uff01\uff1a.。:?？，,·・]/g, ' ').replace(/([^\d]?)([\d一二三四五六七八九十]+)([^\d])/g, '$1 $2 $3').replace(/([^\d])([\d一二三四五六七八九十]+)([^\d]?)/g, '$1 $2 $3').replace(/ +/g, ' ').trim();
     if (!wish.imdb && imdb) {
       logger.binge(this.alias, '无 IMDB 编号, 跳过搜索种子');
       return false;
     }
     let torrents = [];
     if (remote) {
-      logger.binge(this.alias, '启动搜索任务, 搜索类型: 远程搜索', '名称', wish.name, '豆瓣ID', wish.id, 'imdb', wish.imdb);
+      logger.binge(this.alias, '启动搜索任务, 搜索类型: 远程搜索', '影视:', wish.name, '关键词:', searchKey, '豆瓣ID', wish.id, 'imdb', wish.imdb);
       const result = JSON.parse(await this._searchRemoteTorrents(searchKey));
       if (result.success) {
         torrents = result.data.map(item => {
@@ -701,7 +702,7 @@ class Douban {
         torrents = [];
       }
     } else {
-      logger.binge(this.alias, '启动搜索任务, 搜索类型:', imdb ? 'imdb' : '名称', '名称', wish.name, '豆瓣ID', wish.id, 'imdb', wish.imdb, '开始搜索以下站点', this.sites.join(', '));
+      logger.binge(this.alias, '启动搜索任务, 搜索类型:', imdb ? 'imdb' : '名称', wish.name, '影视:', wish.name, '豆瓣ID', wish.id, 'imdb', wish.imdb, '开始搜索以下站点', this.sites.join(', '));
       const result = await Promise.all(this.sites.map(i => global.runningSite[i].search(imdb ? wish.imdb : searchKey)));
       torrents = result.map(i => i.torrentList).flat();
     }
@@ -724,7 +725,7 @@ class Douban {
     }
     torrents = torrents.filter(item => {
       let subtitle = item.subtitle;
-      const name = wish.name.split('/')[0].replace(/[!\uff01\uff1a.。:?？，,·・]/g, ' ').trim();
+      const name = (wish.searchKey || wish.name.split('/')[0]).replace(/[!\uff01\uff1a.。:?？，,·・]/g, ' ').trim();
       const serachKeys = name.split(/[^0-9a-zA-Z\u4e00-\u9fa5*]|丨/g).filter(item => item);
       if (!subtitle) return false;
       subtitle = subtitle.replace(/(第[\d一二三四五六七八九十]+季)/g, ' $1 ');

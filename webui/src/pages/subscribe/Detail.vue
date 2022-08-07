@@ -61,6 +61,12 @@
           <a-checkbox v-model:checked="item.downloaded">已完成</a-checkbox>
         </a-form-item>
         <a-form-item
+          label="搜索使用的关键词"
+          name="searchKey"
+          extra="搜索种子时使用的关键词, 留空不启用">
+          <a-input size="small" v-model:value="item.searchKey"/>
+        </a-form-item>
+        <a-form-item
           label="包含关键词"
           name="acceptKeys"
           extra="以 , 为分割, 各个关键词间为 且 的关系">
