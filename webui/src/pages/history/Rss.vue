@@ -75,7 +75,9 @@ export default {
     ];
     const qs = {
       page: 1,
-      length: 20
+      length: 20,
+      type: 'rss',
+      rss: ''
     };
     const pagination = {
       position: ['topRight', 'bottomRight'],

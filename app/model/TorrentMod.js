@@ -451,16 +451,14 @@ class TorrentMod {
   async listHistory (options) {
     const index = options.length * (options.page - 1);
     let where = 'where 1 = 1';
-    if (options.rss && options.rss === 'deleted') {
-      where += ` and rss_id NOT IN ('${util.listRss().map(item => item.id).join('\', \'')}')`;
-    } else if (options.rss) {
+    if (options.type === 'rss') {
+      where += ' and record_type IN (1,2,3)';
+    }
+    if (options.rss) {
       where += ` and rss_id = '${options.rss}'`;
     }
     if (options.key) {
       where += ` and name like '%${options.key}%'`;
-    }
-    if (options.type) {
-      where += ` and record_type like '%${options.type}%'`;
     }
     const params = [options.length, index];
     const torrents = await util.getRecords('select rss_id as rssId, name, size, link, record_type as recordType, record_note as recordNote, upload, download, tracker, record_time as recordTime, add_time as addTime, delete_time as deleteTime from torrents ' + where + ' order by id desc limit ? offset ?',

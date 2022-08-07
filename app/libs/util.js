@@ -92,7 +92,7 @@ exports.requestPromise = async function (_options, usePuppeteer = true) {
     }
   }
   const res = await exports._requestPromise(options);
-  if (usePuppeteer && res.body && typeof res.body === 'string' && (res.body.indexOf('jschl-answer') !== -1 || (res.body.indexOf('cloudflare-static') !== -1 && res.body.indexOf('email-decode.min.js') === -1))) {
+  if (usePuppeteer && res.body && typeof res.body === 'string' && (res.body.indexOf('trk_jschal_js') !== -1 || res.body.indexOf('jschl-answer') !== -1 || (res.body.indexOf('cloudflare-static') !== -1 && res.body.indexOf('email-decode.min.js') === -1))) {
     logger.info(new url.URL(options.url).hostname, '疑似遇到 5s 盾, 启用 Puppeteer 抓取页面....');
     return await exports.requestUsePuppeteer(options);
   }
@@ -106,7 +106,9 @@ exports.requestUsePuppeteer = async function (options) {
     if (!browser || browser.process().exitCode === 0) {
       browser = await puppeteer.launch({
         executablePath: '/usr/bin/chromium',
-        args: ['--no-sandbox'],
+        args: [
+          '--no-sandbox'
+        ],
         headless: false
       });
     }
@@ -134,7 +136,7 @@ exports.requestUsePuppeteer = async function (options) {
       if (cookieList.length !== 0) await page.setCookie(...cookieList);
     }
     await page.goto(options.url, {});
-    await page.waitForTimeout(10000);
+    await page.waitForTimeout(30000);
     const body = await page.content();
     await page.close();
     if ((await browser.pages()).length === 1) {
