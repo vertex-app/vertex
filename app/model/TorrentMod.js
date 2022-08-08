@@ -317,7 +317,7 @@ class TorrentMod {
         if (file.size < _linkRule.minFileSize) continue;
         if (_linkRule.excludeKeys && _linkRule.excludeKeys.split(',').some(item => filename.indexOf(item) !== -1)) continue;
         const seriesName = mediaName.split('/')[0].trim().replace(/ /g, '.').replace(/\.?[第][\d一二三四五六七八九十]+[季部]/, '');
-        const prefix = _linkRule.keepSeriesName ? seriesName + '.' : '';
+        const prefix = _linkRule.keepSeriesName ? '{SERIESNAME}' + '.' : '';
         const suffixKeys = [];
         const reservedKeys = (_linkRule.reservedKeys || '').split(',');
         for (const key of reservedKeys) {

@@ -116,6 +116,16 @@
           <span style="font-size: 16px; font-weight: bold;">链接文件列表</span>
         </template>
         <template #bodyCell="{ column, record }">
+          <template v-if="column.dataIndex === 'seriesName'">
+            <a-input-group compact>
+              <a-input size="small" @change="() => refreshSeriesName()" v-model:value="record.seriesName" style="width: calc(100% - 20px)"/>
+              <fa
+                @click="() => { record.seriesNameUnlink = !record.seriesNameUnlink; }"
+                :icon="['fas', record.seriesNameUnlink ? 'unlink' : 'link']"
+                :style="{ width: '16px', height: '24px', 'margin-left': '4px', color: record.seriesNameUnlink ? 'red' : 'blue', cursor: 'pointer' }">
+              </fa>
+            </a-input-group>
+          </template>
           <template v-if="column.dataIndex === 'season'">
             <a-input-group compact>
               <a-input size="small" @change="() => refreshSeason()" v-model:value="record.season" style="width: calc(100% - 20px)"/>
@@ -173,17 +183,17 @@ export default {
       {
         title: '季',
         dataIndex: 'season',
-        width: 15,
+        width: 10,
         fixed: true
       }, {
         title: '集',
         dataIndex: 'episode',
-        width: 15,
+        width: 10,
         fixed: true
       }, {
         title: '剧集名称',
         dataIndex: 'seriesName',
-        width: 15
+        width: 25
       }, {
         title: '链接文件名称',
         dataIndex: 'linkFile',
@@ -292,6 +302,7 @@ export default {
             newLinkFile: item.linkFile
               .replace('{SEASON}', 'S' + '0'.repeat(2 - ('' + item.season).length) + item.season)
               .replace('{EPISODE}', 'E' + '0'.repeat(Math.max(0, maxEpisode - ('' + item.episode).length)) + item.episode)
+              .replace('{SERIESNAME}', item.seriesName)
           };
         });
     },
@@ -305,7 +316,8 @@ export default {
           value.season = +fileList[index - 1].season || (+fileList[index - 1].season === 0 ? 0 : 1);
         }
         value.newLinkFile = value.linkFile.replace('{SEASON}', 'S' + '0'.repeat(2 - ('' + value.season).length) + value.season)
-          .replace('{EPISODE}', 'E' + '0'.repeat(Math.max(0, maxEpisode - ('' + value.episode).length)) + value.episode);
+          .replace('{EPISODE}', 'E' + '0'.repeat(Math.max(0, maxEpisode - ('' + value.episode).length)) + value.episode)
+          .replace('{SERIESNAME}', value.seriesName);
       }
     },
     refreshEpisode () {
@@ -318,7 +330,20 @@ export default {
           value.episode = (+fileList[index - 1].episode || (+fileList[index - 1].episode === 0 ? 0 : 1)) + 1;
         }
         value.newLinkFile = value.linkFile.replace('{SEASON}', 'S' + '0'.repeat(2 - ('' + value.season).length) + value.season)
-          .replace('{EPISODE}', 'E' + '0'.repeat(Math.max(0, maxEpisode - ('' + value.episode).length)) + value.episode);
+          .replace('{EPISODE}', 'E' + '0'.repeat(Math.max(0, maxEpisode - ('' + value.episode).length)) + value.episode)
+          .replace('{SERIESNAME}', value.seriesName);
+      }
+    },
+    refreshSeriesName () {
+      const maxEpisode = ('' + Math.max(10, ...this.fileList.map(item => item.episode))).length;
+      const fileList = this.fileList.filter(item => item.episode !== -999);
+      for (const [index, value] of fileList.entries()) {
+        if (!value.seriesNameUnlink && index !== 0) {
+          value.seriesName = fileList[index - 1].seriesName;
+        }
+        value.newLinkFile = value.linkFile.replace('{SEASON}', 'S' + '0'.repeat(2 - ('' + value.season).length) + value.season)
+          .replace('{EPISODE}', 'E' + '0'.repeat(Math.max(0, maxEpisode - ('' + value.episode).length)) + value.episode)
+          .replace('{SERIESNAME}', value.seriesName);
       }
     }
   },
