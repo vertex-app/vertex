@@ -134,7 +134,9 @@ export default {
     },
     async handleChange (pagination, filters) {
       this.qs.page = pagination.current;
-      this.qs.rss = filters.rssId[0];
+      if (filters.rssId) {
+        this.qs.rss = filters.rssId[0];
+      }
       this.listHistory();
     }
   },

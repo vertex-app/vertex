@@ -17,6 +17,7 @@
           label="操作">
           <a-button type="primary" @click="refreshItem()">刷新</a-button>
           <a-button type="primary" danger style="margin-left: 12px;" @click="deleteItem()">删除</a-button>
+          <a-button style="margin-left: 12px;" @click="$goto('/subscribe/list', $router);">返回</a-button>
         </a-form-item>
         <a-divider></a-divider>
         <a-form-item
