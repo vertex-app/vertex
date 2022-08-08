@@ -43,6 +43,7 @@ import SettingBase from '@/pages/setting/Base';
 import SettingStyle from '@/pages/setting/Style';
 import SettingSecurity from '@/pages/setting/Security';
 import SettingInteraction from '@/pages/setting/Interaction';
+import SettingMenu from '@/pages/setting/Menu';
 import SettingBackup from '@/pages/setting/Backup';
 
 import SubscribeList from '@/pages/subscribe/List';
@@ -233,6 +234,12 @@ const setting = {
       component: SettingInteraction,
       meta: {
         title: '交互设置 - 系统设置'
+      }
+    }, {
+      path: 'menu',
+      component: SettingMenu,
+      meta: {
+        title: '菜单设置 - 系统设置'
       }
     }, {
       path: 'backup',

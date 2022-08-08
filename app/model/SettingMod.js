@@ -47,6 +47,7 @@ class SettingMod {
       password: options.password
     };
     global.webhookPushTo = options.webhookPushTo;
+    global.menu = options.menu || [];
     global.userAgent = options.userAgent;
     global.apiKey = options.apiKey;
     global.theme = options.theme;

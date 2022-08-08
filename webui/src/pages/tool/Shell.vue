@@ -32,7 +32,6 @@ export default {
         // rendererType: 'dom',
         cursorStyle: 'bar'
       });
-      console.log((window.document.body.clientWidth - 232) / 6, (window.document.body.clientHeight - 96) / 16);
       const websocket = this.socket;
       const attachAddon = new AttachAddon(this.socket);
       const fitAddon = new FitAddon();

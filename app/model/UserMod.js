@@ -189,6 +189,10 @@ class UserMod {
           path: '/setting/interaction',
           icon: ['fas', 'fire']
         }, {
+          title: '菜单设置',
+          path: '/setting/menu',
+          icon: ['fas', 'bars']
+        }, {
           title: '备份还原',
           path: '/setting/backup',
           icon: ['fas', 'floppy-disk']
@@ -212,6 +216,18 @@ class UserMod {
         }]
       }
     ];
+    for (const m of menu) {
+      if (global.menu[0] && global.menu.indexOf(m.path) !== -1) {
+        m.hidden = true;
+      }
+      if (m.sub) {
+        for (const mm of m.sub) {
+          if (global.menu[0] && global.menu.indexOf(mm.path) !== -1) {
+            mm.hidden = true;
+          }
+        }
+      }
+    }
     return { menu };
   };
 }
