@@ -176,7 +176,7 @@ class WebhookMod {
           return '';
         }
         try {
-          await global.runningDouban[movie.doubanId].addWish(movie.id, content.xml.SelectedItems[0].SelectedItem[1].OptionIds[0].OptionId[0], content.xml.SelectedItems[0].SelectedItem[2].OptionIds[0].OptionId[0]);
+          await global.runningDouban[movie.doubanId].addWish(movie.id, content.xml.SelectedItems[0].SelectedItem[1].OptionIds[0].OptionId[0]);
         } catch (e) {
           logger.error(e);
           await global.doubanPush.selectWish('添加失败: ' + e.message);
@@ -258,18 +258,9 @@ class WebhookMod {
           question_key: 'tagIndex',
           title: '选择标签',
           option_list: Object.keys(global.runningDouban[douban].categories).map(item => { return { id: item, text: item }; })
-        },
-        {
-          question_key: 'cronIndex',
-          title: '选择 Cron',
-          option_list: [...new Set([global.runningDouban[douban].defaultRefreshCron]
-            .concat(global.runningDouban[douban].cronList.split('\n')
-              .map(item => item.trim())
-              .filter(item => item)
-            ))].map(item => { return { id: item, text: item }; })
         }
       ];
-      await global.doubanPush.pushWeChat('Vertex', '企业微信请进行选择\n普通微信请回复\n序号/标签/Cron, Cron 可空, 默认为 ' + global.runningDouban[douban].defaultRefreshCron);
+      await global.doubanPush.pushWeChat('Vertex', '企业微信请进行选择\n普通微信请回复\n序号/标签');
       await global.doubanPush.pushWeChatSelector('选择想看', '选择以下项目添加想看项目', selectors, 'selectMedia');
       await redis.setWithExpire('vertex:select:movies', JSON.stringify(result), 300);
       return '';

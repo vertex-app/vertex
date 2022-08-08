@@ -24,7 +24,6 @@ class Douban {
     this.sites = douban.sites;
     this.client = douban.client;
     this.cron = douban.cron;
-    this.cronList = douban.cronList || '';
     this.advancedMode = douban.advancedMode;
     this.defaultRefreshCron = '30 1 * * *';
     this.enableWechatLink = douban.enableWechatLink;
@@ -42,13 +41,12 @@ class Douban {
     this.wishes = (util.listDoubanSet().filter(item => item.id === this.id)[0] || {}).wishes || [];
     for (const wish of this.wishes) {
       if (!wish.downloaded) {
-        this.refreshWishJobs[wish.id] = cron.schedule(wish.cron || this.defaultRefreshCron, () => this._refreshWish(wish.id));
+        this.refreshWishJobs[wish.id] = cron.schedule(this.defaultRefreshCron, () => this._refreshWish(wish.id));
         if (this.advancedMode) {
           this.searchRemoteTorrentJobs[wish.id] = cron.schedule('*/2 * * * *', () => this._refreshWish(wish.id, true));
         }
       }
     };
-    this.cronCache = {};
     logger.binge('豆瓣账号', this.alias, '初始化完毕');
   };
 
@@ -239,7 +237,7 @@ class Douban {
           delete this.searchRemoteTorrentJobs[wish.id];
         }
         if (!wish.downloaded) {
-          this.refreshWishJobs[wish.id] = cron.schedule(wish.cron || this.defaultRefreshCron, () => this._refreshWish(wish.id));
+          this.refreshWishJobs[wish.id] = cron.schedule(this.defaultRefreshCron, () => this._refreshWish(wish.id));
           if (this.advancedMode) {
             this.searchRemoteTorrentJobs[wish.id] = cron.schedule('*/2 * * * *', () => this._refreshWish(wish.id, true));
           }
@@ -380,7 +378,6 @@ class Douban {
             delete wish.episodes;
           }
           try {
-            wish.cron = this.cronCache[wish.id] || '';
             this.wishes.push(wish);
             await this.ntf.addDoubanWish(this.alias, wish);
             this.updateWish(wish);
@@ -962,13 +959,10 @@ class Douban {
     return result;
   }
 
-  async addWish (id, tag, cron) {
+  async addWish (id, tag) {
     const ck = (this.cookie.split(';').map(item => item.trim().split('=')).filter(item => item[0] === 'ck')[0] || [])[1];
     if (!ck) {
       throw new Error('Cookie 内未包含 ck 信息');
-    }
-    if (cron) {
-      this.cronCache[id] = cron;
     }
     const res = await this._post(`https://movie.douban.com/j/subject/${id}/interest`, {
       ck,

@@ -20,6 +20,10 @@ class UserMod {
         path: '/metric',
         icon: ['fas', 'chart-line'],
         sub: [{
+          title: '站点',
+          path: '/metric/site',
+          icon: ['fas', 'location']
+        }, {
           title: '服务器',
           path: '/metric/server',
           icon: ['fas', 'server']
@@ -27,10 +31,6 @@ class UserMod {
           title: '下载器',
           path: '/metric/downloader',
           icon: ['fas', 'download']
-        }, {
-          title: '站点',
-          path: '/metric/site',
-          icon: ['fas', 'location']
         }]
       }, {
         title: '基础组件',
