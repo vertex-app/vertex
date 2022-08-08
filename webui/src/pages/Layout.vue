@@ -18,13 +18,13 @@
           </span>
         </div>
         <template v-for="item of menu">
-          <a-menu-item v-if="!item.hidden && !item.sub"  :key="item.path" @click="goto(item.path)">
+          <a-menu-item v-if="!item.hidden && !item.sub" :key="item.path" @click="goto(item.path)">
             <template #icon>
               <fa :icon="item.icon" style="width: 32px;"></fa>
             </template>
             {{ item.title }}
           </a-menu-item>
-          <a-sub-menu v-if="!item.hidden && item.sub"  :key="item.path">
+          <a-sub-menu v-if="!item.hidden && item.sub" :key="item.path">
             <template #icon>
               <fa :icon="item.icon" style="width: 32px;"></fa>
             </template>
@@ -32,7 +32,7 @@
               {{ item.title }}
             </template>
             <template v-for="subItem of item.sub" :key="subItem.path">
-              <a-menu-item v-if="!subItem.hidden" @click="goto(subItem.path)">
+              <a-menu-item v-if="!subItem.hidden" @click="goto(subItem.path)" :key="subItem.path">
                 <template #icon>
                   <fa :icon="subItem.icon" style="width: 32px;"></fa>
                 </template>
@@ -73,7 +73,7 @@
               {{ item.title }}
             </template>
             <template v-for="subItem of item.sub" :key="subItem.path">
-              <a-menu-item v-if="!subItem.hidden" @click="goto(subItem.path); visible = false;">
+              <a-menu-item v-if="!subItem.hidden" @click="goto(subItem.path); visible = false;" :key="subItem.path">
                 <template #icon>
                   <fa :icon="subItem.icon" style="width: 32px;"></fa>
                 </template>

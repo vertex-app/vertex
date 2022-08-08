@@ -20,14 +20,6 @@ class TorrentMod {
         torrentList.push(_torrent);
       }
     }
-    const res = await util.getRecords(`select link, hash from torrents where hash in ('${torrentList.map(item => item.hash).join('\',\'')}')`);
-    const hashMap = {};
-    for (const r of res) {
-      hashMap[r.hash] = r.link;
-    }
-    for (const torrent of torrentList) {
-      torrent.link = hashMap[torrent.hash] || false;
-    }
     if (options.sortKey) {
       const sortType = options.sortType || 'desc';
       const sortKey = options.sortKey;
@@ -42,9 +34,19 @@ class TorrentMod {
         return sortType === 'asc' ? a[sortKey] - b[sortKey] : b[sortKey] - a[sortKey];
       });
     }
+    const total = torrentList.length;
+    torrentList = torrentList.slice((options.page - 1) * options.length, options.page * options.length);
+    const res = await util.getRecords(`select link, hash from torrents where hash in ('${torrentList.map(item => item.hash).join('\',\'')}')`);
+    const hashMap = {};
+    for (const r of res) {
+      hashMap[r.hash] = r.link;
+    }
+    for (const torrent of torrentList) {
+      torrent.link = hashMap[torrent.hash] || false;
+    }
     return {
-      torrents: torrentList.slice((options.page - 1) * options.length, options.page * options.length),
-      total: torrentList.length
+      torrents: torrentList,
+      total
     };
   };
 
