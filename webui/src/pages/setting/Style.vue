@@ -48,7 +48,7 @@
           <a-input size="small" v-model:value="setting.jellyfinCover"/>
         </a-form-item>
         <a-form-item
-          :wrapperCol="isMobile() ? { span:24 } : { span: 20, offset: 4 }">
+          :wrapperCol="isMobile() ? { span:24 } : { span: 21, offset: 3 }">
           <a-button type="primary" html-type="submit" style="margin-top: 24px; margin-bottom: 48px;">保存</a-button>
         </a-form-item>
       </a-form>

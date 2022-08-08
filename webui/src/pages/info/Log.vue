@@ -24,7 +24,7 @@
           </a-select>
         </a-form-item>
         <a-form-item
-          :wrapperCol="isMobile() ? { span:24 } : { span: 20, offset: 4 }">
+          :wrapperCol="isMobile() ? { span:24 } : { span: 21, offset: 3 }">
           <a-button size="small" type="primary" @click="getLog">查询</a-button>
         </a-form-item>
         <a-form-item

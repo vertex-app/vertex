@@ -453,15 +453,21 @@ class TorrentMod {
     let where = 'where 1 = 1';
     if (options.type === 'rss') {
       where += ' and record_type IN (1,2,3)';
+    } else if (options.type === 'bingewatching') {
+      where += ' and record_type IN (4,6,98,99)';
     }
     if (options.rss) {
-      where += ` and rss_id = '${options.rss}'`;
+      if (options.rss === 'deleted') {
+        where += ` and rss_id not in ('${util.listRss().map(item => item.id).join('\',\'')}')`;
+      } else {
+        where += ` and rss_id = '${options.rss}'`;
+      }
     }
     if (options.key) {
       where += ` and name like '%${options.key}%'`;
     }
     const params = [options.length, index];
-    const torrents = await util.getRecords('select rss_id as rssId, name, size, link, record_type as recordType, record_note as recordNote, upload, download, tracker, record_time as recordTime, add_time as addTime, delete_time as deleteTime from torrents ' + where + ' order by id desc limit ? offset ?',
+    const torrents = await util.getRecords('select rss_id as rssId, name, size, link, record_type as recordType, record_note as recordNote, upload, download, tracker, record_time as recordTime, add_time as addTime, delete_time as deleteTime, hash from torrents ' + where + ' order by id desc limit ? offset ?',
       params);
     const total = (await util.getRecord('select count(*) as total from torrents ' + where)).total;
     return { torrents, total };

@@ -1,16 +1,95 @@
 <template>
   <div style="font-size: 24px; font-weight: bold;">订阅历史</div>
   <a-divider></a-divider>
-  <div class="subscribe" >
-    <div style="text-align: left; ">
-    </div>
+  <div class="rss" >
+    <a-table
+      :style="`font-size: ${isMobile() ? '12px': '14px'};`"
+      :columns="columns"
+      size="small"
+      :loading="loading"
+      :data-source="torrents"
+      :pagination="pagination"
+      @change="handleChange"
+      :scroll="{ x: 960 }"
+    >
+      <template #title>
+        <span style="font-size: 16px; font-weight: bold;">订阅历史</span>
+      </template>
+      <template #bodyCell="{ column, record }">
+        <template v-if="column.dataIndex === 'mediaName' && [6, 99].indexOf(record.recordType) !== -1">
+          {{ JSON.parse(record.recordNote).wish.name }}
+        </template>
+        <template v-if="column.dataIndex === 'mediaName' && [6, 99].indexOf(record.recordType) === -1">
+          种子推送
+        </template>
+        <template v-if="['size', 'upload', 'download'].indexOf(column.dataIndex) !== -1">
+          {{ $formatSize(record[column.dataIndex]) }}
+        </template>
+        <template v-if="['recordTime', 'deleteTime'].indexOf(column.dataIndex) !== -1 && record[column.dataIndex]">
+          {{ $moment(record[column.dataIndex] * 1000).format('YYYY-MM-DD HH:mm:ss') }}
+        </template>
+        <template v-if="column.dataIndex === 'recordNote'">
+          <span>{{ record.recordNote.indexOf('wish') !== -1 ? '豆瓣' : record.recordNote }}</span>
+        </template>
+        <template v-if="column.title === '操作'">
+          <a @click="gotoDetail(record)">打开</a>
+          <a-divider type="vertical" />
+          <a @click="gotoLink(record)">软/硬链接</a>
+        </template>
+      </template>
+    </a-table>
   </div>
 </template>
 <script>
 export default {
   data () {
+    const columns = [
+      {
+        title: '剧集',
+        dataIndex: 'mediaName',
+        width: 18,
+        fixed: true
+      }, {
+        title: '种子名称',
+        dataIndex: 'name',
+        width: 120
+      }, {
+        title: '种子大小',
+        dataIndex: 'size',
+        width: 24
+      }, {
+        title: '记录时间',
+        dataIndex: 'recordTime',
+        width: 32
+      }, {
+        title: '种子状态',
+        dataIndex: 'recordNote',
+        width: 32
+      }, {
+        title: '操作',
+        dataIndex: 'option',
+        width: 32
+      }
+    ];
+    const qs = {
+      page: 1,
+      length: 20,
+      type: 'bingewatching',
+      rss: ''
+    };
+    const pagination = {
+      position: ['topRight', 'bottomRight'],
+      total: 0,
+      pageSize: qs.length,
+      showSizeChanger: false
+    };
     return {
-      setting: {}
+      loading: true,
+      pagination,
+      columns,
+      qs,
+      torrents: [],
+      rssList: []
     };
   },
   methods: {
@@ -21,39 +100,39 @@ export default {
         return false;
       }
     },
-    async get () {
+    async listHistory () {
+      this.loading = true;
       try {
-        const s = (await this.$api().setting.get()).data;
-        this.setting = {
-          userAgent: s.userAgent,
-          loggerLevel: s.loggerLevel,
-          telegramProxy: s.telegramProxy
-        };
+        const res = (await this.$api().torrent.listHistory(this.qs)).data;
+        this.torrents = res.torrents;
+        this.pagination.total = res.total;
       } catch (e) {
         await this.$message().error(e.message);
       }
+      this.loading = false;
     },
-    async modify () {
-      try {
-        await this.$api().setting.modify(this.setting);
-        await this.$message().success('修改成功, 部分设置可能需要刷新页面生效.');
-        this.get();
-      } catch (e) {
-        await this.$message().error(e.message);
-      }
+    async gotoDetail (record) {
+      if (!record.link) return await this.$message().error('链接不存在');
+      window.open(record.link);
+    },
+    async handleChange (pagination, filters) {
+      this.qs.page = pagination.current;
+      this.listHistory();
+    },
+    async gotoLink (record) {
+      window.open('/task/link?hash=' + record.hash);
     }
   },
   async mounted () {
-    await this.get();
+    this.listHistory();
   }
 };
 </script>
 <style scoped>
-.subscribe {
+.rss {
   height: calc(100% - 92px);
   width: 100%;
   max-width: 1440px;
   margin: 0 auto;
-  text-align: center;
 }
 </style>

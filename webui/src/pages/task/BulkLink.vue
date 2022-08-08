@@ -60,7 +60,7 @@
           <a-input size="small" v-model:value="bulkLinkInfo.keyword"/>
         </a-form-item>
         <a-form-item
-          :wrapperCol="isMobile() ? { span:24 } : { span: 20, offset: 4 }">
+          :wrapperCol="isMobile() ? { span:24 } : { span: 21, offset: 3 }">
           <a-button type="primary" html-type="submit" style="margin-top: 24px; margin-bottom: 48px;">检查</a-button>
           <a-button type="primary" danger style="margin-left: 12px; margin-top: 24px; margin-bottom: 48px;"  @click="doScrape">识别</a-button>
           <a-button type="primary" danger style="margin-left: 12px; margin-top: 24px; margin-bottom: 48px;"  @click="doLink">执行</a-button>
@@ -77,7 +77,7 @@
         autocomplete="off"
         :class="`container-form-${ isMobile() ? 'mobile' : 'pc' }`">
         <a-form-item
-          :wrapperCol="isMobile() ? { span:24 } : { span: 20, offset: 4 }">
+          :wrapperCol="isMobile() ? { span:24 } : { span: 21, offset: 3 }">
           <a-select size="small" v-model:value="selectTorrent" style="width: calc(100% - 80px);">
             <a-select-option
               :disabled="torrent.visible"

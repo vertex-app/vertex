@@ -36,5 +36,10 @@ export default {
   editItem: async (wish) => {
     const url = '/api/subscribe/editWish';
     return await post(url, wish);
+  },
+  relink: async (qs) => {
+    const qsString = Object.keys(qs).filter(item => qs[item]).map(item => `${item}=${encodeURIComponent(qs[item])}`).join('&');
+    const url = `/api/subscribe/relink?${qsString}`;
+    return await get(url);
   }
 };

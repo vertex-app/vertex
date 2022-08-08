@@ -29,6 +29,7 @@
           <span>{{ record.recordNote.indexOf('wish') !== -1 ? '豆瓣' : record.recordNote }}</span>
         </template>
         <template v-if="column.title === '操作'">
+          <a @click="gotoDetail(record)">打开</a>
         </template>
       </template>
     </a-table>
@@ -42,6 +43,7 @@ export default {
         title: 'RSS',
         dataIndex: 'rssId',
         width: 18,
+        filterMultiple: false,
         fixed: true
       }, {
         title: '种子名称',
@@ -70,6 +72,10 @@ export default {
       }, {
         title: '种子状态',
         dataIndex: 'recordNote',
+        width: 32
+      }, {
+        title: '操作',
+        dataIndex: 'option',
         width: 32
       }
     ];
@@ -117,12 +123,18 @@ export default {
       try {
         const res = await this.$api().rss.list();
         this.rssList = res.data;
+        this.columns[0].filters = [...this.rssList.map(item => ({ text: item.alias, value: item.id })), { text: '已删除', value: 'deleted' }];
       } catch (e) {
         this.$message().error(e.message);
       }
     },
-    async handleChange (pagination) {
+    async gotoDetail (record) {
+      if (!record.link) return await this.$message().error('链接不存在');
+      window.open(record.link);
+    },
+    async handleChange (pagination, filters) {
       this.qs.page = pagination.current;
+      this.qs.rss = filters.rssId[0];
       this.listHistory();
     }
   },
