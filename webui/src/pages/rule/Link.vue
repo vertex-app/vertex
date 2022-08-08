@@ -149,7 +149,9 @@ export default {
     return {
       columns,
       linkRule: {},
-      defaultLinkRule: {},
+      defaultLinkRule: {
+        hardlink: false
+      },
       loading: true,
       serverList: [],
       linkRules: []
@@ -202,7 +204,7 @@ export default {
       }
     },
     clearLinkRule () {
-      this.linkRule = { ...this.deleteLinkRule };
+      this.linkRule = { ...this.defaultLinkRule };
     }
   },
   async mounted () {

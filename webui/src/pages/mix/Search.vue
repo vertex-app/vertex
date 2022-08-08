@@ -23,12 +23,21 @@
               </a-col>
             </a-row>
           </a-checkbox-group>
+          <div style="margin-top: 12px;">
+            <a-button size="small" type="primary" @click="qs.sites = sites.map(item => item.name);">全部选中</a-button>
+            <a-button size="small" type="primary" style="margin-left: 24px;" @click="qs.sites = [];">取消选中</a-button>
+          </div>
         </a-form-item>
         <a-form-item
           label="搜索关键词"
           name="keword">
           <a-input size="small" v-model:value="qs.keyword" style="width: 240px"/>
           <a-button size="small" type="primary" style="margin-left: 24px;" html-type="submit">搜索</a-button>
+        </a-form-item>
+        <a-form-item
+          label="二次筛选">
+          <a-input size="small" v-model:value="filterKey" style="width: 240px"/>
+          <a-button size="small" type="primary" style="margin-left: 24px;" @click="filterTorrent">筛选</a-button>
         </a-form-item>
       </a-form>
     </div>
@@ -153,6 +162,8 @@ export default {
         title: '站点',
         dataIndex: 'site',
         width: 32,
+        filters: [],
+        filterSearch: true,
         fixed: true
       }, {
         title: '种子名称',
@@ -187,7 +198,7 @@ export default {
       page: 1,
       length: 20,
       sites: [],
-      keyword: '小黄人'
+      keyword: ''
     };
     const pagination = {
       position: ['topRight', 'bottomRight'],
@@ -202,9 +213,11 @@ export default {
       columns,
       qs,
       torrents: [],
+      torrentsOri: [],
       subscribes: [],
       downloaders: [],
       torrent: {},
+      filterKey: '',
       modalInfo: {
         category: '',
         savePath: '',
@@ -226,8 +239,13 @@ export default {
       this.loading = true;
       try {
         const res = (await this.$api().site.search(this.qs.keyword, this.qs.sites)).data;
-        this.torrents = res.map(item => [...item.torrentList.map(i => ({ ...i, site: item.site }))]).flat();
+        this.torrentsOri = res.map(item => [...item.torrentList.map(i => ({ ...i, site: item.site }))]).flat();
+        this.torrents = [...this.torrentsOri];
         this.pagination.total = res.total;
+        sessionStorage.setItem('search-mix-torrents', JSON.stringify({
+          torrents: this.torrents,
+          keyword: this.keyword
+        }));
       } catch (e) {
         await this.$message().error(e.message);
       }
@@ -253,6 +271,7 @@ export default {
         const res = await this.$api().site.list();
         this.sites = res.data.siteList;
         this.qs.sites = this.sites.map(item => item.name);
+        this.columns[0].filters = this.qs.sites.map(item => ({ text: item, value: item }));
       } catch (e) {
         this.$message().error(e.message);
       }
@@ -261,8 +280,23 @@ export default {
       if (!record.link) return await this.$message().error('链接不存在');
       window.open(proxy ? record.link.replace(/https:\/\/.*?\//, `/proxy/site/${record.site}/`) : record.link);
     },
-    async handleChange (pagination) {
+    async handleChange (pagination, filters) {
       this.qs.page = pagination.current;
+      console.log(filters, this.torrentsOri);
+      if (filters.site && filters.site[0]) {
+        this.torrents = this.torrentsOri.filter(item => filters.site.indexOf(item.site) !== -1);
+        this.pagination.total = this.torrents.length;
+      } else {
+        this.torrents = [...this.torrentsOri];
+        this.pagination.total = this.torrents.length;
+      }
+    },
+    async filterTorrent () {
+      // this.refreshList();
+      this.torrents = this.torrentsOri.filter(i => {
+        return i.title.toLowerCase().indexOf(this.filterKey.toLowerCase()) !== -1 || i.subtitle.toLowerCase().indexOf(this.filterKey.toLowerCase()) !== -1;
+      });
+      this.pagination.total = this.torrents.length;
     },
     async listSubscribe () {
       try {
@@ -289,6 +323,14 @@ export default {
     this.listSite();
     this.listSubscribe();
     this.listDownloader();
+    const torrentsStr = sessionStorage.getItem('search-mix-torrents');
+    if (torrentsStr) {
+      const torrents = JSON.parse(torrentsStr);
+      this.torrentsOri = torrents.torrents;
+      this.torrents = [...this.torrentsOri];
+      this.qs.keyword = torrents.keyword;
+      this.pagination.total = this.torrents.length;
+    }
   }
 };
 </script>
