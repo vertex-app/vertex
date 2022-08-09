@@ -48,17 +48,18 @@ export default {
       }, {
         title: '日增长',
         dataIndex: 'today',
-        width: 24
+        width: 24,
+        sorter: (a, b) => a.today.upload - b.today.download
       }, {
         title: '周增长',
         dataIndex: 'week',
         width: 24,
-        sorter: (a, b) => a.download - b.download
+        sorter: (a, b) => a.week.upload - b.week.download
       }, {
         title: '月增长',
         dataIndex: 'month',
         width: 24,
-        sorter: (a, b) => a.download - b.download
+        sorter: (a, b) => a.month.upload - b.month.download
       }
     ];
     return {
@@ -87,6 +88,11 @@ export default {
           upload: this.sites.map(item => item.upload).reduce((a, b) => a + b),
           download: this.sites.map(item => item.download).reduce((a, b) => a + b)
         });
+        for (const site of this.sites) {
+          site.today = this.siteIncrease.today[site.name];
+          site.week = this.siteIncrease.week[site.name];
+          site.month = this.siteIncrease.month[site.name];
+        }
       } catch (e) {
         await this.$message().error(e.message);
       }
