@@ -115,35 +115,29 @@
         <a-form-item
           label="分类"
           name="category">
-          <a-select size="small" v-model:value="modalInfo.category">
-            <template v-for="subscribe of subscribes" :key="subscribe.id">
-              <a-select-option
-                v-for="category of subscribe.categories"
-                :value="category.category"
-                :key="subscribe.id + category.category">
-                {{ category.category }}
-              </a-select-option>
-            </template>
+          <a-select
+            size="small"
+            @search="(value) => categories[0].value = value"
+            :showSearch="true"
+            v-model:value="modalInfo.category"
+            :options="categories">
           </a-select>
         </a-form-item>
         <a-form-item
           label="保存路径"
           name="savePath">
-          <a-select size="small" v-model:value="modalInfo.savePath">
-            <template v-for="subscribe of subscribes" :key="subscribe.id">
-              <a-select-option
-                v-for="category of subscribe.categories"
-                :value="category.savePath"
-                :key="subscribe.id + category.savePath">
-                {{ category.savePath }}
-              </a-select-option>
-            </template>
+          <a-select
+            size="small"
+            @search="(value) => savePaths[0].value = value"
+            :showSearch="true"
+            v-model:value="modalInfo.savePath"
+            :options="savePaths">
           </a-select>
         </a-form-item>
         <a-form-item
           label="自动管理"
           name="autoTMM">
-          <a-checkbox v-model:value="modalInfo.autoTMM">自动管理</a-checkbox>
+          <a-checkbox v-model:checked="modalInfo.autoTMM">自动管理</a-checkbox>
         </a-form-item>
         <a-form-item
           :wrapperCol="isMobile() ? { span:24 } : { span: 18, offset: 6 }">
@@ -210,6 +204,8 @@ export default {
       modalVisible: false,
       loading: false,
       pagination,
+      categories: [],
+      savePaths: [],
       columns,
       qs,
       torrents: [],
@@ -301,6 +297,8 @@ export default {
       try {
         const res = await this.$api().subscribe.list();
         this.subscribes = res.data;
+        this.categories = [{ value: '手动输入' }, ...this.subscribes.map(item => item.categories).flat().map(item => ({ value: item.category }))];
+        this.savePaths = [{ value: '手动输入' }, ...this.subscribes.map(item => item.categories).flat().map(item => ({ value: item.savePath }))];
       } catch (e) {
         this.$message().error(e.message);
       }

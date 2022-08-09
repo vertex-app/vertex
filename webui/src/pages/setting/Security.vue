@@ -32,6 +32,12 @@
           <a-input disabled size="small" v-model:value="setting.apiKey"/>
         </a-form-item>
         <a-form-item
+          label="TMDB Api"
+          name="tmdbApiKey"
+          extra="The Movie Database Api Key, 用于从文件名提取影视剧名称, 请确保 Vertex 可以正常请求 api.themoviedb.org">
+          <a-input size="small" v-model:value="setting.tmdbApiKey"/>
+        </a-form-item>
+        <a-form-item
           label="PanelKey"
           name="panelKey"
           extra="在 Vertex Panel 注册账号得到的 ApiKey, 用于与 Vertex Panel 通信">

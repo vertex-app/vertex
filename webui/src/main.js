@@ -62,6 +62,12 @@ app.use(VueLazyLoad, {
 
 app.component('v-chart', VChart);
 
+app.component('v-nodes', (_, {
+  attrs
+}) => {
+  return attrs.vnodes;
+});
+
 app.component('fa', FontAwesomeIcon);
 
 router.beforeEach((to, from) => {
