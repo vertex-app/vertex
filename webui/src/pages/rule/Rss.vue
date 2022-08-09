@@ -145,11 +145,11 @@ export default {
       }, {
         title: '值',
         dataIndex: 'value',
-        width: 30
+        width: 90
       }, {
         title: '操作',
         dataIndex: 'option',
-        width: 20
+        width: 30
       }
     ];
     return {

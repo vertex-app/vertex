@@ -362,7 +362,9 @@ class Rss {
           (!item.maxLeechNum || item.maxLeechNum > item.maindata.leechingCount) &&
           (!item.minFreeSpace || item.minFreeSpace < item.maindata.freeSpaceOnDisk);
       })
-      .sort((a, b) => a.maindata[this.clientSortBy] - b.maindata[this.clientSortBy])[0] || availableClients[0];
+      .sort((a, b) => (this.clientSortBy === 'freeSpaceOnDisk' ? -1 : 1) *
+        (a.maindata[this.clientSortBy] - b.maindata[this.clientSortBy])
+      )[0] || availableClients[0];
     for (const torrent of torrents) {
       const sqlRes = await util.getRecord('SELECT * FROM torrents WHERE hash = ? AND rss_id = ?', [torrent.hash, this.id]);
       if (sqlRes && sqlRes.id) continue;
