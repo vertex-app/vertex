@@ -59,9 +59,6 @@ export default {
         await this.$message().error('恢复备份失败, 请稍后重试');
       }
     }
-  },
-  async mounted () {
-    await this.get();
   }
 };
 </script>

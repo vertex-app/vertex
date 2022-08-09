@@ -26,7 +26,7 @@
           <span>
             <a @click="modifyClick(record)">编辑</a>
             <a-divider type="vertical" />
-            <a @click="deleteNotification(record)">删除</a>
+            <a style="color: red" @click="deleteNotification(record)">删除</a>
           </span>
         </template>
       </template>
@@ -261,6 +261,10 @@ export default {
       this.notification = { ...this.defaultNotification, pushType: [] };
     },
     async deleteNotification (row) {
+      if (row.used) {
+        this.$message().error('组件被占用, 取消占用后删除');
+        return;
+      }
       try {
         await this.$api().notification.delete(row.id);
         this.$message().success('删除成功, 列表正在刷新...');

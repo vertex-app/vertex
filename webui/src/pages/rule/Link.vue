@@ -195,6 +195,10 @@ export default {
       this.linkRule = { ...row };
     },
     async deleteLinkRule (row) {
+      if (row.used) {
+        this.$message().error('组件被占用, 取消占用后删除');
+        return;
+      }
       try {
         await this.$api().linkRule.delete(row.id);
         this.$message().success('删除成功, 列表正在刷新...');

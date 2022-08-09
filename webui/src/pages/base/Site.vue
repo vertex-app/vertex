@@ -222,8 +222,12 @@ export default {
       this.site = { ...row };
     },
     async deleteSite (row) {
+      if (row.used) {
+        this.$message().error('组件被占用, 取消占用后删除');
+        return;
+      }
       try {
-        await this.$api().site.delete(row.id);
+        await this.$api().site.delete(row.name);
         this.$message().success('删除成功, 列表正在刷新...');
         await this.listSite();
       } catch (e) {

@@ -145,11 +145,11 @@ export default {
       }, {
         title: '值',
         dataIndex: 'value',
-        width: 90
+        width: 30
       }, {
         title: '操作',
         dataIndex: 'option',
-        width: 30
+        width: 20
       }
     ];
     return {
@@ -214,6 +214,10 @@ export default {
       this.rssRule = { ...row };
     },
     async deleteRssRule (row) {
+      if (row.used) {
+        this.$message().error('组件被占用, 取消占用后删除');
+        return;
+      }
       try {
         await this.$api().rssRule.delete(row.id);
         this.$message().success('删除成功, 列表正在刷新...');
