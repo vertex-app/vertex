@@ -9,8 +9,8 @@ export default {
     const url = '/api/rssRule/' + (rssRule.id ? 'modify' : 'add');
     return await post(url, rssRule);
   },
-  rss: async (id) => {
-    const url = '/api/rssRule/rss';
+  delete: async (id) => {
+    const url = '/api/rssRule/delete';
     return await post(url, { id });
   }
 };

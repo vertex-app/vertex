@@ -16,5 +16,13 @@ export default {
   reload: async (id) => {
     const url = '/api/server/reload?id=' + id;
     return await get(url);
+  },
+  netSpeed: async (id) => {
+    const url = '/api/server/netSpeed?_=' + Math.random();
+    return await get(url);
+  },
+  cpuUse: async (id) => {
+    const url = '/api/server/cpuUse?_=' + Math.random();
+    return await get(url);
   }
 };
