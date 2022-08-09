@@ -99,7 +99,7 @@
             @click="() => { fileList.filter(item => item.file === selectFile)[0].episode = 0; selectFile = '' }"
             type="primary"
             style="width: 64px; margin-left: 16px;">
-            检查
+            增加
           </a-button>
         </a-form-item>
       </a-form>
