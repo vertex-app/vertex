@@ -16,7 +16,8 @@
         :class="`container-form-${ isMobile() ? 'mobile' : 'pc' }`">
         <a-form-item
           label="下载器"
-          name="client">
+          name="client"
+          extra="留空则选择所有下载器">
           <a-select size="small" v-model:value="bulkLinkInfo.client">
             <a-select-option v-for="downloader of downloaders" v-model:value="downloader.id" :key="downloader.id">{{ downloader.alias }}</a-select-option>
           </a-select>
@@ -56,7 +57,8 @@
         <a-form-item
           label="关键词"
           name="keyword"
-          :rules="[{ required: true, message: '${label}不可为空! ' }]">
+          :rules="[{ required: true, message: '${label}不可为空! ' }]"
+          extra="分类或保存路径包含的关键词">
           <a-input size="small" v-model:value="bulkLinkInfo.keyword"/>
         </a-form-item>
         <a-form-item
@@ -83,7 +85,7 @@
               :disabled="torrent.visible"
               v-for="torrent of torrentList"
               v-model:value="torrent.hash"
-              :key="torrent.hash">{{ file.file }}
+              :key="torrent.hash">{{ torrent.name }}
             </a-select-option>
           </a-select>
           <a-button
@@ -174,7 +176,7 @@ export default {
     async getBulkLinkList () {
       try {
         const res = await this.$api().torrent.getBulkLinkList(this.bulkLinkInfo.keyword, this.bulkLinkInfo.client);
-        this.torrentList = res.data.map(item => { return { ...item, visible: true, scrapedName: '', status: '待识别' }; });;
+        this.torrentList = res.data.map(item => { return { ...item, visible: true, scrapedName: '', status: '待识别' }; });
       } catch (e) {
         await this.$message().error(e.message);
       }
