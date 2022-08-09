@@ -5,6 +5,10 @@ export default {
     const url = '/api/site/list';
     return await get(url);
   },
+  listRecord: async () => {
+    const url = '/api/site/listRecord';
+    return await get(url);
+  },
   modify: async (site) => {
     const url = '/api/site/' + (site.id ? 'modify' : 'add');
     return await post(url, site);

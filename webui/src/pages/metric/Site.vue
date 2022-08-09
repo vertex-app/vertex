@@ -1,35 +1,26 @@
 <template>
   <div style="font-size: 24px; font-weight: bold;">站点数据</div>
   <a-divider></a-divider>
-  <div class="rss" >
+  <div class="site-metric" >
     <a-table
       :style="`font-size: ${isMobile() ? '12px': '14px'};`"
       :columns="columns"
       size="small"
       :loading="loading"
-      :data-source="torrents"
-      :pagination="pagination"
-      @change="handleChange"
+      :data-source="sites"
       :scroll="{ x: 960 }"
     >
       <template #title>
         <span style="font-size: 16px; font-weight: bold;">站点数据</span>
       </template>
       <template #bodyCell="{ column, record }">
-        <template v-if="column.dataIndex === 'rssId'">
-          {{ (rssList.filter(item => item.id === record.rssId)[0] || { alias: '已删除' }).alias }}
-        </template>
-        <template v-if="['size', 'upload', 'download'].indexOf(column.dataIndex) !== -1">
+        <template v-if="['upload', 'download'].indexOf(column.dataIndex) !== -1">
           {{ $formatSize(record[column.dataIndex]) }}
         </template>
-        <template v-if="['recordTime', 'deleteTime'].indexOf(column.dataIndex) !== -1 && record[column.dataIndex]">
-          {{ $moment(record[column.dataIndex] * 1000).format('YYYY-MM-DD HH:mm:ss') }}
-        </template>
-        <template v-if="column.dataIndex === 'recordNote'">
-          <span>{{ record.recordNote.indexOf('wish') !== -1 ? '豆瓣' : record.recordNote }}</span>
-        </template>
-        <template v-if="column.title === '操作'">
-          <a @click="gotoDetail(record)">打开</a>
+        <template v-if="['today', 'week', 'month'].indexOf(column.dataIndex) !== -1">
+          ↑ {{ $formatSize(siteIncrease[column.dataIndex][record.name].upload) }}
+          <br>
+          ↓ {{ $formatSize(siteIncrease[column.dataIndex][record.name].download) }}
         </template>
       </template>
     </a-table>
@@ -40,64 +31,41 @@ export default {
   data () {
     const columns = [
       {
-        title: 'RSS',
-        dataIndex: 'rssId',
-        width: 18,
-        filterMultiple: false,
-        fixed: true
-      }, {
-        title: '种子名称',
+        title: '站点',
         dataIndex: 'name',
-        width: 120
+        width: 18,
+        sorter: (a, b) => a.name.localeCompare(b.name)
       }, {
-        title: '种子大小',
-        dataIndex: 'size',
-        width: 24
-      }, {
-        title: '上传流量',
+        title: '上传',
         dataIndex: 'upload',
-        width: 24
+        width: 24,
+        sorter: (a, b) => a.upload - b.upload
       }, {
-        title: '下载流量',
+        title: '下载',
         dataIndex: 'download',
+        width: 24,
+        sorter: (a, b) => a.download - b.download
+      }, {
+        title: '日增长',
+        dataIndex: 'today',
         width: 24
       }, {
-        title: '记录时间',
-        dataIndex: 'recordTime',
-        width: 32
+        title: '周增长',
+        dataIndex: 'week',
+        width: 24,
+        sorter: (a, b) => a.download - b.download
       }, {
-        title: '删除时间',
-        dataIndex: 'deleteTime',
-        width: 32
-      }, {
-        title: '种子状态',
-        dataIndex: 'recordNote',
-        width: 32
-      }, {
-        title: '操作',
-        dataIndex: 'option',
-        width: 32
+        title: '月增长',
+        dataIndex: 'month',
+        width: 24,
+        sorter: (a, b) => a.download - b.download
       }
     ];
-    const qs = {
-      page: 1,
-      length: 20,
-      type: 'rss',
-      rss: ''
-    };
-    const pagination = {
-      position: ['topRight', 'bottomRight'],
-      total: 0,
-      pageSize: qs.length,
-      showSizeChanger: false
-    };
     return {
       loading: true,
-      pagination,
       columns,
-      qs,
-      torrents: [],
-      rssList: []
+      sites: [],
+      siteIncrease: []
     };
   },
   methods: {
@@ -108,46 +76,38 @@ export default {
         return false;
       }
     },
-    async listHistory () {
+    async listSite () {
       this.loading = true;
       try {
-        const res = (await this.$api().torrent.listHistory(this.qs)).data;
-        this.torrents = res.torrents;
-        this.pagination.total = res.total;
+        const res = (await this.$api().site.list()).data;
+        this.sites = res.siteList;
+        this.siteIncrease = res.increase;
+        this.sites.push({
+          name: 'total',
+          upload: this.sites.map(item => item.upload).reduce((a, b) => a + b),
+          download: this.sites.map(item => item.download).reduce((a, b) => a + b)
+        });
       } catch (e) {
         await this.$message().error(e.message);
       }
       this.loading = false;
     },
-    async listRss () {
+    async listRecord () {
       try {
-        const res = await this.$api().rss.list();
-        this.rssList = res.data;
-        this.columns[0].filters = [...this.rssList.map(item => ({ text: item.alias, value: item.id })), { text: '已删除', value: 'deleted' }];
+        const res = (await this.$api().site.listRecord()).data;
       } catch (e) {
-        this.$message().error(e.message);
+        await this.$message().error(e.message);
       }
-    },
-    async gotoDetail (record) {
-      if (!record.link) return await this.$message().error('链接不存在');
-      window.open(record.link);
-    },
-    async handleChange (pagination, filters) {
-      this.qs.page = pagination.current;
-      if (filters.rssId) {
-        this.qs.rss = filters.rssId[0];
-      }
-      this.listHistory();
     }
   },
   async mounted () {
-    this.listHistory();
-    this.listRss();
+    this.listSite();
+    this.listRecord();
   }
 };
 </script>
 <style scoped>
-.rss {
+.site-metric {
   height: calc(100% - 92px);
   width: 100%;
   max-width: 1440px;

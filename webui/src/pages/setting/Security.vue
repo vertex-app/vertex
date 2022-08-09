@@ -73,7 +73,8 @@ export default {
           apiKey: s.apiKey,
           username: s.username,
           password: '',
-          panelKey: s.panelKey
+          panelKey: s.panelKey,
+          tmdbApiKey: s.tmdbApiKey
         };
       } catch (e) {
         await this.$message().error(e.message);
