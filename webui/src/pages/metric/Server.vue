@@ -99,10 +99,13 @@ export default {
     this.listServer();
     this.getNetSpeed();
     this.getCpuUse();
-    setInterval(() => {
+    this.interval = setInterval(() => {
       this.getNetSpeed();
       this.getCpuUse();
     }, 5000);
+  },
+  beforeUnmount () {
+    clearInterval(this.interval);
   }
 };
 </script>

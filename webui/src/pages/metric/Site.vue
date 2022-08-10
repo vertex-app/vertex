@@ -8,7 +8,8 @@
       size="small"
       :loading="loading"
       :data-source="sites"
-      :scroll="{ x: 960 }"
+      :pagination="false"
+      :scroll="{ x: 640 }"
     >
       <template #title>
         <span style="font-size: 16px; font-weight: bold;">站点数据</span>
@@ -33,32 +34,33 @@ export default {
       {
         title: '站点',
         dataIndex: 'name',
-        width: 18,
+        width: 48,
+        fixed: true,
         sorter: (a, b) => a.name.localeCompare(b.name)
       }, {
         title: '上传',
         dataIndex: 'upload',
-        width: 24,
+        width: 48,
         sorter: (a, b) => a.upload - b.upload
       }, {
         title: '下载',
         dataIndex: 'download',
-        width: 24,
+        width: 48,
         sorter: (a, b) => a.download - b.download
       }, {
         title: '日增长',
         dataIndex: 'today',
-        width: 24,
+        width: 48,
         sorter: (a, b) => a.today.upload - b.today.download
       }, {
         title: '周增长',
         dataIndex: 'week',
-        width: 24,
+        width: 48,
         sorter: (a, b) => a.week.upload - b.week.download
       }, {
         title: '月增长',
         dataIndex: 'month',
-        width: 24,
+        width: 48,
         sorter: (a, b) => a.month.upload - b.month.download
       }
     ];
