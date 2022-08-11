@@ -730,7 +730,6 @@ class Douban {
       }
     }
     torrents = torrents.filter(item => {
-      if (imdb) return true;
       let subtitle = item.subtitle;
       const name = (wish.searchKey || wish.name.split('/')[0]).replace(/[!\uff01\uff1a.。:?？，,·・]/g, ' ').trim();
       const serachKeys = name.split(/[^0-9a-zA-Z\u4e00-\u9fa5*]|丨/g).filter(item => item);
