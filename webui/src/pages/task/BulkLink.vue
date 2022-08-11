@@ -234,11 +234,11 @@ export default {
         const res = await this.$api().torrent.link({
           direct: true,
           hash: torrent.hash,
-          type: this.type,
+          type: this.bulkLinkInfo.type,
           mediaName: torrent.scrapedName,
-          linkRule: this.linkRule,
+          linkRule: this.bulkLinkInfo.linkRule,
           client: torrent.client,
-          libraryPath: this.libraryPath,
+          libraryPath: this.bulkLinkInfo.libraryPath,
           savePath: torrent.savePath
         });
         torrent.status = (res ? res.data : '') || '链接失败';
