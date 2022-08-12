@@ -1,5 +1,5 @@
 <template>
-  <div style="font-size: 24px; font-weight: bold;">路径生成器</div>
+  <div style="font-size: 24px; font-weight: bold;">路径替换规则生成器</div>
   <a-divider></a-divider>
   <div class="path-generator">
     <div style="text-align: left; ">
@@ -14,6 +14,23 @@
         autocomplete="off"
         :class="`container-form-${ isMobile() ? 'mobile' : 'pc' }`">
         <a-form-item
+          :wrapperCol="isMobile() ? { span:24 } : { span: 21, offset: 3 }">
+          <a-alert message="填写提示" type="info" >
+            <template #description>
+              以下路径均是针对影视资源文件本身
+            </template>
+          </a-alert>
+        </a-form-item>
+        <a-form-item
+          label="模式"
+          name="type"
+          :rules="[{ required: true, message: '${label}不可为空! ' }]">
+          <a-select size="small" v-model:value="info.type"  >
+            <a-select-option value="soft">软链接</a-select-option>
+            <a-select-option value="hard">硬链接</a-select-option>
+          </a-select>
+        </a-form-item>
+        <a-form-item
           label="下载器路径关系"
           name="downloader"
           :rules="[{ required: true, message: '${label}不可为空! ' }]"
@@ -21,6 +38,7 @@
           <a-input size="small" v-model:value="info.downloader"/>
         </a-form-item>
         <a-form-item
+          v-if="info.type === 'soft'"
           label="媒体服务器路径关系"
           name="mediaServer"
           :rules="[{ required: true, message: '${label}不可为空! ' }]"
@@ -29,7 +47,7 @@
         </a-form-item>
         <a-form-item
           :wrapperCol="isMobile() ? { span:24 } : { span: 21, offset: 3 }">
-          <a-button type="primary" html-type="submit" style="margin-top: 24px; margin-bottom: 48px;">执行</a-button>
+          <a-button type="primary" html-type="submit" style="margin: 12px 0;">执行</a-button>
         </a-form-item>
         <a-form-item
           label="结果">
@@ -44,7 +62,9 @@ export default {
   data () {
     return {
       info: {
-        cookie: ''
+        type: 'soft',
+        downloader: '',
+        mediaServer: ''
       },
       result: ''
     };
@@ -58,7 +78,41 @@ export default {
       }
     },
     async generate () {
-      const a = 1;
+      // /Data/downloads:/dls
+      // /Data:/movie
+      // /dsl##/movie/downloads
+
+      // /Data:/data
+      // /Data/downloads:/movie
+      // /data/downloads##/movie
+      const { downloader, mediaServer, type } = this.info;
+      if (type === 'hard') {
+        const downloaderPrefix = downloader.split(':')[0];
+        const downloaderSuffix = downloader.split(':')[1];
+        if (!downloaderSuffix) {
+          this.result = '填写内容格式有误, 请检查后重新填写';
+          return;
+        }
+        this.result = `${downloaderSuffix}##${downloaderPrefix}`;
+      }
+      const downloaderPrefix = downloader.split(':')[0];
+      const downloaderSuffix = downloader.split(':')[1];
+      const mediaServerPrefix = mediaServer.split(':')[0];
+      const mediaServerSuffix = mediaServer.split(':')[1];
+      if (!downloaderSuffix || !mediaServerSuffix) {
+        this.result = '填写内容格式有误, 请检查后重新填写';
+        return;
+      }
+      if (downloaderPrefix.indexOf(mediaServerPrefix) !== 0 && mediaServerPrefix.indexOf(downloaderPrefix) !== 0) {
+        this.result = `${downloaderPrefix} 与 ${mediaServerPrefix} 应该存在包含或不包含关系, 请检查所填写内容`;
+        return;
+      }
+      if (downloaderPrefix.indexOf(mediaServerPrefix) === 0) {
+        this.result = `${downloaderSuffix}##${mediaServerSuffix}${downloaderPrefix.replace(mediaServerPrefix, '')}`;
+      }
+      if (mediaServerPrefix.indexOf(downloaderPrefix) === 0) {
+        this.result = `${downloaderSuffix}${mediaServerPrefix.replace(downloaderPrefix, '')}##${mediaServerSuffix}`;
+      }
     }
   },
   async mounted () {
