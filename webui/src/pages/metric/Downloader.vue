@@ -115,7 +115,7 @@ export default {
       }
     ];
     return {
-      loading: true,
+      loading: false,
       trackerColumns,
       columns,
       downloaders: [],

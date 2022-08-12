@@ -374,7 +374,7 @@ export default {
 </script>
 <style scoped>
 .index {
-  width: min(calc(100vw - 40px), 1200px);
+  width: min(calc(100vw - 40px), 960px);
   margin: 0 auto;
   height: 100%;
 }
