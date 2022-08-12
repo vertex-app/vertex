@@ -363,6 +363,9 @@ class Client {
     this.reannouncedHash = [];
     logger.debug(this.alias, moment().format(), '启动重新汇报任务');
     for (const torrent of this.maindata.torrents) {
+      if (!torrent.tracker || torrent.tracker.indexOf('btschool') !== -1) {
+        continue;
+      }
       if (this.reannouncedHash.includes(torrent.hash)) {
         continue;
       } else {
