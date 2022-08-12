@@ -11,7 +11,7 @@
         <div style="color: lightpink; bottom: 0px; width: 100%; position: absolute; background-color: rgba(0,0,0,0.3); backdrop-filter: blur(4px);">
           <a-popover title="刷新?" :overlayStyle="{ width: '84px', overflow: 'hidden' }">
             <template #content>
-              <a-button type="primary" @click="del(item)" size="small">刷新</a-button>
+              <a-button type="primary" @click="refreshItem(item)" size="small">刷新</a-button>
             </template>
             <fa style="position: absolute; left: 6px; font-size: 14px; color: cyan; bottom: 3px; cursor: pointer;" :icon="['fas', 'arrow-rotate-right']"></fa>
           </a-popover>
