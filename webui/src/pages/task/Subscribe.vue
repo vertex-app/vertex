@@ -173,6 +173,12 @@
           <a-input size="small" v-model:value="subscribe.cookie"/>
         </a-form-item>
         <a-form-item
+          label="附加账号"
+          name="users"
+          extra="监视 cookie 自有账号时添加其它人账号 ID, 格式为 'ID1,ID2,ID3', 留空不启用">
+          <a-input size="small" v-model:value="subscribe.users"/>
+        </a-form-item>
+        <a-form-item
           label="刷新周期"
           name="cron"
           extra="刷新 想看列表 的周期, 默认为每 4 小时刷新一次, 仅刷新想看列表"

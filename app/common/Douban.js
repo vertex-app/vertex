@@ -24,6 +24,7 @@ class Douban {
     this.sites = douban.sites;
     this.client = douban.client;
     this.cron = douban.cron;
+    this.users = (douban.users || '').split(',').filter(item => item.trim());
     this.advancedMode = douban.advancedMode;
     this.defaultRefreshCron = '30 1 * * *';
     this.enableWechatLink = douban.enableWechatLink;
@@ -348,6 +349,49 @@ class Douban {
       wish.releaseAt = doubanInfo.releaseAt;
       wish.searchKey = '';
       wishes.push(wish);
+    }
+
+    for (const user of this.users) {
+      const document = await this._getDocument(`https://movie.douban.com/people/${user}/wish`, 20);
+      const items = document.querySelectorAll('.article .grid-view .item');
+      if (!items.length) {
+        logger.error('豆瓣账户', this.alias, '刷新想看列表失败', '疑似是豆瓣 Cookie 过期', '任务退出');
+        await this.ntf.startRefreshWishError(['豆瓣账户', this.alias, '刷新想看列表失败', '疑似是豆瓣 Cookie 过期', '任务退出'].join(' '));
+        return;
+      }
+      for (const item of items) {
+        const wish = {};
+        wish.name = item.querySelector('li[class=title] em').innerHTML;
+        wish.link = item.querySelector('li[class=title] a').href;
+        wish.poster = item.querySelector('a[class=nbg] img').src.trim().replace(/img\d/, 'img9').replace('s_ratio', 'l_ratio').replace('webp', 'jpg');
+        wish.id = wish.link.match(/\/(\d+)\//)[1];
+        wish.tag = (item.querySelector('span.tags')?.innerHTML)?.replace('标签: ', '') || item.querySelector('span[class=\'comment\']')?.innerHTML;
+        let doubanInfo;
+        if (this.wishes.filter(item => item.id === wish.id).length !== 0) {
+          continue;
+        }
+        try {
+          doubanInfo = await this._getDoubanInfo(wish.link);
+        } catch (e) {
+          logger.error('豆瓣账户', this.alias, '/', user, '查询影视', wish.name, '详情失败', '疑似是豆瓣 Cookie 过期', '任务退出\n', e);
+          await this.ntf.selectTorrentError(this.alias, wish, ['豆瓣账户', this.alias, '/', user, '查询影视', wish.name, '详情失败', '疑似是豆瓣 Cookie 过期', '任务退出'].join(' '));
+        }
+        const imdb = doubanInfo.imdb;
+        const year = doubanInfo.year;
+        wish.imdb = imdb ? imdb[1] : null;
+        wish.year = year ? year[1] : null;
+        wish.rating = doubanInfo.rating;
+        wish.length = doubanInfo.length;
+        wish.area = doubanInfo.area;
+        wish.language = doubanInfo.language;
+        wish.category = doubanInfo.category;
+        wish.desc = doubanInfo.desc;
+        wish.mainCreator = doubanInfo.mainCreator;
+        wish.episodes = doubanInfo.episodes;
+        wish.releaseAt = doubanInfo.releaseAt;
+        wish.searchKey = '';
+        wishes.push(wish);
+      }
     }
     const _doubanSet = util.listDoubanSet().filter(item => item.id === this.id)[0];
     if (!_doubanSet) {
