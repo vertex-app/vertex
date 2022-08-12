@@ -175,6 +175,11 @@ module.exports = function (app, express, router) {
   router.post('/downloader/modify', ctrl.Client.modify);
   router.post('/downloader/delete', ctrl.Client.delete);
 
+  router.get('/script/list', ctrl.Script.list);
+  router.post('/script/add', ctrl.Script.add);
+  router.post('/script/modify', ctrl.Script.modify);
+  router.post('/script/delete', ctrl.Script.delete);
+
   router.get('/rss/list', ctrl.Rss.list);
   router.post('/rss/add', ctrl.Rss.add);
   router.post('/rss/modify', ctrl.Rss.modify);

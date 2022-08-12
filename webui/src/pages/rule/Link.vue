@@ -60,7 +60,7 @@
         <a-form-item
           label="启用硬链接"
           name="hardlink"
-          extra="默认为链接接, 勾选后链接文件以硬链接方式进行"
+          extra="默认为软链接, 勾选后链接文件以硬链接方式进行"
           :rules="[{ required: true, message: '${label}不可为空! ' }]">
           <a-checkbox v-model:checked="linkRule.hardlink">启用硬链接</a-checkbox>
         </a-form-item>

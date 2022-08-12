@@ -336,11 +336,11 @@ exports.listDoubanSet = function () {
 };
 
 exports.listCrontabJavaScript = function () {
-  const files = fs.readdirSync(path.join(__dirname, '../data/scripts'));
+  const files = fs.readdirSync(path.join(__dirname, '../data/script'));
   const doubanSetList = [];
   for (const file of files) {
     if (path.extname(file) === '.json') {
-      doubanSetList.push(_importJson(path.join(__dirname, '../data/scripts', file)));
+      doubanSetList.push(_importJson(path.join(__dirname, '../data/script', file)));
     }
   }
   return doubanSetList;

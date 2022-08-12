@@ -91,6 +91,10 @@ class UserMod {
           path: '/task/watchCategory',
           icon: ['fas', 'video']
         }, {
+          title: '定时脚本',
+          path: '/task/script',
+          icon: ['fas', 'clock']
+        }, {
           title: '链接文件',
           path: '/task/link',
           icon: ['fas', 'link']

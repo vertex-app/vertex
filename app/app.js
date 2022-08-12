@@ -89,6 +89,7 @@ const init = function () {
   global.runningSite = {};
   global.runningRace = {};
   global.runningDouban = {};
+  global.runningScript = {};
   global.startTime = moment().unix();
   initPush();
   for (const client of util.listClient()) {
@@ -116,7 +117,7 @@ const init = function () {
   }
   for (const script of util.listCrontabJavaScript()) {
     if (script.enable) {
-      global.runningDouban[script.id] = new Script(script);
+      global.runningScript[script.id] = new Script(script);
     }
   }
 };

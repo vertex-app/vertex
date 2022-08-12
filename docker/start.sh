@@ -23,10 +23,10 @@ else
   echo '/vertex/data/rule/race exists, continue'
 fi
 
-if [ ! -d '/vertex/data/scripts' ]; then
-  mkdir /vertex/data/scripts
+if [ ! -d '/vertex/data/script' ]; then
+  mkdir /vertex/data/script
 else
-  echo '/vertex/data/scripts exists, continue'
+  echo '/vertex/data/script exists, continue'
 fi
 
 if [ ! -d '/vertex/data/rule/raceSet' ]; then

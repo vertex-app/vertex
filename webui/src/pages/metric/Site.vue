@@ -99,7 +99,8 @@ export default {
         await this.$message().error(e.message);
       }
       this.loading = false;
-    },
+    }
+    /*
     async listRecord () {
       try {
         const res = (await this.$api().site.listRecord()).data;
@@ -107,10 +108,11 @@ export default {
         await this.$message().error(e.message);
       }
     }
+    */
   },
   async mounted () {
     this.listSite();
-    this.listRecord();
+    // this.listRecord();
   }
 };
 </script>

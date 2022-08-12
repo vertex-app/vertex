@@ -31,7 +31,7 @@
       :columns="trackerColumns"
       size="small"
       :loading="loading"
-      :data-source="runInfo.perTrackerToday"
+      :data-source="runInfo.perTrackerToday.filter(item => item.tracker)"
       :scroll="{ x: 320 }"
     >
       <template #title>
@@ -49,7 +49,7 @@
       :columns="trackerColumns"
       size="small"
       :loading="loading"
-      :data-source="runInfo.perTracker"
+      :data-source="runInfo.perTracker.filter(item => item.tracker)"
       :scroll="{ x: 320 }"
     >
       <template #title>
@@ -142,14 +142,12 @@ export default {
       }
     },
     async listDownloader () {
-      this.loading = true;
       try {
         const res = (await this.$api().downloader.listMainInfo()).data;
         this.downloaders = res;
       } catch (e) {
         await this.$message().error(e.message);
       }
-      this.loading = false;
     }
   },
   async mounted () {

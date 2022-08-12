@@ -25,6 +25,7 @@ import TaskSubscribe from '@/pages/task/Subscribe';
 import TaskLink from '@/pages/task/Link';
 import TaskBulkLink from '@/pages/task/BulkLink';
 import TaskWatchCategory from '@/pages/task/WatchCategory';
+import TaskScript from '@/pages/task/Script';
 
 import GuideRss from '@/pages/guide/Rss';
 import GuideSubsribe from '@/pages/guide/Subscribe';
@@ -286,6 +287,12 @@ const task = {
       component: TaskWatchCategory,
       meta: {
         title: '监控分类 - 任务配置'
+      }
+    }, {
+      path: 'script',
+      component: TaskScript,
+      meta: {
+        title: '定时脚本 - 任务配置'
       }
     }
   ]
