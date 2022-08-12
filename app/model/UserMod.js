@@ -154,6 +154,10 @@ class UserMod {
           title: 'HTTP 代理',
           path: '/tool/proxy',
           icon: ['fas', 'globe']
+        }, {
+          title: '路径生成器',
+          path: '/tool/pathGenerator',
+          icon: ['fas', 'terminal']
         }]
       }, {
         title: '任务引导',

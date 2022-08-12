@@ -34,6 +34,7 @@ import ToolMTeamLogin from '@/pages/tool/MTeamLogin';
 import ToolHosts from '@/pages/tool/Hosts';
 import ToolProxy from '@/pages/tool/Proxy';
 import ToolShell from '@/pages/tool/Shell';
+import ToolPathGenerator from '@/pages/tool/PathGenerator';
 
 import InfoInfo from '@/pages/info/Info';
 import InfoLog from '@/pages/info/Log';
@@ -381,6 +382,12 @@ const tool = {
       component: ToolProxy,
       meta: {
         title: 'HTTP 代理 - 常用工具'
+      }
+    }, {
+      path: 'pathGenerator',
+      component: ToolPathGenerator,
+      meta: {
+        title: '路径生成器 - 常用工具'
       }
     }, {
       path: 'shell/:id',

@@ -47,6 +47,10 @@ body {
   transition: all 0.5s;
 }
 
+img[lazy=loading] {
+  object-fit: cover;
+}
+
 /*
 html {
   overflow-y: scroll;

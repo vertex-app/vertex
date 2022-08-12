@@ -9,6 +9,12 @@
       <div :class="isMobile() ? 'item-class-mobile' : 'item-class-pc'">
         <img v-lazy="item.poster" @click="gotoDetail(item)" style="cursor: pointer; width: 100%; height: 100%;">
         <div style="color: lightpink; bottom: 0px; width: 100%; position: absolute; background-color: rgba(0,0,0,0.3); backdrop-filter: blur(4px);">
+          <a-popover title="刷新?" :overlayStyle="{ width: '84px', overflow: 'hidden' }">
+            <template #content>
+              <a-button type="primary" @click="del(item)" size="small">刷新</a-button>
+            </template>
+            <fa style="position: absolute; left: 6px; font-size: 14px; color: cyan; bottom: 3px; cursor: pointer;" :icon="['fas', 'arrow-rotate-right']"></fa>
+          </a-popover>
           <span>[{{item.tag}}]</span>
           <span>[{{item.episodeNow === 0 ? 0 : item.episodeNow || '1'}}/{{item.episodes === 0 ? 0 : item.episodes || '1'}}]</span>
           <a-popover title="删除?" :overlayStyle="{ width: '84px', overflow: 'hidden' }">
@@ -68,7 +74,15 @@ export default {
       } catch (e) {
         await this.$message().error(e.message);
       }
-    }
+    },
+    async refreshItem (item) {
+      try {
+        await this.$api().subscribe.refreshItem(item.id, item.doubanId);
+        await this.$message().success('刷新成功!');
+      } catch (e) {
+        await this.$message().error(e.message);
+      }
+    },
   },
   async mounted () {
     this.list();

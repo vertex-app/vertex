@@ -41,8 +41,7 @@
         <a-form-item
           label="上映日期"
           name="releaseAt"
-          extra="格式为 2022-06-03"
-          :rules="[{ required: true, message: '${label}不可为空! ' }]">
+          extra="格式为 2022-06-03">
           <a-input size="small" v-model:value="item.releaseAt"/>
         </a-form-item>
         <a-form-item
@@ -166,7 +165,7 @@ export default {
       try {
         await this.$api().subscribe.editItem(this.item);
         await this.$message().success('编辑成功!');
-        this.getItem();
+        this.$goto('/subscribe/list', this.$router);
       } catch (e) {
         await this.$message().error(e.message);
       }
