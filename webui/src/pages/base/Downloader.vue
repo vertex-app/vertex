@@ -161,8 +161,7 @@
         <a-form-item
           label="先下载首尾文件块"
           name="firstLastPiecePrio"
-          extra="先下载首尾文件块, 同 qBittorrent 右键菜单 - 先下载首尾文件块"
-          :rules="[{ required: true, message: '${label}不可为空! ' }]">
+          extra="先下载首尾文件块, 同 qBittorrent 右键菜单 - 先下载首尾文件块">
           <a-checkbox v-model:checked="downloader.firstLastPiecePrio">先下载首尾文件块</a-checkbox>
         </a-form-item>
         <a-form-item

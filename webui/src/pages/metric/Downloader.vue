@@ -14,8 +14,8 @@
         <span style="font-size: 16px; font-weight: bold;">下载器数据</span>
       </template>
       <template #bodyCell="{ column, record }">
-        <template v-if="['uploadSpeed', 'downloadSpeed'].indexOf(column.dataIndex) !== -1">
-          {{ $formatSize(record[column.dataIndex]) }}
+        <template v-if="column.dataIndex === 'speed'">
+          {{ $formatSize(record.uploadSpeed) }} / {{ $formatSize(record.downloadSpeed) }}
         </template>
         <template v-if="column.dataIndex === 'seedingCount'">
           {{ record.seedingCount + ' / ' + record.leechingCount }}
@@ -74,15 +74,10 @@ export default {
         fixed: true,
         sorter: (a, b) => a.name.localeCompare(b.name)
       }, {
-        title: '实时上传',
-        dataIndex: 'uploadSpeed',
+        title: '实时速度',
+        dataIndex: 'speed',
         width: 48,
         sorter: (a, b) => a.uploadSpeed - b.uploadSpeed
-      }, {
-        title: '实时下载',
-        dataIndex: 'downloadSpeed',
-        width: 48,
-        sorter: (a, b) => a.downloadSpeed - b.downloadSpeed
       }, {
         title: '当前任务',
         dataIndex: 'seedingCount',

@@ -333,14 +333,22 @@ class Rss {
         } else {
           await _client.addTorrent(torrent.url, torrent.hash, false, this.uploadLimit, this.downloadLimit, this.savePath, this.category);
         }
-        await this.ntf.addTorrent(this._rss, _client, torrent);
+        try {
+          await this.ntf.addTorrent(this._rss, _client, torrent);
+        } catch (e) {
+          logger.info('通知信息发送失败: \n', e);
+        }
         await util.runRecord('INSERT INTO torrents (hash, name, size, rss_id, link, category, record_time, add_time, record_type, record_note) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
           [torrent.hash, torrent.name, torrent.size, this.id, torrent.link, this.category, moment().unix(), moment().unix(), 1, '添加种子']);
       } catch (error) {
         logger.error(this.alias, '下载器', _client.alias, '添加种子失败:', error.message);
         await util.runRecord('INSERT INTO torrents (hash, name, size, rss_id, link, record_time, record_type, record_note) values (?, ?, ?, ?, ?, ?, ?, ?)',
           [torrent.hash, torrent.name, torrent.size, this.id, torrent.link, moment().unix(), 3, '添加种子失败']);
-        await this.ntf.addTorrentError(this._rss, _client, torrent);
+        try {
+          await this.ntf.addTorrentError(this._rss, _client, torrent);
+        } catch (e) {
+          logger.info('通知信息发送失败: \n', e);
+        }
       }
     }
   }
