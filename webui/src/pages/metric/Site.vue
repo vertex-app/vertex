@@ -87,8 +87,8 @@ export default {
         this.siteIncrease = res.increase;
         this.sites.push({
           name: 'total',
-          upload: this.sites.map(item => item.upload).reduce((a, b) => a + b),
-          download: this.sites.map(item => item.download).reduce((a, b) => a + b)
+          upload: this.sites[0] ? this.sites.map(item => item.upload).reduce((a, b) => a + b) : 0,
+          download: this.sites[0] ? this.sites.map(item => item.download).reduce((a, b) => a + b) : 0
         });
         for (const site of this.sites) {
           site.today = this.siteIncrease.today[site.name];

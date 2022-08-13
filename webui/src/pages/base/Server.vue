@@ -40,7 +40,12 @@
                     <a @click="reloadServer(record)">重连</a>
                   </a-menu-item>
                   <a-menu-item danger>
-                    <a @click="deleteServer(record)">删除</a>
+                    <a-popover title="删除?" trigger="click" :overlayStyle="{ width: '84px', overflow: 'hidden' }">
+                      <template #content>
+                        <a-button type="primary" danger @click="deleteServer(record)" size="small">删除</a-button>
+                      </template>
+                      <a>删除</a>
+                    </a-popover>
                   </a-menu-item>
                 </a-menu>
               </template>

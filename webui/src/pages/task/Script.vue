@@ -22,7 +22,12 @@
           <span>
             <a @click="modifyClick(record)">编辑</a>
             <a-divider type="vertical" />
-            <a @click="deleteScript(record)">删除</a>
+            <a-popover title="删除?" trigger="click" :overlayStyle="{ width: '84px', overflow: 'hidden' }">
+              <template #content>
+                <a-button type="primary" danger @click="deleteScript(record)" size="small">删除</a-button>
+              </template>
+              <a style="color: red">删除</a>
+            </a-popover>
           </span>
         </template>
       </template>

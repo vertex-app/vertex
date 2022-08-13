@@ -51,6 +51,10 @@ img[lazy=loading] {
   object-fit: cover;
 }
 
+.ant-popover {
+  z-index: 1055;
+}
+
 /*
 html {
   overflow-y: scroll;
