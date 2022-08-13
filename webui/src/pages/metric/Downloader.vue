@@ -71,8 +71,9 @@ export default {
         title: '别名',
         dataIndex: 'alias',
         width: 32,
+        defaultSortOrder: 'ascend',
         fixed: true,
-        sorter: (a, b) => a.name.localeCompare(b.name)
+        sorter: (a, b) => a.alias.localeCompare(b.alias)
       }, {
         title: '实时速度',
         dataIndex: 'speed',

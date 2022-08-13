@@ -31,9 +31,10 @@ export default {
       {
         title: '服务器',
         dataIndex: 'alias',
+        defaultSortOrder: 'ascend',
         width: 6,
         fixed: true,
-        sorter: (a, b) => a.name.localeCompare(b.name)
+        sorter: (a, b) => a.alias.localeCompare(b.alias)
       }, {
         title: 'CPU 占用',
         dataIndex: 'cpuUse',

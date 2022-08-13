@@ -290,6 +290,7 @@ export default {
         title: '别名',
         dataIndex: 'alias',
         sorter: (a, b) => a.alias.localeCompare(b.alias),
+        defaultSortOrder: 'ascend',
         width: 20
       }, {
         title: '启用',
