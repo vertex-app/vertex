@@ -49,7 +49,11 @@ class Push {
       return logger.debug('周期内错误推送已达上限, 跳过本次推送');
     }
     if (_push && this.push) {
-      return this.pushWrapper[this.type].call(this, text, desp, poster);
+      try {
+        return await this.pushWrapper[this.type].call(this, text, desp, poster);
+      } catch (e) {
+        logger.error('发送通知信息失败:\n', e);
+      }
     }
   };
 

@@ -37,14 +37,22 @@
           <a-input-password v-model:value="user.password"/>
         </a-form-item>
         <a-form-item
-          :wrapperCol="{ span: 22 }">
+          :wrapperCol="isMobile() ? { span: 22 } : { offset: 2, span: 20 }">
           <a-button type="primary" html-type="submit" block style="width: 100%; margin-top: 24px;">登录</a-button>
         </a-form-item>
         <a-form-item
           name="checked"
           :rules="[{ validator: async (rule, value) => { if (value) return; throw '需勾选我已阅读使用须知!' } }]"
-          :wrapperCol="{ span: 22}">
-          <a-checkbox v-model:checked="user.checked">我已阅读</a-checkbox><a color="warning" @click="openRegulation">《使用须知》</a>
+          :wrapperCol="isMobile() ? { span: 22 } : { offset: 2, span: 20 }">
+          <a-checkbox v-model:checked="user.checked">
+            我已阅读
+            <a color="warning" @click="openRegulation">《使用须知》</a>
+            <br>
+            并且知道遇到问题先去看
+            <a color="warning" @click="openWiki">Wiki</a>
+            否则在交流群提问可能被
+            <span style="color: red">禁言</span>
+          </a-checkbox>
         </a-form-item>
       </a-form>
     </div>
@@ -63,6 +71,13 @@ export default {
     };
   },
   methods: {
+    isMobile () {
+      if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+        return true;
+      } else {
+        return false;
+      }
+    },
     async login (ee) {
       try {
         await this.$api().user.login(this.user.username, this.user.password);
@@ -73,6 +88,9 @@ export default {
     },
     openRegulation () {
       window.open('https://wiki.vertex.icu/zh/misc/regulations');
+    },
+    openWiki () {
+      window.open('https://wiki.vertex.icu/zh/misc/faq');
     }
   }
 };

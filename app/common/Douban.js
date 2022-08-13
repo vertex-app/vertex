@@ -426,7 +426,7 @@ class Douban {
           }
           try {
             this.wishes.push(wish);
-            await this.ntf.addDoubanWish(this.alias, wish);
+            this.ntf.addDoubanWish(this.alias, wish);
             this.updateWish(wish);
             if (this.categories[wish.tag].autoSearch !== false) {
               this.refreshWish(wish.id);
