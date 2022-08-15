@@ -129,22 +129,7 @@ class TorrentMod {
         const fileExt = path.extname(file.name);
         group = group.replace(fileExt, '');
         let season = (filename.match(/[. ]S(\d+)/) || [0, null])[1];
-        let episode = +(filename.match(/[Ee][Pp]?(\d+)[. ]?/) || [])[1];
-        // 适配奇奇怪怪的命名
-        if (!episode) {
-          episode = +(filename.match(/\[(\d+)[Vv]*\d*\]/) || [])[1];
-        }
-        if (!episode) {
-          episode = +(filename.match(/第(\d+)[话話集]/) || [])[1];
-        }
-        if (!episode) {
-          const episodes = filename.match(/[^(mp)(MP)(Mp)]*\d+[^KkFfPpi]*/g)
-            ?.map(item => +item.match(/\d+/))
-            .filter(item => [0, 480, 720, 1080, 576, 2160].indexOf(item) === -1) || [];
-          if (episodes.length === 1) {
-            episode = episodes[0];
-          }
-        }
+        let episode = util.scrapeEpisodeByFilename(filename);
         if (!episode) {
           continue;
         }
@@ -335,22 +320,7 @@ class TorrentMod {
         const fileExt = path.extname(file.name);
         group = group.replace(fileExt, '');
         let season = (filename.match(/[. ]S(\d+)/) || [0, null])[1];
-        let episode = +(filename.match(/[Ee][Pp]?(\d+)[. ]?/) || [])[1];
-        // 适配奇奇怪怪的命名
-        if (!episode) {
-          episode = +(filename.match(/\[(\d+)[Vv]*\d*\]/) || [])[1];
-        }
-        if (!episode) {
-          episode = +(filename.match(/第(\d+)[话話集]/) || [])[1];
-        }
-        if (!episode) {
-          const episodes = filename.match(/[^(mp)(MP)(Mp)]*\d+[^KkFfPpi]*/g)
-            ?.map(item => +item.match(/\d+/))
-            .filter(item => [0, 480, 720, 1080, 576, 2160].indexOf(item) === -1) || [];
-          if (episodes.length === 1) {
-            episode = episodes[0];
-          }
-        }
+        let episode = util.scrapeEpisodeByFilename(filename);
         if (!episode) {
           dryrunResult.push({
             file: file.name,

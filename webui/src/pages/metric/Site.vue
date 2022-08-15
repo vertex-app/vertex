@@ -51,22 +51,22 @@ export default {
         title: '昨日增长',
         dataIndex: 'yesterday',
         width: 48,
-        sorter: (a, b) => a.yesterday.upload - b.yesterday.download
+        sorter: (a, b) => a.yesterday.upload - b.yesterday.upload
       }, {
         title: '今日增长',
         dataIndex: 'today',
         width: 48,
-        sorter: (a, b) => a.today.upload - b.today.download
+        sorter: (a, b) => a.today.upload - b.today.upload
       }, {
         title: '周增长',
         dataIndex: 'week',
         width: 48,
-        sorter: (a, b) => a.week.upload - b.week.download
+        sorter: (a, b) => a.week.upload - b.week.upload
       }, {
         title: '月增长',
         dataIndex: 'month',
         width: 48,
-        sorter: (a, b) => a.month.upload - b.month.download
+        sorter: (a, b) => a.month.upload - b.month.upload
       }
     ];
     return {

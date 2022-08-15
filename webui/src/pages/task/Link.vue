@@ -183,12 +183,12 @@ export default {
       {
         title: '季',
         dataIndex: 'season',
-        width: 10,
+        width: 16,
         fixed: true
       }, {
         title: '集',
         dataIndex: 'episode',
-        width: 10,
+        width: 16,
         fixed: true
       }, {
         title: '剧集名称',

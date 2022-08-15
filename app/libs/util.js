@@ -199,6 +199,38 @@ exports.scrapeNameByFile = async function (_filename, type) {
   return body.results[0]?.name || body.results[0]?.title || '';
 };
 
+exports.scrapeEpisodeByFilename = function (_filename) {
+  const filename = _filename
+    .replace(/【/g, '[')
+    .replace(/】/g, ']');
+  let episode = +(filename.match(/[Ee][Pp]?(\d+)[. ]+/) || [])[1];
+  if (!episode) {
+    episode = +(filename.match(/\[(\d+)[Vv]?\d?\]/) || [])[1];
+  }
+  if (!episode) {
+    episode = +(filename.match(/第(\d+)[话話集]/) || [])[1];
+  }
+  if (!episode) {
+    const episodes = filename
+      .replace(/((mp)|(MP)|(Mp))4/g, '')
+      .replace(/\d+[KkFfPpi年月日期季]+/g, '')
+      .replace(/\d+\.\d+/g, '')
+      .replace(/[xXHh]26[45]/g, '')
+      .replace(/[Ss]\d+/g, '')
+      .replace(/((1st)|(2nd)|(3rd))/g, '')
+      .replace(/\[[.\dA-Za-z_-]*\]/g, '')
+      .replace(/\d+[MmBbGg]/g, '')
+      .replace(/\d+[Xx]\d+/g, '')
+      .match(/\d+/g)
+      ?.map(item => +item.match(/\d+/))
+      .filter(item => [0, 480, 720, 1080, 576, 2160, 1920].indexOf(item) === -1) || [];
+    if (episodes.length === 1) {
+      episode = episodes[0];
+    }
+  };
+  return episode;
+};
+
 exports.listSite = function () {
   const files = fs.readdirSync(path.join(__dirname, '../data/site'));
   const list = [];

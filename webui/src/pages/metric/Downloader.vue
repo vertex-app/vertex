@@ -15,7 +15,7 @@
       </template>
       <template #bodyCell="{ column, record }">
         <template v-if="column.dataIndex === 'speed'">
-          {{ $formatSize(record.uploadSpeed) }} / {{ $formatSize(record.downloadSpeed) }}
+          {{ $formatSize(record.uploadSpeed) }}/s / {{ $formatSize(record.downloadSpeed) }}/s
         </template>
         <template v-if="column.dataIndex === 'seedingCount'">
           {{ record.seedingCount + ' / ' + record.leechingCount }}

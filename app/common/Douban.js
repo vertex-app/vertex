@@ -561,22 +561,7 @@ class Douban {
         if (linkRule.excludeKeys && linkRule.excludeKeys.split(',').some(item => filename.indexOf(item) !== -1)) continue;
         const seriesName = wish.name.split('/')[0].trim().replace(/ /g, '.').replace(/\.?[第].*[季部]/, '').replace(/\..*篇[\d一二三四五六七八九十]*/, '');
         let season = (filename.match(/[. ]S(\d+)/) || [0, null])[1];
-        let episode = +(filename.match(/[Ee][Pp]?(\d+)[. ]?/) || [])[1];
-        // 适配奇奇怪怪的命名
-        if (!episode) {
-          episode = +(filename.match(/\[(\d+)[Vv]*\d*\]/) || [])[1];
-        }
-        if (!episode) {
-          episode = +(filename.match(/第(\d+)[话話集]/) || [])[1];
-        }
-        if (!episode) {
-          const episodes = filename.match(/[^(mp)(MP)(Mp)]\d+[^KkFfPpi]/g)
-            ?.map(item => +item.match(/\d+/))
-            .filter(item => [0, 480, 720, 1080, 576, 2160].indexOf(item) === -1) || [];
-          if (episodes.length === 1) {
-            episode = episodes[0];
-          }
-        }
+        let episode = util.scrapeEpisodeByFilename(filename);
         if (!episode) {
           continue;
         }
