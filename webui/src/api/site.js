@@ -13,9 +13,9 @@ export default {
     const url = '/api/site/' + (site.id ? 'modify' : 'add');
     return await post(url, site);
   },
-  delete: async (id) => {
+  delete: async (name) => {
     const url = '/api/site/delete';
-    return await post(url, { id });
+    return await post(url, { name });
   },
   refresh: async (name) => {
     const url = `/api/site/refresh${name ? '?name=' + name : ''}`;

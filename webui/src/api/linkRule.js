@@ -9,8 +9,8 @@ export default {
     const url = '/api/linkRule/' + (linkRule.id ? 'modify' : 'add');
     return await post(url, linkRule);
   },
-  link: async (id) => {
-    const url = '/api/linkRule/link';
+  delete: async (id) => {
+    const url = '/api/linkRule/delete';
     return await post(url, { id });
   }
 };
