@@ -50,7 +50,7 @@
         <template v-if="['size', 'uploaded', 'downloaded'].indexOf(column.dataIndex) !== -1">
           {{ $formatSize(record[column.dataIndex]) }}
         </template>
-        <template v-if="['recordTime', 'deleteTime'].indexOf(column.dataIndex) !== -1 && record[column.dataIndex]">
+        <template v-if="['recordTime', 'deleteTime', 'addedTime'].indexOf(column.dataIndex) !== -1 && record[column.dataIndex]">
           {{ $moment(record[column.dataIndex] * 1000).format('YYYY-MM-DD HH:mm:ss') }}
         </template>
         <template v-if="column.title === '操作'">
@@ -77,7 +77,7 @@ export default {
         title: '种子名称',
         dataIndex: 'name',
         resizable: true,
-        width: 180
+        width: 144
       }, {
         title: '分类',
         dataIndex: 'category',
@@ -95,6 +95,11 @@ export default {
         dataIndex: 'downloaded',
         width: 32
       }, {
+        title: '添加时间',
+        dataIndex: 'addedTime',
+        sorter: (a, b) => 0,
+        width: 32
+      }, {
         title: '操作',
         width: this.isMobile() ? 72 : 48
       }
@@ -103,7 +108,9 @@ export default {
       page: 1,
       length: 20,
       downloaders: [],
-      keyword: ''
+      keyword: '',
+      sortKey: '',
+      sortType: ''
     };
     const pagination = {
       position: ['topRight', 'bottomRight'],
@@ -135,7 +142,9 @@ export default {
           clientList: JSON.stringify(this.qs.downloaders),
           page: this.qs.page,
           length: this.qs.length,
-          searchKey: this.qs.keyword
+          searchKey: this.qs.keyword,
+          sortKey: this.qs.sortKey,
+          sortType: this.qs.sortType
         };
         const res = (await this.$api().torrent.list(qs)).data;
         this.torrents = res.torrents;
@@ -161,7 +170,11 @@ export default {
     async gotoLink (record) {
       window.open('/task/link?hash=' + record.hash);
     },
-    async handleChange (pagination) {
+    async handleChange (pagination, filters, sorter) {
+      if (sorter) {
+        this.qs.sortKey = sorter.field;
+        this.qs.sortType = sorter.order === 'ascend' ? 'asc' : 'desc';
+      }
       this.qs.page = pagination.current;
       this.listTorrent();
     }

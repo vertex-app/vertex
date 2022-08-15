@@ -80,6 +80,12 @@ class SiteMod {
           download: 0
         }
       },
+      yesterday: {
+        total: {
+          upload: 0,
+          download: 0
+        }
+      },
       week: {
         total: {
           upload: 0,
@@ -95,12 +101,16 @@ class SiteMod {
     };
     for (const site of siteList) {
       const sql = 'select * from sites where site = ? and update_time < ? order by update_time desc limit 1';
+      const yesterday = (await util.getRecord(sql, [site.name, moment().startOf('day').subtract(1, 'day').unix()])) || {};
       const today = (await util.getRecord(sql, [site.name, moment().startOf('day').unix()])) || {};
       const week = (await util.getRecord(sql, [site.name, moment().startOf('week').unix()])) || {};
       const month = (await util.getRecord(sql, [site.name, moment().startOf('month').unix()])) || {};
+      increase.yesterday[site.name] = { upload: today.upload - yesterday.upload || 0, download: today.download - yesterday.download || 0 };
       increase.today[site.name] = { upload: site.upload - today.upload || 0, download: site.download - today.download || 0 };
       increase.week[site.name] = { upload: site.upload - week.upload || 0, download: site.download - week.download || 0 };
       increase.month[site.name] = { upload: site.upload - month.upload || 0, download: site.download - month.download || 0 };
+      increase.yesterday.total.upload += today.upload - yesterday.upload || 0;
+      increase.yesterday.total.download += today.download - yesterday.download || 0;
       increase.today.total.upload += site.upload - today.upload || 0;
       increase.today.total.download += site.download - today.download || 0;
       increase.week.total.upload += site.upload - week.upload || 0;

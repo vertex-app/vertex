@@ -41,5 +41,10 @@ export default {
     const qsString = Object.keys(qs).filter(item => qs[item]).map(item => `${item}=${encodeURIComponent(qs[item])}`).join('&');
     const url = `/api/subscribe/relink?${qsString}`;
     return await get(url);
+  },
+  delRecord: async (qs) => {
+    const qsString = Object.keys(qs).filter(item => qs[item]).map(item => `${item}=${encodeURIComponent(qs[item])}`).join('&');
+    const url = `/api/subscribe/deleteRecord?${qsString}`;
+    return await get(url);
   }
 };

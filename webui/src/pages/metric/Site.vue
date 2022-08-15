@@ -18,7 +18,7 @@
         <template v-if="['upload', 'download'].indexOf(column.dataIndex) !== -1">
           {{ $formatSize(record[column.dataIndex]) }}
         </template>
-        <template v-if="['today', 'week', 'month'].indexOf(column.dataIndex) !== -1">
+        <template v-if="['yesterday', 'today', 'week', 'month'].indexOf(column.dataIndex) !== -1">
           ↑ {{ $formatSize(siteIncrease[column.dataIndex][record.name].upload) }}
           <br>
           ↓ {{ $formatSize(siteIncrease[column.dataIndex][record.name].download) }}
@@ -48,7 +48,12 @@ export default {
         width: 48,
         sorter: (a, b) => a.download - b.download
       }, {
-        title: '日增长',
+        title: '昨日增长',
+        dataIndex: 'yesterday',
+        width: 48,
+        sorter: (a, b) => a.yesterday.upload - b.yesterday.download
+      }, {
+        title: '今日增长',
         dataIndex: 'today',
         width: 48,
         sorter: (a, b) => a.today.upload - b.today.download
@@ -91,6 +96,7 @@ export default {
           download: this.sites[0] ? this.sites.map(item => item.download).reduce((a, b) => a + b) : 0
         });
         for (const site of this.sites) {
+          site.yesterday = this.siteIncrease.yesterday[site.name];
           site.today = this.siteIncrease.today[site.name];
           site.week = this.siteIncrease.week[site.name];
           site.month = this.siteIncrease.month[site.name];

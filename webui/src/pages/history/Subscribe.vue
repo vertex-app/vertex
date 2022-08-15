@@ -22,6 +22,14 @@
         <template v-if="column.dataIndex === 'mediaName' && [6, 99].indexOf(record.recordType) === -1">
           种子推送
         </template>
+        <template v-if="column.dataIndex === 'name'">
+          <a @click="gotoDetail(record)">{{ record.name }}</a>
+          <template v-if="[6, 99].indexOf(record.recordType) !== -1">
+            <br>
+            <span style="font-size: 12px;">{{ JSON.parse(record.recordNote).torrent.subtitle }}</span>
+          </template>
+          <a style="font-size: 12px;" @click="gotoDetail(record, true)">[代理打开]</a>
+        </template>
         <template v-if="['size', 'upload', 'download'].indexOf(column.dataIndex) !== -1">
           {{ $formatSize(record[column.dataIndex]) }}
         </template>
@@ -32,9 +40,14 @@
           <span>{{ record.recordNote.indexOf('wish') !== -1 ? '豆瓣' : record.recordNote }}</span>
         </template>
         <template v-if="column.title === '操作'">
-          <a @click="gotoDetail(record)">打开</a>
-          <a-divider type="vertical" />
           <a @click="gotoLink(record)">软/硬链接</a>
+          <a-divider type="vertical" />
+          <a-popover title="删除?" trigger="click" :overlayStyle="{ width: '84px', overflow: 'hidden' }">
+            <template #content>
+              <a-button type="primary" danger @click="delRecord(record)" size="small">删除</a-button>
+            </template>
+            <a style="color: red">删除</a>
+          </a-popover>
         </template>
       </template>
     </a-table>
@@ -47,7 +60,7 @@ export default {
       {
         title: '剧集',
         dataIndex: 'mediaName',
-        width: 18,
+        width: 24,
         fixed: true
       }, {
         title: '种子名称',
@@ -64,11 +77,11 @@ export default {
       }, {
         title: '种子状态',
         dataIndex: 'recordNote',
-        width: 32
+        width: 16
       }, {
         title: '操作',
         dataIndex: 'option',
-        width: 32
+        width: 24
       }
     ];
     const qs = {
@@ -111,9 +124,17 @@ export default {
       }
       this.loading = false;
     },
-    async gotoDetail (record) {
+    async delRecord (record) {
+      try {
+        await this.$api().subscribe.delRecord({ id: record.id });
+        this.listHistory();
+      } catch (e) {
+        await this.$message().error(e.message);
+      }
+    },
+    async gotoDetail (record, proxy) {
       if (!record.link) return await this.$message().error('链接不存在');
-      window.open(record.link);
+      window.open(proxy ? record.link.replace(/https:\/\/.*?\//, `/proxy/site/${record.rssId}/`) : record.link);
     },
     async handleChange (pagination, filters) {
       this.qs.page = pagination.current;
