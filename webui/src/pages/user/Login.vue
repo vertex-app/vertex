@@ -50,6 +50,7 @@
             <br>
             并且知道遇到问题先去看
             <a color="warning" @click="openWiki">Wiki</a>
+            <br>
             否则在交流群提问可能被
             <span style="color: red">禁言</span>
           </a-checkbox>

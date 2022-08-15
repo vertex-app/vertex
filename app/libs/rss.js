@@ -472,6 +472,32 @@ const _getIPTorrentsTorrents = async function (rssUrl) {
   return torrents;
 };
 
+const _getMikanProjectTorrents = async function (rssUrl) {
+  const rss = await parseXml(await _getRssContent(rssUrl));
+  const torrents = [];
+  const items = rss.rss.channel[0].item;
+  for (let i = 0; i < items.length; ++i) {
+    const torrent = {
+      size: 0,
+      name: '',
+      hash: '',
+      id: 0,
+      url: '',
+      link: ''
+    };
+    torrent.size = items[i].enclosure[0].$.length;
+    torrent.name = items[i].title[0];
+    const link = items[i].link[0];
+    torrent.link = link;
+    torrent.id = link.substring(link.indexOf('Episode/') + 8);
+    torrent.url = items[i].enclosure[0].$.url;
+    torrent.hash = torrent.id;
+    torrent.pubTime = moment(items[i].torrent[0].pubDate[0]).unix();
+    torrents.push(torrent);
+  }
+  return torrents;
+};
+
 const _getTorrentsWrapper = {
   'filelist.io': _getTorrentsFileList,
   'blutopia.xyz': _getTorrentsUnit3D,
@@ -485,7 +511,8 @@ const _getTorrentsWrapper = {
   'pt.sjtu.edu.cn': _getTorrentsPuTao,
   'hd-torrents.org': _getHDTorrents,
   'hdcity.leniter.org': _getHDCityTorrents,
-  'iptorrents.com': _getIPTorrentsTorrents
+  'iptorrents.com': _getIPTorrentsTorrents,
+  'mikanani.me': _getMikanProjectTorrents
 };
 
 exports.getTorrents = async function (rssUrl) {
