@@ -9,7 +9,7 @@
       :loading="loading"
       :data-source="sites"
       :pagination="false"
-      :scroll="{ x: 640 }"
+      :scroll="{ x: 840, y: scrollHeight }"
     >
       <template #title>
         <span style="font-size: 16px; font-weight: bold;">站点数据</span>
@@ -17,6 +17,9 @@
       <template #bodyCell="{ column, record }">
         <template v-if="['upload', 'download'].indexOf(column.dataIndex) !== -1">
           {{ $formatSize(record[column.dataIndex]) }}
+        </template>
+        <template v-if="column.dataIndex === 'ratio'">
+          {{ (record.upload / record.download).toFixed(2) }}
         </template>
         <template v-if="['yesterday', 'today', 'week', 'month'].indexOf(column.dataIndex) !== -1">
           ↑ {{ $formatSize(siteIncrease[column.dataIndex][record.name].upload) }}
@@ -48,6 +51,11 @@ export default {
         width: 48,
         sorter: (a, b) => a.download - b.download
       }, {
+        title: '分享率',
+        dataIndex: 'ratio',
+        width: 32,
+        sorter: (a, b) => (a.upload / a.download) - (b.upload / b.download)
+      }, {
         title: '昨日增长',
         dataIndex: 'yesterday',
         width: 48,
@@ -72,6 +80,7 @@ export default {
     return {
       loading: true,
       columns,
+      scrollHeight: 640,
       sites: [],
       siteIncrease: {}
     };
@@ -118,7 +127,10 @@ export default {
   },
   async mounted () {
     this.listSite();
-    // this.listRecord();
+    this.scrollHeight = window.innerHeight - 32 - 38 - 49 - 41 - 60 - (this.isMobile() ? 60 : 0);
+    window.onresize = () => {
+      this.scrollHeight = window.innerHeight - 32 - 38 - 49 - 41 - 60 - (this.isMobile() ? 60 : 0);
+    };
   }
 };
 </script>
