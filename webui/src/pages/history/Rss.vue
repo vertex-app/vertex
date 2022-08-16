@@ -136,6 +136,8 @@ export default {
       this.qs.page = pagination.current;
       if (filters.rssId) {
         this.qs.rss = filters.rssId[0];
+      } else {
+        this.qs.rss = '';
       }
       this.listHistory();
     }
