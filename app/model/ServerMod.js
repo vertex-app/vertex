@@ -163,9 +163,15 @@ class ServerMod {
           ws.send(data.toString());
         });
       });
+    }).on('error', (e) => {
+      logger.error(e);
+      ws.send('\r\n*** SSH SHELL ERROR: ' + e.message + ' ***\r\n');
     }).connect(server);
     ws.on('close', () => {
       logger.info(`[${serverId}]`, server.alias, 'shell 已断开连接');
+      ssh.end();
+    }).on('error', (e) => {
+      logger.error(server.alias, e);
       ssh.end();
     });
   }
