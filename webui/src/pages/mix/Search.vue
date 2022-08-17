@@ -208,6 +208,12 @@ export default {
       savePaths: [],
       columns,
       qs,
+      supportSite: [
+        'HaresClub', 'LemonHD', 'MTeam', 'HDSky', 'OurBits',
+        'HDHome', 'PTerClub', 'BTSchool', 'TJUPT', 'KeepFriends',
+        'SpringSunDay', 'ToTheGlory', 'HDChina', 'Audiences', 'PTHome',
+        'HDDolby', 'HDArea', 'SoulVoice', 'NYPT'
+      ],
       torrents: [],
       torrentsOri: [],
       subscribes: [],
@@ -265,7 +271,7 @@ export default {
     async listSite () {
       try {
         const res = await this.$api().site.list();
-        this.sites = res.data.siteList;
+        this.sites = res.data.siteList.filter(item => this.supportSite.indexOf(item.name) !== -1);
         this.qs.sites = this.sites.map(item => item.name);
         this.columns[0].filters = this.qs.sites.map(item => ({ text: item, value: item }));
       } catch (e) {
