@@ -61,7 +61,8 @@ class Site {
       HDDolby: this._searchHDDolby,
       HDArea: this._searchHDArea,
       SoulVoice: this._searchSoulVoice,
-      NYPT: this._searchNYPT
+      NYPT: this._searchNYPT,
+      U2: this._searchU2
     };
     this.scrapeDownloadLinkWrapper = {
       HDChina: this._scrapeDownloadLinkHDChina,
@@ -83,7 +84,8 @@ class Site {
       HDDolby: 'https://www.hddolby.com/download.php?id={ID}',
       HDArea: 'https://www.hdarea.co/download.php?id={ID}',
       SoulVoice: 'https://pt.soulvoice.club/download.php?id={ID}',
-      NYPT: 'https://nanyangpt.com/download.php?id={ID}'
+      NYPT: 'https://nanyangpt.com/download.php?id={ID}',
+      U2: 'https://u2.dmhy.org//download.php?id={ID}'
     };
     this.siteUrlMap = {
       HaresClub: 'https://club.hares.top/',
@@ -104,7 +106,8 @@ class Site {
       HDDolby: 'https://www.hddolby.com/',
       HDArea: 'https://www.hdarea.co/',
       SoulVoice: 'https://www.soulvoice.co/',
-      NYPT: 'https://nanyangpt.com/'
+      NYPT: 'https://nanyangpt.com/',
+      U2: 'https://u2.dmhy.org/'
     };
     this.siteIdMap = {
       HaresClub: 1,
@@ -1520,6 +1523,39 @@ class Site {
       torrent.snatches = +(_torrent.querySelector('a[href*=snatches] b') || _torrent.childNodes[11]).innerHTML.trim();
       torrent.size = _torrent.childNodes[6].innerHTML.trim().replace('<br>', ' ').replace(/([KMGPT])B/, '$1iB');
       torrent.time = moment(_torrent.childNodes[5].querySelector('span') ? _torrent.childNodes[5].querySelector('span').title : _torrent.childNodes[5].innerHTML.replace(/<br>/, ' ')).unix();
+      torrent.size = util.calSize(...torrent.size.split(' '));
+      torrent.tags = [];
+      const tagsDom = _torrent.querySelectorAll('div[class*=tag]');
+      for (const tag of tagsDom) {
+        torrent.tags.push(tag.innerHTML.trim());
+      }
+      torrentList.push(torrent);
+    }
+    return {
+      site: this.site,
+      torrentList
+    };
+  };
+
+  // U2
+  async _searchU2 (keyword) {
+    const torrentList = [];
+    const document = await this._getDocument(`https://u2.dmhy.org/torrents.php?search=${encodeURIComponent(keyword)}&notnewword=1`);
+    logger.info(`https://u2.dmhy.org/torrents.php?search=${encodeURIComponent(keyword)}&notnewword=1`);
+    const torrents = document.querySelectorAll('.torrents > tbody > tr:not(:first-child)');
+    for (const _torrent of torrents) {
+      const torrent = {};
+      torrent.site = this.site;
+      torrent.title = _torrent.querySelector('td[class~="embedded"] > a[href*="details"]').innerHTML.trim();
+      torrent.subtitle = (_torrent.querySelector('span[class=tooltip]').innerHTML || '').trim();
+      torrent.category = _torrent.querySelector('td a[href*=cat]').innerHTML.trim();
+      torrent.link = 'https://u2.dmhy.org/' + _torrent.querySelector('a[href*=details]').href.trim();
+      torrent.id = +torrent.link.match(/id=(\d*)/)[1];
+      torrent.seeders = +(_torrent.querySelector('a[href*=seeders] font') || _torrent.querySelector('a[href*=seeders]') || _torrent.querySelector('span[class=red]')).innerHTML.trim();
+      torrent.leechers = +(_torrent.querySelector('a[href*=leechers]') || _torrent.childNodes[7]).innerHTML.trim();
+      torrent.snatches = +(_torrent.querySelector('a[href*=snatches] b') || _torrent.childNodes[8]).innerHTML.trim();
+      torrent.size = _torrent.childNodes[5].innerHTML.trim().replace('<br>', ' ');
+      torrent.time = moment(_torrent.childNodes[4].querySelector('time') ? _torrent.childNodes[4].querySelector('time').title : _torrent.childNodes[4].innerHTML.replace(/<br>/, ' ')).unix();
       torrent.size = util.calSize(...torrent.size.split(' '));
       torrent.tags = [];
       const tagsDom = _torrent.querySelectorAll('div[class*=tag]');
