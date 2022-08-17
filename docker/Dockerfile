@@ -21,6 +21,7 @@ RUN \
   echo 'daemonize yes' >> /app/redis.conf
 COPY src/static /app/vertex/app/static
 ENV TZ=Asia/Shanghai
+EXPOSE 3000
 CMD \
   cp /usr/share/zoneinfo/$TZ /app/localtime && \
   /usr/bin/redis-server /app/redis.conf && \

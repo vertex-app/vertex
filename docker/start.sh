@@ -29,6 +29,12 @@ else
   echo '/vertex/data/script exists, continue'
 fi
 
+if [ ! -d '/vertex/data/watch' ]; then
+  mkdir /vertex/data/watch/set -p
+else
+  echo '/vertex/data/watch exists, continue'
+fi
+
 if [ ! -d '/vertex/data/rule/raceSet' ]; then
   mkdir /vertex/data/rule/raceSet
 else

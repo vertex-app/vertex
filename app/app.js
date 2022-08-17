@@ -13,6 +13,7 @@ const Rss = require('./common/Rss');
 const Server = require('./common/Server');
 const Douban = require('./common/Douban');
 const Site = require('./common/Site');
+const Watch = require('./common/Watch');
 
 const logger = require('./libs/logger');
 const util = require('./libs/util');
@@ -90,6 +91,7 @@ const init = function () {
   global.runningRace = {};
   global.runningDouban = {};
   global.runningScript = {};
+  global.runningWatch = {};
   global.startTime = moment().unix();
   initPush();
   for (const client of util.listClient()) {
@@ -118,6 +120,11 @@ const init = function () {
   for (const script of util.listCrontabJavaScript()) {
     if (script.enable) {
       global.runningScript[script.id] = new Script(script);
+    }
+  }
+  for (const watch of util.listWatch()) {
+    if (watch.enable) {
+      global.runningWatch[watch.id] = new Watch(watch);
     }
   }
 };

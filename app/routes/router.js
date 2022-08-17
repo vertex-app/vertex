@@ -180,6 +180,11 @@ module.exports = function (app, express, router) {
   router.post('/script/modify', ctrl.Script.modify);
   router.post('/script/delete', ctrl.Script.delete);
 
+  router.get('/watch/list', ctrl.Watch.list);
+  router.post('/watch/add', ctrl.Watch.add);
+  router.post('/watch/modify', ctrl.Watch.modify);
+  router.post('/watch/delete', ctrl.Watch.delete);
+
   router.get('/rss/list', ctrl.Rss.list);
   router.post('/rss/add', ctrl.Rss.add);
   router.post('/rss/modify', ctrl.Rss.modify);

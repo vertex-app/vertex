@@ -164,7 +164,7 @@ exports.uuid = uuid;
 exports.md5 = md5;
 exports.tar = tar;
 
-exports.scrapeNameByFile = async function (_filename, type) {
+exports.scrapeNameByFile = async function (_filename, type, _year = false) {
   const filename = _filename.replace(/[[\]]/g, '');
   if (!global.tmdbApiKey) {
     throw new Error('未填写 The Movie Database Api Key');
@@ -196,6 +196,13 @@ exports.scrapeNameByFile = async function (_filename, type) {
   body.results = body.results.sort((a, b) => b.popularity - a.popularity);
   logger.debug('根据文件名抓取影视剧名', filename, searchKey, body.results[0]?.name || body.results[0]?.title || '');
   logger.debug('tmdb api url', url);
+  if (_year) {
+    return {
+      name: body.results[0]?.name || body.results[0]?.title || '',
+      year: (body.results[0]?.release_date || body.results[0]?.first_air_date || '').split('-')[0],
+      type: type || body.results[0]?.media_type
+    };
+  }
   return body.results[0]?.name || body.results[0]?.title || '';
 };
 
@@ -369,13 +376,35 @@ exports.listDoubanSet = function () {
 
 exports.listCrontabJavaScript = function () {
   const files = fs.readdirSync(path.join(__dirname, '../data/script'));
-  const doubanSetList = [];
+  const scriptList = [];
   for (const file of files) {
     if (path.extname(file) === '.json') {
-      doubanSetList.push(_importJson(path.join(__dirname, '../data/script', file)));
+      scriptList.push(_importJson(path.join(__dirname, '../data/script', file)));
     }
   }
-  return doubanSetList;
+  return scriptList;
+};
+
+exports.listWatch = function () {
+  const files = fs.readdirSync(path.join(__dirname, '../data/watch'));
+  const watchList = [];
+  for (const file of files) {
+    if (path.extname(file) === '.json') {
+      watchList.push(_importJson(path.join(__dirname, '../data/watch', file)));
+    }
+  }
+  return watchList;
+};
+
+exports.listWatchSet = function () {
+  const files = fs.readdirSync(path.join(__dirname, '../data/watch/set'));
+  const watchSetList = [];
+  for (const file of files) {
+    if (path.extname(file) === '.json') {
+      watchSetList.push(_importJson(path.join(__dirname, '../data/watch/set', file)));
+    }
+  }
+  return watchSetList;
 };
 
 exports.formatSize = function (size) {

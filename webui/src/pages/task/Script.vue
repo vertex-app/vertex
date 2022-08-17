@@ -62,7 +62,7 @@
         <a-form-item
           label="执行周期"
           name="cron"
-          extra="脚本得执行周期, 默认 * * * * * 一分钟执行一次"
+          extra="脚本的执行周期, 默认 * * * * * 一分钟执行一次"
           :rules="[{ required: true, message: '${label}不可为空! ' }]">
           <a-input size="small" v-model:value="script.cron"/>
         </a-form-item>
