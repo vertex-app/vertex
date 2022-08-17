@@ -376,6 +376,33 @@ class Push {
     await this._push(this.pushType.indexOf('clientLoginError') !== -1, text, desp);
   }
 
+  async scrapeTorrent (alias, torrentName, scrapedName) {
+    const text = '种子识别 ' + moment().format('YYYY-MM-DD HH:mm:ss');
+    let desp = `监控分类: ${alias}\n种子名称: ${torrentName}\n识别名称: ${scrapedName}`;
+    if (this.markdown) {
+      desp = '```\n' + desp + '\n```';
+    }
+    if (this.type === 'telegram') {
+      desp = '\\#下载器已连接\n' + desp;
+    }
+    return await this._push(this.pushType.indexOf('watch') !== -1, text, desp);
+  }
+
+  async scrapeTorrentFailed (alias, torrentName, note) {
+    const text = '种子识别失败 ' + moment().format('YYYY-MM-DD HH:mm:ss');
+    let desp = `监控分类: ${alias}\n种子名称: ${torrentName}`;
+    if (note) {
+      desp += `\n错误信息: ${note}`;
+    }
+    if (this.markdown) {
+      desp = '```\n' + desp + '\n```';
+    }
+    if (this.type === 'telegram') {
+      desp = '\\#种子识别失败\n' + desp;
+    }
+    return await this._push(this.pushType.indexOf('watch') !== -1, text, desp);
+  }
+
   async getMaindataError (client) {
     if (this.errorCount > this.maxErrorCount) {
       return logger.debug('周期内错误推送已达上限, 跳过本次推送');

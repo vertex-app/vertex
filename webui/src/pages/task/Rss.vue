@@ -329,6 +329,7 @@ export default {
       columns,
       rssList: [],
       downloaders: [],
+      notifications: [],
       rssRules: [],
       rss: {},
       defaultRss: {

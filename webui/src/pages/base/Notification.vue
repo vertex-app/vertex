@@ -224,6 +224,9 @@ export default {
         }, {
           key: 'finish',
           value: '种子完成'
+        }, {
+          key: 'watch',
+          value: '监控分类'
         }
       ],
       defaultNotification: {

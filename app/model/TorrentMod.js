@@ -10,7 +10,7 @@ class TorrentMod {
     for (const clientId of Object.keys(clients)) {
       if (!clientsList.some(item => item === clientId)) continue;
       if (!clients[clientId].maindata) {
-        throw new Error('客户端 ' + clients[clientId] + ' 未连接或未更新种子列表, 请稍后重试');
+        throw new Error('客户端 ' + clients[clientId].alias + ' 未连接或未更新种子列表, 请稍后重试');
       }
       for (const torrent of clients[clientId].maindata.torrents) {
         const _torrent = { ...torrent };

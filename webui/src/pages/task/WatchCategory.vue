@@ -79,6 +79,14 @@
           </a-select>
         </a-form-item>
         <a-form-item
+          label="通知方式"
+          name="notify"
+          extra="通知方式, 用于推送信息, 留空则不推送信息">
+          <a-select size="small" v-model:value="watch.notify">
+            <a-select-option v-for="notification of notifications" v-model:value="notification.id" :key="notification.id">{{ notification.alias }}</a-select-option>
+          </a-select>
+        </a-form-item>
+        <a-form-item
           label="资源类型"
           name="type"
           extra="该分类下的资源类型, 选择该项目可以提高识别准确率, 如果是混合类型分类, 请不要勾选">
@@ -153,6 +161,7 @@ export default {
       watches: [],
       downloaders: [],
       linkRules: [],
+      notifications: [],
       watch: {},
       defaultWatch: {
         enable: true,
@@ -197,6 +206,14 @@ export default {
         this.$message().error(e.message);
       }
     },
+    async listNotification () {
+      try {
+        const res = await this.$api().notification.list();
+        this.notifications = res.data;
+      } catch (e) {
+        this.$message().error(e.message);
+      }
+    },
     async modifyWatch () {
       try {
         await this.$api().watch.modify({ ...this.watch });
@@ -229,6 +246,7 @@ export default {
     this.clearWatch();
     this.listWatch();
     this.listDownloader();
+    this.listNotification();
     this.listLinkRule();
   }
 };

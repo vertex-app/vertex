@@ -2,6 +2,7 @@ const util = require('../libs/util');
 const cron = require('node-cron');
 const path = require('path');
 const fs = require('fs');
+const Push = require('./Push');
 const logger = require('../libs/logger');
 
 class Watch {
@@ -12,6 +13,9 @@ class Watch {
     this.linkRule = watch.linkRule;
     this.category = watch.category;
     this.type = watch.type;
+    this.notify = util.listPush().filter(item => item.id === watch.notify)[0] || {};
+    this.notify.push = !!watch.notify;
+    this.ntf = new Push(this.notify);
     this.libraryPath = watch.libraryPath;
     this.downloader = watch.downloader;
     this.torrents = util.listWatchSet().filter(item => item.id === this.id)[0]?.torrents || {};
@@ -41,24 +45,30 @@ class Watch {
     for (const torrent of torrents) {
       if (!this.torrents[torrent.hash]) {
         logger.watch('检测到新种子', torrent.name, '已完成, 开始识别');
-        const { name, year, type } = await util.scrapeNameByFile(torrent.name, this.type === 'series' ? 'tv' : this.type ? 'movie' : '', true);
-        torrent.scrapedName = name;
-        torrent.year = year;
-        torrent.type = type === 'tv' ? 'series' : type === 'movie' ? 'movie' : this.type;
-        if (!name || !year) {
-          logger.error(`${torrent.name} 识别失败: ${name}.${year} ${torrent.type}`);
-        } else {
-          logger.watch(`${torrent.name} 识别结果: ${name}.${year} ${torrent.type}`);
-          await this._linkTorrentFiles(torrent, this.downloader, name, year, torrent.type);
+        try {
+          const { name, year, type } = await util.scrapeNameByFile(torrent.name, this.type === 'series' ? 'tv' : this.type ? 'movie' : '', true);
+          torrent.scrapedName = name;
+          torrent.year = year;
+          torrent.type = type === 'tv' ? 'series' : type === 'movie' ? 'movie' : this.type;
+          if (!name || !year) {
+            logger.error(`${torrent.name} 识别失败: ${name}.${year} ${torrent.type}`);
+            this.ntf.scrapeTorrentFailed(this.alias, torrent.name);
+          } else {
+            this.ntf.scrapeTorrent(this.alias, torrent.name, `${name}.${year} ${torrent.type}`);
+            logger.watch(`${torrent.name} 识别结果: ${name}.${year} ${torrent.type}`);
+            await this._linkTorrentFiles(torrent, this.downloader, name, year, torrent.type);
+          }
+          this.torrents[torrent.hash] = {
+            name: torrent.name,
+            size: torrent.size,
+            scrapedName: name,
+            year: year,
+            type: type
+          };
+          this._saveSet();
+        } catch (e) {
+          this.ntf.scrapeTorrentFailed(this.alias, torrent.name, `${e.message}`);
         }
-        this.torrents[torrent.hash] = {
-          name: torrent.name,
-          size: torrent.size,
-          scrapedName: name,
-          year: year,
-          type: type
-        };
-        this._saveSet();
       }
     }
   };
