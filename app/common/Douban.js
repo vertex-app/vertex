@@ -559,7 +559,7 @@ class Douban {
         const filename = path.basename(file.name);
         if (file.size < linkRule.minFileSize) continue;
         if (linkRule.excludeKeys && linkRule.excludeKeys.split(',').some(item => filename.indexOf(item) !== -1)) continue;
-        const seriesName = wish.name.split('/')[0].trim().replace(/ /g, '.').replace(/\.?[第].*[季部]/, '').replace(/\..*篇[\d一二三四五六七八九十]*/, '');
+        const seriesName = wish.name.split('/')[0].trim().replace(/ +/g, '.').replace(/\.?[第].*[季部]/, '').replace(/\..*篇[\d一二三四五六七八九十]*/, '');
         let season = (filename.match(/[. ]S(\d+)/) || [0, null])[1];
         let episode = util.scrapeEpisodeByFilename(filename);
         if (!episode) {

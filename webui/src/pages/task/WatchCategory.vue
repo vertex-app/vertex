@@ -118,6 +118,37 @@
           </a-select>
         </a-form-item>
         <a-form-item
+          label="强制识别"
+          name="forceScrape"
+          :rules="[{ required: true, message: '${label}不可为空! ' }]">
+          <a-table
+            :style="`font-size: ${isMobile() ? '12px': '14px'};`"
+            :columns="scrapeColumns"
+            size="small"
+            :data-source="watch.forceScrape"
+            :pagination="false"
+            :scroll="{ x: 540 }"
+          >
+            <template #bodyCell="{ column, record }">
+              <template v-if="column.dataIndex === 'keyword'">
+                <a-input size="small" v-model:value="record.keyword"/>
+              </template>
+              <template v-if="column.dataIndex === 'name'">
+                <a-input size="small" v-model:value="record.name"/>
+              </template>
+              <template v-if="column.dataIndex === 'option'">
+                <a style="color: red" @click="watch.forceScrape = watch.forceScrape.filter(item => item !== record)">删除</a>
+              </template>
+            </template>
+          </a-table>
+          <a-button
+            type="primary"
+            @click="watch.forceScrape.push({ ...scrapeMap })"
+            size="small">
+            新增条目
+          </a-button>
+        </a-form-item>
+        <a-form-item
           :wrapperCol="isMobile() ? { span:24 } : { span: 21, offset: 3 }">
           <a-button type="primary" html-type="submit" style="margin-top: 24px; margin-bottom: 48px;">新增 | 编辑</a-button>
           <a-button style="margin-left: 12px; margin-top: 24px; margin-bottom: 48px;"  @click="clearWatch()">清空</a-button>
@@ -156,18 +187,42 @@ export default {
         width: 24
       }
     ];
+    const scrapeColumns = [
+      {
+        title: '关键词',
+        dataIndex: 'keyword',
+        fixed: true,
+        width: 24
+      }, {
+        title: '名称',
+        dataIndex: 'name',
+        width: 24
+      }, {
+        title: '操作',
+        dataIndex: 'option',
+        width: 6
+      }
+    ];
     return {
       columns,
+      scrapeColumns,
       watches: [],
       downloaders: [],
       linkRules: [],
       notifications: [],
       watch: {},
+      scrapeMap: {
+        keyword: '',
+        name: ''
+      },
       defaultWatch: {
         enable: true,
         cron: '* * * * *',
         downlaoder: '',
-        category: ''
+        category: '',
+        linkRule: '',
+        notify: '',
+        forceScrape: []
       },
       loading: true
     };
@@ -225,7 +280,10 @@ export default {
       }
     },
     modifyClick (row) {
-      this.watch = { ...row };
+      this.watch = {
+        ...row,
+        forceScrape: [...row.forceScrape]
+      };
     },
     async deleteWatch (row) {
       try {
@@ -238,7 +296,8 @@ export default {
     },
     clearWatch () {
       this.watch = {
-        ...this.defaultWatch
+        ...this.defaultWatch,
+        forceScrape: []
       };
     }
   },

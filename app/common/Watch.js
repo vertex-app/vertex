@@ -18,6 +18,7 @@ class Watch {
     this.ntf = new Push(this.notify);
     this.libraryPath = watch.libraryPath;
     this.downloader = watch.downloader;
+    this.forceScrape = watch.forceScrape || [];
     this.torrents = util.listWatchSet().filter(item => item.id === this.id)[0]?.torrents || {};
     // eslint-disable-next-line no-eval
     this.job = cron.schedule(this.cron, async () => { try { await this._scanCategory(); } catch (e) { logger.error(e); } });
@@ -46,7 +47,12 @@ class Watch {
       if (!this.torrents[torrent.hash]) {
         logger.watch('检测到新种子', torrent.name, '已完成, 开始识别');
         try {
-          const { name, year, type } = await util.scrapeNameByFile(torrent.name, this.type === 'series' ? 'tv' : this.type ? 'movie' : '', true);
+          const forceScrape = this.forceScrape.filter(item => torrent.name.indexOf(item.keyword) !== -1)[0];
+          let _name;
+          if (forceScrape) {
+            _name = forceScrape.name;
+          }
+          const { name, year, type } = await util.scrapeNameByFile(_name || torrent.name, this.type === 'series' ? 'tv' : this.type ? 'movie' : '', true);
           torrent.scrapedName = name;
           torrent.year = year;
           torrent.type = type === 'tv' ? 'series' : type === 'movie' ? 'movie' : this.type;
@@ -55,7 +61,7 @@ class Watch {
             this.ntf.scrapeTorrentFailed(this.alias, torrent.name);
           } else {
             this.ntf.scrapeTorrent(this.alias, torrent.name, `${name}.${year} ${torrent.type}`);
-            logger.watch(`${torrent.name} 识别结果: ${name}.${year} ${torrent.type}`);
+            logger.watch(`${torrent.name} 识别结果: ${name}.${year || ''} ${torrent.type}`);
             await this._linkTorrentFiles(torrent, this.downloader, name, year, torrent.type);
           }
           this.torrents[torrent.hash] = {
@@ -67,6 +73,7 @@ class Watch {
           };
           this._saveSet();
         } catch (e) {
+          logger.error(e);
           this.ntf.scrapeTorrentFailed(this.alias, torrent.name, `${e.message}`);
         }
       }
@@ -96,7 +103,7 @@ class Watch {
           fakeEpisode = part?.[1] === 'A' || part?.[1] === '1' ? episode * 2 - 1 : episode * 2;
         }
         if (season === null) {
-          const seasonSubtitle = name.replace(/ /g, '').match(/第([一二三四五六七八九十])[季部]/);
+          const seasonSubtitle = name.replace(/ +/g, '').match(/第([一二三四五六七八九十])[季部]/);
           if (seasonSubtitle) {
             season = {
               一: 1,
@@ -137,7 +144,7 @@ class Watch {
         }
         const fileExt = path.extname(file.name);
         group = group.replace(fileExt, '');
-        const linkFilePath = path.join(linkRule.linkFilePath, this.libraryPath.split(':')[1], seriesName, season).replace(/'/g, '\\\'');
+        const linkFilePath = path.join(linkRule.linkFilePath, this.libraryPath.split(':')[1], `${seriesName}(${year})`, season).replace(/'/g, '\\\'');
         const linkFile = path.join(linkFilePath, prefix + season + episode + suffix + group + fileExt).replace(/'/g, '\\\'');
         const targetFile = path.join(torrent.savePath.replace(linkRule.targetPath.split('##')[0], linkRule.targetPath.split('##')[1]), file.name).replace(/'/g, '\\\'');
         const linkMode = linkRule.hardlink ? 'f' : 'sf';

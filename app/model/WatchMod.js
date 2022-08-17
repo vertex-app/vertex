@@ -16,6 +16,7 @@ class WatchMod {
 
   delete (options) {
     fs.unlinkSync(path.join(__dirname, '../data/watch/', options.id + '.json'));
+    fs.unlinkSync(path.join(__dirname, '../data/watch/set/', options.id + '.json'));
     if (global.runningWatch[options.id]) global.runningWatch[options.id].destroy();
     return '删除 Watch 成功';
   };
