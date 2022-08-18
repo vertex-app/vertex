@@ -26,6 +26,18 @@
           <a-input size="small" v-model:value="setting.password"/>
         </a-form-item>
         <a-form-item
+          label="二步验证"
+          name="otp"
+          extra="二步验证字符串, 请添加至 Authy 或者 Goole Authenticator, 若未设置, 此处会显示随机字符串供首次设定, 若已设置, 此处显示 ****** ">
+          <a-input size="small" disabled v-model:value="setting.otp"/>
+        </a-form-item>
+        <a-form-item
+          label="二步验证验证码"
+          name="otpPw"
+          :extra="`二步验证验证码, 除首次设定外, 不需要填写, 服务器当前时间: ${$moment(setting.time * 1000).format('HH:mm:ss')}`">
+          <a-input size="small" v-model:value="setting.otpPw"/>
+        </a-form-item>
+        <a-form-item
           label="ApiKey"
           name="apiKey"
           extra="ApiKey 用于 Vertex 对外的接口请求鉴权, 第一次保存设置后生成">
@@ -74,7 +86,10 @@ export default {
           username: s.username,
           password: '',
           panelKey: s.panelKey,
-          tmdbApiKey: s.tmdbApiKey
+          tmdbApiKey: s.tmdbApiKey,
+          otp: s.otp ? '******' : (new Array(16)).fill(1).map(() => '234567ABCDEFGHIJKLMNOPQRSTUVWXYZ'[parseInt(Math.random() * 31)]).join(''),
+          otpPw: '',
+          time: s.time
         };
       } catch (e) {
         await this.$message().error(e.message);

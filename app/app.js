@@ -63,7 +63,8 @@ const init = function () {
   global.domains = proxySetting.domains;
   global.auth = {
     username: setting.username,
-    password: setting.password
+    password: setting.password,
+    otp: setting.otp
   };
   global.telegramProxy = setting.telegramProxy || 'https://api.telegram.org';
   global.checkFinishCron = setting.checkFinishCron || '30 * * * * *';

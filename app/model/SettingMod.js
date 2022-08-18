@@ -4,8 +4,7 @@ const moment = require('moment');
 const util = require('../libs/util');
 const cron = require('node-cron');
 const Push = require('../common/Push');
-const redis = require('../libs/redis');
-const logger = require('../libs/logger');
+const otp = require('../libs/otp');
 
 const settingPath = path.join(__dirname, '../data/setting.json');
 const proxyPath = path.join(__dirname, '../data/setting/proxy.json');
@@ -17,7 +16,7 @@ const torrentPushSettingPath = path.join(__dirname, '../data/setting/torrent-pus
 class SettingMod {
   get () {
     const settingStr = fs.readFileSync(settingPath, { encoding: 'utf-8' });
-    return JSON.parse(settingStr);
+    return { time: moment().unix(), ...JSON.parse(settingStr) };
   };
 
   getBackground () {
@@ -39,12 +38,24 @@ class SettingMod {
     if (_options.password === '') {
       delete _options.password;
     }
+    if (_options.otp && _options.otpPw && _options.otp !== '******') {
+      if (otp.verify(_options.otp, _options.otpPw)) {
+        global.auth.otp = _options.otp;
+      } else {
+        throw new Error('二步验证码错误');
+      }
+    } else {
+      delete _options.otp;
+    }
+    delete _options.otpPw;
+    delete _options.time;
     const options = Object.assign(JSON.parse(fs.readFileSync(settingPath, { encoding: 'utf-8' })), _options);
     options.apiKey = options.apiKey || util.uuid.v4().replace(/-/g, '').toUpperCase();
     fs.writeFileSync(settingPath, JSON.stringify(options, null, 2));
     global.auth = {
       username: options.username,
-      password: options.password
+      password: options.password,
+      otp: global.auth.otp
     };
     global.webhookPushTo = options.webhookPushTo;
     global.menu = options.menu || [];

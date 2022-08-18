@@ -37,6 +37,11 @@
           <a-input-password v-model:value="user.password"/>
         </a-form-item>
         <a-form-item
+          label="二步验证"
+          name="otpPw">
+          <a-input v-model:value="user.otpPw"/>
+        </a-form-item>
+        <a-form-item
           :wrapperCol="isMobile() ? { span: 22 } : { offset: 2, span: 20 }">
           <a-button type="primary" html-type="submit" block style="width: 100%; margin-top: 24px;">登录</a-button>
         </a-form-item>
@@ -65,7 +70,8 @@ export default {
   data () {
     const user = {
       username: '',
-      password: ''
+      password: '',
+      otpPw: ''
     };
     return {
       user
@@ -81,7 +87,7 @@ export default {
     },
     async login (ee) {
       try {
-        await this.$api().user.login(this.user.username, this.user.password);
+        await this.$api().user.login(this.user.username, this.user.password, this.user.otpPw);
         this.$goto('/index', this.$router);
       } catch (e) {
         this.$message().error(e.message);

@@ -1,3 +1,5 @@
+const otp = require('../libs/otp');
+
 class UserMod {
   login (options) {
     if (options.username !== global.auth.username) {
@@ -5,6 +7,9 @@ class UserMod {
     }
     if (options.password !== global.auth.password) {
       throw new Error('密码错误');
+    }
+    if (global.auth.otp && !otp.verify(global.auth.otp, options.otpPw)) {
+      throw new Error('两步验证错误');
     }
     return options.username;
   };
