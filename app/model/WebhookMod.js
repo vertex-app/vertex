@@ -128,6 +128,13 @@ class WebhookMod {
       case 'select':
         let note = '';
         const doubans = Object.keys(global.runningDouban);
+        if (doubans.length === 1) {
+          await redis.setWithExpire('vertex:select:douban', doubans[0], 300);
+          const _note = '豆瓣账户: ' + global.runningDouban[doubans[0]].alias + '\n' +
+            '请输入希望搜索的影视剧名称, 5 分钟内输入有效';
+          await global.doubanPush.selectWish(_note);
+          return;
+        }
         const keys = [];
         for (const [index, _douban] of doubans.entries()) {
           note += doubans.indexOf(_douban) + ': ' + global.runningDouban[_douban].alias + '\n';
