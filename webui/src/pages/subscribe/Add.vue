@@ -23,7 +23,7 @@
           label="标签"
           name="tag"
           :rules="[{ required: true, message: '${label}不可为空! ' }]">
-          {{item.tag}}
+          <a-input size="small" v-model:value="item.tag"/>
         </a-form-item>
         <a-form-item
           label="年份"

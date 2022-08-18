@@ -101,7 +101,7 @@ export default {
   width: 200px;
   height: 280px;
   position: relative;
-  border-radius: 4px;
+  border-radius: 8px;
   overflow: hidden;
   font-size: 14px;
 }
@@ -110,7 +110,7 @@ export default {
   width: 160px;
   height: 224px;
   position: relative;
-  border-radius: 4px;
+  border-radius: 8px;
   overflow: hidden;
   font-size: 14px;
 }

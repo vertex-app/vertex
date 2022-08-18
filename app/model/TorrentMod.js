@@ -16,7 +16,7 @@ class TorrentMod {
         const _torrent = { ...torrent };
         _torrent.clientAlias = clients[clientId].alias;
         _torrent.client = clientId;
-        if (options.searchKey && !options.searchKey.split(' ').every(item => _torrent.name.indexOf(item) !== -1)) continue;
+        if (options.searchKey && !options.searchKey.split(' ').every(item => _torrent.name.toLowerCase().indexOf(item.toLowerCase()) !== -1)) continue;
         torrentList.push(_torrent);
       }
     }
