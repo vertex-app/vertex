@@ -203,6 +203,8 @@ module.exports = function (app, express, router) {
   router.get('/subscribe/deleteRecord', ctrl.Douban.deleteRecord);
   router.post('/subscribe/refresh', ctrl.Douban.refreshWishes);
   router.get('/subscribe/relink', ctrl.Douban.relink);
+  router.get('/subscribe/search', ctrl.Douban.search);
+  router.post('/subscribe/addWish', ctrl.Douban.addWish);
 
   router.get('/deleteRule/list', ctrl.DeleteRule.list);
   router.post('/deleteRule/add', ctrl.DeleteRule.add);

@@ -46,5 +46,14 @@ export default {
     const qsString = Object.keys(qs).filter(item => qs[item]).map(item => `${item}=${encodeURIComponent(qs[item])}`).join('&');
     const url = `/api/subscribe/deleteRecord?${qsString}`;
     return await get(url);
-  }
+  },
+  search: async (qs) => {
+    const qsString = Object.keys(qs).filter(item => qs[item]).map(item => `${item}=${encodeURIComponent(qs[item])}`).join('&');
+    const url = `/api/subscribe/search?${qsString}`;
+    return await get(url);
+  },
+  addWish: async (wish) => {
+    const url = '/api/subscribe/addWish';
+    return await post(url, wish);
+  },
 };

@@ -119,8 +119,7 @@
         </a-form-item>
         <a-form-item
           label="强制识别"
-          name="forceScrape"
-          :rules="[{ required: true, message: '${label}不可为空! ' }]">
+          name="forceScrape">
           <a-table
             :style="`font-size: ${isMobile() ? '12px': '14px'};`"
             :columns="scrapeColumns"

@@ -50,6 +50,8 @@ import SettingBackup from '@/pages/setting/Backup';
 
 import SubscribeList from '@/pages/subscribe/List';
 import SubscribeDetail from '@/pages/subscribe/Detail';
+import SubscribeAdd from '@/pages/subscribe/Add';
+import SubscribeSearch from '@/pages/subscribe/Search';
 
 import HistoryRss from '@/pages/history/Rss';
 import HistorySubsribe from '@/pages/history/Subscribe';
@@ -422,6 +424,18 @@ const subscribe = {
       component: SubscribeDetail,
       meta: {
         title: '详情 - 影视订阅'
+      }
+    }, {
+      path: 'search',
+      component: SubscribeSearch,
+      meta: {
+        title: '影视搜索 - 影视订阅'
+      }
+    }, {
+      path: 'add',
+      component: SubscribeAdd,
+      meta: {
+        title: '手动添加 - 影视订阅'
       }
     }
   ]

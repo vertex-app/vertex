@@ -151,12 +151,44 @@ class Douban {
     }
   };
 
+  async addWish (req, res) {
+    try {
+      const r = await doubanMod.addWish(req.body);
+      res.send({
+        success: true,
+        message: r
+      });
+    } catch (e) {
+      logger.error(e);
+      res.send({
+        success: false,
+        message: e.message
+      });
+    }
+  };
+
   async refreshWish (req, res) {
     try {
       const r = doubanMod.refreshWish(req.query);
       res.send({
         success: true,
         message: r
+      });
+    } catch (e) {
+      logger.error(e);
+      res.send({
+        success: false,
+        message: e.message
+      });
+    }
+  };
+
+  async search (req, res) {
+    try {
+      const r = await doubanMod.search(req.query);
+      res.send({
+        success: true,
+        data: r
       });
     } catch (e) {
       logger.error(e);

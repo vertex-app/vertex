@@ -991,6 +991,7 @@ class Douban {
       item.link = detail.url;
       item.poster = detail.img?.replace(/img\d/, 'img9').replace('s_ratio', 'l_ratio').replace('webp', 'jpg');
       item.id = detail.id;
+      item.type = detail.type;
       item.year = detail.year;
       result.push(item);
     }

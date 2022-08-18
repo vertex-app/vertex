@@ -103,6 +103,20 @@ class DoubanMod {
     return '已启动刷新任务';
   }
 
+  async search (options) {
+    if (!global.runningDouban[options.douban]) {
+      throw new Error('豆瓣账号未启用');
+    }
+    return await global.runningDouban[options.douban].search(options.keyword);
+  }
+
+  async addWish (options) {
+    if (!global.runningDouban[options.douban]) {
+      throw new Error('豆瓣账号未启用');
+    }
+    return await global.runningDouban[options.douban].addWish(options.id, options.tag);
+  }
+
   async listHistory (options) {
     const index = options.length * (options.page - 1);
     const params = [options.length, index];

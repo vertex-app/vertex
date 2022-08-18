@@ -116,6 +116,14 @@ class UserMod {
           title: '订阅列表',
           path: '/subscribe/list',
           icon: ['fas', 'square-check']
+        }, {
+          title: '影视搜索',
+          path: '/subscribe/search',
+          icon: ['fas', 'magnifying-glass']
+        }, {
+          title: '手动添加',
+          path: '/subscribe/add',
+          icon: ['fas', 'plus']
         }]
       }, {
         title: '聚合操作',
