@@ -278,6 +278,7 @@ export default {
           });
         } else if (type === 'keepStructLink') {
           requestBody.keepStruct = true;
+          requestBody.replaceTopDir = true;
         }
         const res = await this.$api().torrent.link(requestBody);
         if (type !== 'dryrun' && type !== undefined) {

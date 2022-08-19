@@ -98,7 +98,7 @@
         <a-form-item
           label="分类"
           name="category"
-          extra="所要监控的分类"
+          extra="所要监控的分类, 也可以是保存路径, 需完全匹配"
           :rules="[{ required: true, message: '${label}不可为空! ' }]">
           <a-input size="small" v-model:value="watch.category"/>
         </a-form-item>

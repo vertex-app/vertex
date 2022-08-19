@@ -220,13 +220,30 @@ class TorrentMod {
     }
   }
 
-  async _linkTorrentFilesKeepStruct ({ hash, savePath, client, mediaName, libraryPath, linkRule }) {
+  async _linkTorrentFilesKeepStruct ({ hash, savePath, client, mediaName, libraryPath, linkRule, replaceTopDir }) {
     const _linkRule = util.listLinkRule().filter(item => item.id === linkRule)[0];
     const files = await global.runningClient[client].getFiles(hash);
+    const first = files[0].name;
+    let topDir = path.dirname(first);
+    const hasDir = topDir !== '.';
+    if (hasDir) {
+      let d = topDir;
+      while (d !== '.') {
+        topDir = d;
+        d = path.dirname(d);
+      }
+    }
+    const hasTopDir = files.every(item => item.name.indexOf(topDir) === 0);
+    if (!hasTopDir) {
+      topDir = false;
+    }
     for (const file of files) {
       const filePathname = path.join(savePath.replace(..._linkRule.targetPath.split('##')), file.name);
+      if (replaceTopDir) {
+        file._name = file.name.replace(topDir, '');
+      }
       const fileBasename = path.basename(filePathname);
-      const linkFilePath = path.join(_linkRule.linkFilePath, libraryPath, mediaName, path.dirname(file.name)).replace(/'/g, '\\\'');
+      const linkFilePath = path.join(_linkRule.linkFilePath, libraryPath, mediaName, path.dirname(file._name)).replace(/'/g, '\\\'');
       const linkFile = path.join(linkFilePath, fileBasename).replace(/'/g, '\\\'');
       const targetFile = filePathname.replace(/'/g, '\\\'');
       const linkMode = _linkRule.hardlink ? 'f' : 'sf';

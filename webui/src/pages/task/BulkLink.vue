@@ -62,6 +62,17 @@
           <a-input size="small" v-model:value="bulkLinkInfo.keyword"/>
         </a-form-item>
         <a-form-item
+          label="链接模式"
+          name="linkMode"
+          :rules="[{ required: true, message: '${label}不可为空! ' }]"
+          extra="链接模式">
+          <a-select size="small" v-model:value="bulkLinkInfo.linkMode">
+            <a-select-option value="normal">正常模式</a-select-option>
+            <a-select-option value="keepStruct-1">保留目录结构并添加顶层文件夹</a-select-option>
+            <a-select-option value="keepStruct-2">保留目录结构并替换顶层文件夹</a-select-option>
+          </a-select>
+        </a-form-item>
+        <a-form-item
           :wrapperCol="isMobile() ? { span:24 } : { span: 21, offset: 3 }">
           <a-button type="primary" html-type="submit" style="margin-top: 24px; margin-bottom: 48px;">检查</a-button>
           <a-button type="primary" danger style="margin-left: 12px; margin-top: 24px; margin-bottom: 48px;"  @click="doScrape">识别</a-button>
@@ -160,7 +171,8 @@ export default {
       selectTorrent: '',
       linkRules: [],
       bulkLinkInfo: {
-        libraryPath: ''
+        libraryPath: '',
+        linkMode: 'normal'
       },
       torrentInfo: {}
     };
@@ -232,7 +244,9 @@ export default {
           continue;
         }
         const res = await this.$api().torrent.link({
-          direct: true,
+          direct: this.bulkLinkInfo.linkMode === 'normal',
+          keepStruct: this.bulkLinkInfo.linkMode !== 'normal',
+          replaceTopDir: this.bulkLinkInfo.linkMode === 'keepStruct-2',
           hash: torrent.hash,
           type: this.bulkLinkInfo.type,
           mediaName: torrent.scrapedName,

@@ -32,7 +32,10 @@ class Watch {
     }
     const torrents = [];
     for (const torrent of downloader.maindata.torrents) {
-      if (torrent.category === this.category && ['uploading', 'stalledUP', 'Seeding'].indexOf(torrent.state) !== -1) {
+      if (
+        (torrent.category === this.category || torrent.savePath === this.category) &&
+        ['uploading', 'stalledUP', 'Seeding'].indexOf(torrent.state) !== -1
+      ) {
         torrents.push({ ...torrent });
       }
     }
