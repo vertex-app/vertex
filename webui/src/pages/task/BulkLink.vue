@@ -43,15 +43,11 @@
           label="资料库文件夹"
           name="libraryPath"
           :rules="[{ required: true, message: '${label}不可为空! ' }]">
-          <a-select size="small" v-model:value="bulkLinkInfo.libraryPath">
-            <template v-for="subscribe of subscribes" :key="subscribe.id">
-              <a-select-option
-                v-for="category of subscribe.categories"
-                :value="category.libraryPath"
-                :key="subscribe.id + category.libraryPath">
-                {{category.libraryPath}}
-              </a-select-option>
-            </template>
+          <a-select size="small"
+            :options="libraryPaths"
+            @search="(value) => libraryPaths[0].value = value"
+            :showSearch="true"
+            v-model:value="bulkLinkInfo.libraryPath">
           </a-select>
         </a-form-item>
         <a-form-item
@@ -168,6 +164,7 @@ export default {
       torrentList: [],
       downloaders: [],
       subscribes: '',
+      libraryPaths: [],
       selectTorrent: '',
       linkRules: [],
       bulkLinkInfo: {
@@ -213,6 +210,7 @@ export default {
       try {
         const res = await this.$api().subscribe.list();
         this.subscribes = res.data;
+        this.libraryPaths = [{ value: '手动输入' }, ...this.subscribes.map(item => item.categories).flat().map(item => ({ value: item.libraryPath }))];
       } catch (e) {
         this.$message().error(e.message);
       }

@@ -20,6 +20,7 @@ class Watch {
     this.downloader = watch.downloader;
     this.forceScrape = watch.forceScrape || [];
     this.torrents = util.listWatchSet().filter(item => item.id === this.id)[0]?.torrents || {};
+    this._saveSet();
     // eslint-disable-next-line no-eval
     this.job = cron.schedule(this.cron, async () => { try { await this._scanCategory(); } catch (e) { logger.error(e); } });
   };
