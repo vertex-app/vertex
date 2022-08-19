@@ -47,8 +47,8 @@
       :style="`display: inline-block; margin: 12px; text-align: center; width: ${isMobile() ? '160px' : '200px'}; vertical-align: top;`">
       <div :class="isMobile() ? 'item-class-mobile' : 'item-class-pc'">
         <img v-lazy="item.poster" @click="gotoDetail(item)" style="cursor: pointer; width: 100%; height: 100%;">
-        <div style="color: lightpink; bottom: 0px; width: 100%; position: absolute; background-color: rgba(0,0,0,0.3); backdrop-filter: blur(4px);">
-          <span @click="addWish(item)">[{{added[item.id] ? '已订阅' : '点击订阅'}}]</span>
+        <div @click="addWish(item)" style="cursor: pointer; color: lightpink; bottom: 0px; width: 100%; position: absolute; background-color: rgba(0,0,0,0.3); backdrop-filter: blur(4px);">
+          <span>[{{ added[item.id] ? '已订阅' : '点击订阅' }}]</span>
         </div>
       </div>
       <div style="margin: 6px auto; max-width: 100%;" v-if="isMobile()">
@@ -155,6 +155,9 @@ export default {
     },
     async addWish (record) {
       try {
+        if (this.added[record.id]) {
+          return;
+        }
         const body = {
           douban: this.qs.subscribe,
           id: record.id,

@@ -49,8 +49,13 @@ class Watch {
         try {
           const forceScrape = this.forceScrape.filter(item => torrent.name.indexOf(item.keyword) !== -1)[0];
           let _name;
+          let _season;
           if (forceScrape) {
             _name = forceScrape.name;
+            _season = forceScrape.season;
+          }
+          if (_season === '') {
+            _season = false;
           }
           const { name, year, type } = await util.scrapeNameByFile(_name || torrent.name, this.type === 'series' ? 'tv' : this.type ? 'movie' : '', true);
           torrent.scrapedName = name;
@@ -62,7 +67,7 @@ class Watch {
           } else {
             this.ntf.scrapeTorrent(this.alias, torrent.name, `${name}.${year} ${torrent.type}`);
             logger.watch(`${torrent.name} 识别结果: ${name}.${year || ''} ${torrent.type}`);
-            await this._linkTorrentFiles(torrent, this.downloader, name, year, torrent.type);
+            await this._linkTorrentFiles(torrent, this.downloader, name, _season, year, torrent.type);
           }
           this.torrents[torrent.hash] = {
             name: torrent.name,
@@ -80,7 +85,7 @@ class Watch {
     }
   };
 
-  async _linkTorrentFiles (torrent, client, name, year, type) {
+  async _linkTorrentFiles (torrent, client, name, _season, year, type) {
     const linkRule = util.listLinkRule().filter(item => item.id === this.linkRule)[0];
     let size = 1;
     linkRule.minFileSize.split('*').forEach(i => { size *= +i; });
@@ -129,6 +134,9 @@ class Watch {
         episode = (fakeEpisode || episode);
         episode = 'E' + '0'.repeat(Math.max(2 - ('' + episode).length, 0)) + (episode);
         season = 'S' + '0'.repeat(2 - ('' + season).length) + season;
+        if (_season) {
+          season = _season;
+        }
         const prefix = linkRule.keepSeriesName ? seriesName + '.' : '';
         const suffixKeys = [];
         const reservedKeys = (linkRule.reservedKeys || '').split(',');

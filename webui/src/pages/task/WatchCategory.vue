@@ -135,6 +135,9 @@
               <template v-if="column.dataIndex === 'name'">
                 <a-input size="small" v-model:value="record.name"/>
               </template>
+              <template v-if="column.dataIndex === 'season'">
+                <a-input size="small" v-model:value="record.season"/>
+              </template>
               <template v-if="column.dataIndex === 'option'">
                 <a style="color: red" @click="watch.forceScrape = watch.forceScrape.filter(item => item !== record)">删除</a>
               </template>
@@ -197,6 +200,10 @@ export default {
         dataIndex: 'name',
         width: 24
       }, {
+        title: '季',
+        dataIndex: 'season',
+        width: 6
+      }, {
         title: '操作',
         dataIndex: 'option',
         width: 6
@@ -212,7 +219,8 @@ export default {
       watch: {},
       scrapeMap: {
         keyword: '',
-        name: ''
+        name: '',
+        season: ''
       },
       defaultWatch: {
         enable: true,

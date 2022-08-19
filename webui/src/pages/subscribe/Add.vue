@@ -130,34 +130,10 @@ export default {
         return false;
       }
     },
-    async getItem () {
-      try {
-        this.item = (await this.$api().subscribe.getItem(this.$route.params.id, this.$route.params.douban)).data;
-      } catch (e) {
-        await this.$message().error(e.message);
-      }
-    },
-    async refreshItem () {
-      try {
-        await this.$api().subscribe.refreshItem(this.$route.params.id, this.$route.params.douban);
-        await this.$message().success('刷新成功!');
-      } catch (e) {
-        await this.$message().error(e.message);
-      }
-    },
-    async deleteItem () {
-      try {
-        await this.$api().subscribe.deleteItem(this.$route.params.id, this.$route.params.douban);
-        await this.$message().success('删除成功!');
-        this.$goto('/subscribe/list', this.$router);
-      } catch (e) {
-        await this.$message().error(e.message);
-      }
-    },
     async editItem () {
       try {
         await this.$api().subscribe.editItem(this.item);
-        await this.$message().success('编辑成功!');
+        await this.$message().success('新增成功!');
         this.$goto('/subscribe/list', this.$router);
       } catch (e) {
         await this.$message().error(e.message);
