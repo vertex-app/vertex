@@ -94,6 +94,7 @@ export default {
           return;
         }
         this.result = `${downloaderSuffix}##${downloaderPrefix}`;
+        return;
       }
       const downloaderPrefix = downloader.split(':')[0];
       const downloaderSuffix = downloader.split(':')[1];

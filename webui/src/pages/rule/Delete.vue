@@ -219,7 +219,7 @@ export default {
         name: '种子状态',
         key: 'state'
       }, {
-        name: '删种规则域名',
+        name: '站点域名',
         key: 'tracker'
       }, {
         name: '返回信息',
