@@ -259,7 +259,13 @@ class Douban {
   _refreshWish (id, remote = false) {
     const randomDelayTime = parseInt(Math.random() * (remote ? 30 : 3600 * 4));
     logger.debug('延时开启搜索资源任务, 延时时间', randomDelayTime, '秒');
-    setTimeout(() => this.refreshWish(id, false, remote), randomDelayTime * 1000);
+    setTimeout(async () => {
+      try {
+        await this.refreshWish(id, false, remote);
+      } catch (e) {
+        logger.error('搜索任务报错:\n', e);
+      }
+    }, randomDelayTime * 1000);
   }
 
   async refreshWish (id, manual = false, remote) {

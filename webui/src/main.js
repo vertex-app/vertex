@@ -24,6 +24,7 @@ import {
   GraphicComponent
 } from 'echarts/components';
 import VChart from 'vue-echarts';
+import 'zrender/lib/svg/svg';
 import VueLazyLoad from 'vue3-lazyload';
 import md5 from 'md5-node';
 

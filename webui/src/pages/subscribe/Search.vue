@@ -33,7 +33,7 @@
         </a-form-item>
         <a-form-item
           label="搜索关键词"
-          name="keword"
+          name="keyword"
           :rules="[{ required: true, message: '${label}不可为空! ' }]">
           <a-input size="small" v-model:value="qs.keyword" style="width: 240px"/>
           <a-button size="small" type="primary" style="margin-left: 24px;" html-type="submit">搜索</a-button>

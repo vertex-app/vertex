@@ -62,20 +62,74 @@
             </div>
           </div>
         </div>
+        <!--
+        <div style="margin: 24px auto; text-align: center; max-width: 1440px;">
+          <div :class="`data-rect-3-${isMobile() ? 'mobile': 'pc'}`" style="background: #eff;">
+          </div>
+        </div>
+        -->
         <div style="margin: 24px auto; text-align: center; max-width: 1440px;">
           <template v-for="(downloader, index ) in downloaders" :key="downloader.id">
-            <div v-if="index === 0" class="data-rect-2 highlight-3">
-              <div style="font-size: 14px; font-weight: bold; color: #fff;">
+            <div
+              v-if="index === 0"
+              class="data-rect-2 highlight-3"
+              :style="downloaders.length === 1 ? `width: ${isMobile() ? '348px' : '712px'}` : ''">
+              <div style="position: absolute; left: 0; top: 0; width: 100%; height: 100%;">
+                <v-chart :option="downloader.speedChart"/>
+              </div>
+              <div style="font-size: 14px; font-weight: bold; color: #fff; padding: 16px 16px;">
                 <div>{{ downloader.alias }}</div>
                 <div style="margin: initial; font-size: 12px;">累计数据: {{ $formatSize(downloader.allTimeUpload) }} ↑ / {{$formatSize(downloader.allTimeDownload)}} ↓</div>
-                <div style="margin: initial; font-size: 20px;">{{ $formatSize(downloader.uploadSpeed) }} ↑ / {{$formatSize(downloader.downloadSpeed)}} ↓</div>
+                <div style="margin: initial; font-size: 16px;">{{ $formatSize(downloader.uploadSpeed) }}/s ↑ / {{$formatSize(downloader.downloadSpeed)}}/s ↓</div>
               </div>
             </div>
-            <div v-if="index !== 0" class="data-rect-2" style="background: #eff;">
-              <div style="font-size: 14px; font-weight: bold;">
+            <div
+              v-if="index !== 0"
+              class="data-rect-2"
+              :style="(downloaders.length === index + 1 && downloaders.length % 2 === 1) ? `background: #eff; width: ${isMobile() ? '348px' : '712px'}` : 'background: #eff;'">
+              <div style="position: absolute; left: 0; top: 0; width: 100%; height: 100%;">
+                <v-chart :option="downloader.speedChart"/>
+              </div>
+              <div style="font-size: 14px; font-weight: bold; padding: 16px 16px;">
                 <div>{{ downloader.alias }}</div>
                 <div style="margin: initial; font-size: 12px;">累计数据: {{ $formatSize(downloader.allTimeUpload) }} ↑ / {{$formatSize(downloader.allTimeDownload)}} ↓</div>
-                <div style="margin: initial; font-size: 20px;">{{ $formatSize(downloader.uploadSpeed) }} ↑ / {{$formatSize(downloader.downloadSpeed)}} ↓</div>
+                <div style="margin: initial; font-size: 16px;">{{ $formatSize(downloader.uploadSpeed) }}/s ↑ / {{$formatSize(downloader.downloadSpeed)}}/s ↓</div>
+              </div>
+            </div>
+          </template>
+        </div>
+        <!--
+        <div style="margin: 24px auto; text-align: center; max-width: 1440px;">
+          <div :class="`data-rect-3-${isMobile() ? 'mobile': 'pc'}`" style="background: #eff;">
+          </div>
+        </div>
+        -->
+        <div style="margin: 24px auto; text-align: center; max-width: 1440px;">
+          <template v-for="(server, index ) in servers" :key="server.id">
+            <div
+              v-if="index === 0"
+              class="data-rect-2 highlight-4"
+              :style="servers.length === 1 ? `width: ${isMobile() ? '348px' : '712px'}` : ''">
+              <div style="position: absolute; left: 0; top: 0; width: 100%; height: 100%;">
+                <v-chart :option="server.speedChart"/>
+              </div>
+              <div style="font-size: 14px; font-weight: bold; color: #fff; padding: 16px 16px;">
+                <div>{{ server.alias }}</div>
+                <div style="margin: initial; font-size: 12px;"></div>
+                <div style="margin: initial; font-size: 16px;">{{ $formatSize(server.netSpeed.upload) }}/s ↑ / {{$formatSize(server.netSpeed.download)}}/s ↓</div>
+              </div>
+            </div>
+            <div
+              v-if="index !== 0"
+              class="data-rect-2"
+              :style="servers.length === index + 1 && servers.length % 2 === 1 ? `background: #eff; width: ${isMobile() ? '348px' : '712px'}` : 'background: #eff;'">
+              <div style="position: absolute; left: 0; top: 0; width: 100%; height: 100%;">
+                <v-chart :option="server.speedChart" :init-options="{renderer: 'svg'}"/>
+              </div>
+              <div style="font-size: 14px; font-weight: bold; padding: 16px 16px;">
+                <div>{{ server.alias }}</div>
+                <div style="margin: initial; font-size: 12px;"></div>
+                <div style="margin: initial; font-size: 16px;">{{ $formatSize(server.netSpeed.upload) }}/s ↑ / {{$formatSize(server.netSpeed.download)}}/s ↓</div>
               </div>
             </div>
           </template>
@@ -107,181 +161,56 @@
 export default {
   data () {
     return {
-      trackerFlow: {
-        tooltip: {
-          trigger: 'item'
-        },
-        legend: this.isMobile()
-          ? { show: false, type: 'scroll' }
-          : {
-            top: 0,
-            type: 'scroll',
-            left: 'center'
-          },
-        grid: {
-          bottom: '5%'
-        },
-        series: [
-          {
-            name: 'Access From',
-            type: 'pie',
-            radius: ['40%', '70%'],
-            avoidLabelOverlap: false,
-            itemStyle: {
-              borderRadius: 10,
-              borderColor: '#fff',
-              borderWidth: 2
-            },
-            label: {
-              show: false,
-              position: 'center'
-            },
-            emphasis: {
-              label: {
-                show: true,
-                fontSize: '40',
-                fontWeight: 'bold'
-              }
-            },
-            labelLine: {
-              show: false
-            },
-            data: [
-              { value: 1048, name: 'A' },
-              { value: 735, name: 'B' },
-              { value: 580, name: 'C' },
-              { value: 484, name: 'D' },
-              { value: 300, name: 'E' }
-            ]
-          }
-        ]
-      },
-      torrents: {
-        tooltip: {
-          trigger: 'axis',
-          axisPointer: {
-            // Use axis to trigger tooltip
-            type: 'shadow' // 'shadow' as default; can also be 'line' or 'shadow'
-          }
-        },
-        legend: {},
+      speedChart: {
         grid: {
           left: 0,
           right: 0,
+          top: 0,
           bottom: 0,
-          containLabel: true
+          z: 0
         },
         xAxis: {
           type: 'category',
-          data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
-
-        },
-        yAxis: {
-          type: 'value'
-        },
-        series: [
-          {
-            name: '添加',
-            type: 'bar',
-            stack: 'total',
-            emphasis: {
-              focus: 'series'
-            },
-            data: [220, 182, 191, 234, 290, 330, 310]
-          },
-          {
-            name: '删除',
-            type: 'bar',
-            stack: 'total',
-            emphasis: {
-              focus: 'series'
-            },
-            data: [150, 212, 201, 154, 190, 330, 410]
-          }
-        ]
-      },
-      tracker: {
-        title: {
-          text: 'Tracker 速度',
-          left: 'center',
-          textStyle: {
-            fontFamily: 'LXGW WenKai Screen',
-            color: '#555'
-          }
-        },
-        grid: {
-          top: 120,
-          left: 90,
-          right: 20,
-          bottom: 40
-        },
-        legend: this.isMobile()
-          ? {
-            type: 'scroll',
-            top: 72
-          }
-          : {
-            type: 'scroll',
-            top: 64,
-            left: '10%',
-            width: '80%',
-            textStyle: {
-              fontFamily: 'consolas',
-              color: '#555'
-            }
-          },
-        textStyle: {
-          fontFamily: 'consolas',
-          color: '#555'
-        },
-        darkMode: true,
-        tooltip: {
-          position: function (pos, params, dom, rect, size) {
-            const obj = { top: 60 };
-            obj[['left', 'right'][+(pos[0] < size.viewSize[0] / 2)]] = 5;
-            return obj;
-          },
-          trigger: 'axis',
-          formatter: (params) => {
-            let str = params[0].axisValue + '</br>';
-            params = params.sort((a, b) => b.value - a.value);
-            for (const param of params) {
-              const size = this.$formatSize(param.value) + '/s';
-              str += `${param.seriesName}: ${'&nbsp;'.repeat(40 - size.length - param.seriesName.length || 1)}${size}<br>`;
-            }
-            return str;
-          }
-        },
-        xAxis: {
-          type: 'category',
+          show: false,
+          boundaryGap: false,
           data: []
         },
         yAxis: {
           type: 'value',
-          axisLabel: {
-            formatter: item => this.$formatSize(item) + '/s'
-          }
+          show: false
         },
-        graphic: [
+        series: [
           {
-            type: 'image',
-            id: 'logo',
-            right: 20,
-            top: 20,
-            z: -1,
-            bounding: 'raw',
-            origin: [125, 125],
-            style: {
-              image: '/assets/images/logo.svg',
-              width: 64,
-              height: 64,
-              opacity: 0.8
+            data: [],
+            type: 'line',
+            symbol: 'none',
+            smooth: true,
+            areaStyle: {
+              opacity: 0.2,
+              color: '#BEC23F'
+            },
+            lineStyle: {
+              opacity: 0,
+              color: '#BEC23F'
+            }
+          }, {
+            data: [],
+            type: 'line',
+            symbol: 'none',
+            smooth: true,
+            areaStyle: {
+              opacity: 0,
+              color: '#C46243'
+            },
+            lineStyle: {
+              opacity: 0,
+              color: '#C46243'
             }
           }
-        ],
-        series: []
+        ]
       },
       runInfo: {},
+      servers: [],
       downloaders: [],
       loading: true
     };
@@ -311,10 +240,67 @@ export default {
         await this.$message().error(e.message);
       }
     },
+    async listDownloader () {
+      try {
+        const res = await this.$api().downloader.listMainInfo();
+        this.downloaders = res.data
+          .sort((a, b) => a.alias.localeCompare(b.alias))
+          .map(item => ({
+            ...item,
+            speedChart: JSON.parse(JSON.stringify(this.speedChart))
+          }));
+      } catch (e) {
+        await this.$message().error(e.message);
+      }
+    },
     async listDownloaderInfo () {
       try {
         const res = await this.$api().downloader.listMainInfo();
-        this.downloaders = res.data.sort((a, b) => a.alias.localeCompare(b.alias));
+        for (const downloader of this.downloaders) {
+          const upload = res.data.filter(item => item.id === downloader.id)[0]?.uploadSpeed || 0;
+          const download = res.data.filter(item => item.id === downloader.id)[0]?.downloadSpeed || 0;
+          downloader.uploadSpeed = upload;
+          downloader.downloadSpeed = download;
+          downloader.speedChart.xAxis.data.push('');
+          downloader.speedChart.series[0].data.push(upload);
+          // downloader.speedChart.series[1].data.push(download);
+        }
+      } catch (e) {
+        await this.$message().error(e.message);
+      }
+    },
+    async listServer () {
+      try {
+        const res = await this.$api().server.list();
+        this.servers = res.data
+          .sort((a, b) => a.alias.localeCompare(b.alias))
+          .map(item => (
+            {
+              ...item,
+              netSpeed: {
+                upload: 0,
+                download: 0
+              },
+              speedChart: JSON.parse(JSON.stringify(this.speedChart))
+            }));
+      } catch (e) {
+        await this.$message().error(e.message);
+      }
+    },
+    async getNetSpeed () {
+      try {
+        this.netSpeed = (await this.$api().server.netSpeed()).data;
+        for (const server of this.servers) {
+          const upload = this.netSpeed[server.id]?.sort((a, b) => b.txBytes - a.txBytes)[0].txBytes || 0;
+          const download = this.netSpeed[server.id]?.sort((a, b) => b.txBytes - a.txBytes)[0].rxBytes || 0;
+          server.netSpeed = {
+            upload,
+            download
+          };
+          server.speedChart.xAxis.data.push('');
+          server.speedChart.series[0].data.push(upload);
+          // server.speedChart.series[1].data.push(download);
+        }
       } catch (e) {
         await this.$message().error(e.message);
       }
@@ -361,8 +347,12 @@ export default {
   },
   async mounted () {
     this.getRunInfo();
+    this.listDownloader();
     this.listDownloaderInfo();
+    this.listServer();
+    this.getNetSpeed();
     this.interval = setInterval(() => {
+      this.getNetSpeed();
       this.getRunInfo();
       this.listDownloaderInfo();
     }, 3000);
@@ -391,6 +381,10 @@ export default {
   background: #3A8FB7;
 }
 
+.highlight-4 {
+  background: #00896C;
+}
+
 .data-rect-1 {
   text-align: left;
   vertical-align: top;
@@ -405,6 +399,32 @@ export default {
 }
 
 .data-rect-2 {
+  text-align: left;
+  vertical-align: top;
+  width: 348px;
+  height: 104px;
+  transition: all 0.5s;
+  color: #555;
+  position: relative;
+  display: inline-block;
+  margin: 8px 12px;
+  border-radius: 8px;
+}
+
+.data-rect-3-pc {
+  text-align: left;
+  vertical-align: top;
+  width: 712px;
+  height: 104px;
+  transition: all 0.5s;
+  padding: 16px 16px;
+  color: #555;
+  display: inline-block;
+  margin: 8px 12px;
+  border-radius: 8px;
+}
+
+.data-rect-3-mobile {
   text-align: left;
   vertical-align: top;
   width: 348px;

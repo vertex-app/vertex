@@ -135,7 +135,7 @@ class ServerMod {
       return { fiveminute, hour, day, month };
     } catch (e) {
       logger.error(e);
-      throw e.message;
+      throw e;
     }
   }
 
