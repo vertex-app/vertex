@@ -203,7 +203,6 @@ class TorrentMod {
         const linkFile = path.join(linkFilePath, `${movieName}.${year}${suffix + group}${fileExt}`).replace(/'/g, '\\\'');
         const targetFile = path.join(savePath.replace(_linkRule.targetPath.split('##')[0], _linkRule.targetPath.split('##')[1]), file.name).replace(/'/g, '\\\'');
         const linkMode = _linkRule.hardlink ? 'f' : 'sf';
-        logger.binge(_linkRule, _linkRule.hardlink, linkMode);
         const command = `mkdir -p $'${linkFilePath}' && ln -${linkMode} $'${targetFile}' $'${linkFile}'`;
         logger.binge('手动链接', '执行链接命令', command);
         try {
@@ -220,7 +219,7 @@ class TorrentMod {
     }
   }
 
-  async _linkTorrentFilesKeepStruct ({ hash, savePath, client, mediaName, libraryPath, linkRule, replaceTopDir }) {
+  async _linkTorrentFilesKeepStruct ({ hash, savePath, client, mediaName, libraryPath, linkRule, replaceTopDir, keepTopDir }) {
     const _linkRule = util.listLinkRule().filter(item => item.id === linkRule)[0];
     const files = await global.runningClient[client].getFiles(hash);
     const first = files[0].name;
@@ -241,9 +240,13 @@ class TorrentMod {
       const filePathname = path.join(savePath.replace(..._linkRule.targetPath.split('##')), file.name);
       if (replaceTopDir) {
         file._name = file.name.replace(topDir, '');
+      } else {
+        file._name = file.name;
       }
+      const paths = [_linkRule.linkFilePath, libraryPath, mediaName, path.dirname(file._name)];
+      const pathsKeepTopDir = [_linkRule.linkFilePath, libraryPath, path.dirname(file._name)];
       const fileBasename = path.basename(filePathname);
-      const linkFilePath = path.join(_linkRule.linkFilePath, libraryPath, mediaName, path.dirname(file._name)).replace(/'/g, '\\\'');
+      const linkFilePath = path.join(...(keepTopDir ? pathsKeepTopDir : paths)).replace(/'/g, '\\\'');
       const linkFile = path.join(linkFilePath, fileBasename).replace(/'/g, '\\\'');
       const targetFile = filePathname.replace(/'/g, '\\\'');
       const linkMode = _linkRule.hardlink ? 'f' : 'sf';

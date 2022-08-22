@@ -38,11 +38,13 @@ class PushMod {
     const pushList = util.listPush();
     const clientList = util.listClient();
     const doubanList = util.listDouban();
+    const watchList = util.listWatch();
     const rssList = util.listRss();
     for (const push of pushList) {
       push.used = clientList.some(item => item.notify === push.id || item.monitor === push.id) ||
         rssList.some(item => item.notify === push.id) ||
-        doubanList.some(item => item.notify === push.id);
+        doubanList.some(item => item.notify === push.id) ||
+        watchList.some(item => item.notify === push.id);
     }
     return pushList;
   };

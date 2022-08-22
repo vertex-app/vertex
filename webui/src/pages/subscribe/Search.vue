@@ -37,6 +37,7 @@
           :rules="[{ required: true, message: '${label}不可为空! ' }]">
           <a-input size="small" v-model:value="qs.keyword" style="width: 240px"/>
           <a-button size="small" type="primary" style="margin-left: 24px;" html-type="submit">搜索</a-button>
+          <a-button size="small" type="primary" style="margin-left: 24px;" @click="refreshSubscribe(qs.subscribe)" :disabled="refreshed || !isAdded">刷新想看列表</a-button>
         </a-form-item>
       </a-form>
     </div>
@@ -121,6 +122,8 @@ export default {
       results: [],
       columns,
       added: {},
+      isAdded: false,
+      refreshed: false,
       columnsWithPoster,
       showPoster: true,
       qs
@@ -166,6 +169,7 @@ export default {
         };
         await this.$api().subscribe.addWish(body);
         this.added[record.id] = 1;
+        this.isAdded = true;
         await this.$message().success('添加成功!');
       } catch (e) {
         this.$message().error(e.message);
@@ -173,7 +177,17 @@ export default {
     },
     async gotoDetail (record) {
       window.open(record.link);
-    }
+    },
+    async refreshSubscribe (id) {
+      try {
+        await this.$api().subscribe.refreshSubscribe(id);
+        this.refreshed = true;
+        this.$message().success('已启动刷新任务');
+        await this.listSubscribe();
+      } catch (e) {
+        this.$message().error(e.message);
+      }
+    },
   },
   async mounted () {
     await this.listSubscribe();

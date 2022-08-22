@@ -66,6 +66,7 @@
             <a-select-option value="normal">正常模式</a-select-option>
             <a-select-option value="keepStruct-1">保留目录结构并添加顶层文件夹</a-select-option>
             <a-select-option value="keepStruct-2">保留目录结构并替换顶层文件夹</a-select-option>
+            <a-select-option value="keepStruct-3">保留目录结构并不修改顶层文件夹</a-select-option>
           </a-select>
         </a-form-item>
         <a-form-item
@@ -245,6 +246,7 @@ export default {
           direct: this.bulkLinkInfo.linkMode === 'normal',
           keepStruct: this.bulkLinkInfo.linkMode !== 'normal',
           replaceTopDir: this.bulkLinkInfo.linkMode === 'keepStruct-2',
+          keepTopDir: this.bulkLinkInfo.linkMode === 'keepStruct-3',
           hash: torrent.hash,
           type: this.bulkLinkInfo.type,
           mediaName: torrent.scrapedName,
