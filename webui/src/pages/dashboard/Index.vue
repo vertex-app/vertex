@@ -1,6 +1,6 @@
 <template>
   <div class="index">
-    <a-row type="flex" justify="center" align="middle" style="height: 100%;">
+    <a-row type="flex" justify="center" align="middle" style="min-height: 100%;">
       <a-col :span="isMobile() ? 24 : 24">
         <div style="margin: 24px auto; text-align: center; max-width: 1440px;">
           <div class="data-rect-1 highlight-1">

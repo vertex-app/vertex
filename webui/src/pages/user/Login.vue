@@ -18,10 +18,10 @@
         :wrapperCol="{ span: 16 }"
         autocomplete="off"
         class="login-form">
-        <div style="margin: 32px auto 6px; font-size: 32px; width: fit-content; font-weight: bold;">
+        <div style="margin: 12px auto 6px; font-size: 32px; width: fit-content; font-weight: bold;">
           <span>Vertex</span>
         </div>
-        <div style="margin: 6px auto 32px; font-size: 16px; width: fit-content; color: grey">
+        <div style="margin: 6px auto 12px; font-size: 16px; width: fit-content; color: grey">
           <span>追剧刷流一体化工具</span>
         </div>
         <a-form-item
@@ -107,7 +107,7 @@ export default {
 .login-form {
   width: min(100vw, 360px);
   border-radius: 4px;
-  padding: 12px;
+  padding: 6px;
   margin: 0 auto;
   height: 360px;
   transition: all 0.5s;
@@ -177,7 +177,7 @@ export default {
   .right-rect > .logo {
     margin: 0 auto;
     width: 120px;
-    padding-top: 32px;
+    padding-top: 6px;
     border-radius: 32px;
   }
 }
