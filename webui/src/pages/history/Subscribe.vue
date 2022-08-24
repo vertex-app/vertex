@@ -10,7 +10,7 @@
       :data-source="torrents"
       :pagination="pagination"
       @change="handleChange"
-      :scroll="{ x: 960 }"
+      :scroll="{ x: 1440 }"
     >
       <template #title>
         <span style="font-size: 16px; font-weight: bold;">订阅历史</span>
@@ -38,6 +38,15 @@
         </template>
         <template v-if="column.dataIndex === 'recordNote'">
           <span>{{ record.recordNote.indexOf('wish') !== -1 ? '豆瓣' : record.recordNote }}</span>
+          <span v-if="record.recordType === 99">/
+            <a-popover title="重新链接?" trigger="click" :overlayStyle="{ width: '96px', overflow: 'hidden' }">
+              <template #content>
+                <a-button type="primary" danger @click="relink(record)" size="small">重新链接</a-button>
+              </template>
+              <a>已完成</a>
+            </a-popover>
+          </span>
+          <span v-if="record.recordType === 6">/未完成</span>
         </template>
         <template v-if="column.title === '操作'">
           <a @click="gotoLink(record)">软/硬链接</a>
@@ -77,7 +86,7 @@ export default {
       }, {
         title: '种子状态',
         dataIndex: 'recordNote',
-        width: 16
+        width: 24
       }, {
         title: '操作',
         dataIndex: 'option',
@@ -127,6 +136,14 @@ export default {
     async delRecord (record) {
       try {
         await this.$api().subscribe.delRecord({ id: record.id });
+        this.listHistory();
+      } catch (e) {
+        await this.$message().error(e.message);
+      }
+    },
+    async relink (record) {
+      try {
+        await this.$api().subscribe.relink({ id: record.id, doubanId: JSON.parse(record.recordNote).wish.doubanId });
         this.listHistory();
       } catch (e) {
         await this.$message().error(e.message);
