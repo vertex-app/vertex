@@ -214,6 +214,7 @@ class Client {
     this.monitor.push = this._client.pushMonitor;
     this.ntf = new Push(this.notify);
     this.mnt = new Push(this.monitor);
+    this.login();
   };
 
   async login (notify = true) {
@@ -518,6 +519,12 @@ class Client {
           return await this.client.getFiles(this.clientUrl, this.cookie, t.id);
         }
       }
+    }
+  }
+
+  async setSpeedLimit (hash, type, speed) {
+    if (this._client.type === 'qBittorrent') {
+      await this.client.addTorrentTag(this.clientUrl, this.cookie, hash, type, speed);
     }
   }
 }

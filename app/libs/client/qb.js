@@ -135,6 +135,22 @@ exports.getFiles = async (clientUrl, cookie, hash) => {
   return JSON.parse(res.body);
 };
 
+exports.setSpeedLimit = async (clientUrl, cookie, hash, type, speed) => {
+  const message = {
+    url: clientUrl + `/api/v2/torrents/set${type === 'upload' ? 'Upload' : 'Download'}Limit`,
+    method: 'POST',
+    headers: {
+      cookie
+    },
+    formData: {
+      hashes: hash,
+      limit: speed + ''
+    }
+  };
+  const res = await util.requestPromise(message);
+  return res;
+};
+
 exports.getMaindata = async function (clientUrl, cookie) {
   const option = {
     url: clientUrl + '/api/v2/sync/maindata',
