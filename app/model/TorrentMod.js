@@ -237,6 +237,9 @@ class TorrentMod {
       topDir = false;
     }
     for (const file of files) {
+      const filename = path.basename(file.name);
+      if (file.size < _linkRule.minFileSize) continue;
+      if (_linkRule.excludeKeys && _linkRule.excludeKeys.split(',').some(item => filename.indexOf(item) !== -1)) continue;
       const filePathname = path.join(savePath.replace(..._linkRule.targetPath.split('##')), file.name);
       if (replaceTopDir) {
         file._name = file.name.replace(topDir, '');
