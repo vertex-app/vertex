@@ -334,9 +334,10 @@ class Client {
     try {
       await this.client.reannounceTorrent(this.clientUrl, this.cookie, torrent.hash);
       logger.info('下载器', this.alias, '重新汇报种子成功:', torrent.name);
+      this.ntf.reannounceTorrent(this._client, torrent);
     } catch (error) {
       logger.error('下载器', this.alias, '重新汇报种子失败:', torrent.name, '\n', error.message);
-      await this.ntf.reannounceTorrent(this._client, torrent);
+      this.ntf.reannounceTorrentError(this._client, torrent);
     }
   };
 

@@ -350,6 +350,19 @@ class Push {
     await this._push(this.pushType.indexOf('reannounce') !== -1, text, desp);
   };
 
+  async reannounceTorrentError (client, torrent) {
+    const text = '重新汇报种子失败 ' + moment().format('YYYY-MM-DD HH:mm:ss');
+    let desp = `下载器名: ${client.alias}\n` +
+      `种子名称: ${torrent.name}`;
+    if (this.markdown) {
+      desp = '```\n' + desp + '\n```';
+    }
+    if (this.type === 'telegram') {
+      desp = '\\#重新汇报种子\n' + desp;
+    }
+    await this._push(this.pushType.indexOf('reannounce') !== -1, text, desp);
+  };
+
   async connectClient (client) {
     const text = '下载器已连接 ' + moment().format('YYYY-MM-DD HH:mm:ss');
     let desp = `下载器: ${client.alias}`;

@@ -98,12 +98,6 @@
             </div>
           </template>
         </div>
-        <!--
-        <div style="margin: 24px auto; text-align: center; max-width: 1440px;">
-          <div :class="`data-rect-3-${isMobile() ? 'mobile': 'pc'}`" style="background: #eff;">
-          </div>
-        </div>
-        -->
         <div style="margin: 24px auto; text-align: center; max-width: 1440px;">
           <template v-for="(server, index ) in servers" :key="server.id">
             <div
@@ -134,6 +128,11 @@
             </div>
           </template>
         </div>
+        <div style="margin: 24px auto; text-align: center; max-width: 1440px;">
+          <div :class="`data-rect-3-${isMobile() ? 'mobile': 'pc'}`" style="background: #eff; height: 400px;">
+            <v-chart :option="trackerChart" autoresize/>
+          </div>
+        </div>
       </a-col>
       <!--
       <a-col :span="isMobile() ? 24 : 6">
@@ -161,6 +160,84 @@
 export default {
   data () {
     return {
+      trackerChart: {
+        title: {
+          text: 'Tracker 速度',
+          left: 'center',
+          textStyle: {
+            fontFamily: 'consolas'
+          }
+        },
+        grid: {
+          top: 20,
+          left: this.isMobile() ? 0 : 90,
+          right: 0,
+          bottom: 90
+        },
+        legend: {
+          show: false
+        },
+        textStyle: {
+          fontFamily: 'consolas'
+        },
+        dataZoom: [
+          {
+            type: 'inside',
+            start: 90,
+            end: 100
+          },
+          {
+            start: 90,
+            end: 100
+          }
+        ],
+        tooltip: {
+          trigger: 'axis',
+          position: function (pos, params, dom, rect, size) {
+            const obj = { top: 60 };
+            obj[['left', 'right'][+(pos[0] < size.viewSize[0] / 2)]] = 5;
+            return obj;
+          },
+          formatter: (params) => {
+            let str = params[0].axisValue + '</br>';
+            params = params.sort((a, b) => b.value - a.value).filter(item => item.value);
+            for (const param of params) {
+              const size = this.$formatSize(param.value) + '/s';
+              str += `${param.seriesName.slice(0, 20)}: ${'&nbsp;'.repeat(40 - size.length - param.seriesName.slice(0, 20).length || 1)}${size}<br>`;
+            }
+            return str;
+          }
+        },
+        xAxis: {
+          type: 'category',
+          data: []
+        },
+        yAxis: {
+          type: 'value',
+          axisLabel: {
+            show: !this.isMobile(),
+            formatter: item => this.$formatSize(item) + '/s'
+          }
+        },
+        graphic: [
+          {
+            type: 'image',
+            id: 'logo',
+            right: 20,
+            top: 20,
+            z: -1,
+            bounding: 'raw',
+            origin: [125, 125],
+            style: {
+              image: '/assets/images/logo.svg',
+              width: 64,
+              height: 64,
+              opacity: 0.8
+            }
+          }
+        ],
+        series: []
+      },
       speedChart: {
         grid: {
           left: 0,
@@ -210,6 +287,7 @@ export default {
         ]
       },
       runInfo: {},
+      trackerInfo: {},
       servers: [],
       downloaders: [],
       loading: true
@@ -312,24 +390,28 @@ export default {
         type: 'line',
         data: [],
         symbol: 'none',
+        sampling: 'lttb',
         areaStyle: {
           opacity: 0.2
         },
+        lineStyle: {
+          opacity: 0.7
+        },
         smooth: true
       };
-      this.tracker.series = [];
+      this.trackerChart.series = [];
       const dateSet = this.trackerInfo.data.timeGroup;
       for (const _tracker of Object.keys(recordList)) {
         const trackerRecord = recordList[_tracker];
         const tracker = { ...template };
         tracker.data = Object.keys(trackerRecord).map(i => Math.max(trackerRecord[i].upload, 0));
         tracker.name = _tracker;
-        this.tracker.series.push(tracker);
+        this.trackerChart.series.push(tracker);
       }
-      if (this.tracker.series[0]) {
+      if (this.trackerChart.series[0]) {
         const total = [];
-        for (const [i] of this.tracker.series[0].data.entries()) {
-          for (const series of this.tracker.series) {
+        for (const [i] of this.trackerChart.series[0].data.entries()) {
+          for (const series of this.trackerChart.series) {
             if (total[i]) {
               total[i] += Math.max(series.data[i], 0);
             } else {
@@ -340,15 +422,16 @@ export default {
         const t = { ...template };
         t.name = 'Total';
         t.data = total;
-        this.tracker.series.push(t);
+        this.trackerChart.series.push(t);
       }
-      this.tracker.xAxis.data = dateSet.map(i => this.$moment(i * 1000).format('YYYY-MM-DD HH:mm'));
+      this.trackerChart.xAxis.data = dateSet.map(i => this.$moment(i * 1000).format('YYYY-MM-DD HH:mm'));
     }
   },
   async mounted () {
     this.getRunInfo();
     this.listDownloader();
     this.listDownloaderInfo();
+    this.listTrackerHistory();
     this.listServer();
     this.getNetSpeed();
     this.interval = setInterval(() => {

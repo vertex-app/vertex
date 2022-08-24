@@ -21,7 +21,9 @@ import {
   TooltipComponent,
   LegendComponent,
   GridComponent,
-  GraphicComponent
+  GraphicComponent,
+  DataZoomComponent,
+  ToolboxComponent
 } from 'echarts/components';
 import VChart from 'vue-echarts';
 import 'zrender/lib/svg/svg';
@@ -42,7 +44,9 @@ use([
   TooltipComponent,
   LegendComponent,
   GridComponent,
-  GraphicComponent
+  GraphicComponent,
+  DataZoomComponent,
+  ToolboxComponent
 ]);
 
 const app = createApp(App);
