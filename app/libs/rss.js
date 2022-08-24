@@ -12,13 +12,17 @@ const _getSum = function (a, b) {
   return a + b;
 };
 
-const _getRssContent = async function (rssUrl) {
+const _getRssContent = async function (rssUrl, suffix = true) {
   let body;
   const cache = await redis.get(`vertex:rss:${rssUrl}`);
   if (cache) {
     body = cache;
   } else {
-    const res = await util.requestPromise(rssUrl + (rssUrl.indexOf('?') === -1 ? '?' : '&') + '____=' + Math.random(), true);
+    let url = rssUrl;
+    if (suffix) {
+      url += (rssUrl.indexOf('?') === -1 ? '?' : '&') + '____=' + Math.random();
+    }
+    const res = await util.requestPromise(url, true);
     body = res.body;
     const isHTML = body.indexOf('xml-viewer-style') !== -1;
     if (isHTML) {
@@ -498,6 +502,37 @@ const _getMikanProjectTorrents = async function (rssUrl) {
   return torrents;
 };
 
+const _getLearnFlakesTorrents = async function (rssUrl) {
+  const rss = await parseXml(await _getRssContent(rssUrl, false));
+  const torrents = [];
+  const items = rss.rss.channel[0].item;
+  for (let i = 0; i < items.length; ++i) {
+    const torrent = {
+      size: 0,
+      name: '',
+      hash: '',
+      id: 0,
+      url: '',
+      link: ''
+    };
+    torrent.size = items[i].description[0].match(/\d+\.\d+ [MGKT]B/);
+    if (torrent.size) {
+      torrent.size = util.calSize(...torrent.size[0].replace(/([MGKT])B/, '$1iB').split(' '));
+    } else {
+      torrent.size = 0;
+    }
+    torrent.name = items[i].title[0];
+    const link = items[i].link[0];
+    torrent.link = link;
+    torrent.id = link.match(/&tid=(\d+)/)[1];
+    torrent.url = items[i].guid[0]._;
+    torrent.hash = 'learnflakes' + torrent.id + 'learnflakes';
+    torrent.pubTime = moment(items[i].pubDate[0]).unix();
+    torrents.push(torrent);
+  }
+  return torrents;
+};
+
 const _getTorrentsWrapper = {
   'filelist.io': _getTorrentsFileList,
   'blutopia.xyz': _getTorrentsUnit3D,
@@ -512,7 +547,8 @@ const _getTorrentsWrapper = {
   'hd-torrents.org': _getHDTorrents,
   'hdcity.leniter.org': _getHDCityTorrents,
   'iptorrents.com': _getIPTorrentsTorrents,
-  'mikanani.me': _getMikanProjectTorrents
+  'mikanani.me': _getMikanProjectTorrents,
+  'learnflakes.net': _getLearnFlakesTorrents
 };
 
 exports.getTorrents = async function (rssUrl) {

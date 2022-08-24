@@ -299,8 +299,8 @@ class Push {
       `添加时间: ${moment(torrent.addedTime * 1000).format('YYYY-MM-DD HH:mm:ss')}\n` +
       `删除时间: ${moment().format('YYYY-MM-DD HH:mm:ss')}\n` +
       `所属分类: ${torrent.category}\n` +
-      `流量统计: ${util.formatSize(torrent.uploaded)} / ${util.formatSize(torrent.downloaded)}\n` +
-      `即时速度: ${util.formatSize(torrent.uploadSpeed)}/s / ${util.formatSize(torrent.downloadSpeed)}/s\n` +
+      `流量统计: ${util.formatSize(torrent.uploaded)} ↑ / ${util.formatSize(torrent.downloaded)} ↓\n` +
+      `即时速度: ${util.formatSize(torrent.uploadSpeed)}/s ↑ / ${util.formatSize(torrent.downloadSpeed)}/s ↓\n` +
       `分享比率: ${(+torrent.ratio).toFixed(2)}\n` +
       `站点域名: ${torrent.tracker}\n` +
       `删除文件: ${deleteFile}\n` +
@@ -323,8 +323,8 @@ class Push {
       `已完成量: ${util.formatSize(torrent.completed)}\n` +
       `种子状态: ${torrent.completed.state}\n` +
       `所属分类: ${torrent.category}\n` +
-      `流量统计: ${util.formatSize(torrent.uploaded)} / ${util.formatSize(torrent.downloaded)}\n` +
-      `即时速度: ${util.formatSize(torrent.uploadSpeed)}/s / ${util.formatSize(torrent.downloadSpeed)}/s\n` +
+      `流量统计: ${util.formatSize(torrent.uploaded)} ↑ / ${util.formatSize(torrent.downloaded)}\n` +
+      `即时速度: ${util.formatSize(torrent.uploadSpeed)}/s ↑ / ${util.formatSize(torrent.downloadSpeed)}/s\n` +
       `分享比率: ${(+torrent.ratio).toFixed(2)}\n` +
       `站点域名: ${torrent.tracker}\n` +
       `符合规则: ${rule.alias}\n`;
