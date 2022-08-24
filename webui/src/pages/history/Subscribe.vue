@@ -136,6 +136,7 @@ export default {
     async delRecord (record) {
       try {
         await this.$api().subscribe.delRecord({ id: record.id });
+        await this.$message().success('删除成功, 列表刷新中....');
         this.listHistory();
       } catch (e) {
         await this.$message().error(e.message);
@@ -144,6 +145,7 @@ export default {
     async relink (record) {
       try {
         await this.$api().subscribe.relink({ id: record.id, doubanId: JSON.parse(record.recordNote).wish.doubanId });
+        await this.$message().success('已重新启动链接任务, 列表刷新中....');
         this.listHistory();
       } catch (e) {
         await this.$message().error(e.message);

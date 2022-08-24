@@ -29,6 +29,7 @@ appenders:
     filename: logs/app-access.log
     pattern: yyyy-MM-dd
     compress: true
+    numBackups: 30
     layout:
       type: pattern
       pattern: '[%d{ISO8601}][%p %c] %z (%f{3} %l:%o) %m'
@@ -42,6 +43,7 @@ appenders:
     filename: logs/app-info.log
     pattern: yyyy-MM-dd
     compress: true
+    numBackups: 30
     layout:
       type: pattern
       pattern: '[%d{ISO8601}][%p %c] %z (%f{3} %l:%o) %m'
@@ -50,6 +52,7 @@ appenders:
     filename: logs/app-binge.log
     pattern: yyyy-MM-dd
     compress: true
+    numBackups: 30
     layout:
       type: pattern
       pattern: '[%d{ISO8601}][%p %c] %z (%f{3} %l:%o) %m'
@@ -58,6 +61,7 @@ appenders:
     filename: logs/app-advanced.log
     pattern: yyyy-MM-dd
     compress: true
+    numBackups: 30
     layout:
       type: pattern
       pattern: '[%d{ISO8601}][%p %c] %z (%f{3} %l:%o) %m'
@@ -66,6 +70,7 @@ appenders:
     filename: logs/app-advanced-debug.log
     pattern: yyyy-MM-dd
     compress: true
+    numBackups: 30
     layout:
       type: pattern
       pattern: '[%d{ISO8601}][%p %c] %z (%f{3} %l:%o) %m'
@@ -74,6 +79,7 @@ appenders:
     filename: logs/app-watch.log
     pattern: yyyy-MM-dd
     compress: true
+    numBackups: 30
     layout:
       type: pattern
       pattern: '[%d{ISO8601}][%p %c] %z (%f{3} %l:%o) %m'
@@ -82,6 +88,7 @@ appenders:
     filename: logs/app-watch-debug.log
     pattern: yyyy-MM-dd
     compress: true
+    numBackups: 30
     layout:
       type: pattern
       pattern: '[%d{ISO8601}][%p %c] %z (%f{3} %l:%o) %m'
@@ -90,6 +97,7 @@ appenders:
     filename: logs/app-binge-debug.log
     pattern: yyyy-MM-dd
     compress: true
+    numBackups: 30
     layout:
       type: pattern
       pattern: '[%d{ISO8601}][%p %c] %z (%f{3} %l:%o) %m'
@@ -98,6 +106,7 @@ appenders:
     filename: logs/app-debug.log
     pattern: yyyy-MM-dd
     compress: true
+    numBackups: 30
     layout:
       type: pattern
       pattern: '[%d{ISO8601}][%p %c] %z (%f{3} %l:%o) %m'
@@ -146,6 +155,7 @@ appenders:
     filename: logs/app-error.log
     pattern: yyyy-MM-dd
     compress: true
+    numBackups: 30
     layout:
       type: pattern
       pattern: '[%d{ISO8601}][%p %c] %z (%f{3} %l:%o) %m'

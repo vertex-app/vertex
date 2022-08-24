@@ -865,7 +865,11 @@ class Douban {
             }
             let episodes;
             if (wish.episodes) {
-              episodes = this.scrapeEpisode(torrent.subtitle);
+              let _subtitle = torrent.subtitle;
+              if (wish.removeKeyword) {
+                _subtitle = torrent.subtitle.replace(new RegExp(wish.removeKeyword), '');
+              }
+              episodes = this.scrapeEpisode(_subtitle);
               episodes = episodes.filter(item => +item <= wish.episodes).map(item => +item);
               episodes = [...new Set(episodes)];
               logdebug(this.alias, '选种规则', rulesName, '种子', `[${torrent.site}]`, torrent.title, '/', torrent.subtitle, '识别到分集', episodes, '已完成至', wish.episodeNow);

@@ -55,5 +55,5 @@ export default {
   addWish: async (wish) => {
     const url = '/api/subscribe/addWish';
     return await post(url, wish);
-  },
+  }
 };

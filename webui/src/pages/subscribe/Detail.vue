@@ -79,6 +79,12 @@
           <a-input size="small" v-model:value="item.rejectKeys"/>
         </a-form-item>
         <a-form-item
+          label="过滤关键词"
+          name="removeKeyword"
+          extra="识别集数时用于去除副标题内的特定关键词, 正则表达式, 例: 总第\d+集 表示去除掉 总第60集这类表达">
+          <a-input size="small" v-model:value="item.removeKeyword"/>
+        </a-form-item>
+        <a-form-item
           label="固定季"
           name="fixedSeason"
           extra="适用于特别篇等内容, 设置固定季后按照设置项软链接, 如 特别篇, 此处填 0">
