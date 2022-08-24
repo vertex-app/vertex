@@ -560,7 +560,7 @@ class Douban {
     const _torrent = recordNoteJson.torrent;
     const category = recordNoteJson.category;
     if (category.type === 'series') {
-      let newEpisode = 0;
+      // let newEpisode = 0;
       for (const file of files) {
         const filename = path.basename(file.name);
         if (file.size < linkRule.minFileSize) continue;
@@ -605,7 +605,7 @@ class Douban {
         } else {
           season = _season;
         }
-        newEpisode = Math.max(episode, newEpisode);
+        // newEpisode = Math.max(episode, newEpisode);
         episode = (fakeEpisode || episode) + +wish.episodeOffset;
         episode = 'E' + '0'.repeat(Math.max(2 - ('' + episode).length, 0)) + (episode);
         season = 'S' + '0'.repeat(2 - ('' + season).length) + season;
@@ -636,9 +636,11 @@ class Douban {
           logger.error(e);
         }
       }
+      /*
       if (newEpisode) {
         this._setEpisodeNow(wish.id, newEpisode);
       }
+      */
     } else if (category.type === 'movie') {
       for (const file of files) {
         if (file.size < linkRule.minFileSize) continue;
