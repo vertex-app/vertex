@@ -5,9 +5,9 @@
   <h1 align="center">Vertex</h1>
   <p align="center">适用于 PT 玩家的追剧刷流一体化综合管理工具</p>
   <p align="center">
-    <a href="https://github.com/l-s-w-l/vertex"><img src="https://img.shields.io/github/stars/l-s-w-l/vertex" /></a>
-    <a href="https://github.com/l-s-w-l/vertex"><img src="https://img.shields.io/github/license/l-s-w-l/vertex"></a>
-    <a href="https://github.com/l-s-w-l/vertex"><img src="https://img.shields.io/github/languages/top/l-s-w-l/vertex"></a>
+    <a href="https://github.com/vertex-app/vertex"><img src="https://img.shields.io/github/stars/vertex-app/vertex" /></a>
+    <a href="https://github.com/vertex-app/vertex"><img src="https://img.shields.io/github/license/vertex-app/vertex"></a>
+    <a href="https://github.com/vertex-app/vertex"><img src="https://img.shields.io/github/languages/top/vertex-app/vertex"></a>
     <a href="https://hub.docker.com/r/lswl/vertex"><img src="https://img.shields.io/docker/pulls/lswl/vertex.svg" /></a>
     <a href="https://hub.docker.com/r/lswl/vertex"><img src="https://img.shields.io/docker/image-size/lswl/vertex" /></a>
   </p>

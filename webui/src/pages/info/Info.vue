@@ -70,7 +70,7 @@ export default {
       window.open('https://lswl.in/2022/01/14/vertex-changelog');
     },
     async gotoGithub () {
-      window.open('https://github.com/l-s-w-l/Vertex');
+      window.open('https://github.com/vertex-app/Vertex');
     },
     async gotoGitlab () {
       window.open('https://gitlab.lswl.in/lswl/vertex');
