@@ -524,7 +524,13 @@ class Client {
 
   async setSpeedLimit (hash, type, speed) {
     if (this._client.type === 'qBittorrent') {
-      await this.client.addTorrentTag(this.clientUrl, this.cookie, hash, type, speed);
+      await this.client.setSpeedLimit(this.clientUrl, this.cookie, hash, type, speed);
+    }
+  }
+
+  async setFilePriority (hash, id, priority) {
+    if (this._client.type === 'qBittorrent') {
+      await this.client.setFilePriority(this.clientUrl, this.cookie, hash, id, priority);
     }
   }
 }

@@ -151,6 +151,23 @@ exports.setSpeedLimit = async (clientUrl, cookie, hash, type, speed) => {
   return res;
 };
 
+exports.setFilePriority = async (clientUrl, cookie, hash, id, priority) => {
+  const message = {
+    url: clientUrl + '/api/v2/torrents/filePrio',
+    method: 'POST',
+    headers: {
+      cookie
+    },
+    formData: {
+      hash: hash,
+      id: id,
+      priority: priority
+    }
+  };
+  const res = await util.requestPromise(message);
+  return res;
+};
+
 exports.getMaindata = async function (clientUrl, cookie) {
   const option = {
     url: clientUrl + '/api/v2/sync/maindata',
@@ -188,6 +205,8 @@ exports.getMaindata = async function (clientUrl, cookie) {
     savePath: 'save_path',
     seeder: 'num_seeds',
     leecher: 'num_leechs',
+    totalSeeder: 'num_complete',
+    totalLeecher: 'num_incomplete',
     tags: 'tags'
   };
   const maindata = {
