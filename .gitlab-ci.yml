@@ -24,6 +24,14 @@ generate_static:
     - mkdir ./public/assets/styles
     - node dark
     - node light
+    - node cyber
+    - echo '@import url(/api/setting/getBackground.less);' >> ./public/assets/styles/cyber.less
+    - echo '.body-bg {' >> ./public/assets/styles/cyber.less
+    - echo '  background:@vt-bg-image;' >> ./public/assets/styles/cyber.less
+    - echo '  background-position-x:center;' >> ./public/assets/styles/cyber.less
+    - echo '  background-position-y:center;' >> ./public/assets/styles/cyber.less
+    - echo '  background-size:cover;' >> ./public/assets/styles/cyber.less
+    - echo '}' >> ./public/assets/styles/cyber.less
     - echo '' > ./public/assets/styles/follow.less
     - npm run build
     - cd ../app

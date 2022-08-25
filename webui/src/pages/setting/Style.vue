@@ -14,14 +14,22 @@
         autocomplete="off"
         :class="`container-form-${ isMobile() ? 'mobile' : 'pc' }`">
         <a-form-item
-          label="主题色"
+          label="主题"
           name="theme"
           :rules="[{ required: true, message: '${label}不可为空! ' }]">
           <a-radio-group v-model:value="setting.theme" name="theme">
             <a-radio value="light">亮色</a-radio>
             <a-radio value="dark">暗色</a-radio>
             <a-radio value="follow">跟随系统</a-radio>
+            <a-radio value="cyber">赛博</a-radio>
           </a-radio-group>
+        </a-form-item>
+        <a-form-item
+          v-if="setting.theme === 'cyber'"
+          label="背景图片"
+          name="background"
+          extra="背景图片链接">
+          <a-input size="small" v-model:value="setting.background"/>
         </a-form-item>
         <a-form-item
           label="微信通知默认封面"
@@ -75,6 +83,7 @@ export default {
         const s = (await this.$api().setting.get()).data;
         this.setting = {
           theme: s.theme || 'follow',
+          background: s.background,
           wechatCover: s.wechatCover,
           embyCover: s.embyCover,
           plexCover: s.plexCover,

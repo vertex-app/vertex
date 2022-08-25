@@ -20,13 +20,7 @@ class SettingMod {
   };
 
   getBackground () {
-    const style = '\n  background: #141E30;  /* fallback for old browsers */' +
-      '\n  background: -webkit-linear-gradient(45deg, #243B55, #141E30);  /* Chrome 10-25, Safari 5.1-6 */' +
-      '\n  background: linear-gradient(45deg, #243B55, #141E30); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */' +
-      '\n  height: calc(var(--vh, 1vh) * 100);' +
-      '\n  color: #fff;';
-    const settingStr = fs.readFileSync(settingPath, { encoding: 'utf-8' });
-    return 'body {' + (JSON.parse(settingStr).background || style) + '\n}';
+    return `@vt-bg-image: url('${global.background}');`;
   };
 
   getCss () {
@@ -62,6 +56,7 @@ class SettingMod {
     global.userAgent = options.userAgent;
     global.apiKey = options.apiKey;
     global.theme = options.theme;
+    global.background = options.background;
     global.tmdbApiKey = options.tmdbApiKey;
     global.dataPath = options.dataPath || '/';
     global.wechatCover = options.wechatCover;
