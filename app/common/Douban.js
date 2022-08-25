@@ -727,6 +727,7 @@ class Douban {
         torrents = result.data.map(item => {
           return {
             site: item.site,
+            sitePriority: global.runningSite[item.site]?.priority || 0,
             title: item.title,
             subtitle: item.subtitle,
             category: item.category,
@@ -805,6 +806,9 @@ class Douban {
           desc: [-1, 1],
           asc: [1, -1]
         };
+        if (sortBy === 'sitePriority') {
+          torrents = torrents.sort((a, b) => b.seeders - a.seeders);
+        }
         torrents = torrents.sort((a, b) => {
           if (typeof a[sortBy] === 'string') {
             return (a[sortBy] < b[sortBy] ? numberSet[sortType][1] : numberSet[sortType][0]);

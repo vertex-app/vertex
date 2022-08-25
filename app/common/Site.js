@@ -11,7 +11,6 @@ const path = require('path');
 
 class Site {
   constructor (site) {
-    this.ssh = null;
     this.refreshWrapper = {
       HaresClub: this._haresclub,
       LemonHD: this._lemonhd,
@@ -131,6 +130,7 @@ class Site {
     this.siteId = this.siteIdMap[site.name];
     this.cookie = site.cookie;
     this.site = site.name;
+    this.priority = +site.priority || 0;
     this.adult = site.adult;
     this.siteUrl = this.siteUrlMap[this.site];
     this.maxRetryCount = +site.maxRetryCount || 5;
@@ -1596,6 +1596,7 @@ class Site {
         };
       }
       const result = await this.searchWrapper[this.site].call(this, keyword);
+      result.torrentList.forEach(item => { item.sitePriority = this.priority; });
       return result;
     } catch (e) {
       logger.error(this.site, '种子列表抓取失败 (疑似是 Cookie 失效, 或绕过 CloudFlare 5s 盾失效),', '报错如下:\n', e);

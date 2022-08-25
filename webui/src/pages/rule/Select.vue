@@ -203,7 +203,7 @@ export default {
       conditionColumns,
       conditionKeys: [{
         name: '站点',
-        key: 'site'
+        key: 'sitePriority'
       }, {
         name: '标题',
         key: 'title'

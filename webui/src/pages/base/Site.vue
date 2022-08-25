@@ -97,6 +97,12 @@
           <a-input size="small" v-model:value="site.cron"/>
         </a-form-item>
         <a-form-item
+          label="优先级"
+          name="priority"
+          extra="选种规则内的站点优先级, 默认为 0">
+          <a-input size="small" v-model:value="site.priority"/>
+        </a-form-item>
+        <a-form-item
           label="拉取远程种子"
           name="pullRemoteTorrent"
           extra="豆瓣任务启动超级模式时, 将使用本站点拉取远程种子"
@@ -168,6 +174,7 @@ export default {
         cookie: '',
         cron: '55 11,23 * * *',
         enable: true,
+        priority: '0',
         adult: false,
         pullRemoteTorrent: false
       },
