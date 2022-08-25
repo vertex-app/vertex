@@ -155,8 +155,13 @@ fi
 
 cp /app/vertex/app/config_backup/logger.yaml /vertex/config/logger.yaml
 
-cd /app/vertex
+VUID=`[ $PUID ] && echo $PUID || echo 0`
+VGID=`[ $PGID ] && echo $PGID || echo 0`
+usermod -o -u ${VUID} vt > /dev/null 2>&1 ||:
+groupmod -o -g ${VGID} vt > /dev/null 2>&1 ||:
+usermod -g ${VGID} vt > /dev/null 2>&1 ||:
+chown -R ${VUID}:${VGID} /vertex
 export PORT=`[ $PORT ] && echo $PORT || echo 3000`
 Xvfb -ac :99 -screen 0 1280x1024x16 &
 export DISPLAY=:99
-node app/app.js > /dev/null
+su - vt -p -c 'cd /app/vertex && node app/app.js > /dev/null'

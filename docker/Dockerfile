@@ -1,6 +1,10 @@
 FROM lswl/vertex-base:latest
+LABEL maintainer="lswl.in"
+LABEL build_from="https://gitlab.lswl.in/lswl/vertex"
+
+ENV TZ=Asia/Shanghai
 RUN \
-  apk add cmake redis bash git nodejs npm python3 make gcc libc-dev g++ tzdata && \
+  apk add --no-cache shadow cmake redis bash git nodejs npm python3 make gcc libc-dev g++ tzdata && \
   git clone https://gitlab.lswl.in/lswl/vertex.git /app/vertex && \
   cd /app/vertex && \
   git checkout COMMIT_ID && \
@@ -16,11 +20,14 @@ RUN \
   ln -s /app/localtime /etc/localtime && \
   ln -s /usr/bin/chromium-browser /usr/bin/chromium && \
   chmod +x /usr/bin/chromium && \
-  apk del gcc g++ python3 git cmake make npm && \
+  apk del gcc g++ python3 git cmake make npm libc-dev && \
   echo 'bind 127.0.0.1' >> /app/redis.conf && \
   echo 'daemonize yes' >> /app/redis.conf
 COPY src/static /app/vertex/app/static
-ENV TZ=Asia/Shanghai
+RUN \
+  useradd -d /app/vertex -s /bin/sh vt && \
+  chown -R vt /vertex && \
+  chmod +x /vertex
 EXPOSE 3000
 CMD \
   cp /usr/share/zoneinfo/$TZ /app/localtime && \

@@ -29,7 +29,7 @@
       :style="`font-size: ${isMobile() ? '12px': '14px'};`"
       :columns="vnstatColumns"
       size="small"
-      :pagenition="false"
+      :pagination="false"
       v-if="vnstatData[period]"
       :data-source="vnstatData[period]"
       :scroll="{ x: 88 }"
