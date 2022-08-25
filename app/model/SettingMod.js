@@ -177,13 +177,17 @@ class SettingMod {
     };
   };
 
-  async backupVertex () {
+  async backupVertex (options) {
     const backupsFile = `/tmp/Vertex-backups-${moment().format('YYYY-MM-DD_HH:mm:ss')}.tar.gz`;
+    const backupsFileds = ['vertex/db', 'vertex/data', 'vertex/config'];
+    if (options.bt + '' === 'true') {
+      backupsFileds.push('vertex/torrents');
+    }
     await util.tar.c({
       gzip: true,
       file: backupsFile,
       cwd: global.dataPath
-    }, ['vertex/db', 'vertex/data', 'vertex/config', 'vertex/torrents']);
+    }, backupsFileds);
     return backupsFile;
   }
 

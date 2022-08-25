@@ -201,7 +201,7 @@ class Setting {
 
   async backupVertex (req, res) {
     try {
-      const file = await settingMod.backupVertex();
+      const file = await settingMod.backupVertex(req.query);
       res.download(file);
     } catch (e) {
       logger.error(e);

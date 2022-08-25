@@ -12,6 +12,11 @@
         autocomplete="off"
         :class="`container-form-${ isMobile() ? 'mobile' : 'pc' }`">
         <a-form-item
+          label="种子文件"
+          extra="备份时是否备份种子文件, 如不备份, 恢复时将清空所有已有种子">
+          <a-checkbox v-model:checked="setting.backupTorrent">启用</a-checkbox>
+        </a-form-item>
+        <a-form-item
           label="备份">
           <a-button size="small" type="primary" @click="backupVertex">下载备份</a-button>
         </a-form-item>
@@ -37,7 +42,9 @@
 export default {
   data () {
     return {
-      setting: {}
+      setting: {
+        backupTorrent: false
+      }
     };
   },
   methods: {
@@ -49,7 +56,11 @@ export default {
       }
     },
     async backupVertex () {
-      window.open('/api/setting/backupVertex');
+      if (this.setting.backupTorrent) {
+        window.open('/api/setting/backupVertex?bt=true');
+      } else {
+        window.open('/api/setting/backupVertex');
+      }
     },
     async handleChange ({ file }) {
       if (file.status === 'done') {
