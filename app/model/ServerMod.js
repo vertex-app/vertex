@@ -151,7 +151,7 @@ class ServerMod {
         }
         ws.on('message', function (data) {
           data = data || '';
-          if (data.startsWith('setWindow')) {
+          if (typeof data === 'string' && data.startsWith('setWindow')) {
             stream.setWindow(data.split(':')[1], data.split(':')[2]);
             return;
           }
