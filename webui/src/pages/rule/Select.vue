@@ -110,6 +110,8 @@
                     <a-select-option value="includeIn">包含于</a-select-option>
                     <a-select-option value="notContain">不包含</a-select-option>
                     <a-select-option value="notIncludeIn">不包含于</a-select-option>
+                    <a-select-option value="regExp">正则匹配</a-select-option>
+                    <a-select-option value="notRegExp">正则不匹配</a-select-option>
                   </a-select>
                 </template>
                 <template v-if="column.dataIndex === 'value'">

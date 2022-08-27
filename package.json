@@ -24,6 +24,7 @@
     "js-yaml": "^4.0.0",
     "jsdom": "^19.0.0",
     "log4js": "^6.3.0",
+    "matrix-org-irc": "^1.2.1",
     "md5-node": "^1.0.1",
     "moment": "^2.29.1",
     "node-cron": "^3.0.0",
