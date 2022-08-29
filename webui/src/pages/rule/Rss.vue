@@ -49,6 +49,31 @@
           <a-input size="small" v-model:value="rssRule.alias"/>
         </a-form-item>
         <a-form-item
+          label="分类"
+          name="category"
+          extra="添加种子时下载器内的分类, 留空使用 RSS 任务设置的分类">
+          <a-input size="small" v-model:value="rssRule.category"/>
+        </a-form-item>
+        <a-form-item
+          label="保存路径"
+          name="savePath"
+          extra="添加种子时下载器内的保存路径, 留空使用 RSS 任务设置的保存路径">
+          <a-input size="small" v-model:value="rssRule.savePath"/>
+        </a-form-item>
+        <a-form-item
+          label="下载器"
+          name="client"
+          extra="添加种子时选择的下载器, 该选项会直接覆盖 RSS 任务的下载器选择">
+          <a-select size="small" :allowClear="true" v-model:value="rssRule.client">
+            <template v-for="downloader of downloaders" :key="downloader.id">
+              <a-select-option
+                :value="downloader.id">
+                {{ downloader.alias }}
+              </a-select-option>
+            </template>
+          </a-select>
+        </a-form-item>
+        <a-form-item
           label="类型"
           name="type"
           :rules="[{ required: true, message: '${label}不可为空! ' }]">
@@ -188,6 +213,7 @@ export default {
               '}'
       },
       loading: true,
+      downloaders: [],
       rssRuleList: []
     };
   },
@@ -233,12 +259,21 @@ export default {
         this.$message().error(e.message);
       }
     },
+    async listDownloader () {
+      try {
+        const res = await this.$api().downloader.list();
+        this.downloaders = res.data;
+      } catch (e) {
+        this.$message().error(e.message);
+      }
+    },
     clearRssRule () {
       this.rssRule = { ...this.defaultRssRule, conditions: [{ ...this.condition }] };
     }
   },
   async mounted () {
     this.clearRssRule();
+    this.listDownloader();
     await this.listRssRule();
   }
 };
