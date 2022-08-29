@@ -477,46 +477,46 @@ export default {
   padding: 16px 16px;
   color: #555;
   display: inline-block;
-  margin: 8px 12px;
+  margin: 8px;
   border-radius: 8px;
 }
 
 .data-rect-2 {
   text-align: left;
   vertical-align: top;
-  width: 348px;
+  width: 336px;
   height: 104px;
   transition: all 0.5s;
   color: #555;
   position: relative;
   display: inline-block;
-  margin: 8px 12px;
+  margin: 8px;
   border-radius: 8px;
 }
 
 .data-rect-3-pc {
   text-align: left;
   vertical-align: top;
-  width: 712px;
+  width: 688px;
   height: 104px;
   transition: all 0.5s;
   padding: 16px 16px;
   color: #555;
   display: inline-block;
-  margin: 8px 12px;
+  margin: 8px;
   border-radius: 8px;
 }
 
 .data-rect-3-mobile {
   text-align: left;
   vertical-align: top;
-  width: 348px;
+  width: 336px;
   height: 104px;
   transition: all 0.5s;
   padding: 16px 16px;
   color: #555;
   display: inline-block;
-  margin: 8px 12px;
+  margin: 8px;
   border-radius: 8px;
 }
 

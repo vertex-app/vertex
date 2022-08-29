@@ -438,7 +438,7 @@ class Client {
       const cache = await redis.get('vertex:torrent:' + torrent.hash);
       // 0 无记录  1 种子存在  2 种子不存在
       if (!cache) {
-        const sqlRes = await util.getRecord('SELECT * FROM torrents WHERE hash = ?', [torrent.hash]);
+        const sqlRes = await util.getRecord('SELECT * FROM torrents WHERE hash = ? and record_type = 1', [torrent.hash]);
         await redis.set('vertex:torrent:' + torrent.hash, sqlRes ? 1 : 2);
         if (!sqlRes) continue;
       }
