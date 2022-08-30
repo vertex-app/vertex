@@ -124,51 +124,56 @@
           label="分类"
           name="categories"
           :rules="[{ required: true, message: '${label}不可为空! ' }]">
-          <a-table
-            :style="`font-size: ${isMobile() ? '12px': '14px'};`"
-            :columns="categoriesColumns"
-            size="small"
-            :data-source="subscribe.categories"
-            :pagination="false"
-            :scroll="{ x: 980 }"
-          >
-            <template #bodyCell="{ column, record }">
-              <template v-if="column.dataIndex === 'doubanTag'">
-                <a-input size="small" v-model:value="record.doubanTag"/>
+          <a-form-item-rest>
+            <a-table
+              :style="`font-size: ${isMobile() ? '12px': '14px'};`"
+              :columns="categoriesColumns"
+              size="small"
+              :data-source="subscribe.categories"
+              :pagination="false"
+              :scroll="{ x: 980 }"
+            >
+              <template #bodyCell="{ column, record }">
+                <template v-if="column.dataIndex === 'doubanTag'">
+                  <a-input size="small" v-model:value="record.doubanTag"/>
+                </template>
+                <template v-if="column.dataIndex === 'type'">
+                  <a-select size="small" v-model:value="record.type">
+                    <a-select-option value="movie">电影</a-select-option>
+                    <a-select-option value="series">剧集</a-select-option>
+                  </a-select>
+                </template>
+                <template v-if="column.dataIndex === 'category'">
+                  <a-input size="small" v-model:value="record.category"/>
+                </template>
+                <template v-if="column.dataIndex === 'libraryPath'">
+                  <a-input size="small" v-model:value="record.libraryPath"/>
+                </template>
+                <template v-if="column.dataIndex === 'savePath'">
+                  <a-input size="small" v-model:value="record.savePath"/>
+                </template>
+                <template v-if="column.dataIndex === 'autoTMM'">
+                  <a-checkbox v-model:checked="record.autoTMM">自动管理</a-checkbox>
+                </template>
+                <template v-if="column.dataIndex === 'autoSearch'">
+                  <a-checkbox v-model:checked="record.autoSearch">添加自动刷新</a-checkbox>
+                </template>
+                <template v-if="column.dataIndex === 'rejectKeys'">
+                  <a-input size="small" v-model:value="record.rejectKeys"/>
+                </template>
+                <template v-if="column.dataIndex === 'rules'">
+                  <a-button type="primary" @click="expandModal(record)" size="small">弹出</a-button>
+                </template>
+                <template v-if="column.dataIndex === 'option'">
+                  <a style="color: red" @click="subscribe.categories = subscribe.categories.filter(item => item !== record)">删除</a>
+                </template>
               </template>
-              <template v-if="column.dataIndex === 'type'">
-                <a-select size="small" v-model:value="record.type">
-                  <a-select-option value="movie">电影</a-select-option>
-                  <a-select-option value="series">剧集</a-select-option>
-                </a-select>
-              </template>
-              <template v-if="column.dataIndex === 'category'">
-                <a-input size="small" v-model:value="record.category"/>
-              </template>
-              <template v-if="column.dataIndex === 'libraryPath'">
-                <a-input size="small" v-model:value="record.libraryPath"/>
-              </template>
-              <template v-if="column.dataIndex === 'savePath'">
-                <a-input size="small" v-model:value="record.savePath"/>
-              </template>
-              <template v-if="column.dataIndex === 'autoTMM'">
-                <a-checkbox v-model:checked="record.autoTMM">自动管理</a-checkbox>
-              </template>
-              <template v-if="column.dataIndex === 'autoSearch'">
-                <a-checkbox v-model:checked="record.autoSearch">添加自动刷新</a-checkbox>
-              </template>
-              <template v-if="column.dataIndex === 'rejectKeys'">
-                <a-input size="small" v-model:value="record.rejectKeys"/>
-              </template>
-              <template v-if="column.dataIndex === 'option'">
-                <a style="color: red" @click="subscribe.categories = subscribe.categories.filter(item => item !== record)">删除</a>
-              </template>
-            </template>
-          </a-table>
-          <a-button
-            type="primary" @click="subscribe.categories.push({ ...defaultCategory })"
-            size="small"
-          >新增条件</a-button>
+            </a-table>
+            <a-button
+              type="primary" @click="subscribe.categories.push({ ...defaultCategory })"
+              size="small"
+            >新增条件</a-button>
+          </a-form-item-rest>
         </a-form-item>
         <a-form-item
           label="Cookie"
@@ -227,6 +232,58 @@
       </a-form>
     </div>
   </div>
+  <a-modal
+    v-model:visible="modalVisible"
+    title="推送种子"
+    width="1440px"
+    :footer="null">
+    <div style="text-align: left; ">
+      <a-form
+        labelAlign="right"
+        :labelWrap="true"
+        :model="expandCategory"
+        size="small"
+        :labelCol="{ span: 3 }"
+        :wrapperCol="{ span: 21 }"
+        autocomplete="off">
+        <a-form-item
+          :wrapperCol="{ span:24 }">
+          <span>
+            {{ expandCategory.doubanTag }}
+          </span>
+        </a-form-item>
+        <a-form-item
+          label="选择规则"
+          name="raceRules"
+          :rules="[{ required: true, message: '${label}不可为空! ' }]"
+          extra="选择选种规则, 符合这些规则的种子才会添加, 可前往选种规则分页添加, 仅显示优先级不为 0 的规则">
+          <a-checkbox-group style="width: 100%;" v-model:value="expandCategory.raceRules">
+            <a-row>
+              <template v-for="selectRule of selectRules" :key="selectRule.id">
+                <a-col v-if="selectRule.priority !== '0'" :span="8">
+                  <a-checkbox  v-model:value="selectRule.id">{{ selectRule.alias }}</a-checkbox>
+                </a-col>
+              </template>
+            </a-row>
+          </a-checkbox-group>
+        </a-form-item>
+        <a-form-item
+          label="排除规则"
+          name="rejectRules"
+          extra="选择排除规则, 符合这些规则的种子都会被拒绝, 可前往选种规则分页添加, 仅显示优先级为 0 的规则">
+          <a-checkbox-group style="width: 100%;" v-model:value="expandCategory.rejectRules">
+            <a-row>
+              <template v-for="selectRule of selectRules" :key="selectRule.id">
+                <a-col v-if="selectRule.priority === '0'" :span="8">
+                  <a-checkbox  v-model:value="selectRule.id">{{ selectRule.alias }}</a-checkbox>
+                </a-col>
+              </template>
+            </a-row>
+          </a-checkbox-group>
+        </a-form-item>
+      </a-form>
+    </div>
+  </a-modal>
 </template>
 <script>
 export default {
@@ -281,6 +338,10 @@ export default {
         dataIndex: 'rejectKeys',
         width: 20
       }, {
+        title: '规则',
+        dataIndex: 'rules',
+        width: 16
+      }, {
         title: '操作',
         dataIndex: 'option',
         width: 12
@@ -289,6 +350,7 @@ export default {
     return {
       columns,
       categoriesColumns,
+      modalVisible: false,
       subscribes: [],
       notifications: [],
       selectRules: [],
@@ -296,6 +358,10 @@ export default {
       subscribe: {},
       sites: [],
       linkRules: [],
+      expandCategory: {
+        raceRules: [],
+        rejectRules: []
+      },
       defaultSubscribe: {
         cron: '0 */4 * * *',
         sites: [],
@@ -312,6 +378,7 @@ export default {
         savePath: '',
         autoTMM: false,
         rejectKeys: '',
+        categoryRules: [],
         autoSearch: true
       },
       loading: true,
@@ -330,6 +397,16 @@ export default {
       try {
         const res = await this.$api().subscribe.list();
         this.subscribes = res.data;
+        for (const s of this.subscribes) {
+          for (const c of s.categories) {
+            if (!c.raceRules) {
+              c.raceRules = [];
+            }
+            if (!c.rejectRules) {
+              c.rejectRules = [];
+            }
+          }
+        }
       } catch (e) {
         this.$message().error(e.message);
       }
@@ -386,6 +463,10 @@ export default {
     },
     modifyClick (row) {
       this.subscribe = { ...row };
+    },
+    expandModal (row) {
+      this.modalVisible = true;
+      this.expandCategory = row;
     },
     async deleteSubscribe (row) {
       try {

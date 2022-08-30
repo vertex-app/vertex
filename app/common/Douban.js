@@ -752,10 +752,10 @@ class Douban {
     }
     logbinge(this.alias, '种子搜索已完成, 共计查找到', torrents.length, '个种子');
     const raceRuleList = util.listRaceRule();
-    const rejectRules = this.rejectRules
+    const rejectRules = [...new Set(this.rejectRules.concat(this.categories[wish.tag].rejectRules || []))]
       .map(i => raceRuleList.filter(ii => ii.id === i)[0])
       .filter(i => i);
-    const raceRules = this.raceRules
+    const raceRules = [...new Set(this.raceRules.concat(this.categories[wish.tag].raceRules || []))]
       .map(i => raceRuleList.filter(ii => ii.id === i)[0])
       .filter(i => i)
       .sort((a, b) => +b.priority - +a.priority);
