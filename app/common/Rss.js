@@ -31,6 +31,8 @@ class Rss {
     this.cookie = rss.cookie;
     this.savePath = rss.savePath;
     this.category = rss.category;
+    this.paused = rss.paused;
+    this.autoTMM = rss.autoTMM;
     this.addCountPerHour = +rss.addCountPerHour || 20;
     this.addCount = 0;
     this.pushTorrentFile = rss.pushTorrentFile;
@@ -333,9 +335,9 @@ class Rss {
         this.addCount += 1;
         if (this.pushTorrentFile) {
           const { filepath, hash } = await this._downloadTorrent(torrent.url);
-          await client.addTorrentByTorrentFile(filepath, hash, false, this.uploadLimit, this.downloadLimit, savePath, category);
+          await client.addTorrentByTorrentFile(filepath, hash, false, this.uploadLimit, this.downloadLimit, savePath, category, this.autoTMM, this.paused);
         } else {
-          await client.addTorrent(torrent.url, torrent.hash, false, this.uploadLimit, this.downloadLimit, savePath, category);
+          await client.addTorrent(torrent.url, torrent.hash, false, this.uploadLimit, this.downloadLimit, savePath, category, this.autoTMM, this.paused);
         }
         try {
           await this.ntf.addTorrent(this._rss, client, torrent);

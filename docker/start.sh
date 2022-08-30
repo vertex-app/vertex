@@ -53,6 +53,12 @@ else
   echo '/vertex/data/site exists, continue'
 fi
 
+if [ ! -d '/vertex/data/irc' ]; then
+  mkdir /vertex/data/irc
+else
+  echo '/vertex/data/irc exists, continue'
+fi
+
 if [ ! -d '/vertex/data/race' ]; then
   mkdir /vertex/data/race
 else

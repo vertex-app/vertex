@@ -407,6 +407,17 @@ exports.listWatchSet = function () {
   return watchSetList;
 };
 
+exports.listIRC = function () {
+  const files = fs.readdirSync(path.join(__dirname, '../data/irc'));
+  const ircList = [];
+  for (const file of files) {
+    if (path.extname(file) === '.json') {
+      ircList.push(_importJson(path.join(__dirname, '../data/irc', file)));
+    }
+  }
+  return ircList;
+};
+
 exports.formatSize = function (size) {
   if (size < 1024) {
     return `${size.toFixed(2)} Byte`;

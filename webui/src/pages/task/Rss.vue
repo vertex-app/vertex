@@ -237,6 +237,18 @@
           <a-input size="small" v-model:value="rss.addCountPerHour"/>
         </a-form-item>
         <a-form-item
+          label="添加种子时暂停"
+          name="paused"
+          extra="向下载器添加种子时暂停种子">
+          <a-checkbox v-model:checked="rss.paused">添加种子时暂停</a-checkbox>
+        </a-form-item>
+        <a-form-item
+          label="自动管理"
+          name="autoTMM"
+          extra="向下载器添加种子时启用种子的自动管理功能, 不了解请勿勾选">
+          <a-checkbox v-model:checked="rss.autoTMM">自动管理</a-checkbox>
+        </a-form-item>
+        <a-form-item
           label="等待时间"
           name="sleepTime"
           extra="若在 Rss 时种子是非免费状态, 将在种子发布后的一段时间内重复抓取免费状态, 建议等待时间略小于 Rss 周期">

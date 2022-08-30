@@ -73,7 +73,7 @@
             <div
               v-if="index === 0"
               class="data-rect-2 highlight-3"
-              :style="downloaders.length === 1 ? `width: ${isMobile() ? '348px' : '712px'}` : ''">
+              :style="downloaders.length === 1 ? `width: ${isMobile() ? '336px' : '688px'}` : ''">
               <div style="position: absolute; left: 0; top: 0; width: 100%; height: 100%;">
                 <v-chart :option="downloader.speedChart"/>
               </div>
@@ -86,7 +86,7 @@
             <div
               v-if="index !== 0"
               class="data-rect-2"
-              :style="(downloaders.length === index + 1 && downloaders.length % 2 === 1) ? `background: #eff; width: ${isMobile() ? '348px' : '712px'}` : 'background: #eff;'">
+              :style="(downloaders.length === index + 1 && downloaders.length % 2 === 1) ? `background: #eff; width: ${isMobile() ? '336px' : '688px'}` : 'background: #eff;'">
               <div style="position: absolute; left: 0; top: 0; width: 100%; height: 100%;">
                 <v-chart :option="downloader.speedChart"/>
               </div>
@@ -103,7 +103,7 @@
             <div
               v-if="index === 0"
               class="data-rect-2 highlight-4"
-              :style="servers.length === 1 ? `width: ${isMobile() ? '348px' : '712px'}` : ''">
+              :style="servers.length === 1 ? `width: ${isMobile() ? '336px' : '688px'}` : ''">
               <div style="position: absolute; left: 0; top: 0; width: 100%; height: 100%;">
                 <v-chart :option="server.speedChart"/>
               </div>
@@ -116,7 +116,7 @@
             <div
               v-if="index !== 0"
               class="data-rect-2"
-              :style="servers.length === index + 1 && servers.length % 2 === 1 ? `background: #eff; width: ${isMobile() ? '348px' : '712px'}` : 'background: #eff;'">
+              :style="servers.length === index + 1 && servers.length % 2 === 1 ? `background: #eff; width: ${isMobile() ? '336px' : '688px'}` : 'background: #eff;'">
               <div style="position: absolute; left: 0; top: 0; width: 100%; height: 100%;">
                 <v-chart :option="server.speedChart" :init-options="{renderer: 'svg'}"/>
               </div>

@@ -14,6 +14,7 @@ const Server = require('./common/Server');
 const Douban = require('./common/Douban');
 const Site = require('./common/Site');
 const Watch = require('./common/Watch');
+const IRC = require('./common/IRC');
 
 const logger = require('./libs/logger');
 const util = require('./libs/util');
@@ -93,6 +94,7 @@ const init = function () {
   global.runningDouban = {};
   global.runningScript = {};
   global.runningWatch = {};
+  global.runningIRC = {};
   global.startTime = moment().unix();
   initPush();
   for (const client of util.listClient()) {
@@ -126,6 +128,11 @@ const init = function () {
   for (const watch of util.listWatch()) {
     if (watch.enable) {
       global.runningWatch[watch.id] = new Watch(watch);
+    }
+  }
+  for (const irc of util.listIRC()) {
+    if (irc.enable) {
+      global.runningIRC[irc.id] = new IRC(irc);
     }
   }
 };

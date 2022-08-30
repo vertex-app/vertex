@@ -24,7 +24,7 @@ exports.login = async function (username, clientUrl, password) {
   }
 };
 
-exports.addTorrent = async function (clientUrl, cookie, torrentUrl, isSkipChecking, uploadLimit, downloadLimit, savePath, category, firstLastPiecePrio) {
+exports.addTorrent = async function (clientUrl, cookie, torrentUrl, isSkipChecking, uploadLimit, downloadLimit, savePath, category, autoTMM, firstLastPiecePrio, paused) {
   const message = {
     url: clientUrl + '/api/v2/torrents/add',
     method: 'POST',
@@ -36,7 +36,8 @@ exports.addTorrent = async function (clientUrl, cookie, torrentUrl, isSkipChecki
       skip_checking: isSkipChecking + '',
       upLimit: uploadLimit,
       dlLimit: downloadLimit,
-      firstLastPiecePrio: firstLastPiecePrio + ''
+      firstLastPiecePrio: firstLastPiecePrio + '',
+      paused: paused || 'false'
     }
   };
   if (savePath) {
@@ -45,12 +46,15 @@ exports.addTorrent = async function (clientUrl, cookie, torrentUrl, isSkipChecki
   if (category) {
     message.formData.category = category;
   }
+  if (autoTMM) {
+    message.formData.autoTMM = '' + autoTMM;
+  }
   const res = await util.requestPromise(message);
   logger.debug(clientUrl, '添加种子', torrentUrl, '\n返回信息', { body: res.body, statusCode: res.statusCode });
   return res;
 };
 
-exports.addTorrentByTorrentFile = async function (clientUrl, cookie, filepath, isSkipChecking, uploadLimit, downloadLimit, savePath, category, autoTMM, firstLastPiecePrio) {
+exports.addTorrentByTorrentFile = async function (clientUrl, cookie, filepath, isSkipChecking, uploadLimit, downloadLimit, savePath, category, autoTMM, firstLastPiecePrio, paused) {
   const message = {
     url: clientUrl + '/api/v2/torrents/add',
     method: 'POST',
@@ -62,7 +66,8 @@ exports.addTorrentByTorrentFile = async function (clientUrl, cookie, filepath, i
       skip_checking: isSkipChecking + '',
       upLimit: uploadLimit,
       dlLimit: downloadLimit,
-      firstLastPiecePrio: firstLastPiecePrio + ''
+      firstLastPiecePrio: firstLastPiecePrio + '',
+      paused: paused || 'false'
     }
   };
   if (savePath) {
