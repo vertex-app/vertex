@@ -84,6 +84,12 @@
           <a-input size="small" v-model:value="linkRule.linkFilePath"/>
         </a-form-item>
         <a-form-item
+          label="UMASK"
+          name="umask"
+          extra="用于调整生成文件的权限, 例: 0022, 如果不懂请务必留空!">
+          <a-input size="small" v-model:value="linkRule.umask"/>
+        </a-form-item>
+        <a-form-item
           label="保留剧集名"
           name="keepSeriesName"
           extra="链接时在文件名前添加剧集的名称"

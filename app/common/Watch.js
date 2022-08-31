@@ -160,7 +160,7 @@ class Watch {
         const linkFile = path.join(linkFilePath, prefix + season + episode + suffix + group + fileExt).replace(/'/g, '\\\'');
         const targetFile = path.join(torrent.savePath.replace(linkRule.targetPath.split('##')[0], linkRule.targetPath.split('##')[1]), file.name).replace(/'/g, '\\\'');
         const linkMode = linkRule.hardlink ? 'f' : 'sf';
-        const command = `mkdir -p $'${linkFilePath}' && ln -${linkMode} $'${targetFile}' $'${linkFile}'`;
+        const command = `${linkRule.umask ? 'umask ' + linkRule.umask + ' && ' : ''}mkdir -p $'${linkFilePath}' && ln -${linkMode} $'${targetFile}' $'${linkFile}'`;
         logger.watch(this.alias, '执行链接命令', command);
         try {
           await global.runningServer[linkRule.server].run(command);
@@ -193,7 +193,7 @@ class Watch {
         const linkFile = path.join(linkFilePath, `${movieName}.${_year}${suffix + group}${fileExt}`).replace(/'/g, '\\\'');
         const targetFile = path.join(torrent.savePath.replace(linkRule.targetPath.split('##')[0], linkRule.targetPath.split('##')[1]), file.name).replace(/'/g, '\\\'');
         const linkMode = linkRule.hardlink ? 'f' : 'sf';
-        const command = `mkdir -p $'${linkFilePath}' && ln -${linkMode} $'${targetFile}' $'${linkFile}'`;
+        const command = `${linkRule.umask ? 'umask ' + linkRule.umask + ' && ' : ''}mkdir -p $'${linkFilePath}' && ln -${linkMode} $'${targetFile}' $'${linkFile}'`;
         logger.watch(this.alias, '执行链接命令', command);
         try {
           await global.runningServer[linkRule.server].run(command);

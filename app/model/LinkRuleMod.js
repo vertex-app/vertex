@@ -9,7 +9,7 @@ class LinkRuleMod {
       id
     };
     for (const key of Object.keys(options)) {
-      if (options[key] && options[key] !== '') {
+      if (options[key] !== undefined && options[key] !== '') {
         linkRuleSet[key] = options[key];
       }
     }
@@ -25,7 +25,7 @@ class LinkRuleMod {
   modify (options) {
     const linkRuleSet = {};
     for (const key of Object.keys(options)) {
-      if (options[key] && options[key] !== '') {
+      if (options[key] !== undefined && options[key] !== '') {
         linkRuleSet[key] = options[key];
       }
     }

@@ -9,7 +9,7 @@ class RssRuleMod {
       id
     };
     for (const key of Object.keys(options)) {
-      if (options[key] && options[key] !== '') {
+      if (options[key] !== undefined && options[key] !== '') {
         rssRuleSet[key] = options[key];
       }
     }
@@ -25,7 +25,7 @@ class RssRuleMod {
   modify (options) {
     const rssRuleSet = {};
     for (const key of Object.keys(options)) {
-      if (options[key] && options[key] !== '') {
+      if (options[key] !== undefined && options[key] !== '') {
         rssRuleSet[key] = options[key];
       }
     }

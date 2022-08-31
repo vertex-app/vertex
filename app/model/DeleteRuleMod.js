@@ -9,7 +9,7 @@ class DeleteRuleMod {
       id
     };
     for (const key of Object.keys(options)) {
-      if (options[key] && options[key] !== '') {
+      if (options[key] !== undefined && options[key] !== '') {
         deleteRuleSet[key] = options[key];
       }
     }
@@ -25,7 +25,7 @@ class DeleteRuleMod {
   modify (options) {
     const deleteRuleSet = {};
     for (const key of Object.keys(options)) {
-      if (options[key] && options[key] !== '') {
+      if (options[key] !== undefined && options[key] !== '') {
         deleteRuleSet[key] = options[key];
       }
     }
