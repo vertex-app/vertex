@@ -534,6 +534,19 @@ class Client {
     }
   }
 
+  async setGlobalSpeedLimit (type, speed) {
+    if (this._client.type === 'qBittorrent') {
+      await this.client.setGlobalSpeedLimit(this.clientUrl, this.cookie, type, speed);
+    }
+  }
+
+  async getGlobalSpeedLimit (type) {
+    if (this._client.type === 'qBittorrent') {
+      return await this.client.getGlobalSpeedLimit(this.clientUrl, this.cookie, type);
+    }
+    return 0;
+  }
+
   async setFilePriority (hash, id, priority) {
     if (this._client.type === 'qBittorrent') {
       await this.client.setFilePriority(this.clientUrl, this.cookie, hash, id, priority);

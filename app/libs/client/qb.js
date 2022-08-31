@@ -156,6 +156,33 @@ exports.setSpeedLimit = async (clientUrl, cookie, hash, type, speed) => {
   return res;
 };
 
+exports.setGlobalSpeedLimit = async (clientUrl, cookie, type, speed) => {
+  const message = {
+    url: clientUrl + `/api/v2/transfer/set${type === 'upload' ? 'Upload' : 'Download'}Limit`,
+    method: 'POST',
+    headers: {
+      cookie
+    },
+    formData: {
+      limit: speed + ''
+    }
+  };
+  const res = await util.requestPromise(message);
+  return res;
+};
+
+exports.getGlobalSpeedLimit = async (clientUrl, cookie, type) => {
+  const message = {
+    url: clientUrl + `/api/v2/transfer/${type}Limit`,
+    method: 'GET',
+    headers: {
+      cookie
+    }
+  };
+  const res = await util.requestPromise(message);
+  return res.body;
+};
+
 exports.setFilePriority = async (clientUrl, cookie, hash, id, priority) => {
   const message = {
     url: clientUrl + '/api/v2/torrents/filePrio',

@@ -9,7 +9,7 @@ class Script {
     this.id = script.id;
     this.script = script.script;
     // eslint-disable-next-line no-eval
-    this.job = cron.schedule(this.cron, async () => { try { eval(this.script); } catch (e) { logger.error(e); } });
+    this.job = cron.schedule(this.cron, async () => { try { const f = eval(this.script); await f(); } catch (e) { logger.error(e); } });
   };
 
   destroy () {
