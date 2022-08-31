@@ -40,6 +40,9 @@
                   <a-menu-item>
                     <a @click="modifyClick(record)">编辑</a>
                   </a-menu-item>
+                  <a-menu-item>
+                    <a @click="cloneClick(record)">克隆</a>
+                  </a-menu-item>
                   <a-menu-item danger>
                     <a-popover title="删除?" trigger="click" :overlayStyle="{ width: '84px', overflow: 'hidden' }">
                       <template #content>
@@ -385,6 +388,11 @@ export default {
     },
     modifyClick (row) {
       this.downloader = { ...row };
+    },
+    cloneClick (row) {
+      this.downloader = { ...row, deleteRules: [...row.deleteRules] };
+      this.downloader.id = null;
+      this.downloader.alias = this.downloader.alias + '-克隆';
     },
     async deleteDownloader (row) {
       if (row.used) {
