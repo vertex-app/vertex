@@ -74,7 +74,7 @@
         </a-form-item>
         <a-form-item
           :wrapperCol="isMobile() ? { span:24 } : { span: 21, offset: 3 }">
-          <a-button type="primary" html-type="submit" style="margin-top: 24px; margin-bottom: 48px;">新增 | 编辑</a-button>
+          <a-button type="primary" html-type="submit" style="margin-top: 24px; margin-bottom: 48px;">应用 | 完成</a-button>
           <a-button style="margin-left: 12px; margin-top: 24px; margin-bottom: 48px;"  @click="clearScript()">清空</a-button>
         </a-form-item>
       </a-form>
@@ -116,7 +116,7 @@ export default {
         cron: '* * * * *',
         script: 'logger.info(\'VERTEX IS THE BEST!\')'
       },
-      loading: true,
+      loading: true
     };
   },
   methods: {

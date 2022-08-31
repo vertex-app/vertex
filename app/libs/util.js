@@ -175,7 +175,7 @@ exports.scrapeNameByFile = async function (_filename, type, _year = false) {
     .replace(/[!\u4e00-\u9fa5\uff01\uff1a。:?？，,·・]/g, '')
     .replace(/\./g, ' ').trim();
   if (filename.match(/^[\u4e00-\u9fa5\uff01\uff1a]+/)) {
-    searchKey = filename.match(/^[\u4e00-\u9fa5]+[A-RT-Za-rt-z]*[\u4e00-\u9fa5]+/)[0].replace(/[^\u4e00-\u9fa5A-Za-z]/g, ' ').replace(/第.*季/g, '');
+    searchKey = filename.match(/^[\u4e00-\u9fa5·]+[A-RT-Za-rt-z]*[\u4e00-\u9fa5·]+/)[0].replace(/[^\u4e00-\u9fa5A-Za-z]/g, ' ').replace(/第.*季/g, '');
   }
   url += encodeURI(searchKey);
   const year = filename.match(/[^d](19\d{2}|20\d{2})[^d]/);

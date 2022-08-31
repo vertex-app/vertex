@@ -309,7 +309,7 @@ class Douban {
         this.selectTorrentToday[wish.id] = 1;
       }
     }
-    wish.downloaded = wish.downloaded && (wish.episodeNow === wish.episodes);
+    wish.downloaded = wish.downloaded && (+wish.episodeNow === +wish.episodes);
     this._saveSet();
   }
 

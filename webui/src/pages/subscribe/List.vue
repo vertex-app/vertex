@@ -16,7 +16,7 @@
             <fa style="position: absolute; left: 6px; font-size: 14px; color: cyan; bottom: 3px; cursor: pointer;" :icon="['fas', 'arrow-rotate-right']"></fa>
           </a-popover>
           <span>[{{item.tag}}]</span>
-          <span>[{{item.episodeNow === 0 ? 0 : item.episodeNow || '1'}}/{{item.episodes === 0 ? 0 : item.episodes || '1'}}]</span>
+          <span>[{{+item.episodeNow === 0 ? 0 : (item.episodeNow || '1')}}/{{+item.episodes === 0 ? 0 : (item.episodes || '1')}}]</span>
           <a-popover title="删除?" :overlayStyle="{ width: '84px', overflow: 'hidden' }">
             <template #content>
               <a-button type="primary" danger @click="del(item)" size="small">删除</a-button>

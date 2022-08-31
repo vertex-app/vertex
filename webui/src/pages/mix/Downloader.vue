@@ -23,6 +23,10 @@
               </a-col>
             </a-row>
           </a-checkbox-group>
+          <div style="margin-top: 12px;">
+            <a-button size="small" type="primary" @click="qs.downloaders = downloaders.map(item => item.id);">全部选中</a-button>
+            <a-button size="small" type="primary" style="margin-left: 24px;" @click="qs.downloaders = [];">取消选中</a-button>
+          </div>
         </a-form-item>
         <a-form-item
           label="搜索关键词"
@@ -81,6 +85,10 @@ export default {
       }, {
         title: '分类',
         dataIndex: 'category',
+        width: 32
+      }, {
+        title: '标签',
+        dataIndex: 'tags',
         width: 32
       }, {
         title: '种子大小',
