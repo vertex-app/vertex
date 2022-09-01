@@ -197,6 +197,7 @@ export default {
     const pagination = {
       position: ['topRight', 'bottomRight'],
       total: 0,
+      current: 1,
       pageSize: qs.length,
       showSizeChanger: false
     };
@@ -308,6 +309,7 @@ export default {
       this.torrents = this.torrentsOri.filter(i => {
         return i.title.toLowerCase().indexOf(this.filterKey.toLowerCase()) !== -1 || i.subtitle.toLowerCase().indexOf(this.filterKey.toLowerCase()) !== -1;
       });
+      this.pagination.current = 1;
       this.pagination.total = this.torrents.length;
     },
     async listSubscribe () {

@@ -123,6 +123,7 @@ export default {
     const pagination = {
       position: ['topRight', 'bottomRight'],
       total: 0,
+      current: 1,
       pageSize: qs.length,
       showSizeChanger: false
     };

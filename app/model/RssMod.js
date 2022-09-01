@@ -20,6 +20,11 @@ class RssMod {
     return '删除 Rss 成功';
   };
 
+  async deleteRecord (options) {
+    await util.runRecord('delete from torrents where id = ?', [options.id]);
+    return '删除 Rss 记录成功';
+  };
+
   modify (options) {
     const rssSet = { ...options };
     rssSet.sameServerClients = rssSet.sameServerClients || [];

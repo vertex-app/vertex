@@ -30,6 +30,13 @@
         </template>
         <template v-if="column.title === '操作'">
           <a @click="gotoDetail(record)">打开</a>
+          <a-divider type="vertical" />
+          <a-popover title="删除?" trigger="click" :overlayStyle="{ width: '84px', overflow: 'hidden' }">
+            <template #content>
+              <a-button type="primary" danger @click="delRecord(record)" size="small">删除</a-button>
+            </template>
+            <a style="color: red">删除</a>
+          </a-popover>
         </template>
       </template>
     </a-table>
@@ -140,6 +147,15 @@ export default {
         this.qs.rss = '';
       }
       this.listHistory();
+    },
+    async delRecord (record) {
+      try {
+        await this.$api().rss.delRecord({ id: record.id });
+        this.$message().success('删除成功, 列表刷新中....');
+        this.listHistory();
+      } catch (e) {
+        await this.$message().error(e.message);
+      }
     }
   },
   async mounted () {

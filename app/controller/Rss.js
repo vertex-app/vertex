@@ -38,6 +38,23 @@ class Rss {
     }
   };
 
+  async deleteRecord (req, res) {
+    const options = req.body;
+    try {
+      const r = await rssMod.deleteRecord(options);
+      res.send({
+        success: true,
+        message: r
+      });
+    } catch (e) {
+      logger.error(e);
+      res.send({
+        success: false,
+        message: e.message
+      });
+    }
+  };
+
   async modify (req, res) {
     const options = req.body;
     try {

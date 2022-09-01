@@ -12,5 +12,9 @@ export default {
   delete: async (id) => {
     const url = '/api/rss/delete';
     return await post(url, { id });
+  },
+  delRecord: async (body) => {
+    const url = '/api/rss/deleteRecord';
+    return await post(url, body);
   }
 };
