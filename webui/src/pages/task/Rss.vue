@@ -15,8 +15,7 @@
       </template>
       <template #bodyCell="{ column, record }">
         <template v-if="column.dataIndex === 'enable'">
-          <a-tag color="success" v-if="record.enable">启用</a-tag>
-          <a-tag color="error" v-if="!record.enable">禁用</a-tag>
+          <a-switch @change="enableTask(record)" v-model:checked="record.enable" checked-children="启用" un-checked-children="禁用"/>
         </template>
         <template v-if="column.dataIndex === 'clientArr'">
           {{ downloaders.filter(item => record.clientArr.indexOf(item.id) !== -1).map(item => item.alias).join(' / ') }}
@@ -409,6 +408,16 @@ export default {
     async modifyRss () {
       try {
         await this.$api().rss.modify({ ...this.rss });
+        this.$message().success((this.rss.id ? '编辑' : '新增') + '成功, 列表正在刷新...');
+        setTimeout(() => this.listRss(), 1000);
+        this.clearRss();
+      } catch (e) {
+        this.$message().error(e.message);
+      }
+    },
+    async enableTask (record) {
+      try {
+        await this.$api().rss.modify({ ...record });
         this.$message().success((this.rss.id ? '编辑' : '新增') + '成功, 列表正在刷新...');
         setTimeout(() => this.listRss(), 1000);
         this.clearRss();
