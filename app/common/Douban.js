@@ -701,7 +701,13 @@ class Douban {
     const episodeTypeC = (subtitle.match(/[第全E]\d[^\d帧部季Kk]/g) || []).map(item => item.match(/\d/g)).flat() || [];
     const episodeTypeD = ((subtitle.match(/全[一二三四五六七八九十]集/g) || []).map(item => item.match(/[一二三四五六七八九十]/g)).flat() || []).map(item => episodeMap[item]);
     const episodeTypeE = ((subtitle.match(/[^\d][第全][一二三四五六七八九十][集期话]/g) || []).map(item => item.match(/[一二三四五六七八九十]/g)).flat() || []).map(item => episodeMap[item]);
-    const episodes = episodeTypeA.concat(episodeTypeB).concat(episodeTypeC).concat(episodeTypeD).concat(episodeTypeE);
+    let episodes = episodeTypeA.concat(episodeTypeB).concat(episodeTypeC).concat(episodeTypeD).concat(episodeTypeE);
+    if (subtitle.match(/[集期] *[上]/) && !subtitle.match(/[集期] *上[中 +]*下/)) {
+      episodes = episodes.map(item => item - 0.5);
+    }
+    if (subtitle.match(/[集期] *[中]/)) {
+      episodes = episodes.map(item => item - 0.25);
+    }
     return episodes;
   };
 
