@@ -37,7 +37,7 @@ exports.addTorrent = async function (clientUrl, cookie, torrentUrl, isSkipChecki
       upLimit: uploadLimit,
       dlLimit: downloadLimit,
       firstLastPiecePrio: firstLastPiecePrio + '',
-      paused: paused || 'false'
+      paused: paused ? 'true' : 'false'
     }
   };
   if (savePath) {
@@ -67,7 +67,7 @@ exports.addTorrentByTorrentFile = async function (clientUrl, cookie, filepath, i
       upLimit: uploadLimit,
       dlLimit: downloadLimit,
       firstLastPiecePrio: firstLastPiecePrio + '',
-      paused: paused || 'false'
+      paused: paused ? 'true' : 'false'
     }
   };
   if (savePath) {
