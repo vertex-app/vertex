@@ -19,7 +19,7 @@
           <a-checkbox-group style="width: 100%;" v-model:value="qs.sites">
             <a-row>
               <a-col v-for="site of sites" :span="isMobile() ? 8 : 6" :key="site.name">
-                <a-checkbox  v-model:value="site.name">{{ site.name }}</a-checkbox>
+                <a-checkbox  v-model:value="site.name">{{ site.text }}</a-checkbox>
               </a-col>
             </a-row>
           </a-checkbox-group>
@@ -237,21 +237,32 @@ export default {
         return false;
       }
     },
-    async search () {
-      this.loading = true;
+    async searchSingleSite (site) {
       try {
-        const res = (await this.$api().site.search(this.qs.keyword, this.qs.sites)).data;
-        this.torrentsOri = res.map(item => [...item.torrentList.map(i => ({ ...i, site: item.site }))]).flat();
+        this.sites.filter(item => item.name === site)[0].text = site + ' 搜索中...';
+        const res = (await this.$api().site.search(this.qs.keyword, [site])).data;
+        this.torrentsOri = this.torrentsOri.concat(res.map(item => [...item.torrentList.map(i => ({ ...i, site: item.site }))]).flat());
         this.torrents = [...this.torrentsOri];
-        this.pagination.total = res.total;
+        this.pagination.total = this.torrents.length;
         sessionStorage.setItem('search-mix-torrents', JSON.stringify({
           torrents: this.torrents,
           keyword: this.keyword
         }));
+        this.loading = false;
+        this.sites.filter(item => item.name === site)[0].text = site + ` [${res[0].torrentList.length}]`;
       } catch (e) {
         await this.$message().error(e.message);
+        this.sites.filter(item => item.name === site)[0].text = site + ' 搜索失败';
+        this.loading = false;
       }
-      this.loading = false;
+    },
+    async search () {
+      this.loading = true;
+      this.torrentsOri = [];
+      this.torrents = [];
+      for (const site of this.qs.sites) {
+        this.searchSingleSite(site);
+      }
     },
     async push () {
       try {
@@ -271,7 +282,7 @@ export default {
     async listSite () {
       try {
         const res = await this.$api().site.list();
-        this.sites = res.data.siteList.filter(item => this.supportSite.indexOf(item.name) !== -1);
+        this.sites = res.data.siteList.filter(item => this.supportSite.indexOf(item.name) !== -1).map(item => ({ ...item, text: item.name }));
         this.qs.sites = this.sites.map(item => item.name);
         this.columns[0].filters = this.qs.sites.map(item => ({ text: item, value: item }));
       } catch (e) {
