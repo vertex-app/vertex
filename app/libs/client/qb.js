@@ -118,6 +118,28 @@ exports.reannounceTorrent = async (clientUrl, cookie, hash) => {
   return res;
 };
 
+exports.resumeTorrent = async (clientUrl, cookie, hash) => {
+  const message = {
+    url: clientUrl + `/api/v2/torrents/resume?hashes=${hash}`,
+    headers: {
+      cookie
+    }
+  };
+  const res = await util.requestPromise(message);
+  return res;
+};
+
+exports.pauseTorrent = async (clientUrl, cookie, hash) => {
+  const message = {
+    url: clientUrl + `/api/v2/torrents/pause?hashes=${hash}`,
+    headers: {
+      cookie
+    }
+  };
+  const res = await util.requestPromise(message);
+  return res;
+};
+
 exports.getTrackerList = async (clientUrl, cookie, hash) => {
   const message = {
     url: clientUrl + `/api/v2/torrents/trackers?hash=${hash}`,

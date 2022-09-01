@@ -1,5 +1,5 @@
 <template>
-  <div style="font-size: 24px; font-weight: bold;">关于</div>
+  <div style="font-size: 24px; font-weight: bold;">日志</div>
   <a-divider></a-divider>
   <div class="log">
     <div style="text-align: left; margin: 24px">
@@ -14,7 +14,7 @@
         <a-form-item
           label="日志等级"
           name="type">
-          <a-select size="small" v-model:value="type"  >
+          <a-select size="small" v-model:value="type" @change="getLog">
             <a-select-option value="info">信息</a-select-option>
             <a-select-option value="binge">豆瓣</a-select-option>
             <a-select-option value="binge-debug">豆瓣调试</a-select-option>
@@ -22,6 +22,8 @@
             <a-select-option value="advanced-debug">超级模式调试</a-select-option>
             <a-select-option value="watch">监控分类</a-select-option>
             <a-select-option value="watch-debug">监控分类调试</a-select-option>
+            <a-select-option value="sc">定时脚本</a-select-option>
+            <a-select-option value="sc-debug">定时脚本调试</a-select-option>
             <a-select-option value="error">错误</a-select-option>
             <a-select-option value="debug">调试</a-select-option>
             <a-select-option value="access">跟踪</a-select-option>

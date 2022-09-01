@@ -552,5 +552,17 @@ class Client {
       await this.client.setFilePriority(this.clientUrl, this.cookie, hash, id, priority);
     }
   }
+
+  async resumeTorrent (hash) {
+    if (this._client.type === 'qBittorrent') {
+      await this.client.resumeTorrent(this.clientUrl, this.cookie, hash);
+    }
+  }
+
+  async pauseTorrent (hash) {
+    if (this._client.type === 'qBittorrent') {
+      await this.client.pauseTorrent(this.clientUrl, this.cookie, hash);
+    }
+  }
 }
 module.exports = Client;

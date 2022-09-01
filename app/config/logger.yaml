@@ -1,20 +1,26 @@
 levels:
   watch: 
-    value: 20006
+    value: 20008
     colour: white
   watchdebug: 
-    value: 20005
+    value: 20007
     colour: white
   binge: 
-    value: 20004
+    value: 20006
     colour: white
+  bingedebug: 
+    value: 20005
+    colour: cyan
   advanceddebug: 
-    value: 20003
+    value: 20004
     colour: cyan
   advanced: 
+    value: 20003
+    colour: cyan
+  scdebug: 
     value: 20002
     colour: cyan
-  bingedebug: 
+  sc: 
     value: 20001
     colour: cyan
 
@@ -41,15 +47,6 @@ appenders:
   info:
     type: dateFile
     filename: logs/app-info.log
-    pattern: yyyy-MM-dd
-    compress: true
-    numBackups: 30
-    layout:
-      type: pattern
-      pattern: '[%d{ISO8601}][%p %c] %z (%f{3} %l:%o) %m'
-  binge:
-    type: dateFile
-    filename: logs/app-binge.log
     pattern: yyyy-MM-dd
     compress: true
     numBackups: 30
@@ -92,9 +89,36 @@ appenders:
     layout:
       type: pattern
       pattern: '[%d{ISO8601}][%p %c] %z (%f{3} %l:%o) %m'
+  binge:
+    type: dateFile
+    filename: logs/app-binge.log
+    pattern: yyyy-MM-dd
+    compress: true
+    numBackups: 30
+    layout:
+      type: pattern
+      pattern: '[%d{ISO8601}][%p %c] %z (%f{3} %l:%o) %m'
   bingedebug:
     type: dateFile
     filename: logs/app-binge-debug.log
+    pattern: yyyy-MM-dd
+    compress: true
+    numBackups: 30
+    layout:
+      type: pattern
+      pattern: '[%d{ISO8601}][%p %c] %z (%f{3} %l:%o) %m'
+  sc:
+    type: dateFile
+    filename: logs/app-sc.log
+    pattern: yyyy-MM-dd
+    compress: true
+    numBackups: 30
+    layout:
+      type: pattern
+      pattern: '[%d{ISO8601}][%p %c] %z (%f{3} %l:%o) %m'
+  scdebug:
+    type: dateFile
+    filename: logs/app-sc-debug.log
     pattern: yyyy-MM-dd
     compress: true
     numBackups: 30
@@ -115,11 +139,6 @@ appenders:
     appender: info
     level: info
     maxLevel: info
-  bingeFilter:
-    type: logLevelFilter
-    appender: binge
-    level: binge
-    maxLevel: binge
   advancedFilter:
     type: logLevelFilter
     appender: advanced
@@ -140,11 +159,26 @@ appenders:
     appender: watchdebug
     level: watchdebug
     maxLevel: watchdebug
+  bingeFilter:
+    type: logLevelFilter
+    appender: binge
+    level: binge
+    maxLevel: binge
   bingedebugFilter:
     type: logLevelFilter
     appender: bingedebug
     level: bingedebug
     maxLevel: bingedebug
+  scFilter:
+    type: logLevelFilter
+    appender: sc
+    level: sc
+    maxLevel: sc
+  scdebugFilter:
+    type: logLevelFilter
+    appender: scdebug
+    level: scdebug
+    maxLevel: scdebug
   debugFilter:
     type: logLevelFilter
     appender: debug
@@ -178,4 +212,6 @@ categories:
       - advanceddebugFilter
       - watchFilter
       - watchdebugFilter
+      - scFilter
+      - scdebugFilter
     level: info
