@@ -14,8 +14,17 @@
         autocomplete="off"
         :class="`container-form-${ isMobile() ? 'mobile' : 'pc' }`">
         <a-form-item
+          label="订阅任务"
+          name="doubanId"
+          :rules="[{ required: true, message: '${label}不可为空! ' }]">
+          <a-select size="small" v-model:value="item.doubanId">
+            <a-select-option v-for="subscribe of subscribes" v-model:value="subscribe.id" :key="subscribe.id">{{ subscribe.alias }}</a-select-option>
+          </a-select>
+        </a-form-item>
+        <a-form-item
           label="影视剧名"
           name="name"
+          extra="添加完成后不会自动启动任务, 需要手动在订阅列表编辑一次, 或重启 Vertex 才启动追剧任务"
           :rules="[{ required: true, message: '${label}不可为空! ' }]">
           <a-input size="small" v-model:value="item.name"/>
         </a-form-item>
@@ -23,7 +32,9 @@
           label="标签"
           name="tag"
           :rules="[{ required: true, message: '${label}不可为空! ' }]">
-          <a-input size="small" v-model:value="item.tag"/>
+          <a-select v-if="item.doubanId" size="small" v-model:value="item.tag">
+            <a-select-option v-for="category of subscribes.filter(i => i.id === item.doubanId)[0].categories" v-model:value="category.doubanTag" :key="category.doubanTag">{{ category.doubanTag }}</a-select-option>
+          </a-select>
         </a-form-item>
         <a-form-item
           label="年份"
@@ -34,12 +45,14 @@
         <a-form-item
           label="上映日期"
           name="releaseAt"
-          extra="格式为 2022-06-03">
+          extra="格式为 2022-06-03, 若确认已上映, 可随意填写过去时间"
+          :rules="[{ required: true, message: '${label}不可为空! ' }]">
           <a-input size="small" v-model:value="item.releaseAt"/>
         </a-form-item>
         <a-form-item
           label="总集数"
-          name="episodes">
+          name="episodes"
+          extra="电影类资源务必留空">
           <a-input size="small" v-model:value="item.episodes"/>
         </a-form-item>
         <a-form-item
@@ -119,7 +132,24 @@
 export default {
   data () {
     return {
-      item: {}
+      item: {
+        name: '',
+        tag: '',
+        year: '',
+        releaseAt: '',
+        episodes: '',
+        episodeNow: '',
+        downloaded: false,
+        searchKey: '',
+        rejectKeys: '',
+        fixedSeason: '',
+        episodeOffset: '',
+        restrictYear: false,
+        rejectCompleteTorrent: false,
+        ignoreEpisodes: false,
+        cancelLink: false
+      },
+      subscribes: []
     };
   },
   methods: {
@@ -132,16 +162,24 @@ export default {
     },
     async editItem () {
       try {
-        await this.$api().subscribe.editItem(this.item);
-        await this.$message().success('新增成功!');
+        const res = await this.$api().subscribe.editItem(this.item);
+        await this.$message().success(res.message);
         this.$goto('/subscribe/list', this.$router);
       } catch (e) {
         await this.$message().error(e.message);
       }
+    },
+    async listSubscribe () {
+      try {
+        const res = await this.$api().subscribe.list();
+        this.subscribes = res.data;
+      } catch (e) {
+        this.$message().error(e.message);
+      }
     }
   },
   async mounted () {
-    await this.getItem();
+    await this.listSubscribe();
   }
 };
 </script>

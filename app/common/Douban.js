@@ -227,6 +227,29 @@ class Douban {
   }
 
   updateWish (wish) {
+    if (!wish.id) {
+      let newWish = {
+        name: '影视剧名',
+        link: 'https://wiki.vertex.icu',
+        poster: 'https://pic.lswl.in/images/2022/07/10/5ae104f82f39eb4059861393ef24d440.png',
+        id: util.uuid.v4(),
+        rating: {
+          result: '0',
+          votes: '0'
+        },
+        area: '',
+        language: '',
+        category: '',
+        desc: '',
+        mainCreator: '',
+        releaseAt: '',
+        searchKey: ''
+      };
+      newWish = Object.assign(newWish, wish);
+      this.wishes.push(newWish);
+      this._saveSet();
+      return true;
+    }
     for (const [index, value] of this.wishes.entries()) {
       if (wish.id === value.id) {
         if (this.refreshWishJobs[wish.id]) {
