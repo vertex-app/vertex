@@ -1,5 +1,5 @@
 <template>
-  <div style="font-size: 24px; font-weight: bold;">修改 HOSTS</div>
+  <div style="font-size: 24px; font-weight: bold;">HTTP 代理</div>
   <a-divider></a-divider>
   <div class="hosts">
     <div style="text-align: left; ">

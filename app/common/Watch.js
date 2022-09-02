@@ -52,7 +52,10 @@ class Watch {
       if (!this.torrents[torrent.hash]) {
         logger.watch('检测到新种子', torrent.name, '已完成, 开始识别');
         try {
-          const forceScrape = this.forceScrape.filter(item => torrent.name.indexOf(item.keyword) !== -1)[0];
+          const forceScrape = this.forceScrape.filter(item => {
+            return torrent.name.indexOf(item.keyword) !== -1 ||
+            (item.keyword.indexOf('REGEXP:') === 0 && torrent.name.match(new RegExp(item.keyword.replace('REGEXP:', ''))));
+          })[0];
           let _name;
           let _season;
           if (forceScrape) {
@@ -62,21 +65,33 @@ class Watch {
           if (_season === '') {
             _season = false;
           }
-          const { name, year, type } = await util.scrapeNameByFile(_name || torrent.name, this.type === 'series' ? 'tv' : this.type ? 'movie' : '', true);
-          torrent.scrapedName = name;
-          torrent.year = year;
-          torrent.type = type === 'tv' ? 'series' : type === 'movie' ? 'movie' : this.type;
-          if (!name || !year) {
-            logger.error(`${torrent.name} 识别失败: ${name}.${year} ${torrent.type}, ${this.linkMode === 'keepStruct-3' ? '保留目录结构执行链接' : ''}`);
+          let name;
+          let year;
+          let type;
+          if (forceScrape.keyword.indexOf('REGEXP:') === 0) {
+            name = (torrent.name.match(new RegExp(forceScrape.keyword.replace('REGEXP:', ''))))[1];
+            type = this.type;
+            year = '';
+          } else {
+            const scrapeRes = await util.scrapeNameByFile(_name || torrent.name, this.type === 'series' ? 'tv' : this.type ? 'movie' : '', true);
+            name = scrapeRes;
+            year = scrapeRes;
+            type = scrapeRes;
+            torrent.scrapedName = name;
+            torrent.year = year;
+            torrent.type = type === 'tv' ? 'series' : type === 'movie' ? 'movie' : this.type;
+          }
+          if (!name) {
+            logger.error(`${torrent.name} 识别失败: ${name}.${year}, ${this.linkMode === 'keepStruct-3' ? '保留目录结构执行链接' : ''}`);
             this.ntf.scrapeTorrentFailed(this.alias, torrent.name);
             if (this.linkMode === 'keepStruct-3') {
               await this._linkTorrentFilesKeepStruct(torrent, this.downloader);
             }
           } else {
-            this.ntf.scrapeTorrent(this.alias, torrent.name, `${name}.${year} ${torrent.type}`);
-            logger.watch(`${torrent.name} 识别结果: ${name}.${year || ''} ${torrent.type}`);
+            this.ntf.scrapeTorrent(this.alias, torrent.name, `${name}.${year} ${type}`);
+            logger.watch(`${torrent.name} 识别结果: ${name}.${year || ''} / ${type === 'series' ? '剧集' : '电影'}`);
             if (this.linkMode === 'normal') {
-              await this._linkTorrentFiles(torrent, this.downloader, name, _season, year, torrent.type);
+              await this._linkTorrentFiles(torrent, this.downloader, name, _season, year, type);
             } else {
               await this._linkTorrentFilesKeepStruct(torrent, this.downloader, name);
             }
@@ -182,7 +197,10 @@ class Watch {
         if (linkRule.excludeKeys && linkRule.excludeKeys.split(',').some(item => file.name.indexOf(item) !== -1)) continue;
         const movieName = name;
         const filename = file.name;
-        const _year = year || (filename.match(/[. ](20\d\d)[. ]/) || filename.match(/[. ](19\d\d)[. ]/) || ['', ''])[1];
+        let _year = year || (filename.match(/[. ](20\d\d)[. ]/) || filename.match(/[. ](19\d\d)[. ]/) || ['', ''])[1];
+        if (_year) {
+          _year = `(${_year})`;
+        }
         const suffixKeys = [];
         const reservedKeys = (linkRule.reservedKeys || '').split(',');
         for (const key of reservedKeys) {
@@ -197,8 +215,8 @@ class Watch {
         }
         const fileExt = path.extname(filename);
         group = group.replace(fileExt, '');
-        const linkFilePath = path.join(linkRule.linkFilePath, this.libraryPath.split(':')[0], `${movieName}.${_year}`).replace(/'/g, '\\\'');
-        const linkFile = path.join(linkFilePath, `${movieName}.${_year}${suffix + group}${fileExt}`).replace(/'/g, '\\\'');
+        const linkFilePath = path.join(linkRule.linkFilePath, this.libraryPath.split(':')[0], `${movieName}${_year}`).replace(/'/g, '\\\'');
+        const linkFile = path.join(linkFilePath, `${movieName}${_year}${suffix + group}${fileExt}`).replace(/'/g, '\\\'');
         const targetFile = path.join(torrent.savePath.replace(linkRule.targetPath.split('##')[0], linkRule.targetPath.split('##')[1]), file.name).replace(/'/g, '\\\'');
         const linkMode = linkRule.hardlink ? 'f' : 'sf';
         const command = `${linkRule.umask ? 'umask ' + linkRule.umask + ' && ' : ''}mkdir -p $'${linkFilePath}' && ln -${linkMode} $'${targetFile}' $'${linkFile}'`;
