@@ -118,6 +118,18 @@
           </a-select>
         </a-form-item>
         <a-form-item
+          label="链接模式"
+          name="linkMode"
+          :rules="[{ required: true, message: '${label}不可为空! ' }]"
+          extra="链接模式">
+          <a-select size="small" v-model:value="watch.linkMode">
+            <a-select-option value="normal">正常模式</a-select-option>
+            <a-select-option value="keepStruct-1">保留目录结构并添加顶层文件夹</a-select-option>
+            <a-select-option value="keepStruct-2">保留目录结构并替换顶层文件夹</a-select-option>
+            <a-select-option value="keepStruct-3">保留目录结构并不修改顶层文件夹</a-select-option>
+          </a-select>
+        </a-form-item>
+        <a-form-item
           label="强制识别"
           name="forceScrape">
           <a-table

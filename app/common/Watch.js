@@ -18,6 +18,7 @@ class Watch {
     this.ntf = new Push(this.notify);
     this.libraryPath = watch.libraryPath;
     this.downloader = watch.downloader;
+    this.linkMode = watch.linkMode;
     this.forceScrape = watch.forceScrape || [];
     this.torrents = util.listWatchSet().filter(item => item.id === this.id)[0]?.torrents || {};
     this._saveSet();
@@ -66,12 +67,19 @@ class Watch {
           torrent.year = year;
           torrent.type = type === 'tv' ? 'series' : type === 'movie' ? 'movie' : this.type;
           if (!name || !year) {
-            logger.error(`${torrent.name} 识别失败: ${name}.${year} ${torrent.type}`);
+            logger.error(`${torrent.name} 识别失败: ${name}.${year} ${torrent.type}, ${this.linkMode === 'keepStruct-3' ? '保留目录结构执行链接' : ''}`);
             this.ntf.scrapeTorrentFailed(this.alias, torrent.name);
+            if (this.linkMode === 'keepStruct-3') {
+              await this._linkTorrentFilesKeepStruct(torrent, this.downloader);
+            }
           } else {
             this.ntf.scrapeTorrent(this.alias, torrent.name, `${name}.${year} ${torrent.type}`);
             logger.watch(`${torrent.name} 识别结果: ${name}.${year || ''} ${torrent.type}`);
-            await this._linkTorrentFiles(torrent, this.downloader, name, _season, year, torrent.type);
+            if (this.linkMode === 'normal') {
+              await this._linkTorrentFiles(torrent, this.downloader, name, _season, year, torrent.type);
+            } else {
+              await this._linkTorrentFilesKeepStruct(torrent, this.downloader, name);
+            }
           }
           this.torrents[torrent.hash] = {
             name: torrent.name,
@@ -189,7 +197,7 @@ class Watch {
         }
         const fileExt = path.extname(filename);
         group = group.replace(fileExt, '');
-        const linkFilePath = path.join(linkRule.linkFilePath, this.libraryPath.split(':')[1], `${movieName}.${_year}`).replace(/'/g, '\\\'');
+        const linkFilePath = path.join(linkRule.linkFilePath, this.libraryPath.split(':')[0], `${movieName}.${_year}`).replace(/'/g, '\\\'');
         const linkFile = path.join(linkFilePath, `${movieName}.${_year}${suffix + group}${fileExt}`).replace(/'/g, '\\\'');
         const targetFile = path.join(torrent.savePath.replace(linkRule.targetPath.split('##')[0], linkRule.targetPath.split('##')[1]), file.name).replace(/'/g, '\\\'');
         const linkMode = linkRule.hardlink ? 'f' : 'sf';
@@ -204,6 +212,60 @@ class Watch {
     }
     try {
       await global.runningClient[client].addTorrentTag(torrent.hash, '已链接-' + name.replace(/ /g, '-'));
+    } catch (e) {
+      logger.error('添加种子标签失败', e);
+    }
+  }
+
+  async _linkTorrentFilesKeepStruct (torrent, client, name) {
+    const replaceTopDir = this.linkMode === 'keepStruct-2';
+    const keepTopDir = this.linkMode === 'keepStruct-3';
+    const hash = torrent.hash;
+    const savePath = torrent.savePath;
+    const libraryPath = this.libraryPath.split(':')[this.type === 'movie' ? 0 : 1];
+    const _linkRule = util.listLinkRule().filter(item => item.id === this.linkRule)[0];
+    const files = await global.runningClient[client].getFiles(hash);
+    const first = files[0].name;
+    let topDir = path.dirname(first);
+    const hasDir = topDir !== '.';
+    if (hasDir) {
+      let d = topDir;
+      while (d !== '.') {
+        topDir = d;
+        d = path.dirname(d);
+      }
+    }
+    const hasTopDir = files.every(item => item.name.indexOf(topDir) === 0);
+    if (!hasTopDir) {
+      topDir = false;
+    }
+    for (const file of files) {
+      const filename = path.basename(file.name);
+      if (file.size < _linkRule.minFileSize) continue;
+      if (_linkRule.excludeKeys && _linkRule.excludeKeys.split(',').some(item => filename.indexOf(item) !== -1)) continue;
+      const filePathname = path.join(savePath.replace(..._linkRule.targetPath.split('##')), file.name);
+      if (replaceTopDir) {
+        file._name = file.name.replace(topDir, '');
+      } else {
+        file._name = file.name;
+      }
+      const paths = [_linkRule.linkFilePath, libraryPath, name, path.dirname(file._name)];
+      const pathsKeepTopDir = [_linkRule.linkFilePath, libraryPath, path.dirname(file._name)];
+      const fileBasename = path.basename(filePathname);
+      const linkFilePath = path.join(...(keepTopDir ? pathsKeepTopDir : paths)).replace(/'/g, '\\\'');
+      const linkFile = path.join(linkFilePath, fileBasename).replace(/'/g, '\\\'');
+      const targetFile = filePathname.replace(/'/g, '\\\'');
+      const linkMode = _linkRule.hardlink ? 'f' : 'sf';
+      const command = `${_linkRule.umask ? 'umask ' + _linkRule.umask + ' && ' : ''}mkdir -p $'${linkFilePath}' && ln -${linkMode} $'${targetFile}' $'${linkFile}'`;
+      logger.binge('手动链接', '执行链接命令', command);
+      try {
+        await global.runningServer[_linkRule.server].run(command);
+      } catch (e) {
+        logger.error(e);
+      }
+    }
+    try {
+      await global.runningClient[client].addTorrentTag(hash, '已链接-' + name.split('/')[0].replace(/ /g, '-'));
     } catch (e) {
       logger.error('添加种子标签失败', e);
     }
