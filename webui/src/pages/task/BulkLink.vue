@@ -51,13 +51,6 @@
           </a-select>
         </a-form-item>
         <a-form-item
-          label="关键词"
-          name="keyword"
-          :rules="[{ required: true, message: '${label}不可为空! ' }]"
-          extra="分类或保存路径包含的关键词">
-          <a-input size="small" v-model:value="bulkLinkInfo.keyword"/>
-        </a-form-item>
-        <a-form-item
           label="链接模式"
           name="linkMode"
           :rules="[{ required: true, message: '${label}不可为空! ' }]"
@@ -68,6 +61,13 @@
             <a-select-option value="keepStruct-2">保留目录结构并替换顶层文件夹</a-select-option>
             <a-select-option value="keepStruct-3">保留目录结构并不修改顶层文件夹</a-select-option>
           </a-select>
+        </a-form-item>
+        <a-form-item
+          label="关键词"
+          name="keyword"
+          :rules="[{ required: true, message: '${label}不可为空! ' }]"
+          extra="分类或保存路径包含的关键词">
+          <a-input size="small" v-model:value="bulkLinkInfo.keyword"/>
         </a-form-item>
         <a-form-item
           :wrapperCol="isMobile() ? { span:24 } : { span: 21, offset: 3 }">

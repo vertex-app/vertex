@@ -63,6 +63,18 @@
           </a-select>
         </a-form-item>
         <a-form-item
+          label="链接模式"
+          name="linkMode"
+          :rules="[{ required: true, message: '${label}不可为空! ' }]"
+          extra="链接模式, 正常模式需要先 检查 之后 执行!">
+          <a-select size="small" v-model:value="linkInfo.linkMode">
+            <a-select-option value="normal">正常模式</a-select-option>
+            <a-select-option value="keepStruct-1">保留目录结构并添加顶层文件夹</a-select-option>
+            <a-select-option value="keepStruct-2">保留目录结构并替换顶层文件夹</a-select-option>
+            <a-select-option value="keepStruct-3">保留目录结构并不修改顶层文件夹</a-select-option>
+          </a-select>
+        </a-form-item>
+        <a-form-item
           label="影视剧名"
           name="mediaName"
           :rules="[{ required: true, message: '${label}不可为空! ' }]">
@@ -260,11 +272,15 @@ export default {
           ...this.linkInfo,
           hash: this.hash,
           client: this.torrentInfo.client,
-          savePath: this.torrentInfo.savePath
+          savePath: this.torrentInfo.savePath,
+          keepStruct: this.linkInfo.linkMode !== 'normal',
+          replaceTopDir: this.linkInfo.linkMode === 'keepStruct-2',
+          keepTopDir: this.linkInfo.linkMode === 'keepStruct-3'
         };
-        if (type === 'dryrun' || !type) {
+        if (type === 'dryrun') {
           requestBody.dryrun = true;
-        } else if (type === 'link') {
+        }
+        if (type === 'link' && this.linkInfo.linkMode === 'normal') {
           requestBody.files = this.fileList.filter(item => item.episode !== -999).map(item => {
             return {
               season: item.season,
@@ -274,9 +290,6 @@ export default {
               linkFile: item.newLinkFile || item.linkFile
             };
           });
-        } else if (type === 'keepStructLink') {
-          requestBody.keepStruct = true;
-          requestBody.replaceTopDir = true;
         }
         const res = await this.$api().torrent.link(requestBody);
         if (type !== 'dryrun' && type !== undefined) {
