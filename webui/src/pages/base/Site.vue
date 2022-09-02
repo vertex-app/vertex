@@ -184,7 +184,7 @@ export default {
         'SpringSunDay', 'MTeam', 'OpenCD', 'U2', 'BeiTai',
         'TCCF', 'TLFBits', 'PTMSG', 'HDFans', 'DICMusic', 'GPW',
         'BTSchool', 'TJUPT', 'ToTheGlory', 'KeepFriends', 'HDDolby',
-        'HDArea', 'SoulVoice', 'PTHome', 'NYPT', 'CHDBits'].sort(),
+        'HDArea', 'SoulVoice', 'PTHome', 'NYPT', 'CHDBits', 'PIGGO'].sort(),
       siteInfo: {},
       displayAll: true,
       loading: true,

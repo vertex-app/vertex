@@ -63,6 +63,8 @@
           <a @click="gotoDetail(record)">{{ record.title }}</a>
           <br>
           <span style="font-size: 12px;">{{ record.subtitle }}</span><a style="font-size: 12px;" @click="gotoDetail(record, true)">[代理打开]</a>
+          <br>
+          <span style="font-size: 12px; color: red;">{{ record.tags.map(item => `[${item}]`).join('') }}</span>
         </template>
         <template v-if="column.dataIndex === 'seeder'">
           {{[record.seeders, record.leechers, record.snatches].join(' / ')}}
@@ -213,7 +215,7 @@ export default {
         'HaresClub', 'LemonHD', 'MTeam', 'HDSky', 'OurBits',
         'HDHome', 'PTerClub', 'BTSchool', 'TJUPT', 'KeepFriends',
         'SpringSunDay', 'ToTheGlory', 'HDChina', 'Audiences', 'PTHome',
-        'HDDolby', 'HDArea', 'SoulVoice', 'NYPT', 'U2', 'CHDBits'
+        'HDDolby', 'HDArea', 'SoulVoice', 'NYPT', 'U2', 'CHDBits', 'PIGGO'
       ],
       torrents: [],
       torrentsOri: [],
