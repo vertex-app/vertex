@@ -26,9 +26,9 @@
           </div>
           <div class="data-rect-1" style="background: #eff;">
             <div style="font-size: 14px; font-weight: bold;">
-              <div>今日删除</div>
+              <div>今日拒绝</div>
               <div>REJECT</div>
-              <div style="margin: initial; font-size: 18px;">{{runInfo.deleteCountToday}}</div>
+              <div style="margin: initial; font-size: 18px;">{{runInfo.rejectCountToday}}</div>
             </div>
           </div>
         </div>
@@ -56,9 +56,9 @@
           </div>
           <div class="data-rect-1" style="background: #eff;">
             <div style="font-size: 14px; font-weight: bold;">
-              <div>累计删除</div>
+              <div>累计拒绝</div>
               <div>REJECT</div>
-              <div style="margin: initial; font-size: 18px;">{{runInfo.deleteCount}}</div>
+              <div style="margin: initial; font-size: 18px;">{{runInfo.rejectCount}}</div>
             </div>
           </div>
         </div>

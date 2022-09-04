@@ -30,6 +30,7 @@ const _freeOpencd = async function (url, cookie) {
   return state && ['pro_free', 'pro_free2up'].indexOf(state.className) !== -1;
 };
 
+// eslint-disable-next-line no-unused-vars
 const _freeHDChina = async function (url, cookie) {
   const d = await getDocument(url, cookie);
   if (d.body.innerHTML.indexOf('userdetails') === -1) {
@@ -107,6 +108,7 @@ const freeWrapper = {
   'www.nicept.net': _free,
   'kp.m-team.cc': _free,
   'discfan.net': _free,
+  'piggo.me': _free,
   'open.cd': _freeOpencd,
   'www.open.cd': _freeOpencd,
   'totheglory.im': _freeToTheGlory,
@@ -146,6 +148,7 @@ const hrWrapper = {
   'www.hddolby.com': _hr,
   'hdhome.org': _hr,
   'ourbits.club': _hr,
+  'piggo.me': _hr,
   'totheglory.im': _hrToTheGlory,
   'chdbits.co': _hrToCHDBits
 };

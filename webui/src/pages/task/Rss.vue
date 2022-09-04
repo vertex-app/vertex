@@ -400,7 +400,7 @@ export default {
     async listDownloader () {
       try {
         const res = await this.$api().downloader.list();
-        this.downloaders = res.data;
+        this.downloaders = res.data.sort((a, b) => a.alias.localeCompare(b.alias));
       } catch (e) {
         this.$message().error(e.message);
       }

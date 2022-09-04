@@ -91,7 +91,8 @@ const siteProxy = function (req, res, next) {
   const site = siteList.filter(item => item.name === siteId)[0];
   if (!site || !global.runningSite[siteId] || !global.runningSite[siteId].siteUrl) {
     res.status(404);
-    res.end('暂不支持 ' + 'siteId' + ' 代理登录, 请直接打开');
+    res.setHeader('Content-Type', 'text/html; charset=utf-8;');
+    res.end('暂不支持 ' + siteId + ' 代理登录, 请直接使用站点网址打开。');
     return;
   }
   const siteUrl = global.runningSite[siteId].siteUrl;

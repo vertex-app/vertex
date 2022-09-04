@@ -215,7 +215,7 @@ export default {
         'HaresClub', 'LemonHD', 'MTeam', 'HDSky', 'OurBits',
         'HDHome', 'PTerClub', 'BTSchool', 'TJUPT', 'KeepFriends',
         'SpringSunDay', 'ToTheGlory', 'HDChina', 'Audiences', 'PTHome',
-        'HDDolby', 'HDArea', 'SoulVoice', 'NYPT', 'U2', 'CHDBits', 'PIGGO'
+        'HDDolby', 'HDArea', 'SoulVoice', 'NYPT', 'U2', 'CHDBits', 'PIGGO', 'BeiTai'
       ],
       torrents: [],
       torrentsOri: [],
