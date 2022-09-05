@@ -179,12 +179,7 @@ export default {
         pullRemoteTorrent: false
       },
       site: {},
-      sites: ['HaresClub', 'LemonHD', 'HDChina',
-        'HDSky', 'HDHome', 'PTerClub', 'Audiences', 'OurBits',
-        'SpringSunDay', 'MTeam', 'OpenCD', 'U2', 'BeiTai',
-        'TCCF', 'TLFBits', 'PTMSG', 'HDFans', 'DICMusic', 'GPW',
-        'BTSchool', 'TJUPT', 'ToTheGlory', 'KeepFriends', 'HDDolby',
-        'HDArea', 'SoulVoice', 'PTHome', 'NYPT', 'CHDBits', 'PIGGO'].sort(),
+      sites: [],
       siteInfo: {},
       displayAll: true,
       loading: true,
@@ -204,6 +199,14 @@ export default {
         const res = await this.$api().site.list();
         this.siteInfo = res;
         this.loadSite();
+      } catch (e) {
+        this.$message().error(e.message);
+      }
+    },
+    async listSupportSite () {
+      try {
+        const res = await this.$api().site.listSite({ support: 1 });
+        this.sites = res.data.sort();
       } catch (e) {
         this.$message().error(e.message);
       }
@@ -262,6 +265,7 @@ export default {
   },
   async mounted () {
     this.site = { ...this.defaultSite };
+    await this.listSupportSite();
     await this.listSite();
   }
 };

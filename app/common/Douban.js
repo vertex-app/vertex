@@ -917,7 +917,7 @@ class Douban {
                   logdebug(this.alias, '选种规则', rulesName, '种子', `[${torrent.site}]`, torrent.title, '/', torrent.subtitle, '匹配成功, 已完成至', wish.episodeNow, '判断结果为已下载, 跳过');
                   continue;
                 }
-                if (episodes.every(item => +item > wish.episodeNow + 1) && !(episodes.length === 1 && +episodes[0] === wish.episodes && _subtitle.match(/[全共]\d+[集期话]/))) {
+                if (episodes.every(item => +item > wish.episodeNow + 1) && !(episodes.length === 1 && +episodes[0] === +wish.episodes && _subtitle.match(/[全共]\d+[集期话]/))) {
                   logdebug(this.alias, '选种规则', rulesName, '种子', `[${torrent.site}]`, torrent.title, '/', torrent.subtitle, '匹配成功, 已完成至', wish.episodeNow, '剧集跨度过大, 跳过');
                   continue;
                 }

@@ -37,7 +37,11 @@
           :rules="[{ required: true, message: '${label}不可为空! ' }]">
           <a-input size="small" v-model:value="qs.keyword" style="width: 240px"/>
           <a-button size="small" type="primary" style="margin-left: 24px;" html-type="submit">搜索</a-button>
-          <a-button size="small" type="primary" style="margin-left: 24px;" @click="refreshSubscribe(qs.subscribe)" :disabled="refreshed || !isAdded">刷新想看列表</a-button>
+          <a-button size="small" v-if="!isMobile()" type="primary" style="margin-left: 24px;" @click="refreshSubscribe(qs.subscribe)" :disabled="refreshed || !isAdded">刷新想看列表</a-button>
+        </a-form-item>
+        <a-form-item
+          v-if="isMobile()">
+          <a-button size="small" type="primary" @click="refreshSubscribe(qs.subscribe)" :disabled="refreshed || !isAdded">刷新想看列表</a-button>
         </a-form-item>
       </a-form>
     </div>
@@ -187,7 +191,7 @@ export default {
       } catch (e) {
         this.$message().error(e.message);
       }
-    },
+    }
   },
   async mounted () {
     await this.listSubscribe();

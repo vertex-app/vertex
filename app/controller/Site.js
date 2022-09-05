@@ -139,5 +139,22 @@ class Site {
       });
     }
   };
+
+  async listSite (req, res) {
+    const options = req.query;
+    try {
+      const r = await siteMod.listSite(options);
+      res.send({
+        success: true,
+        data: r
+      });
+    } catch (e) {
+      logger.error(e);
+      res.send({
+        success: false,
+        message: e.message
+      });
+    }
+  };
 }
 module.exports = Site;

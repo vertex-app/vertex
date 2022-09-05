@@ -28,5 +28,10 @@ export default {
   pushTorrent: async (body) => {
     const url = '/api/site/pushTorrent';
     return await post(url, body);
+  },
+  listSite: async (qs) => {
+    const qsString = Object.keys(qs).filter(item => qs[item]).map(item => `${item}=${encodeURIComponent(qs[item])}`).join('&');
+    const url = `/api/site/listSite?${qsString}`;
+    return await get(url);
   }
 };

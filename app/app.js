@@ -16,6 +16,7 @@ const Site = require('./common/Site');
 const Watch = require('./common/Watch');
 const IRC = require('./common/IRC');
 
+const sites = require('./libs/site');
 const logger = require('./libs/logger');
 const util = require('./libs/util');
 const config = require('./libs/config');
@@ -51,6 +52,7 @@ const init = function () {
 
   global.CONFIG = config;
   global.LOGGER = logger;
+  global.SITE = sites;
   const setting = JSON.parse(fs.readFileSync(path.join(__dirname, './data/setting.json')));
   if (!setting.password) {
     const password = util.uuid.v4();

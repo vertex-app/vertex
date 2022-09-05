@@ -480,6 +480,7 @@ const _getMikanProjectTorrents = async function (rssUrl) {
   const rss = await parseXml(await _getRssContent(rssUrl));
   const torrents = [];
   const items = rss.rss.channel[0].item;
+  if (!items) return [];
   for (let i = 0; i < items.length; ++i) {
     const torrent = {
       size: 0,

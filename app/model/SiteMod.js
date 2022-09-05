@@ -162,6 +162,17 @@ class SiteMod {
     const result = await global.runningSite[options.site].pushTorrentById(options.id, options.link, options.downloadLink, options.client, options.savePath, options.category, options.autoTMM, 4, '种子推送');
     return result;
   }
+
+  async listSite (options) {
+    if (options.support) {
+      return Object.keys(global.SITE.getInfoWrapper);
+    }
+    const siteList = util.listSite();
+    if (options.search) {
+      return siteList.filter(item => global.SITE.searchTorrentWrapper[item.name]).map(item => item.name);
+    }
+    return siteList.map(item => item.name);
+  }
 }
 
 module.exports = SiteMod;

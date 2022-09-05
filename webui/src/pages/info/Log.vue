@@ -34,6 +34,10 @@
           <a-button size="small" type="primary" @click="getLog">查询</a-button>
         </a-form-item>
         <a-form-item
+          :wrapperCol="isMobile() ? { span:24 } : { span: 21, offset: 3 }">
+          <span style="color: red;">截图日志务必把版本: {{version.head}}/{{version.updateTime}} 带上, 并注意上方的日志等级以及日志的时间</span>
+        </a-form-item>
+        <a-form-item
           label="日志">
           <a-textarea v-model:value="log" type="textarea" autoSize></a-textarea>
         </a-form-item>
@@ -46,7 +50,8 @@ export default {
   data () {
     return {
       type: 'error',
-      log: ''
+      log: '',
+      version: {}
     };
   },
   methods: {
@@ -69,6 +74,7 @@ export default {
     }
   },
   async mounted () {
+    this.version = process.env.version;
     this.getLog();
   }
 };
