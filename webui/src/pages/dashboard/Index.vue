@@ -68,7 +68,10 @@
           </div>
         </div>
         -->
-        <div style="margin: 24px auto; text-align: center; max-width: 1440px;">
+        <div
+          style="margin: 24px auto; text-align: center; max-width: 1440px;"
+          v-if="runInfo.dashboardContent.filter(item => item === 'downloader')[0]"
+          >
           <template v-for="(downloader, index ) in downloaders" :key="downloader.id">
             <div
               v-if="index === 0"
@@ -98,7 +101,10 @@
             </div>
           </template>
         </div>
-        <div style="margin: 24px auto; text-align: center; max-width: 1440px;">
+        <div
+          style="margin: 24px auto; text-align: center; max-width: 1440px;"
+          v-if="runInfo.dashboardContent.filter(item => item === 'server')[0]"
+          >
           <template v-for="(server, index ) in servers" :key="server.id">
             <div
               v-if="index === 0"
@@ -128,7 +134,10 @@
             </div>
           </template>
         </div>
-        <div style="margin: 24px auto; text-align: center; max-width: 1440px;">
+        <div
+          style="margin: 24px auto; text-align: center; max-width: 1440px;"
+          v-if="runInfo.dashboardContent.filter(item => item === 'tracker')[0]"
+          >
           <div :class="`data-rect-3-${isMobile() ? 'mobile': 'pc'}`" style="background: #eff; height: 400px;">
             <v-chart :option="trackerChart" autoresize/>
           </div>
@@ -183,11 +192,11 @@ export default {
         dataZoom: [
           {
             type: 'inside',
-            start: 90,
+            start: 0,
             end: 100
           },
           {
-            start: 90,
+            start: 0,
             end: 100
           }
         ],
@@ -286,7 +295,9 @@ export default {
           }
         ]
       },
-      runInfo: {},
+      runInfo: {
+        dashboardContent: []
+      },
       trackerInfo: {},
       servers: [],
       downloaders: [],
@@ -428,16 +439,28 @@ export default {
     }
   },
   async mounted () {
-    this.getRunInfo();
-    this.listDownloader();
-    this.listDownloaderInfo();
-    this.listTrackerHistory();
-    this.listServer();
-    this.getNetSpeed();
-    this.interval = setInterval(() => {
-      this.getNetSpeed();
-      this.getRunInfo();
+    await this.getRunInfo();
+    const downloader = !!this.runInfo.dashboardContent.filter(item => item === 'downloader')[0];
+    const server = !!this.runInfo.dashboardContent.filter(item => item === 'server')[0];
+    const tracker = !!this.runInfo.dashboardContent.filter(item => item === 'tracker')[0];
+    if (downloader) {
+      this.listDownloader();
       this.listDownloaderInfo();
+    }
+    if (server) {
+      this.listServer();
+      this.getNetSpeed();
+    }
+    if (tracker) {
+      this.listTrackerHistory();
+    }
+    this.interval = setInterval(() => {
+      if (downloader) {
+        this.listDownloaderInfo();
+      }
+      if (server) {
+        this.getNetSpeed();
+      }
     }, 3000);
   },
   beforeUnmount () {

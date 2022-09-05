@@ -56,6 +56,18 @@
           <a-input size="small" v-model:value="setting.jellyfinCover"/>
         </a-form-item>
         <a-form-item
+          label="首页显示内容"
+          name="dashboardContent"
+          extra="选择首页数据展示">
+          <a-checkbox-group style="width: 100%;" v-model:value="setting.dashboardContent">
+            <a-row>
+              <a-col v-for="type of contentType" :span="8" :key="type.key">
+                <a-checkbox v-model:value="type.key">{{ type.text }}</a-checkbox>
+              </a-col>
+            </a-row>
+          </a-checkbox-group>
+        </a-form-item>
+        <a-form-item
           :wrapperCol="isMobile() ? { span:24 } : { span: 21, offset: 3 }">
           <a-button type="primary" html-type="submit" style="margin-top: 24px; margin-bottom: 48px;">保存</a-button>
         </a-form-item>
@@ -67,7 +79,21 @@
 export default {
   data () {
     return {
-      setting: {}
+      setting: {
+        dashboardContent: []
+      },
+      contentType: [
+        {
+          key: 'downloader',
+          text: '客户端'
+        }, {
+          key: 'server',
+          text: '服务器'
+        }, {
+          key: 'tracker',
+          text: 'Tracker 统计'
+        }
+      ]
     };
   },
   methods: {
@@ -87,7 +113,8 @@ export default {
           wechatCover: s.wechatCover,
           embyCover: s.embyCover,
           plexCover: s.plexCover,
-          jellyfinCover: s.jellyfinCover
+          jellyfinCover: s.jellyfinCover,
+          dashboardContent: s.dashboardContent || []
         };
       } catch (e) {
         await this.$message().error(e.message);

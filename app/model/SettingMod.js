@@ -16,7 +16,7 @@ const torrentPushSettingPath = path.join(__dirname, '../data/setting/torrent-pus
 class SettingMod {
   get () {
     const settingStr = fs.readFileSync(settingPath, { encoding: 'utf-8' });
-    return { time: moment().unix(), ...JSON.parse(settingStr) };
+    return { time: moment().unix(), ...JSON.parse(settingStr), password: '' };
   };
 
   getBackground () {
@@ -53,6 +53,7 @@ class SettingMod {
     };
     global.webhookPushTo = options.webhookPushTo;
     global.menu = options.menu || [];
+    global.dashboardContent = options.dashboardContent || [];
     global.userAgent = options.userAgent;
     global.apiKey = options.apiKey;
     global.theme = options.theme;
@@ -156,6 +157,7 @@ class SettingMod {
       perTrackerToday.push({ tracker, ...perTrackerTodaySet[tracker] });
     }
     return {
+      dashboardContent: global.dashboardContent,
       uploaded: uploaded || 0,
       downloaded: downloaded || 0,
       uploadedToday: uploadedToday || 0,

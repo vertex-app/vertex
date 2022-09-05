@@ -944,6 +944,7 @@ class Douban {
                 this._setEpisodeNow(wish.id, maxEpisode);
               }
             } catch (e) {
+              logbinge(this.alias, '选种规则', rulesName, '种子', `[${torrent.site}]`, torrent.title, '/', torrent.subtitle, '推送至下载器', global.runningClient[this.client].alias, '失败, 报错如下:\n', e);
               logger.error(this.alias, '选种规则', rulesName, '种子', `[${torrent.site}]`, torrent.title, '/', torrent.subtitle, '推送至下载器', global.runningClient[this.client].alias, '失败, 报错如下:\n', e);
               await this.ntf.addDoubanTorrentError(global.runningClient[this.client], torrent, rule, wish);
               if (this.failedList[`${torrent.site}-${torrent.id}`]) {
