@@ -170,4 +170,4 @@ chown -R ${VUID}:${VGID} /vertex
 export PORT=`[ $PORT ] && echo $PORT || echo 3000`
 Xvfb -ac :99 -screen 0 1280x1024x16 &
 export DISPLAY=:99
-su - vt -p -c 'cd /app/vertex && node app/app.js > /dev/null'
+su vt -c 'cd /app/vertex && node app/app.js > /dev/null'

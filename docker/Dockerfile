@@ -4,7 +4,7 @@ LABEL build_from="https://gitlab.lswl.in/lswl/vertex"
 
 ENV TZ=Asia/Shanghai
 RUN \
-  apk add --no-cache shadow cmake redis bash git nodejs npm python3 make gcc libc-dev g++ tzdata && \
+  apk add --no-cache gcc g++ python3 git cmake make npm libc-dev && \
   git clone https://gitlab.lswl.in/lswl/vertex.git /app/vertex && \
   cd /app/vertex && \
   git checkout COMMIT_ID && \
