@@ -567,6 +567,32 @@ const _getLearnFlakesTorrents = async function (rssUrl) {
   return torrents;
 };
 
+const _getExoticaZTorrents = async function (rssUrl) {
+  const rss = await parseXml(await _getRssContent(rssUrl));
+  const torrents = [];
+  const items = rss.rss.channel[0].item;
+  for (let i = 0; i < items.length; ++i) {
+    const torrent = {
+      size: 0,
+      name: '',
+      hash: '',
+      id: 0,
+      url: '',
+      link: ''
+    };
+    torrent.size = items[i].enclosure[0].$.length;
+    torrent.name = items[i].title[0];
+    const link = items[i].link[0];
+    torrent.link = link;
+    torrent.id = link.match(/torrent\/(\d+)/)[1];
+    torrent.url = items[i].enclosure[0].$.url;
+    torrent.hash = items[i].guid[0]._.match(/-(.*)/)[1];
+    torrent.pubTime = moment(items[i].pubDate[0]).unix();
+    torrents.push(torrent);
+  }
+  return torrents;
+};
+
 const _getTorrentsWrapper = {
   'filelist.io': _getTorrentsFileList,
   'blutopia.xyz': _getTorrentsBlutopia,
@@ -582,7 +608,9 @@ const _getTorrentsWrapper = {
   'hdcity.leniter.org': _getHDCityTorrents,
   'iptorrents.com': _getIPTorrentsTorrents,
   'mikanani.me': _getMikanProjectTorrents,
-  'learnflakes.net': _getLearnFlakesTorrents
+  'learnflakes.net': _getLearnFlakesTorrents,
+  'exoticaz.to': _getExoticaZTorrents,
+  'avistaz.to': _getExoticaZTorrents
 };
 
 exports.getTorrents = async function (rssUrl) {
