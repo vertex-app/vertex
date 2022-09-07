@@ -4,9 +4,9 @@ const openApiMod = new OpenApiMod();
 
 class OpenApi {
   async widget (req, res) {
-    const canvas = await openApiMod.widget(req.query);
+    const image = await openApiMod.widget(req.query);
     res.setHeader('content-type', 'image/png');
-    res.send(canvas.toBuffer());
+    res.send(image);
   }
 }
 module.exports = OpenApi;

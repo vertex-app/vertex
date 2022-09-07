@@ -4,7 +4,7 @@
   "description": "",
   "main": "app/app.js",
   "scripts": {
-    "app": "export DISPLAY=:99 && export PORT=4000 && nodemon app/app.js"
+    "app": "export DISPLAY=:99 && export PORT=4001 && nodemon app/app.js"
   },
   "author": "",
   "license": "MIT",

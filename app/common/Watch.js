@@ -68,18 +68,19 @@ class Watch {
           let name;
           let year;
           let type;
-          if (forceScrape.keyword.indexOf('REGEXP:') === 0) {
+          if (forceScrape && forceScrape.keyword.indexOf('REGEXP:') === 0) {
             name = (torrent.name.match(new RegExp(forceScrape.keyword.replace('REGEXP:', ''))))[1];
             type = this.type;
             year = '';
           } else {
             const scrapeRes = await util.scrapeNameByFile(_name || torrent.name, this.type === 'series' ? 'tv' : this.type ? 'movie' : '', true);
-            name = scrapeRes;
-            year = scrapeRes;
-            type = scrapeRes;
+            name = scrapeRes.name;
+            year = scrapeRes.year;
+            type = scrapeRes.type;
+            type = type === 'tv' ? 'series' : type === 'movie' ? 'movie' : this.type;
             torrent.scrapedName = name;
             torrent.year = year;
-            torrent.type = type === 'tv' ? 'series' : type === 'movie' ? 'movie' : this.type;
+            torrent.type = type;
           }
           if (!name) {
             logger.error(`${torrent.name} 识别失败: ${name}.${year}, ${this.linkMode === 'keepStruct-3' ? '保留目录结构执行链接' : ''}`);
