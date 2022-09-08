@@ -159,6 +159,7 @@ export default {
         title: '别名',
         dataIndex: 'alias',
         sorter: (a, b) => a.alias.localeCompare(b.alias),
+        defaultSortOrder: 'ascend',
         width: 30
       }, {
         title: '操作',
@@ -262,7 +263,7 @@ export default {
     async listDownloader () {
       try {
         const res = await this.$api().downloader.list();
-        this.downloaders = res.data;
+        this.downloaders = res.data.sort((a, b) => a.alias.localeCompare(b.alias));
       } catch (e) {
         this.$message().error(e.message);
       }

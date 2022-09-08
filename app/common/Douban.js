@@ -456,8 +456,8 @@ class Douban {
           try {
             this.wishes.push(wish);
             this.ntf.addDoubanWish(this.alias, wish);
-            this.updateWish(wish);
             if (this.categories[wish.tag].autoSearch !== false) {
+              this.updateWish(wish);
               this.refreshWish(wish.id);
             } else {
               logger.binge('豆瓣账户:', this.alias, '项目', wish.name, '首次添加不刷新', '跳过');
