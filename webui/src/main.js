@@ -6,7 +6,7 @@ import {
   Button, Form, Input, Message, Menu, Layout,
   Drawer, Table, Divider, Descriptions, Col, Row, Tag,
   Checkbox, Select, Dropdown, Switch, Upload, Modal,
-  Radio, Popover, Tree, Alert
+  Radio, Popover, Tree, Alert, notification as Notification
 } from 'ant-design-vue';
 import App from './App';
 import { library } from '@fortawesome/fontawesome-svg-core';
@@ -87,6 +87,10 @@ const message = () => {
   return Message;
 };
 
+const notification = () => {
+  return Notification;
+};
+
 const formatSize = (_size) => {
   const tag = _size < 0;
   const size = Math.abs(_size);
@@ -119,6 +123,7 @@ app.mixin({
     $api: api,
     $moment: moment,
     $message: message,
+    $notification: notification,
     $defineComponent: defineComponent,
     $formatSize: formatSize,
     $ref: ref,

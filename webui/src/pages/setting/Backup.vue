@@ -24,7 +24,7 @@
           label="恢复">
           <a-upload
             action="/api/setting/restoreVertex"
-            :showUploadList="false"
+            :showUploadList="true"
             @change="handleChange">
             <a-button
               size="small"
@@ -64,10 +64,18 @@ export default {
     },
     async handleChange ({ file }) {
       if (file.status === 'done') {
-        await this.$message().success('恢复备份成功, 重启后生效');
+        await this.$notification().open({
+          message: '恢复备份成功',
+          description: '恢复备份成功, 重启后生效',
+          duration: 0
+        });
       }
       if (file.status === 'error') {
-        await this.$message().error('恢复备份失败, 请稍后重试');
+        await this.$notification().open({
+          message: '恢复备份失败',
+          description: '恢复备份失败',
+          duration: 0
+        });
       }
     }
   }
