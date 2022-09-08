@@ -30,6 +30,4 @@ RUN \
   chmod +x /vertex
 EXPOSE 3000
 CMD \
-  cp /usr/share/zoneinfo/$TZ /app/localtime && \
-  /usr/bin/redis-server /app/redis.conf && \
   bash /app/vertex/docker/start.sh

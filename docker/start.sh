@@ -168,6 +168,9 @@ groupmod -o -g ${VGID} vt > /dev/null 2>&1 ||:
 usermod -g ${VGID} vt > /dev/null 2>&1 ||:
 chown -R ${VUID}:${VGID} /vertex
 export PORT=`[ $PORT ] && echo $PORT || echo 3000`
+export REDISPORT=`[ $REDISPORT ] && echo $REDISPORT || echo 6379`
 Xvfb -ac :99 -screen 0 1280x1024x16 &
 export DISPLAY=:99
+cp /usr/share/zoneinfo/$TZ /app/localtime
+/usr/bin/redis-server /app/redis.conf --port $REDISPORT
 su vt -c 'cd /app/vertex && node app/app.js > /dev/null'
