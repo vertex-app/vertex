@@ -571,6 +571,7 @@ const _getExoticaZTorrents = async function (rssUrl) {
   const rss = await parseXml(await _getRssContent(rssUrl));
   const torrents = [];
   const items = rss.rss.channel[0].item;
+  console.log(items);
   for (let i = 0; i < items.length; ++i) {
     const torrent = {
       size: 0,
@@ -580,7 +581,16 @@ const _getExoticaZTorrents = async function (rssUrl) {
       url: '',
       link: ''
     };
-    torrent.size = items[i].enclosure[0].$.length;
+    const size = items[i].description[0].match(/Size<\/strong>: (\d*\.\d*|\d*) (GB|MB|TB|KB)/)[0].replace(/([GMTK])B/, '$1iB');
+    const map = {
+      KiB: 1024,
+      MiB: 1024 * 1024,
+      GiB: 1024 * 1024 * 1024,
+      TiB: 1024 * 1024 * 1024 * 1024
+    };
+    console.log(size);
+    const regRes = size.match(/Size<\/strong>: (\d*\.\d*|\d*) (GiB|MiB|TiB|KiB)/);
+    torrent.size = parseFloat(regRes[1]) * map[regRes[2]];
     torrent.name = items[i].title[0];
     const link = items[i].link[0];
     torrent.link = link;
