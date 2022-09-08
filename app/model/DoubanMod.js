@@ -10,7 +10,9 @@ class DoubanMod {
     const doubanSet = { ...options };
     doubanSet.id = id;
     fs.writeFileSync(path.join(__dirname, '../data/douban/', id + '.json'), JSON.stringify(doubanSet, null, 2));
-    global.runningDouban[id] = new Douban(doubanSet);
+    if (options.enable) {
+      global.runningDouban[options.id] = new Douban(doubanSet);
+    }
     return '添加豆瓣成功';
   };
 
@@ -21,14 +23,20 @@ class DoubanMod {
     } catch (e) {
       logger.error('删除豆瓣 set 报错:\n', e);
     }
-    global.runningDouban[options.id].destroy();
+    if (global.runningDouban[options.id]) {
+      global.runningDouban[options.id].destroy();
+    }
     return '删除豆瓣成功';
   };
 
   modify (options) {
     const doubanSet = { ...options };
-    global.runningDouban[options.id].destroy();
-    global.runningDouban[options.id] = new Douban(doubanSet);
+    if (global.runningDouban[options.id]) {
+      global.runningDouban[options.id].destroy();
+    }
+    if (options.enable) {
+      global.runningDouban[options.id] = new Douban(doubanSet);
+    }
     fs.writeFileSync(path.join(__dirname, '../data/douban/', options.id + '.json'), JSON.stringify(doubanSet, null, 2));
     return '修改豆瓣成功';
   };

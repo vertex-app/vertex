@@ -121,7 +121,9 @@ const init = function () {
     }
   }
   for (const douban of util.listDouban()) {
-    global.runningDouban[douban.id] = new Douban(douban);
+    if (douban.enable) {
+      global.runningDouban[douban.id] = new Douban(douban);
+    }
   }
   for (const script of util.listCrontabJavaScript()) {
     if (script.enable) {

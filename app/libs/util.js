@@ -357,7 +357,11 @@ exports.listDouban = function () {
   const DoubanList = [];
   for (const file of files) {
     if (path.extname(file) === '.json') {
-      DoubanList.push(_importJson(path.join(__dirname, '../data/douban', file)));
+      const douban = _importJson(path.join(__dirname, '../data/douban', file));
+      if (douban.enable === undefined) {
+        douban.enable = true;
+      }
+      DoubanList.push(douban);
     }
   }
   return DoubanList;

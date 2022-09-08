@@ -64,6 +64,13 @@
           <a-input size="small" v-model:value="subscribe.alias"/>
         </a-form-item>
         <a-form-item
+          label="启用"
+          name="enable"
+          extra="选择是否启用订阅任务"
+          :rules="[{ required: true, message: '${label}不可为空! ' }]">
+          <a-checkbox v-model:checked="subscribe.enable">启用</a-checkbox>
+        </a-form-item>
+        <a-form-item
           label="站点"
           name="sites"
           :rules="[{ required: true, message: '${label}不可为空! ' }]">
