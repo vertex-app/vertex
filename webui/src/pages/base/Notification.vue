@@ -75,6 +75,7 @@
           <a-select size="small" v-model:value="notification.type"  >
             <a-select-option value="telegram">Telegram</a-select-option>
             <a-select-option value="wechat">WeChat</a-select-option>
+            <a-select-option value="slack">Slack</a-select-option>
           </a-select>
         </a-form-item>
         <a-form-item
@@ -117,6 +118,13 @@
           name="telegramChannel"
           :rules="[{ required: true, message: '${label}不可为空! ' }]">
           <a-input size="small" v-model:value="notification.telegramChannel"/>
+        </a-form-item>
+        <a-form-item
+          v-if="notification.type === 'slack'"
+          label="Webhook"
+          name="slackWebhook"
+          :rules="[{ required: true, message: '${label}不可为空! ' }]">
+          <a-input size="small" v-model:value="notification.slackWebhook"/>
         </a-form-item>
         <a-form-item
           label="推送类型"

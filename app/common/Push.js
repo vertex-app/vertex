@@ -7,7 +7,8 @@ class Push {
   constructor (push) {
     this.pushWrapper = {
       telegram: this.pushTelegram,
-      wechat: this.pushWeChat
+      wechat: this.pushWeChat,
+      slack: this.pushSlack
     };
     for (const key of Object.keys(push)) {
       this[key] = push[key];
@@ -25,6 +26,7 @@ class Push {
     } else {
       this.WechatUrl = this.proxyKey ? 'https://dash.vertex-app.top/proxy/' + this.proxyKey + '/' : 'https://qyapi.weixin.qq.com/';
     }
+    this.slackWebhook = push.slackWebhook;
     this.pushType = this.pushType || [];
     this.markdown = ['telegram', 'wechat'].indexOf(this.type) !== -1;
     logger.info('通知工具', this.alias, '初始化成功');
@@ -492,6 +494,43 @@ class Push {
       return;
     }
     return json.result.message_id;
+  };
+
+  async pushSlack (text, desp) {
+    const option = {
+      url: this.slackWebhook,
+      method: 'POST',
+      json: {
+        text: text,
+        blocks: [
+          {
+            type: 'header',
+            text: {
+              type: 'plain_text',
+              text: text
+            }
+          }, {
+            type: 'divider'
+          },
+          {
+            type: 'section',
+            text: {
+              type: 'mrkdwn',
+              text: '```' + desp + '```'
+            }
+          }, {
+            type: 'divider'
+          }
+        ]
+      }
+    };
+    const res = await util.requestPromise(option);
+    const json = res.body;
+    if (json !== 'ok') {
+      logger.error('推送失败', this.alias, text, res.body);
+      return;
+    }
+    return '';
   };
 
   async pushWeChat (text, desp, poster) {

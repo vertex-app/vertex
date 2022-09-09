@@ -71,7 +71,8 @@ export default {
         this.setting = {
           userAgent: s.userAgent,
           loggerLevel: s.loggerLevel,
-          telegramProxy: s.telegramProxy
+          telegramProxy: s.telegramProxy,
+          wechatProxy: s.wechatProxy
         };
       } catch (e) {
         await this.$message().error(e.message);
