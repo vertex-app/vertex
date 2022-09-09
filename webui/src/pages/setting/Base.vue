@@ -33,8 +33,14 @@
         <a-form-item
           label="Telegram 代理"
           name="telegramProxy"
-          extra="用于 Vertex 环境不方便访问 Telegram 的情况">
+          extra="Nginx 或 Caddy 等软件反代 Telegram 域名 api.telegram.org 后的地址, 格式: http(s)://ip:port">
           <a-input size="small" v-model:value="setting.telegramProxy"/>
+        </a-form-item>
+        <a-form-item
+          label="企业微信代理"
+          name="wechatProxy"
+          extra="Nginx 或 Caddy 等软件反代企业微信域名 qyapi.weixin.qq.com 后的地址, 格式: http(s)://ip:port/">
+          <a-input size="small" v-model:value="setting.wechatProxy"/>
         </a-form-item>
         <a-form-item
           :wrapperCol="isMobile() ? { span:24 } : { span: 21, offset: 3 }">

@@ -70,6 +70,7 @@ const init = function () {
     otp: setting.otp
   };
   global.telegramProxy = setting.telegramProxy || 'https://api.telegram.org';
+  global.wechatProxy = setting.wechatProxy;
   global.checkFinishCron = setting.checkFinishCron || '30 * * * * *';
   global.userAgent = setting.userAgent;
   global.webhookPushTo = setting.webhookPushTo;

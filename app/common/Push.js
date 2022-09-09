@@ -20,7 +20,11 @@ class Push {
       token: '',
       refreshTime: 0
     };
-    this.WechatUrl = this.proxyKey ? 'dash.vertex-app.top/proxy/' + this.proxyKey + '/' : 'qyapi.weixin.qq.com/';
+    if (global.wechatProxy) {
+      this.WechatUrl = global.wechatProxy;
+    } else {
+      this.WechatUrl = this.proxyKey ? 'https://dash.vertex-app.top/proxy/' + this.proxyKey + '/' : 'https://qyapi.weixin.qq.com/';
+    }
     this.pushType = this.pushType || [];
     this.markdown = ['telegram', 'wechat'].indexOf(this.type) !== -1;
     logger.info('通知工具', this.alias, '初始化成功');
@@ -32,7 +36,7 @@ class Push {
 
   async _refreshWeChatAccessToken () {
     const option = {
-      url: `https://${this.WechatUrl}cgi-bin/gettoken?corpid=${this.corpid}&corpsecret=${this.corpsecret}`
+      url: `${this.WechatUrl}cgi-bin/gettoken?corpid=${this.corpid}&corpsecret=${this.corpsecret}`
     };
     const res = await util.requestPromise(option);
     const json = JSON.parse(res.body);
@@ -531,7 +535,7 @@ class Push {
       };
     }
     const option = {
-      url: `https://${this.WechatUrl}cgi-bin/message/send?access_token=${this.accessToken.token}`,
+      url: `${this.WechatUrl}cgi-bin/message/send?access_token=${this.accessToken.token}`,
       method: 'POST',
       json: body
     };
@@ -571,7 +575,7 @@ class Push {
       }
     };
     const option = {
-      url: `https://${this.WechatUrl}cgi-bin/message/send?access_token=${this.accessToken.token}`,
+      url: `${this.WechatUrl}cgi-bin/message/send?access_token=${this.accessToken.token}`,
       method: 'POST',
       json: body
     };
@@ -606,7 +610,7 @@ class Push {
       ]
     };
     const option = {
-      url: `https://${this.WechatUrl}cgi-bin/menu/create?access_token=${this.accessToken.token}&agentid=${this.agentid}`,
+      url: `${this.WechatUrl}cgi-bin/menu/create?access_token=${this.accessToken.token}&agentid=${this.agentid}`,
       method: 'POST',
       json: body
     };
