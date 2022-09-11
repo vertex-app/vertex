@@ -26,6 +26,10 @@ PKCS7Encoder.encode = function (text) {
 };
 
 class WebhookMod {
+  async handleSlackShortCuts (id) {
+    logger.info(id);
+  }
+
   async plex (req) {
     const payload = JSON.parse(req.body.payload);
     const eventMap = {
@@ -89,7 +93,7 @@ class WebhookMod {
     let body;
     const query = req.query;
     if (!req.body || !req.query.timestamp || !req.query.nonce) {
-      return '请求格式错误!!';
+      return '服务正常';
     }
     if (!query.echostr) {
       try {
@@ -327,6 +331,30 @@ class WebhookMod {
       await redis.setWithExpire('vertex:select:doubans', JSON.stringify(doubans), 300);
     }
     return content;
+  }
+
+  async slack (body) {
+    // if ()
+    if (body.challenge) {
+      return {
+        challenge: body.challenge
+      };
+    }
+    if (body.payload) {
+      body.event = JSON.parse(body.payload);
+    }
+    if (!body.event ||
+      body.event.subtype === 'bot_message' ||
+      body.event.subtype === 'message_deleted') {
+      return '';
+    }
+    const event = body.event;
+    if (event.callback_id) {
+      return await this.handleSlackShortCuts(event.callback_id);
+    }
+    logger.info(event);
+    logger.info('收到 Slack 消息:', event.text);
+    return event;
   }
 }
 module.exports = WebhookMod;

@@ -273,6 +273,7 @@ module.exports = function (app, express, router) {
   router.all('/openapi/:apiKey/emby', ctrl.Webhook.emby);
   router.all('/openapi/:apiKey/jellyfin', ctrl.Webhook.jellyfin);
   router.all('/openapi/:apiKey/wechat', ctrl.Webhook.wechat);
+  router.all('/openapi/:apiKey/slack', ctrl.Webhook.slack);
 
   router.all('/openapi/:apiKey/widget', ctrl.OpenApi.widget);
 

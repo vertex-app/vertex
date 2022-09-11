@@ -29,7 +29,9 @@ class Push {
     this.slackWebhook = push.slackWebhook;
     this.pushType = this.pushType || [];
     this.markdown = ['telegram', 'wechat'].indexOf(this.type) !== -1;
-    logger.info('通知工具', this.alias, '初始化成功');
+    if (this.push) {
+      logger.info('通知工具', this.alias, '初始化成功');
+    }
   };
 
   _clearErrorCount () {

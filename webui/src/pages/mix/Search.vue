@@ -292,6 +292,7 @@ export default {
     },
     async handleChange (pagination, filters) {
       this.qs.page = pagination.current;
+      this.pagination.current = pagination.current;
       if (filters.site && filters.site[0]) {
         this.torrents = this.torrentsOri.filter(item => filters.site.indexOf(item.site) !== -1);
         this.pagination.total = this.torrents.length;

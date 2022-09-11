@@ -1,14 +1,22 @@
-const requestPromise = require('util').promisify(require('request'));
+const util = require('./util');
+const redis = require('./redis');
 const { JSDOM } = require('jsdom');
 
 const getDocument = async function (url, cookie) {
-  const html = (await require('./util').requestPromise({
-    url,
-    headers: {
-      cookie
-    }
-  }, true)).body;
-  const dom = new JSDOM(html);
+  let body;
+  const cache = await redis.get(`vertex:scrape:${url}`);
+  if (cache) {
+    body = cache;
+  } else {
+    body = (await util.requestPromise({
+      url,
+      headers: {
+        cookie
+      }
+    }, true)).body;
+    await redis.setWithExpire(`vertex:scrape:${url}`, body, 40);
+  }
+  const dom = new JSDOM(body);
   return dom.window.document;
 };
 

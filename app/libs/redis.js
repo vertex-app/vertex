@@ -2,7 +2,7 @@ const redis = require('redis');
 
 const config = require('./config');
 const logger = require('./logger');
-const util = require('./util');
+const util = require('util');
 
 const client = redis.createClient(config.getRedisConfig());
 

@@ -75,5 +75,23 @@ class Webhook {
       });
     }
   };
+
+  async slack (req, res) {
+    try {
+      if (!global.apiKey || req.params.apiKey !== global.apiKey) {
+        throw new Error('鉴权失效');
+      }
+      if (req.method === 'GET') {
+        return res.send('服务正常');
+      }
+      res.send(await webhookMod.slack(req.body) || '');
+    } catch (e) {
+      logger.error(e);
+      res.send({
+        success: false,
+        message: e.message
+      });
+    }
+  };
 }
 module.exports = Webhook;
