@@ -139,6 +139,63 @@
           <a-button style="margin-left: 12px; margin-top: 24px; margin-bottom: 48px;" @click="clearDeleteRule()">清空</a-button>
         </a-form-item>
       </a-form>
+      <a-divider></a-divider>
+      <a-descriptions
+        title="说明"
+        :column="1"
+        >
+        <!--
+          01. 分享率一: 上传 / 种子大小 的结果<br>
+          02. 分享率二: 上传 / 下载 的结果<br>
+          03. 站点域名: 种子的 Tracker 地址的域名部分<br>
+          04. 各类时间: 选项时间到当前时间的差值, 单位为 秒/s<br>
+          05. 各类大小: 单位为 字节 / Byte, 可以使用 * 做乘法运算<br>
+          06. 各类速度: 单位为 字节/s / Byte/s<br>
+          07. 种子状态: 参照 qBittorrent 对种子状态的定义, 主要包含以下几类: <br>
+              上传中: `uploading`, 下载中: `downloading`
+              等待下载: `stalledDL`, 做种但无上传: `stalledUP`
+              更多状态请参照 qBittorrent Wiki, 若想删除等待下载状态下的种子, 应填写 `stalledDL`
+          08. 返回信息: 种子 Tracker 列表中由 Tracker 返回的信息<br>
+          09. 当前时间: 当天 0 点到当前时间的秒数<br>
+              例: 填写 当前时间大于 8\*3600 与 当前时间小于 22\*3600<br>
+              则只会在当天上午 8 点之后到 22 点之前删种<br>
+              0 点的时间戳取决于 Vertex 安装环境的时区<br>
+          10. 全局速度: 当前下载器的速度<br>
+          11. 做种下载连接: 仅计算已连接上的数量, 也即 qBittorrent WebUI 内括号外的数字 <br>
+          12. 做种下载任务: 任务的数量, 做种包含上传中状态与做种状态, 下载包含下载中与等待下载状态 <br>
+          13. 比较类型中的 包含 / 包含于 或 不包含 / 不包含于: 值部分需以半角逗号 , 为分割符, 如种子分类不包含于 KEEP, KEEP2, KEEP3 三个分类, 则应填写:
+              `KEEP,KEEP2,KEEP3`
+          -->
+        <a-descriptions-item label="01. 分享率一">上传 / 种子大小 的结果</a-descriptions-item>
+        <a-descriptions-item label="02. 分享率二">上传 / 下载 的结果</a-descriptions-item>
+        <a-descriptions-item label="03. 站点域名">种子的 Tracker 地址的域名部分</a-descriptions-item>
+        <a-descriptions-item label="04. 各类时间">选项时间到当前时间的差值, 单位为 秒/s</a-descriptions-item>
+        <a-descriptions-item label="05. 各类大小">单位为 字节 / Byte, 可以使用 * 做乘法运算</a-descriptions-item>
+        <a-descriptions-item label="06. 各类速度">单位为 字节/s / Byte/s</a-descriptions-item>
+        <a-descriptions-item label="07. 种子状态">
+          参照 qBittorrent 对种子状态的定义, 主要包含以下几类:
+          <br>
+          上传中: uploading, 下载中: downloading
+          <br>
+          等待下载: stalledDL, 做种但无上传: stalledUP
+          <br>
+          若想删除等待下载状态下的种子, 应填写 stalledDL
+          <br>
+          更多状态请参照 qBittorrent Wiki
+        </a-descriptions-item>
+        <a-descriptions-item label="08. 返回信息">种子 Tracker 列表中由 Tracker 返回的信息</a-descriptions-item>
+        <a-descriptions-item label="09. 当前时间">
+          当天 0 点到当前时间的秒数, 0 点的时间戳取决于 Vertex 安装环境的时区
+          <br>
+          例: 填写 当前时间大于 8*3600 与 当前时间小于 22*3600, 则只会在当天上午 8 点之后到 22 点之前删种
+        </a-descriptions-item>
+        <a-descriptions-item label="10. 全局速度">当前下载器的速度</a-descriptions-item>
+        <a-descriptions-item label="11. 做种下载连接">仅计算已连接上的数量, 也即 qBittorrent WebUI 内括号外的数字</a-descriptions-item>
+        <a-descriptions-item label="12. 做种下载任务">任务的数量, 做种包含上传中状态与做种状态, 下载包含下载中与等待下载状态</a-descriptions-item>
+        <a-descriptions-item label="13. 比较类型中的 包含 / 包含于 或 不包含 / 不包含于">
+          值部分需以半角逗号 , 为分割符. 如种子分类不包含于 KEEP, KEEP2, KEEP3 三个分类, 则应填写: KEEP,KEEP2,KEEP3
+        </a-descriptions-item>
+      </a-descriptions>
     </div>
   </div>
 </template>

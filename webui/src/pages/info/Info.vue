@@ -29,6 +29,13 @@
       <a-descriptions-item label="开源代码"><a @click="gotoGithub">GITHUB</a></a-descriptions-item>
     </a-descriptions>
     <a-divider></a-divider>
+    <a-descriptions
+      title="使用说明"
+      :column="{ xxl: 4, xl: 3, lg: 3, md: 3, sm: 2, xs: 1 }"
+      >
+      <a-descriptions-item label="Wiki"><a @click="gotoWiki">Wiki</a></a-descriptions-item>
+    </a-descriptions>
+    <a-divider></a-divider>
     <div style="font-size: 16px; font-weight: bold;">微信公众号</div>
     <img style="max-height: 480px; max-width: calc(100vw - 32px); margin: 0 auto;" src="/assets/images/subscription.jpg"/>
   </div>

@@ -17,14 +17,14 @@ class DoubanMod {
   };
 
   delete (options) {
+    if (global.runningDouban[options.id]) {
+      global.runningDouban[options.id].destroy();
+    }
     fs.unlinkSync(path.join(__dirname, '../data/douban/', options.id + '.json'));
     try {
       fs.unlinkSync(path.join(__dirname, '../data/douban/set', options.id + '.json'));
     } catch (e) {
       logger.error('删除豆瓣 set 报错:\n', e);
-    }
-    if (global.runningDouban[options.id]) {
-      global.runningDouban[options.id].destroy();
     }
     return '删除豆瓣成功';
   };

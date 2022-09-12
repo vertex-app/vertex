@@ -14,6 +14,9 @@
         <span style="font-size: 16px; font-weight: bold;">RSS 规则列表</span>
       </template>
       <template #bodyCell="{ column, record }">
+        <template v-if="column.dataIndex === 'downloader'">
+          {{ (downloaders.filter(item => item.id === record.client)[0] || {}).alias || '' }}
+        </template>
         <template v-if="column.title === '操作'">
           <span>
             <a @click="modifyClick(record)">编辑</a>
@@ -161,6 +164,10 @@ export default {
         sorter: (a, b) => a.alias.localeCompare(b.alias),
         defaultSortOrder: 'ascend',
         width: 30
+      }, {
+        title: '下载器',
+        dataIndex: 'downloader',
+        width: 20
       }, {
         title: '操作',
         width: 20
