@@ -453,3 +453,11 @@ exports.calSize = function (size, unit) {
   };
   return +size * (unitMap[unit] || 1);
 };
+
+exports.sleep = function (time) {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      return resolve('ping');
+    }, time);
+  });
+};

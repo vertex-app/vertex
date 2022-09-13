@@ -184,6 +184,7 @@ export default {
         this.qs.sortKey = sorter.field;
         this.qs.sortType = sorter.order === 'ascend' ? 'asc' : 'desc';
       }
+      this.pagination.current = pagination.current;
       this.qs.page = pagination.current;
       this.listTorrent();
     }

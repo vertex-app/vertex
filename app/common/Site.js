@@ -161,8 +161,24 @@ class Site {
         downloadLink = downloadLinkTemplate.replace(/{ID}/, id);
       }
     }
-    const { filepath, hash, size, name } = await this._downloadTorrent(downloadLink);
     let tryCount = 0;
+    let torrentInfo = {};
+    while (true) {
+      try {
+        torrentInfo = await this._downloadTorrent(downloadLink);
+        break;
+      } catch (e) {
+        tryCount += 1;
+        logger.error('下载种子失败第', tryCount, '次,', '失败信息: ', e.message);
+        if (tryCount === 3) {
+          throw new Error('下载失败次数达到限制, 停止本次下载任务');
+        }
+        logger.error('等待 2s 后重新尝试');
+        await util.sleep(2000);
+      }
+    }
+    const { filepath, hash, size, name } = torrentInfo;
+    tryCount = 0;
     while (true) {
       try {
         await global.runningClient[client].addTorrentByTorrentFile(filepath, hash, false, 0, 0, savePath, category, autoTMM);
