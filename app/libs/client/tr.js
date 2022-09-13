@@ -51,6 +51,26 @@ exports.addTorrentByTorrentFile = async function (clientUrl, cookie, filepath, i
   return res;
 };
 
+exports.getSessionStat = async function (clientUrl, cookie) {
+  const message = {
+    method: 'POST',
+    url: clientUrl + '/transmission/rpc',
+    headers: {
+      Authorization: cookie.basic,
+      'X-Transmission-Session-Id': cookie.sessionId
+    },
+    form: JSON.stringify({
+      method: 'session-stats',
+      arguments: {
+        fields:
+        []
+      }
+    })
+  };
+  const res = await util.requestPromise(message);
+  return JSON.parse(res.body).arguments;
+};
+
 exports.getMaindata = async function (clientUrl, cookie) {
   const message = {
     method: 'POST',
@@ -104,6 +124,11 @@ exports.getMaindata = async function (clientUrl, cookie) {
     torrent.tracker = torrent.tracker && torrent.tracker[0] ? new url.URL(torrent.tracker[0].announce).hostname : '';
     maindata.torrents.push(torrent);
   }
+  const sessionStat = await exports.getSessionStat(clientUrl, cookie);
+  maindata.allTimeUpload = sessionStat['cumulative-stats'].uploadedBytes;
+  maindata.allTimeDownload = sessionStat['cumulative-stats'].downloadedBytes;
+  maindata.uploadSpeed = sessionStat.uploadSpeed;
+  maindata.downloadSpeed = sessionStat.downloadSpeed;
   return maindata;
 };
 

@@ -108,6 +108,8 @@ class Watch {
         } catch (e) {
           logger.error(e);
           this.ntf.scrapeTorrentFailed(this.alias, torrent.name, `${e.message}`);
+          this.torrents[torrent.hash] = { name: torrent.name, size: torrent.size };
+          this._saveSet();
         }
       }
     }

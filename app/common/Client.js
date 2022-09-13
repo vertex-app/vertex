@@ -254,8 +254,8 @@ class Client {
       this.login();
       return;
     }
-    if (this.lastCookie < moment().unix() - 3600) {
-      await this.login(false);
+    if (this.lastCookie < moment().unix() - 2400) {
+      this.login(false);
       return;
     }
     const statusLeeching = ['downloading', 'stalledDL', 'Downloading'];

@@ -171,6 +171,7 @@ exports.scrapeNameByFile = async function (_filename, type, _year = false) {
   }
   let url = `https://api.themoviedb.org/3/search/${type || 'multi'}?language=zh-CN&api_key=${global.tmdbApiKey}&query=`;
   let searchKey = filename.split(/19\d\d|20\d\d|S\d\d/)[0]
+    .replace(/[a-zA-z]+TV(\dK)?\.?/, '')
     .replace(/[\u4e00-\u9fa5\uff01\uff1a]+\d+[\u4e00-\u9fa5\uff01\uff1a]+/g, '')
     .replace(/[!\u4e00-\u9fa5\uff01\uff1a。:?？，,·・]/g, '')
     .replace(/\./g, ' ').trim();

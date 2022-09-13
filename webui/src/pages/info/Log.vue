@@ -35,7 +35,9 @@
         </a-form-item>
         <a-form-item
           :wrapperCol="isMobile() ? { span:24 } : { span: 21, offset: 3 }">
-          <span style="color: red;">截图日志务必把版本: {{version.head}}/{{version.updateTime}} 带上, 并注意上方的日志等级以及日志的时间</span>
+          <p style="color: red;">截图日志务必把版本: {{version.head}}/{{version.updateTime}} 带上, 并注意上方的日志等级以及日志的时间</p>
+          <p style="color: red;">注意报错的 message / code / status 附近的内容</p>
+          <p style="color: red;">偶尔报错请直接忽略, 周期性报错需要注意。</p>
         </a-form-item>
         <a-form-item
           label="日志">

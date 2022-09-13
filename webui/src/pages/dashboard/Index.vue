@@ -325,6 +325,18 @@ export default {
       try {
         const res = await this.$api().setting.getRunInfo();
         this.runInfo = res.data;
+        for (const error of this.runInfo.errors) {
+          await this.$notification().error({
+            message: '存在错误信息, 请检查日志',
+            description: error.map(item => {
+              if (typeof item === 'object') {
+                return item.message;
+              }
+              return item;
+            }).join(', '),
+            duration: 0
+          });
+        }
       } catch (e) {
         await this.$message().error(e.message);
       }

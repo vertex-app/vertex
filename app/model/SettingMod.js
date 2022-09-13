@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const moment = require('moment');
 const util = require('../libs/util');
+const redis = require('../libs/redis');
 const cron = require('node-cron');
 const Push = require('../common/Push');
 const otp = require('../libs/otp');
@@ -157,6 +158,8 @@ class SettingMod {
     for (const tracker of Object.keys(perTrackerTodaySet)) {
       perTrackerToday.push({ tracker, ...perTrackerTodaySet[tracker] });
     }
+    const errors = JSON.parse(await redis.get('vertex:error:list') || '[]');
+    await redis.set('vertex:error:list', '[]');
     return {
       dashboardContent: global.dashboardContent,
       uploaded: uploaded || 0,
@@ -171,7 +174,8 @@ class SettingMod {
       deleteCountToday,
       startTime: global.startTime,
       perTracker,
-      perTrackerToday
+      perTrackerToday,
+      errors
     };
   };
 
