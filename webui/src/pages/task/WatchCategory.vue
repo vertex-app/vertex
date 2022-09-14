@@ -106,7 +106,7 @@
           label="资料库文件夹"
           name="libraryPath"
           extra="链接目标的资料库文件夹, 填写规则: 电影:剧集, 如: movie:series"
-          :rules="[{ required: true, message: '${label}不可为空! ' }]">
+          :rules="[{ validator: async (rule, value) => { if (value.split(':').length === 2) return; throw '格式 电影文件夹:剧集文件夹, 例 movie:series' } }]">
           <a-input size="small" v-model:value="watch.libraryPath"/>
         </a-form-item>
         <a-form-item
@@ -239,6 +239,7 @@ export default {
         cron: '* * * * *',
         downlaoder: '',
         category: '',
+        libraryPath: '',
         linkRule: '',
         notify: '',
         forceScrape: []

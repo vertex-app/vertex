@@ -99,11 +99,13 @@ export default {
         const res = (await this.$api().site.list()).data;
         this.sites = res.siteList;
         this.siteIncrease = res.increase;
-        this.sites.push({
-          name: 'total',
-          upload: this.sites[0] ? this.sites.map(item => item.upload).reduce((a, b) => a + b) : 0,
-          download: this.sites[0] ? this.sites.map(item => item.download).reduce((a, b) => a + b) : 0
-        });
+        if (this.sites[1]) {
+          this.sites.push({
+            name: 'total',
+            upload: this.sites.map(item => item.upload).reduce((a, b) => a + b),
+            download: this.sites.map(item => item.download).reduce((a, b) => a + b)
+          });
+        }
         for (const site of this.sites) {
           site.yesterday = this.siteIncrease.yesterday[site.name];
           site.today = this.siteIncrease.today[site.name];

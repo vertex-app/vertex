@@ -28,6 +28,9 @@
                   <a-menu-item>
                     <a @click="modifyClick(record)">编辑</a>
                   </a-menu-item>
+                  <a-menu-item>
+                    <a @click="cloneClick(record)">克隆</a>
+                  </a-menu-item>
                   <a-menu-item danger>
                     <a-popover title="删除?" trigger="click" :overlayStyle="{ width: '84px', overflow: 'hidden' }">
                       <template #content>
@@ -470,6 +473,27 @@ export default {
     },
     modifyClick (row) {
       this.subscribe = { ...row };
+    },
+    cloneClick (row) {
+      /*
+        sites: [],
+        raceRules: [],
+        rejectRules: [],
+        categories: [{ ...this.defaultCategory }]
+      */
+      this.subscribe = {
+        ...row,
+        sites: [...row.sites],
+        raceRules: [...row.raceRules],
+        rejectRules: [...row.rejectRules],
+        categories: [...row.categories.map(item => ({
+          ...item,
+          raceRules: [...item.raceRules],
+          rejectRules: [...item.rejectRules]
+        }))]
+      };
+      this.subscribe.id = null;
+      this.subscribe.alias = this.subscribe.alias + '-克隆';
     },
     expandModal (row) {
       this.modalVisible = true;

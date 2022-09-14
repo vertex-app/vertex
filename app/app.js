@@ -20,6 +20,7 @@ const sites = require('./libs/site');
 const logger = require('./libs/logger');
 const util = require('./libs/util');
 const config = require('./libs/config');
+const { execSync } = require('child_process');
 logger.use(app);
 
 require('./routes/router.js')(app, express, router);
@@ -46,8 +47,13 @@ const initPush = function () {
 
 const init = function () {
   global.clearDatabase = cron.schedule('1 0 * * *', async () => {
-    await util.runRecord('delete from torrent_flow where time < ?', [moment().unix() - 1]);
-    await util.runRecord('delete from tracker_flow where time < ?', [moment().unix() - 7 * 24 * 3600]);
+    try {
+      await util.runRecord('delete from torrent_flow where time < ?', [moment().unix() - 1]);
+      await util.runRecord('delete from tracker_flow where time < ?', [moment().unix() - 7 * 24 * 3600]);
+      execSync('rm /tmp/Vertex-backups-*');
+    } catch (e) {
+      logger.error(e);
+    }
   });
 
   global.CONFIG = config;

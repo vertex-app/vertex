@@ -286,15 +286,22 @@ module.exports = function (app, express, router) {
   app.use('*', (req, res, next) => {
     const pathname = req._parsedOriginalUrl.pathname;
     if (pathname === '/favicon.ico') {
-      return res.download(path.join(__dirname, '../static', pathname));
+      res.status(404);
+      return res.end('Not Found');
     }
     if (pathname.startsWith('/assets')) {
-      return res.download(path.join(__dirname, '../static', pathname));
+      try {
+        return res.download(path.join(__dirname, '../static', pathname));
+      } catch (err) {
+        logger.error(err);
+        res.status(404);
+        return res.end('Not Found');
+      }
     }
     try {
       res.send(fs.readFileSync(path.join(__dirname, '../static/index.html'), 'utf-8'));
     } catch (err) {
-      logger.info(err);
+      logger.error(err);
       res.status(404);
       res.end('Not Found');
     }
