@@ -278,8 +278,7 @@ export default {
         };
         if (type === 'dryrun') {
           requestBody.dryrun = true;
-        }
-        if (!type && this.linkInfo.linkMode === 'normal') {
+        } else if (this.linkInfo.linkMode === 'normal') {
           requestBody.files = this.fileList.filter(item => item.episode !== -999).map(item => {
             return {
               season: item.season,

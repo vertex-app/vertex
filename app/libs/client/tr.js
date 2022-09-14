@@ -71,6 +71,26 @@ exports.getSessionStat = async function (clientUrl, cookie) {
   return JSON.parse(res.body).arguments;
 };
 
+exports.closeSession = async function (clientUrl, cookie) {
+  const message = {
+    method: 'POST',
+    url: clientUrl + '/transmission/rpc',
+    headers: {
+      Authorization: cookie.basic,
+      'X-Transmission-Session-Id': cookie.sessionId
+    },
+    form: JSON.stringify({
+      method: 'session-close',
+      arguments: {
+        fields:
+        []
+      }
+    })
+  };
+  const res = await util.requestPromise(message);
+  return res.body;
+};
+
 exports.getMaindata = async function (clientUrl, cookie) {
   const message = {
     method: 'POST',
@@ -94,6 +114,9 @@ exports.getMaindata = async function (clientUrl, cookie) {
     })
   };
   const res = await util.requestPromise(message);
+  if (res.headers['x-transmission-session-id']) {
+    return res.headers['x-transmission-session-id'];
+  }
   const torrents = JSON.parse(res.body).arguments.torrents;
   const torrentFilter = {
     id: 'id',

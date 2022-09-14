@@ -225,6 +225,9 @@ class Client {
 
   async login (notify = true) {
     try {
+      if (this.cookie && this._client.type === 'Transmission') {
+        await this.client.closeSession(this.clientUrl, this.cookie);
+      }
       this.cookie = await this.client.login(this.username, this.clientUrl, this.password);
       this.status = true;
       this.errorCount = 0;
@@ -261,7 +264,12 @@ class Client {
     const statusLeeching = ['downloading', 'stalledDL', 'Downloading'];
     const statusSeeding = ['uploading', 'stalledUP', 'Seeding'];
     try {
-      this.maindata = await this.client.getMaindata(this.clientUrl, this.cookie);
+      const maindata = await this.client.getMaindata(this.clientUrl, this.cookie);
+      if (typeof maindata === 'string') {
+        this.cookie.sessionId = maindata;
+        return;
+      }
+      this.maindata = maindata;
       this.maindata.leechingCount = 0;
       this.maindata.seedingCount = 0;
       this.maindata.usedSpace = 0;

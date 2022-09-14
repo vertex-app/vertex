@@ -13,6 +13,7 @@ logger.use = function (app) {
     level: 'trace'
   }));
 };
+/*
 const _error = logger.error;
 logger.error = async (...args) => {
   _error.call(logger, ...args);
@@ -24,4 +25,5 @@ logger.error = async (...args) => {
   }
   redis.set('vertex:error:list', JSON.stringify(errorList));
 };
+*/
 module.exports = logger;
