@@ -83,8 +83,7 @@
         <a-form-item
           :wrapperCol="isMobile() ? { span:24 } : { span: 21, offset: 3 }">
           <a-button type="primary" html-type="submit" style="margin-top: 24px; margin-bottom: 48px;">检查</a-button>
-          <a-button type="primary" danger style="margin-left: 12px; margin-top: 24px; margin-bottom: 48px;"  @click="link('link')">执行</a-button>
-          <a-button type="primary" danger style="margin-left: 12px; margin-top: 24px; margin-bottom: 48px;"  @click="link('keepStructLink')">保留目录结构链接</a-button>
+          <a-button type="primary" danger style="margin-left: 12px; margin-top: 24px; margin-bottom: 48px;"  @click="link">执行</a-button>
         </a-form-item>
       </a-form>
       <a-divider></a-divider>
@@ -280,7 +279,7 @@ export default {
         if (type === 'dryrun') {
           requestBody.dryrun = true;
         }
-        if (type === 'link' && this.linkInfo.linkMode === 'normal') {
+        if (!type && this.linkInfo.linkMode === 'normal') {
           requestBody.files = this.fileList.filter(item => item.episode !== -999).map(item => {
             return {
               season: item.season,
@@ -292,7 +291,7 @@ export default {
           });
         }
         const res = await this.$api().torrent.link(requestBody);
-        if (type !== 'dryrun' && type !== undefined) {
+        if (type !== 'dryrun') {
           this.$message().success(res.message);
           return;
         }

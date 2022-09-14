@@ -280,7 +280,7 @@ class Douban {
   }
 
   _refreshWish (id, remote = false) {
-    const randomDelayTime = parseInt(Math.random() * (remote ? 30 : 3600 * 4));
+    const randomDelayTime = parseInt(Math.random() * (remote ? 120 : 3600 * 4));
     logger.debug('延时开启搜索资源任务, 延时时间', randomDelayTime, '秒');
     setTimeout(async () => {
       try {
