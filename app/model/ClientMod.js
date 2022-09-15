@@ -65,6 +65,7 @@ class ClientMod {
       c.alias = client.alias;
       c.enable = client.enable;
       c.autoDelete = client.autoDelete;
+      c.clientUrl = client.clientUrl;
       client.status = !!(client.enable && global.runningClient[client.id] && global.runningClient[client.id].status && global.runningClient[client.id].maindata);
       c.status = client.status;
       if (client.status) {

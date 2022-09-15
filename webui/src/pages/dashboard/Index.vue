@@ -74,12 +74,15 @@
           >
           <template v-for="(downloader, index ) in downloaders" :key="downloader.id">
             <div
+              @click="gotoClient(`/proxy/client/${downloader.id}/`)"
               v-if="index === 0"
               class="data-rect-2 highlight-3"
               :style="downloaders.length === 1 ? `width: ${isMobile() ? '336px' : '688px'}` : ''">
+              <!--
               <div style="position: absolute; left: 0; top: 0; width: 100%; height: 100%;">
                 <v-chart :option="downloader.speedChart"/>
               </div>
+              -->
               <div style="font-size: 14px; font-weight: bold; color: #fff; padding: 16px 16px;">
                 <div>{{ downloader.alias }}</div>
                 <div style="margin: initial; font-size: 12px;">累计数据: {{ $formatSize(downloader.allTimeUpload) }} ↑ / {{$formatSize(downloader.allTimeDownload)}} ↓</div>
@@ -87,12 +90,15 @@
               </div>
             </div>
             <div
+              @click="gotoClient(`/proxy/client/${downloader.id}/`)"
               v-if="index !== 0"
               class="data-rect-2"
               :style="(downloaders.length === index + 1 && downloaders.length % 2 === 1) ? `background: #eff; width: ${isMobile() ? '336px' : '688px'}` : 'background: #eff;'">
+              <!--
               <div style="position: absolute; left: 0; top: 0; width: 100%; height: 100%;">
                 <v-chart :option="downloader.speedChart"/>
               </div>
+              -->
               <div style="font-size: 14px; font-weight: bold; padding: 16px 16px;">
                 <div>{{ downloader.alias }}</div>
                 <div style="margin: initial; font-size: 12px;">累计数据: {{ $formatSize(downloader.allTimeUpload) }} ↑ / {{$formatSize(downloader.allTimeDownload)}} ↓</div>
@@ -110,9 +116,11 @@
               v-if="index === 0"
               class="data-rect-2 highlight-4"
               :style="servers.length === 1 ? `width: ${isMobile() ? '336px' : '688px'}` : ''">
+              <!--
               <div style="position: absolute; left: 0; top: 0; width: 100%; height: 100%;">
                 <v-chart :option="server.speedChart"/>
               </div>
+              -->
               <div style="font-size: 14px; font-weight: bold; color: #fff; padding: 16px 16px;">
                 <div>{{ server.alias }}</div>
                 <div style="margin: initial; font-size: 12px;"></div>
@@ -123,9 +131,11 @@
               v-if="index !== 0"
               class="data-rect-2"
               :style="servers.length === index + 1 && servers.length % 2 === 1 ? `background: #eff; width: ${isMobile() ? '336px' : '688px'}` : 'background: #eff;'">
+              <!--
               <div style="position: absolute; left: 0; top: 0; width: 100%; height: 100%;">
                 <v-chart :option="server.speedChart" :init-options="{renderer: 'svg'}"/>
               </div>
+              -->
               <div style="font-size: 14px; font-weight: bold; padding: 16px 16px;">
                 <div>{{ server.alias }}</div>
                 <div style="margin: initial; font-size: 12px;"></div>
@@ -362,8 +372,8 @@ export default {
           const download = res.data.filter(item => item.id === downloader.id)[0]?.downloadSpeed || 0;
           downloader.uploadSpeed = upload;
           downloader.downloadSpeed = download;
-          downloader.speedChart.xAxis.data.push('');
-          downloader.speedChart.series[0].data.push(upload);
+          // downloader.speedChart.xAxis.data.push('');
+          // downloader.speedChart.series[0].data.push(upload);
           // downloader.speedChart.series[1].data.push(download);
         }
       } catch (e) {
@@ -448,6 +458,9 @@ export default {
         this.trackerChart.series.push(t);
       }
       this.trackerChart.xAxis.data = dateSet.map(i => this.$moment(i * 1000).format('YYYY-MM-DD HH:mm'));
+    },
+    async gotoClient (url) {
+      window.open(url);
     }
   },
   async mounted () {
