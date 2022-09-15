@@ -5,6 +5,18 @@ let redis = null;
 const loggerConfig = config.getLoggerConfig();
 const setting = JSON.parse(require('fs').readFileSync(require('path').join(__dirname, '../data/setting.json'), { encoding: 'utf-8' }));
 loggerConfig.categories.default.level = setting.loggerLevel || loggerConfig.categories.default.level;
+loggerConfig.appenders.error.layout.tokens = {
+  redis: async (logEvent) => {
+    if (!redis) redis = require('./redis');
+    const errorList = JSON.parse((await redis.get('vertex:error:list') || '[]'));
+    errorList.push(logEvent.data);
+    while (errorList.length > 5) {
+      errorList.shift();
+    }
+    redis.set('vertex:error:list', JSON.stringify(errorList));
+    return '';
+  }
+};
 log4js.configure(loggerConfig);
 const logger = log4js.getLogger('console');
 logger.use = function (app) {
@@ -13,17 +25,4 @@ logger.use = function (app) {
     level: 'trace'
   }));
 };
-/*
-const _error = logger.error;
-logger.error = async (...args) => {
-  _error.call(logger, ...args);
-  if (!redis) redis = require('./redis');
-  const errorList = JSON.parse((await redis.get('vertex:error:list') || '[]'));
-  errorList.push(args);
-  if (errorList.length > 5) {
-    errorList.pop();
-  }
-  redis.set('vertex:error:list', JSON.stringify(errorList));
-};
-*/
 module.exports = logger;

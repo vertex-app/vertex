@@ -330,7 +330,7 @@ export default {
             message: '存在错误信息, 请检查日志',
             description: error.map(item => {
               if (typeof item === 'object') {
-                return item.message;
+                return item.message || item.code || item.description;
               }
               return item;
             }).join(', '),

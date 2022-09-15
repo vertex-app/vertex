@@ -192,7 +192,7 @@ appenders:
     numBackups: 30
     layout:
       type: pattern
-      pattern: '[%d{ISO8601}][%p %c] %z (%f{3} %l:%o) %m'
+      pattern: '%x{redis}[%d{ISO8601}[%p %c] %z (%f{3} %l:%o) %m'
   minError:
     type: logLevelFilter
     appender: error
