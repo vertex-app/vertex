@@ -6,14 +6,17 @@ const loggerConfig = config.getLoggerConfig();
 const setting = JSON.parse(require('fs').readFileSync(require('path').join(__dirname, '../data/setting.json'), { encoding: 'utf-8' }));
 loggerConfig.categories.default.level = setting.loggerLevel || loggerConfig.categories.default.level;
 loggerConfig.appenders.error.layout.tokens = {
-  redis: async (logEvent) => {
-    if (!redis) redis = require('./redis');
-    const errorList = JSON.parse((await redis.get('vertex:error:list') || '[]'));
-    errorList.push(logEvent.data);
-    while (errorList.length > 5) {
-      errorList.shift();
-    }
-    redis.set('vertex:error:list', JSON.stringify(errorList));
+  redis: (logEvent) => {
+    const f = async () => {
+      if (!redis) redis = require('./redis');
+      const errorList = JSON.parse((await redis.get('vertex:error:list') || '[]'));
+      errorList.push(logEvent.data);
+      while (errorList.length > 5) {
+        errorList.shift();
+      }
+      redis.set('vertex:error:list', JSON.stringify(errorList));
+    };
+    f();
     return '';
   }
 };

@@ -76,7 +76,7 @@
             <div
               @click="gotoClient(`/proxy/client/${downloader.id}/`)"
               v-if="index === 0"
-              class="data-rect-2 highlight-3"
+              class="data-rect-pointer data-rect-2 highlight-3"
               :style="downloaders.length === 1 ? `width: ${isMobile() ? '336px' : '688px'}` : ''">
               <!--
               <div style="position: absolute; left: 0; top: 0; width: 100%; height: 100%;">
@@ -92,7 +92,7 @@
             <div
               @click="gotoClient(`/proxy/client/${downloader.id}/`)"
               v-if="index !== 0"
-              class="data-rect-2"
+              class="data-rect-pointer data-rect-2"
               :style="(downloaders.length === index + 1 && downloaders.length % 2 === 1) ? `background: #eff; width: ${isMobile() ? '336px' : '688px'}` : 'background: #eff;'">
               <!--
               <div style="position: absolute; left: 0; top: 0; width: 100%; height: 100%;">
@@ -566,6 +566,10 @@ export default {
   display: inline-block;
   margin: 8px;
   border-radius: 8px;
+}
+
+.data-rect-pointer {
+  cursor: pointer;
 }
 
 .tracker-chart {

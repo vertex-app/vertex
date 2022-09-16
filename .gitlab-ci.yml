@@ -33,6 +33,9 @@ generate_static:
     - echo '  background-size:cover;' >> ./public/assets/styles/cyber.less
     - echo '}' >> ./public/assets/styles/cyber.less
     - echo '' > ./public/assets/styles/follow.less
+    - echo '.login-layout {' > ./public/assets/styles/follow.less
+    - echo '  background:@body-background;' > ./public/assets/styles/follow.less
+    - echo '}' > ./public/assets/styles/follow.less
     - npm run build
     - cd ../app
     - tar -czvf ../static.tar.gz static

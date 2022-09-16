@@ -17,7 +17,7 @@
         :labelCol="{ span: 6 }"
         :wrapperCol="{ span: 16 }"
         autocomplete="off"
-        class="login-form">
+        class="login-form login-layout">
         <div style="margin: 12px auto 6px; font-size: 32px; width: fit-content; font-weight: bold;">
           <span>Vertex</span>
         </div>
@@ -109,7 +109,7 @@ export default {
   border-radius: 4px;
   padding: 6px;
   margin: 0 auto;
-  height: 360px;
+  height: 460px;
   transition: all 0.5s;
 }
 
