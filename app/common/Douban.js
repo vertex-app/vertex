@@ -33,6 +33,7 @@ class Douban {
     this.push = douban.push;
     this._notify.push = this.push;
     this.refreshWishJobs = {};
+    this.refreshStat = {};
     this.searchRemoteTorrentJobs = {};
     this.ntf = new Push(this._notify);
     this.refreshWishJob = cron.schedule(douban.cron, () => this.refreshWishList());
@@ -287,6 +288,7 @@ class Douban {
         await this.refreshWish(id, false, remote);
       } catch (e) {
         logger.error('搜索任务报错:\n', e);
+        delete this.refreshStat[id];
       }
     }, randomDelayTime * 1000);
   }
@@ -319,6 +321,10 @@ class Douban {
       this.ntf.startRefreshWish(`${this.alias} / ${wish.name} 近 23 小时有自动搜索记录, 退出任务`);
       return;
     }
+    if (this.refreshStat[id]) {
+      logger.binge('豆瓣账号', this.alias, '/', wish.name, '任务仍在执行中, 退出任务');
+    }
+    this.refreshStat[id] = 1;
     if (!remote) this.ntf.startRefreshWish(`${this.alias} / ${wish.name}`);
     wish.downloaded = await this.selectTorrent(wish, false, remote);
     if (!remote && !wish.downloaded) {
@@ -334,6 +340,7 @@ class Douban {
     }
     wish.downloaded = wish.downloaded && (+wish.episodeNow === +wish.episodes || !wish.episodes);
     this._saveSet();
+    delete this.refreshStat[id];
   }
 
   async refreshWishList (manual = false) {
