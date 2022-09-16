@@ -498,6 +498,39 @@ class Push {
     return json.result.message_id;
   };
 
+  async pushSlackRaw (raw) {
+    const option = {
+      url: this.slackWebhook,
+      method: 'POST',
+      json: raw
+    };
+    const res = await util.requestPromise(option);
+    const json = res.body;
+    if (json !== 'ok') {
+      logger.error('Slack 推送原始信息失败', this.alias, res.body);
+      return;
+    }
+    return '';
+  };
+
+  async openSlackView (raw) {
+    const option = {
+      url: 'https://slack.com/api/views.open',
+      method: 'POST',
+      headers: {
+        Authorization: 'Bearer ' + this.slackToken
+      },
+      json: raw
+    };
+    const res = await util.requestPromise(option);
+    const json = res.body;
+    if (!json.ok) {
+      logger.error('Slack 推送视图失败', this.alias, res.body);
+      return;
+    }
+    return '';
+  };
+
   async pushSlack (text, desp) {
     const option = {
       url: this.slackWebhook,

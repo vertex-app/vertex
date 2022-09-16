@@ -127,6 +127,13 @@
           <a-input size="small" v-model:value="notification.slackWebhook"/>
         </a-form-item>
         <a-form-item
+          v-if="notification.type === 'slack'"
+          label="Token"
+          name="slackToken"
+          :rules="[{ required: true, message: '${label}不可为空! ' }]">
+          <a-input size="small" v-model:value="notification.slackToken"/>
+        </a-form-item>
+        <a-form-item
           label="推送类型"
           name="pushType"
           extra="只有已被勾选的项目才会推送"

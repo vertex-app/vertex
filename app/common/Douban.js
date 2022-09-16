@@ -322,7 +322,8 @@ class Douban {
       return;
     }
     if (this.refreshStat[id]) {
-      logger.binge('豆瓣账号', this.alias, '/', wish.name, '任务仍在执行中, 退出任务');
+      logbinge('豆瓣账号', this.alias, '/', wish.name, '任务仍在执行中, 退出任务');
+      return;
     }
     this.refreshStat[id] = 1;
     if (!remote) this.ntf.startRefreshWish(`${this.alias} / ${wish.name}`);
