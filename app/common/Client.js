@@ -225,9 +225,6 @@ class Client {
 
   async login (notify = true) {
     try {
-      if (this.cookie && this._client.type === 'Transmission') {
-        await this.client.closeSession(this.clientUrl, this.cookie);
-      }
       this.cookie = await this.client.login(this.username, this.clientUrl, this.password);
       this.status = true;
       this.errorCount = 0;
@@ -257,7 +254,7 @@ class Client {
       this.login();
       return;
     }
-    if (this.lastCookie < moment().unix() - 2400) {
+    if (this.lastCookie < moment().unix() - 3000) {
       this.login(false);
       return;
     }
