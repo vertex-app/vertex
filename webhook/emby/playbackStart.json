@@ -1,8 +1,0 @@
-{
-  "event": "playbackStart",
-  "itemName": "%item.name%",
-  "userName": "%username%",
-  "libraryName": "%item.library.name%",
-  "serverName": "%server.name%",
-  "originalName": "%item.originaltitle%"
-}

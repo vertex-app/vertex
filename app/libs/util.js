@@ -456,6 +456,29 @@ exports.calSize = function (size, unit) {
   return +size * (unitMap[unit] || 1);
 };
 
+exports.formatTime = function (ms) {
+  const d = parseInt(ms / (24 * 3600 * 1000));
+  const h = parseInt(ms / (3600 * 1000) % 24);
+  const m = parseInt(ms / (60 * 1000) % 60);
+  const s = parseInt(ms / (1000) % 60);
+  const ss = parseInt(ms % 1000);
+  let str = '';
+  if (d) {
+    str += `${d < 10 ? '0' + d : d}:`;
+  }
+  if (h) {
+    str += `${h < 10 ? '0' + h : h}:`;
+  }
+  if (m) {
+    str += `${m < 10 ? '0' + m : m}:`;
+  }
+  if (s) {
+    str += `${s < 10 ? '0' + s : s}:`;
+  }
+  str += `${ss < 10 ? '00' + ss : ss < 100 ? '0' + ss : ss}`;
+  return str;
+};
+
 exports.sleep = function (time) {
   return new Promise((resolve, reject) => {
     setTimeout(() => {

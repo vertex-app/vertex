@@ -279,48 +279,31 @@ class WebhookMod {
   }
 
   async plex (req) {
-    const payload = JSON.parse(req.body.payload);
-    const eventMap = {
-      'library-new': '媒体已添加',
-      'media-play': '播放已开始',
-      'media-pause': '播放已暂停',
-      'media-resume': '播放已恢复',
-      'media-stop': '播放已停止',
-      'media-scrobble': '播放超过 90%'
-    };
-    const event = eventMap[payload.event.replace('.', '-')] + ': ' + payload.Metadata.title + ' / ' + (payload.Metadata.originalTitle || '');
-    const server = payload.Server.title;
-    const note = `用户: ${payload.Account.title}\n` +
-      `媒体: ${payload.Metadata.title} / ${payload.Metadata.originalTitle || ''}\n` +
-      `服务器: ${payload.Server.title}\n` +
-      `媒体库: ${payload.Metadata.librarySectionTitle}\n`;
-    if (global.webhookPush) {
-      await global.webhookPush.plexWebhook(event, note);
+    if (!req.body) {
+      return '服务正常';
     }
-    return '';
+    const payload = JSON.parse(req.body.payload);
+    if (['media.play', 'media.stop', 'media.resume', 'media.pause', 'media-scrobble', 'library.new'].indexOf(payload.event) !== -1) {
+      return await global.webhookPush.pushPlexStartOrStopToSlack(payload);
+    }
   }
 
   async emby (req) {
-    const payload = JSON.parse(req.body.data);
-    const eventMap = {
-      newItemAdded: '媒体已添加',
-      playbackStart: '播放已开始',
-      playbackStop: '播放已停止'
-    };
-    const event = eventMap[payload.event] + ': ' + payload.itemName + ' / ' + (payload.originalName || '');
-    const server = payload.serverName;
-    const note = `用户: ${payload.userName}\n` +
-      `媒体: ${payload.itemName} / ${payload.originalName || ''}\n` +
-      `服务器: ${payload.serverName}\n` +
-      `媒体库: ${payload.libraryName}\n`;
-    if (global.webhookPush) {
-      await global.webhookPush.embyWebhook(event, note);
+    logger.info(JSON.parse(req.body.data, null, 2));
+    if (!req.body) {
+      return '服务正常';
     }
-    return '';
+    const payload = JSON.parse(req.body.data);
+    if (['media.play', 'media.stop', 'media.resume', 'media.pause', 'media-scrobble', 'media.new'].indexOf(payload.event) !== -1) {
+      return await global.webhookPush.pushEmbyStartOrStopToSlack(payload);
+    }
   }
 
   async jellyfin (req) {
     const payload = req.body;
+    if (!req.body || !req.query.timestamp || !req.query.nonce) {
+      return '服务正常';
+    }
     const eventMap = {
       ItemAdded: '媒体已添加',
       PlaybackStart: '播放已开始',

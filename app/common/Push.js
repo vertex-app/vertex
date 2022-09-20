@@ -498,6 +498,158 @@ class Push {
     return json.result.message_id;
   };
 
+  async pushPlexStartOrStopToSlack (payload) {
+    let text = '';
+    let title = payload.Metadata.grandparentTitle || payload.Metadata.parentTitle || payload.Metadata.title;
+    const stat = {
+      stop: '停止播放',
+      play: '开始播放',
+      pause: '暂停播放',
+      resume: '恢复播放',
+      scrobble: '播放已超过 90%',
+      new: '新入库'
+    };
+    title = `Plex ${stat[payload.event.split('.')[1]]}: ${title}`;
+    if (payload.Metadata.grandparentTitle) {
+      if (payload.Metadata.grandparentTitle) {
+        text += `*${payload.Metadata.grandparentTitle}*\n`;
+      }
+      if (payload.Metadata.parentTitle) {
+        text += `*当前季:* ${payload.Metadata.parentTitle}\n`;
+      }
+      if (payload.Metadata.title) {
+        text += `*当前集:* ${payload.Metadata.title}\n`;
+      }
+      if (payload.Metadata.viewOffset) {
+        text += `*当前位置:* ${util.formatTime(payload.Metadata.viewOffset)}\n`;
+      }
+    }
+    if (payload.Metadata.summary) {
+      text += `*简介:* ${payload.Metadata.summary}`;
+    }
+    const option = {
+      url: this.slackWebhook,
+      method: 'POST',
+      json: {
+        text: title,
+        blocks: [
+          {
+            type: 'header',
+            text: {
+              type: 'plain_text',
+              text: title
+            }
+          }, {
+            type: 'divider'
+          }, {
+            type: 'section',
+            text: {
+              type: 'mrkdwn',
+              text
+            },
+            accessory: {
+              type: 'image',
+              image_url: 'https://pic.lswl.in/images/2022/07/10/5ae104f82f39eb4059861393ef24d440.png',
+              alt_text: 'vertex logo'
+            }
+          }, {
+            type: 'context',
+            elements: [
+              {
+                type: 'plain_text',
+                text: `发送自: ${payload.Server.title} / ${payload.Metadata.librarySectionTitle} / ${payload.Account.title}`
+              }
+            ]
+          }, {
+            type: 'divider'
+          }
+        ]
+      }
+    };
+    const res = await util.requestPromise(option);
+    const json = res.body;
+    if (json !== 'ok') {
+      logger.error('Slack 推送 Plex 开始播放失败', this.alias, res.body);
+      return;
+    }
+    return '';
+  }
+
+  async pushEmbyStartOrStopToSlack (payload) {
+    let text = '';
+    const _title = payload.series_name || payload.season_name || payload.episode_number || payload.item_name;
+    const stat = {
+      stop: '停止播放',
+      play: '开始播放',
+      pause: '暂停播放',
+      resume: '恢复播放',
+      scrobble: '播放已超过 90%',
+      new: '新入库'
+    };
+    const title = `Emby ${stat[payload.event.split('.')[1]]}: ${_title}`;
+    text += `*${_title}*\n`;
+    if (payload.season_name) {
+      text += `*当前季:* ${payload.season_name}\n`;
+    }
+    if (payload.episode_number) {
+      text += `*当前集:* ${payload.item_name || payload.episode_number}\n`;
+    }
+    if (payload.playback_position_percentage) {
+      text += `*当前位置:* ${payload.playback_position_percentage}%\n`;
+    }
+    if (payload.item_overview) {
+      text += `*简介:* ${payload.item_overview}`;
+    } else {
+      text += '*简介:* 暂无';
+    }
+    const option = {
+      url: this.slackWebhook,
+      method: 'POST',
+      json: {
+        text: title,
+        blocks: [
+          {
+            type: 'header',
+            text: {
+              type: 'plain_text',
+              text: title
+            }
+          }, {
+            type: 'divider'
+          }, {
+            type: 'section',
+            text: {
+              type: 'mrkdwn',
+              text
+            },
+            accessory: {
+              type: 'image',
+              image_url: 'https://pic.lswl.in/images/2022/07/10/5ae104f82f39eb4059861393ef24d440.png',
+              alt_text: 'vertex logo'
+            }
+          }, {
+            type: 'context',
+            elements: [
+              {
+                type: 'plain_text',
+                text: `发送自: ${payload.server_name} / ${payload.item_library_name} / ${payload.username || ''}`
+              }
+            ]
+          }, {
+            type: 'divider'
+          }
+        ]
+      }
+    };
+    const res = await util.requestPromise(option);
+    const json = res.body;
+    if (json !== 'ok') {
+      logger.error('Slack 推送 Plex 开始播放失败', this.alias, res.body);
+      return;
+    }
+    return '';
+  }
+
   async pushSlackRaw (raw) {
     const option = {
       url: this.slackWebhook,

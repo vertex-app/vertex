@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<PackageConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Settings>
+    <Setting>
+      <Id>VERTEX_OPENAPI_URL</Id>
+      <Value>VERTEX_OPENAPI_URL HERE</Value>
+    </Setting>
+  </Settings>
+</PackageConfiguration>

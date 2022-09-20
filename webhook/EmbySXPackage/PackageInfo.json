@@ -1,0 +1,7 @@
+{
+  "Id": "vertex.openapi.emby.push",
+  "Name": "Vertex emby push service",
+  "Description": "Send notifications to vertex",
+  "Author": "lswl.in",
+  "Email": "me@mail.lswl.in"
+}
