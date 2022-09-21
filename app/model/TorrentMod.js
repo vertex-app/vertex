@@ -187,7 +187,10 @@ class TorrentMod {
         if (_linkRule.excludeKeys && _linkRule.excludeKeys.split(',').some(item => file.name.indexOf(item) !== -1)) continue;
         const movieName = mediaName.split('/')[0].trim();
         const filename = file.name;
-        const year = (filename.match(/[. ](20\d\d)[. ]/) || filename.match(/[. ](19\d\d)[. ]/) || ['', ''])[1];
+        let year = (filename.match(/[. ](20\d\d)[. ]/) || filename.match(/[. ](19\d\d)[. ]/) || ['', ''])[1];
+        if (year) {
+          year = '.' + year;
+        }
         const suffixKeys = [];
         const reservedKeys = (_linkRule.reservedKeys || '').split(',');
         for (const key of reservedKeys) {
@@ -202,8 +205,8 @@ class TorrentMod {
         }
         const fileExt = path.extname(filename);
         group = group.replace(fileExt, '');
-        const linkFilePath = path.join(_linkRule.linkFilePath, libraryPath, `${movieName}.${year}`).replace(/'/g, '\\\'');
-        const linkFile = path.join(linkFilePath, `${movieName}.${year}${suffix + group}${fileExt}`).replace(/'/g, '\\\'');
+        const linkFilePath = path.join(_linkRule.linkFilePath, libraryPath, `${movieName}${year}`).replace(/'/g, '\\\'');
+        const linkFile = path.join(linkFilePath, `${movieName}${year}${suffix + group}${fileExt}`).replace(/'/g, '\\\'');
         const targetFile = path.join(savePath.replace(_linkRule.targetPath.split('##')[0], _linkRule.targetPath.split('##')[1]), file.name).replace(/'/g, '\\\'');
         const linkMode = _linkRule.hardlink ? 'f' : 'sf';
         const command = `${_linkRule.umask ? 'umask ' + _linkRule.umask + ' && ' : ''}mkdir -p $'${linkFilePath}' && ln -${linkMode} $'${targetFile}' $'${linkFile}'`;
@@ -411,7 +414,10 @@ class TorrentMod {
         if (_linkRule.excludeKeys && _linkRule.excludeKeys.split(',').some(item => file.name.indexOf(item) !== -1)) continue;
         const movieName = mediaName.split('/')[0].trim();
         const filename = file.name;
-        const year = (file.name.match(/[. ](20\d\d)[. ]/) || file.name.match(/[. ](19\d\d)[. ]/) || ['', ''])[1];
+        let year = (filename.match(/[. ](20\d\d)[. ]/) || filename.match(/[. ](19\d\d)[. ]/) || ['', ''])[1];
+        if (year) {
+          year = '.' + year;
+        }
         const suffixKeys = [];
         const reservedKeys = (_linkRule.reservedKeys || '').split(',');
         for (const key of reservedKeys) {
@@ -429,8 +435,8 @@ class TorrentMod {
         dryrunResult.push({
           file: filename,
           episode: 1,
-          folderName: `${movieName}.${year}`,
-          linkFile: `${movieName}.${year}${suffix + group}${fileExt}`
+          folderName: `${movieName}${year}`,
+          linkFile: `${movieName}${year}${suffix + group}${fileExt}`
         });
       }
     }

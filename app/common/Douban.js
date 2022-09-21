@@ -681,7 +681,10 @@ class Douban {
         if (linkRule.excludeKeys && linkRule.excludeKeys.split(',').some(item => file.name.indexOf(item) !== -1)) continue;
         const movieName = wish.name.split('/')[0].trim();
         const filename = file.name;
-        const year = (filename.match(/[. ](20\d\d)[. ]/) || filename.match(/[. ](19\d\d)[. ]/) || ['', ''])[1];
+        let year = (filename.match(/[. ](20\d\d)[. ]/) || filename.match(/[. ](19\d\d)[. ]/) || ['', ''])[1];
+        if (year) {
+          year = '.' + year;
+        }
         const suffixKeys = [];
         const reservedKeys = (linkRule.reservedKeys || '').split(',');
         for (const key of reservedKeys) {
@@ -696,8 +699,8 @@ class Douban {
         }
         const fileExt = path.extname(filename);
         group = group.replace(fileExt, '');
-        const linkFilePath = path.join(linkRule.linkFilePath, category.libraryPath, `${movieName}.${year}`).replace(/'/g, '\\\'');
-        const linkFile = path.join(linkFilePath, `${movieName}.${year}${suffix + group}${fileExt}`).replace(/'/g, '\\\'');
+        const linkFilePath = path.join(linkRule.linkFilePath, category.libraryPath, `${movieName}${year}`).replace(/'/g, '\\\'');
+        const linkFile = path.join(linkFilePath, `${movieName}${year}${suffix + group}${fileExt}`).replace(/'/g, '\\\'');
         const targetFile = path.join(torrent.savePath.replace(linkRule.targetPath.split('##')[0], linkRule.targetPath.split('##')[1]), file.name).replace(/'/g, '\\\'');
         const linkMode = linkRule.hardlink ? 'f' : 'sf';
         const command = `${linkRule.umask ? 'umask ' + linkRule.umask + ' && ' : ''}mkdir -p $'${linkFilePath}' && ln -${linkMode} $'${targetFile}' $'${linkFile}'`;
