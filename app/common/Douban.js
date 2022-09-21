@@ -571,6 +571,8 @@ class Douban {
   }
 
   async _linkTorrentFiles (torrent, client, recordNoteJson) {
+    // 链接有失败标志
+    let isError = false;
     const wish = recordNoteJson.wish;
     const _wish = this.wishes.filter(item => item.id === wish.id)[0];
     wish.episodeOffset = _wish?.episodeOffset || 0;
@@ -665,6 +667,7 @@ class Douban {
           await global.runningServer[linkRule.server].run(command);
         } catch (e) {
           logger.error(e);
+          isError = true;
         }
       }
       /*
@@ -703,11 +706,12 @@ class Douban {
           await global.runningServer[linkRule.server].run(command);
         } catch (e) {
           logger.error(e);
+          isError = true;
         }
       }
     }
     try {
-      await global.runningClient[client].addTorrentTag(torrent.hash, '已链接-' + wish.name.split('/')[0].replace(/ /g, '-'));
+      await global.runningClient[client].addTorrentTag(torrent.hash, (isError ? '链接遇到错误-' : '已链接-') + wish.name.split('/')[0].replace(/ /g, '-'));
     } catch (e) {
       logger.error('添加种子标签失败', e);
     }

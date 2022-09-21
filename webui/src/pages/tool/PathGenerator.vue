@@ -105,7 +105,7 @@ export default {
         return;
       }
       if (downloaderPrefix.indexOf(mediaServerPrefix) !== 0 && mediaServerPrefix.indexOf(downloaderPrefix) !== 0) {
-        this.result = `${downloaderPrefix} 与 ${mediaServerPrefix} 应该存在包含或不包含关系, 请检查所填写内容`;
+        this.result = `${downloaderPrefix} 与 ${mediaServerPrefix} 应该存在包含或被包含关系, 请检查所填写内容`;
         return;
       }
       if (downloaderPrefix.indexOf(mediaServerPrefix) === 0) {

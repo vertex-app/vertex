@@ -101,6 +101,8 @@ class TorrentMod {
   }
 
   async _linkTorrentFilesNotDryrun ({ hash, client, mediaName, type, linkRule, savePath, libraryPath }) {
+    // 链接有失败标志
+    let isError = false;
     const _linkRule = util.listLinkRule().filter(item => item.id === linkRule)[0];
     let size = 1;
     _linkRule.minFileSize.split('*').forEach(i => { size *= +i; });
@@ -176,6 +178,7 @@ class TorrentMod {
           await global.runningServer[_linkRule.server].run(command);
         } catch (e) {
           logger.error(e);
+          isError = true;
         }
       }
     } else if (type === 'movie') {
@@ -209,17 +212,20 @@ class TorrentMod {
           await global.runningServer[_linkRule.server].run(command);
         } catch (e) {
           logger.error(e);
+          isError = true;
         }
       }
     }
     try {
-      await global.runningClient[client].addTorrentTag(hash, '已链接-' + mediaName.split('/')[0].replace(/ /g, '-'));
+      await global.runningClient[client].addTorrentTag(hash, (isError ? '链接遇到错误-' : '已链接-') + mediaName.split('/')[0].replace(/ /g, '-'));
     } catch (e) {
       logger.error('添加种子标签失败', e);
     }
   }
 
   async _linkTorrentFilesKeepStruct ({ hash, savePath, client, mediaName, libraryPath, linkRule, replaceTopDir, keepTopDir }) {
+    // 链接有失败标志
+    let isError = false;
     const _linkRule = util.listLinkRule().filter(item => item.id === linkRule)[0];
     const files = await global.runningClient[client].getFiles(hash);
     const first = files[0].name;
@@ -259,16 +265,19 @@ class TorrentMod {
         await global.runningServer[_linkRule.server].run(command);
       } catch (e) {
         logger.error(e);
+        isError = true;
       }
     }
     try {
-      await global.runningClient[client].addTorrentTag(hash, '已链接-' + mediaName.split('/')[0].replace(/ /g, '-'));
+      await global.runningClient[client].addTorrentTag(hash, (isError ? '链接遇到错误-' : '已链接-') + mediaName.split('/')[0].replace(/ /g, '-'));
     } catch (e) {
       logger.error('添加种子标签失败', e);
     }
   }
 
   async _linkTorrentFiles ({ hash, savePath, client, mediaName, type, libraryPath, linkRule, files: _files }) {
+    // 链接有失败标志
+    let isError = false;
     const _linkRule = util.listLinkRule().filter(item => item.id === linkRule)[0];
     const files = await global.runningClient[client].getFiles(hash);
     if (type === 'series') {
@@ -287,6 +296,7 @@ class TorrentMod {
           await global.runningServer[_linkRule.server].run(command);
         } catch (e) {
           logger.error(e);
+          isError = true;
         }
       }
     } else if (type === 'movie') {
@@ -303,11 +313,12 @@ class TorrentMod {
           await global.runningServer[_linkRule.server].run(command);
         } catch (e) {
           logger.error(e);
+          isError = true;
         }
       }
     }
     try {
-      await global.runningClient[client].addTorrentTag(hash, '已链接-' + mediaName.split('/')[0].replace(/ /g, '-'));
+      await global.runningClient[client].addTorrentTag(hash, (isError ? '链接遇到错误-' : '已链接-') + mediaName.split('/')[0].replace(/ /g, '-'));
     } catch (e) {
       logger.error('添加种子标签失败', e);
     }
