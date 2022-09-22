@@ -424,6 +424,15 @@ exports.listIRC = function () {
   return ircList;
 };
 
+exports.getLinkMapping = function () {
+  return _importJson(path.join(__dirname, '../data/link-mapping.json'));
+};
+
+exports.saveLinkMapping = function () {
+  const mappingPath = path.join(__dirname, '../data/link-mapping.json');
+  return fs.writeFileSync(mappingPath, JSON.stringify(global.linkMapping, null, 2));
+};
+
 exports.formatSize = function (size) {
   if (size < 1024) {
     return `${size.toFixed(2)} Byte`;

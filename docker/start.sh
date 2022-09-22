@@ -81,6 +81,10 @@ if [ ! -f '/vertex/data/setting.json' ]; then
   cp /app/vertex/app/config_backup/setting.json /vertex/data/
 fi
 
+if [ ! -f '/vertex/data/link-mapping.json' ]; then
+  echo '{}' > /vertex/data/link-mapping.json
+fi
+
 if [ ! -f '/vertex/data/bulk-link-history.json' ]; then
   echo '{}' > /vertex/data/bulk-link-history.json
 fi

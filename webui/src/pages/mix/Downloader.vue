@@ -45,7 +45,7 @@
       :data-source="torrents"
       :pagination="pagination"
       @change="handleChange"
-      :scroll="{ x: 960 }"
+      :scroll="{ x: 1440 }"
     >
       <template #title>
         <span style="font-size: 16px; font-weight: bold;">种子聚合</span>
@@ -63,10 +63,64 @@
           <a @click="gotoDetail(record)">代理</a>
           <a-divider type="vertical" />
           <a @click="gotoLink(record)">软/硬链接</a>
+          <a-divider type="vertical" />
+          <a style="color: red;" @click="expandDel(record)">删除</a>
         </template>
       </template>
     </a-table>
   </div>
+    <a-modal
+    v-model:visible="modalVisible"
+    title="删除种子"
+    width="1440px"
+    :footer="null">
+    <div style="text-align: left; ">
+      <a-alert message="注意事项" type="info" >
+        <template #description>
+          执行删除操作后, 会通过列出的服务器删除对应的链接文件, 并且删除下载器内的种子以及该种子的文件, 请谨慎操作。
+          目前仅支持 qBittorrent
+          <br>
+          <br>
+          种子标题: {{ delInfo.title }}
+        </template>
+      </a-alert>
+      <a-form
+        labelAlign="right"
+        :labelWrap="true"
+        :model="delInfo"
+        size="small"
+        @finish="deleteTorrent"
+        :labelCol="{ span: 6 }"
+        :wrapperCol="{ span: 18 }"
+        autocomplete="off">
+        <a-form-item
+          :wrapperCol="{ span:24 }">
+          <a-table
+            :style="`font-size: ${isMobile() ? '12px': '14px'};`"
+            :columns="delFilesColumns"
+            size="small"
+            :data-source="delInfo.files"
+            :pagination="false"
+            :scroll="{ x: 960 }"
+          >
+            <template #title>
+              <span style="font-size: 16px; font-weight: bold;">文件列表</span>
+            </template>
+            <template #bodyCell="{ column, record }">
+              <template v-if="column.dataIndex === 'server'">
+                {{ (servers.filter(item => item.id === record.server)[0] || {}).alias || '已删除' }}
+              </template>
+            </template>
+          </a-table>
+        </a-form-item>
+        <a-form-item
+          :wrapperCol="isMobile() ? { span:24 } : { span: 18, offset: 6 }">
+          <a-button size="small" @click="() => modalVisible = false">取消</a-button>
+          <a-button size="small" type="primary" danger style="margin-left: 24px;" html-type="submit">删除</a-button>
+        </a-form-item>
+      </a-form>
+    </div>
+  </a-modal>
 </template>
 <script>
 export default {
@@ -85,7 +139,7 @@ export default {
       }, {
         title: '分类',
         dataIndex: 'category',
-        width: 32
+        width: 42
       }, {
         title: '标签',
         dataIndex: 'tags',
@@ -106,10 +160,21 @@ export default {
         title: '添加时间',
         dataIndex: 'addedTime',
         sorter: (a, b) => 0,
-        width: 32
+        width: 48
       }, {
         title: '操作',
-        width: this.isMobile() ? 72 : 48
+        width: this.isMobile() ? 96 : 72
+      }
+    ];
+    const delFilesColumns = [
+      {
+        title: '服务器',
+        dataIndex: 'server',
+        width: 4
+      }, {
+        title: '文件路径',
+        dataIndex: 'filepath',
+        width: 32
       }
     ];
     const qs = {
@@ -130,7 +195,13 @@ export default {
     return {
       loading: true,
       pagination,
+      modalVisible: false,
       columns,
+      servers: [],
+      delFilesColumns,
+      delInfo: {
+        files: []
+      },
       qs,
       torrents: [],
       downloaders: []
@@ -172,12 +243,43 @@ export default {
         this.$message().error(e.message);
       }
     },
+    async listServer () {
+      try {
+        const res = await this.$api().server.list();
+        this.servers = res.data;
+      } catch (e) {
+        this.$message().error(e.message);
+      }
+    },
     async gotoDetail (record) {
       if (!record.link) return await this.$message().error('链接不存在');
       window.open(record.link);
     },
     async gotoLink (record) {
       window.open('/task/link?hash=' + record.hash);
+    },
+    async expandDel (record) {
+      this.modalVisible = true;
+      try {
+        this.delInfo.files = (await this.$api().torrent.getDelInfo({ hash: record.hash })).data.map(item => ({
+          server: item.split('####')[0],
+          filepath: item.split('####')[1]
+        }));
+        this.delInfo.hash = record.hash;
+        this.delInfo.title = record.name;
+        this.delInfo.clientId = record.client;
+      } catch (e) {
+        this.$message().error(e.message);
+      }
+    },
+    async deleteTorrent () {
+      this.modalVisible = true;
+      try {
+        const r = await this.$api().torrent.deleteTorrent(this.delInfo);
+        this.$message().success(r.message);
+      } catch (e) {
+        this.$message().error(e.message);
+      }
     },
     async handleChange (pagination, filters, sorter) {
       if (sorter) {
@@ -191,6 +293,7 @@ export default {
   },
   async mounted () {
     await this.listDownloader();
+    this.listServer();
     this.listTorrent();
   }
 };

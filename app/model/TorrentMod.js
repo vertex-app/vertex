@@ -101,6 +101,9 @@ class TorrentMod {
   }
 
   async _linkTorrentFilesNotDryrun ({ hash, client, mediaName, type, linkRule, savePath, libraryPath }) {
+    if (!global.linkMapping[hash]) {
+      global.linkMapping[hash] = [];
+    }
     // 链接有失败标志
     let isError = false;
     const _linkRule = util.listLinkRule().filter(item => item.id === linkRule)[0];
@@ -176,6 +179,7 @@ class TorrentMod {
         logger.binge('手动链接', '执行链接命令', command);
         try {
           await global.runningServer[_linkRule.server].run(command);
+          global.linkMapping[hash].push(_linkRule.server + '####' + linkFile);
         } catch (e) {
           logger.error(e);
           isError = true;
@@ -213,6 +217,7 @@ class TorrentMod {
         logger.binge('手动链接', '执行链接命令', command);
         try {
           await global.runningServer[_linkRule.server].run(command);
+          global.linkMapping[hash].push(_linkRule.server + '####' + linkFile);
         } catch (e) {
           logger.error(e);
           isError = true;
@@ -224,9 +229,13 @@ class TorrentMod {
     } catch (e) {
       logger.error('添加种子标签失败', e);
     }
+    util.saveLinkMapping();
   }
 
   async _linkTorrentFilesKeepStruct ({ hash, savePath, client, mediaName, libraryPath, linkRule, replaceTopDir, keepTopDir }) {
+    if (!global.linkMapping[hash]) {
+      global.linkMapping[hash] = [];
+    }
     // 链接有失败标志
     let isError = false;
     const _linkRule = util.listLinkRule().filter(item => item.id === linkRule)[0];
@@ -266,6 +275,7 @@ class TorrentMod {
       logger.binge('手动链接', '执行链接命令', command);
       try {
         await global.runningServer[_linkRule.server].run(command);
+        global.linkMapping[hash].push(_linkRule.server + '####' + linkFile);
       } catch (e) {
         logger.error(e);
         isError = true;
@@ -276,9 +286,13 @@ class TorrentMod {
     } catch (e) {
       logger.error('添加种子标签失败', e);
     }
+    util.saveLinkMapping();
   }
 
   async _linkTorrentFiles ({ hash, savePath, client, mediaName, type, libraryPath, linkRule, files: _files }) {
+    if (!global.linkMapping[hash]) {
+      global.linkMapping[hash] = [];
+    }
     // 链接有失败标志
     let isError = false;
     const _linkRule = util.listLinkRule().filter(item => item.id === linkRule)[0];
@@ -297,6 +311,7 @@ class TorrentMod {
         logger.binge('手动链接', '执行链接命令', command);
         try {
           await global.runningServer[_linkRule.server].run(command);
+          global.linkMapping[hash].push(_linkRule.server + '####' + linkFile);
         } catch (e) {
           logger.error(e);
           isError = true;
@@ -314,6 +329,7 @@ class TorrentMod {
         logger.binge('手动链接', '执行链接命令', command);
         try {
           await global.runningServer[_linkRule.server].run(command);
+          global.linkMapping[hash].push(_linkRule.server + '####' + linkFile);
         } catch (e) {
           logger.error(e);
           isError = true;
@@ -325,6 +341,7 @@ class TorrentMod {
     } catch (e) {
       logger.error('添加种子标签失败', e);
     }
+    util.saveLinkMapping();
   }
 
   async _dryrun ({ hash, client, mediaName, type, linkRule }) {
@@ -483,6 +500,42 @@ class TorrentMod {
       params);
     const total = (await util.getRecord('select count(*) as total from torrents ' + where)).total;
     return { torrents, total };
+  }
+
+  getDelInfo (options) {
+    return global.linkMapping[options.hash] || [];
+  }
+
+  async deleteTorrent (options) {
+    if (!global.runningClient[options.clientId]) {
+      throw new Error('客户端 ' + options.clientId + ' 未连接或未更新种子列表, 请稍后重试');
+    }
+    if (!global.runningClient[options.clientId].maindata) {
+      throw new Error('客户端 ' + global.runningClient[options.clientId].alias + ' 未连接或未更新种子列表, 请稍后重试');
+    }
+    const client = global.runningClient[options.clientId];
+    let isError = false;
+    try {
+      await client.client.deleteTorrent(client.clientUrl, client.cookie, options.hash, true);
+    } catch (e) {
+      isError = true;
+      logger.error('删除种子失败: ', e);
+    }
+    for (const file of options.files) {
+      const { server, filepath } = file;
+      try {
+        logger.info(global.runningServer[server].server.alias, '执行删除文件命令:', `rm -f $'${filepath}'`);
+        await global.runningServer[server].run(`rm -f $'${filepath}'`);
+      } catch (e) {
+        isError = true;
+        logger.error(global.runningServer[server].server.alias, '执行删除文件命令报错:\n');
+      }
+    }
+    if (!isError) {
+      delete global.linkMapping[options.hash];
+      util.saveLinkMapping();
+    }
+    return '任务执行完毕, 请检查错误日志是否存在报错信息, 若无报错信息, 才是成功执行';
   }
 }
 

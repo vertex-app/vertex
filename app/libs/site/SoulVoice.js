@@ -5,7 +5,7 @@ class Site {
   constructor () {
     this.name = 'SoulVoice';
     this.downloadLink = 'https://pt.soulvoice.club/download.php?id={ID}';
-    this.url = 'https://www.soulvoice.co/';
+    this.url = 'https://pt.soulvoice.club/';
   };
 
   async getInfo () {

@@ -573,6 +573,9 @@ class Douban {
   async _linkTorrentFiles (torrent, client, recordNoteJson) {
     // 链接有失败标志
     let isError = false;
+    if (!global.linkMapping[torrent.hash]) {
+      global.linkMapping[torrent.hash] = [];
+    }
     const wish = recordNoteJson.wish;
     const _wish = this.wishes.filter(item => item.id === wish.id)[0];
     wish.episodeOffset = _wish?.episodeOffset || 0;
@@ -665,6 +668,7 @@ class Douban {
         logger.binge(this.alias, '执行链接命令', command);
         try {
           await global.runningServer[linkRule.server].run(command);
+          global.linkMapping[torrent.hash].push(linkRule.server + '####' + linkFile);
         } catch (e) {
           logger.error(e);
           isError = true;
@@ -707,6 +711,7 @@ class Douban {
         logger.binge(this.alias, '执行链接命令', command);
         try {
           await global.runningServer[linkRule.server].run(command);
+          global.linkMapping[torrent.hash].push(linkRule.server + '####' + linkFile);
         } catch (e) {
           logger.error(e);
           isError = true;
@@ -718,6 +723,7 @@ class Douban {
     } catch (e) {
       logger.error('添加种子标签失败', e);
     }
+    util.saveLinkMapping();
   }
 
   scrapeEpisode (_subtitle = '') {

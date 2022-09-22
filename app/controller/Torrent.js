@@ -112,5 +112,38 @@ class Torrent {
       });
     }
   };
+
+  getDelInfo (req, res) {
+    const options = req.query;
+    try {
+      const r = torrentMod.getDelInfo(options);
+      res.send({
+        success: true,
+        data: r
+      });
+    } catch (e) {
+      res.send({
+        success: false,
+        message: e.message
+      });
+    }
+  };
+
+  async deleteTorrent (req, res) {
+    const options = req.body;
+    try {
+      const r = await torrentMod.deleteTorrent(options);
+      res.send({
+        success: true,
+        message: r
+      });
+    } catch (e) {
+      logger.error(e);
+      res.send({
+        success: false,
+        message: e.message
+      });
+    }
+  };
 }
 module.exports = Torrent;

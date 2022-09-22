@@ -239,7 +239,9 @@ module.exports = function (app, express, router) {
   router.get('/torrent/info', ctrl.Torrent.info);
   router.get('/torrent/getBulkLinkList', ctrl.Torrent.getBulkLinkList);
   router.get('/torrent/scrapeName', ctrl.Torrent.scrapeName);
+  router.get('/torrent/getDelInfo', ctrl.Torrent.getDelInfo);
   router.post('/torrent/link', ctrl.Torrent.link);
+  router.post('/torrent/deleteTorrent', ctrl.Torrent.deleteTorrent);
 
   router.get('/log/get', ctrl.Log.get);
   router.get('/log/clear', ctrl.Log.clear);

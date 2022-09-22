@@ -26,5 +26,14 @@ export default {
     const qsString = Object.keys(qs).map(item => `${item}=${encodeURIComponent(qs[item])}`).join('&');
     const url = `/api/torrent/listHistory?${qsString}`;
     return await get(url);
+  },
+  getDelInfo: async (qs) => {
+    const qsString = Object.keys(qs).map(item => `${item}=${encodeURIComponent(qs[item])}`).join('&');
+    const url = `/api/torrent/getDelInfo?${qsString}`;
+    return await get(url);
+  },
+  deleteTorrent: async (body) => {
+    const url = '/api/torrent/deleteTorrent';
+    return await post(url, body);
   }
 };

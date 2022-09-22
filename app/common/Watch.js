@@ -116,6 +116,9 @@ class Watch {
   };
 
   async _linkTorrentFiles (torrent, client, name, _season, year, type) {
+    if (!global.linkMapping[torrent.hash]) {
+      global.linkMapping[torrent.hash] = [];
+    }
     // 链接有失败标志
     let isError = false;
     const linkRule = util.listLinkRule().filter(item => item.id === this.linkRule)[0];
@@ -229,6 +232,7 @@ class Watch {
         logger.watch(this.alias, '执行链接命令', command);
         try {
           await global.runningServer[linkRule.server].run(command);
+          global.linkMapping[torrent.hash].push(linkRule.server + '####' + linkFile);
         } catch (e) {
           logger.error(e);
           isError = true;
@@ -240,9 +244,13 @@ class Watch {
     } catch (e) {
       logger.error('添加种子标签失败', e);
     }
+    util.saveLinkMapping();
   }
 
   async _linkTorrentFilesKeepStruct (torrent, client, name) {
+    if (!global.linkMapping[torrent.hash]) {
+      global.linkMapping[torrent.hash] = [];
+    }
     // 链接有失败标志
     let isError = false;
     const replaceTopDir = this.linkMode === 'keepStruct-2';
@@ -287,6 +295,7 @@ class Watch {
       logger.binge('手动链接', '执行链接命令', command);
       try {
         await global.runningServer[_linkRule.server].run(command);
+        global.linkMapping[torrent.hash].push(_linkRule.server + '####' + linkFile);
       } catch (e) {
         logger.error(e);
         isError = true;
@@ -297,6 +306,7 @@ class Watch {
     } catch (e) {
       logger.error('添加种子标签失败', e);
     }
+    util.saveLinkMapping();
   }
 
   _saveSet () {
