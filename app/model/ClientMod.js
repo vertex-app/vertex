@@ -117,7 +117,12 @@ class ClientMod {
       trackerList: trackerArr,
       trackers: Object.keys(trackers)
     };
-  }
+  };
+
+  async getLogs (options) {
+    const clients = global.runningClient;
+    return await clients[options.client].getLogs();
+  };
 }
 
 module.exports = ClientMod;

@@ -173,6 +173,7 @@ module.exports = function (app, express, router) {
   router.get('/downloader/listTop10', ctrl.Client.listTop10);
   router.get('/downloader/listMainInfo', ctrl.Client.listMainInfo);
   router.get('/downloader/getSpeedPerTracker', ctrl.Client.getSpeedPerTracker);
+  router.get('/downloader/getLogs', ctrl.Client.getLogs);
   router.post('/downloader/add', ctrl.Client.add);
   router.post('/downloader/modify', ctrl.Client.modify);
   router.post('/downloader/delete', ctrl.Client.delete);

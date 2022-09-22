@@ -118,5 +118,21 @@ class Client {
       });
     }
   };
+
+  async getLogs (req, res) {
+    try {
+      const r = await clientMod.getLogs(req.query);
+      res.send({
+        success: true,
+        data: r
+      });
+    } catch (e) {
+      logger.error(e);
+      res.send({
+        success: false,
+        message: e.message
+      });
+    }
+  };
 }
 module.exports = Client;

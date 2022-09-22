@@ -175,6 +175,10 @@ class UserMod {
           title: '路径生成器',
           path: '/tool/pathGenerator',
           icon: ['fas', 'terminal']
+        }, {
+          title: '下载器日志',
+          path: '/tool/clientLog',
+          icon: ['fas', 'note-sticky']
         }]
       }, {
         title: '任务引导',

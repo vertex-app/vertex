@@ -36,6 +36,7 @@ import ToolHosts from '@/pages/tool/Hosts';
 import ToolProxy from '@/pages/tool/Proxy';
 import ToolShell from '@/pages/tool/Shell';
 import ToolPathGenerator from '@/pages/tool/PathGenerator';
+import ToolClientLog from '@/pages/tool/ToolClientLog';
 
 import InfoInfo from '@/pages/info/Info';
 import InfoLog from '@/pages/info/Log';
@@ -403,6 +404,18 @@ const tool = {
       component: ToolShell,
       meta: {
         title: 'Shell - 常用工具'
+      }
+    }, {
+      path: 'clientLog/:id',
+      component: ToolClientLog,
+      meta: {
+        title: '下载器日志 - 常用工具'
+      }
+    }, {
+      path: 'clientLog',
+      component: ToolClientLog,
+      meta: {
+        title: '下载器日志 - 常用工具'
       }
     }
   ]

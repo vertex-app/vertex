@@ -569,5 +569,12 @@ class Client {
       await this.client.pauseTorrent(this.clientUrl, this.cookie, hash);
     }
   }
+
+  async getLogs (hash) {
+    if (this._client.type === 'qBittorrent') {
+      return await this.client.getLogs(this.clientUrl, this.cookie, hash);
+    }
+    return [];
+  }
 }
 module.exports = Client;

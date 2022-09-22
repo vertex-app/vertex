@@ -162,6 +162,17 @@ exports.getFiles = async (clientUrl, cookie, hash) => {
   return JSON.parse(res.body);
 };
 
+exports.getLogs = async (clientUrl, cookie) => {
+  const message = {
+    url: clientUrl + '/api/v2/log/main',
+    headers: {
+      cookie
+    }
+  };
+  const res = await util.requestPromise(message);
+  return JSON.parse(res.body);
+};
+
 exports.setSpeedLimit = async (clientUrl, cookie, hash, type, speed) => {
   const message = {
     url: clientUrl + `/api/v2/torrents/set${type === 'upload' ? 'Upload' : 'Download'}Limit`,

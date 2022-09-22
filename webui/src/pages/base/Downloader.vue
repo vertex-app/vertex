@@ -43,6 +43,9 @@
                   <a-menu-item>
                     <a @click="cloneClick(record)">克隆</a>
                   </a-menu-item>
+                  <a-menu-item>
+                    <a @click="gotoLog(record)">日志</a>
+                  </a-menu-item>
                   <a-menu-item danger>
                     <a-popover title="删除?" trigger="click" :overlayStyle="{ width: '84px', overflow: 'hidden' }">
                       <template #content>
@@ -409,6 +412,9 @@ export default {
     },
     goto (record) {
       window.open(`/proxy/client/${record.id}/`);
+    },
+    gotoLog (record) {
+      window.open(`/tool/clientLog?id=${record.id}`);
     },
     clearDownloader () {
       this.downloader = {
