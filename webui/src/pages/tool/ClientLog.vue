@@ -7,7 +7,7 @@
       :columns="columns"
       size="small"
       :data-source="logs"
-      :pagination="false"
+      :pagination="pagination"
       :scroll="{ x: 640 }"
     >
       <template #title>
@@ -39,7 +39,14 @@ export default {
         width: 96
       }
     ];
+    const pagination = {
+      position: ['topRight', 'bottomRight'],
+      total: 0,
+      pageSize: 100,
+      showSizeChanger: false
+    };
     return {
+      pagination,
       columns,
       logs: []
     };
@@ -56,6 +63,7 @@ export default {
       try {
         const res = await this.$api().downloader.getLogs(this.$route.query.id);
         this.logs = res.data.reverse();
+        this.pagination.total = this.logs.length;
       } catch (e) {
         this.$message().error(e.message);
       }

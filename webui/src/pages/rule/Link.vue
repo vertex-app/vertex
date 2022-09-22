@@ -161,7 +161,9 @@ export default {
       columns,
       linkRule: {},
       defaultLinkRule: {
-        hardlink: false
+        hardlink: false,
+        keepSeriesName: false,
+        group: false
       },
       loading: true,
       serverList: [],
