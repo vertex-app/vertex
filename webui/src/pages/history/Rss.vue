@@ -14,6 +14,7 @@
     >
       <template #title>
         <span style="font-size: 16px; font-weight: bold;">RSS 历史</span>
+        <span style="font-size: 14px; font-weight: bold; color: red; margin-left: 12px;">遇到问题先去看 Wiki，特别是 Wiki 里的常见问题, 实在找不到再去交流群问, 别 TM Wiki 不看直接在群里问。</span>
       </template>
       <template #bodyCell="{ column, record }">
         <template v-if="column.dataIndex === 'rssId'">

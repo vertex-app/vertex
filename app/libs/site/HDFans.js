@@ -9,7 +9,7 @@ class Site {
     const info = {};
     const document = await this._getDocument('https://hdfans.org/', false, 10);
     // 用户名
-    info.username = document.querySelector('a[href^=userdetails] b').innerHTML;
+    info.username = document.querySelector('a[href*=userdetails] b').innerHTML;
     // 上传
     info.upload = document.querySelector('font[class=color_uploaded]').nextSibling.nodeValue.trim().replace(/(\w)B/, '$1iB');
     info.upload = util.calSize(...info.upload.split(' '));
