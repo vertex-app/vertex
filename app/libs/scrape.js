@@ -99,6 +99,15 @@ const _freeHDBits = async function (url, cookie) {
   return state;
 };
 
+const _freeHDArea = async function (url, cookie) {
+  const d = await getDocument(url, cookie);
+  if (d.body.innerHTML.indexOf('userdetails') === -1) {
+    throw new Error('疑似登录状态失效, 请检查 Cookie');
+  }
+  const state = d.querySelector('h1#top font[class]');
+  return state && ['free', 'twoupfree'].indexOf(state.className) !== -1;
+};
+
 const freeWrapper = {
   'pt.btschool.club': _free,
   'club.hares.top': _freeHaresClub,
@@ -117,11 +126,13 @@ const freeWrapper = {
   'kp.m-team.cc': _free,
   'discfan.net': _free,
   'piggo.me': _free,
+  'hdatmos.club': _free,
   'open.cd': _freeOpencd,
   'www.open.cd': _freeOpencd,
   'totheglory.im': _freeToTheGlory,
   'u2.dmhy.org': _freeDmhy,
-  'hdbits.org': _freeHDBits
+  'hdbits.org': _freeHDBits,
+  'www.hdarea.co': _freeHDArea
 };
 
 const _hr = async function (url, cookie) {

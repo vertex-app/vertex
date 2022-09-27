@@ -190,27 +190,30 @@ export default {
           value: 'Rss 失败'
         }, {
           key: 'scrapeError',
-          value: '抓取失败'
+          value: '抓取免费或 HR 失败'
         }, {
-          key: 'add',
+          key: 'addTorrent',
           value: '添加种子'
         }, {
-          key: 'addError',
+          key: 'addTorrentError',
           value: '添加种子失败'
         }, {
-          key: 'reject',
+          key: 'rejectTorrent',
           value: '拒绝种子'
         }, {
-          key: 'delete',
+          key: 'deleteTorrent',
           value: '删除种子'
         }, {
-          key: 'deleteError',
+          key: 'deleteTorrentError',
           value: '删除种子失败'
         }, {
-          key: 'reannounce',
+          key: 'reannounceTorrent',
           value: '重新汇报种子'
         }, {
-          key: 'clientConnect',
+          key: 'reannounceTorrentError',
+          value: '重新汇报种子失败'
+        }, {
+          key: 'connectClient',
           value: '下载器已连接'
         }, {
           key: 'clientLoginError',
@@ -222,20 +225,47 @@ export default {
           key: 'spaceAlarm',
           value: '空间警告'
         }, {
-          key: 'siteData',
-          value: '站点数据推送'
+          key: 'plexWebhook',
+          value: 'Plex 通知'
         }, {
-          key: 'mediaServer',
-          value: '媒体服务器'
+          key: 'embyWebhook',
+          value: 'Emby 通知'
         }, {
-          key: 'race',
-          value: '追剧相关'
+          key: 'jellyfinWebhook',
+          value: 'Jellyfin 通知'
         }, {
-          key: 'douban',
-          value: '豆瓣'
+          key: 'selectWish',
+          value: '选择想看 (微信交互)'
         }, {
-          key: 'doubanSelectError',
-          value: '豆瓣选种失败'
+          key: 'addDoubanTorrent',
+          value: '添加追剧种子'
+        }, {
+          key: 'addDoubanTorrentError',
+          value: '添加追剧种子失败'
+        }, {
+          key: 'torrentFinish',
+          value: '追剧种子已完成'
+        }, {
+          key: 'selectTorrentError',
+          value: '追剧搜索种子失败'
+        }, {
+          key: 'addDouban',
+          value: '添加追剧任务'
+        }, {
+          key: 'startRefreshWish',
+          value: '刷新追剧任务'
+        }, {
+          key: 'startRefreshWishError',
+          value: '刷新追剧任务失败'
+        }, {
+          key: 'addDoubanWish',
+          value: '添加追剧项目'
+        }, {
+          key: 'scrapeTorrent',
+          value: '识别种子'
+        }, {
+          key: 'scrapeTorrentFailed',
+          value: '识别种子失败'
         }, {
           key: 'finish',
           value: '种子完成'
@@ -279,7 +309,7 @@ export default {
       }
     },
     modifyClick (row) {
-      this.notification = { ...row };
+      this.notification = { ...row, pushType: this.pushType.map(item => item.key).filter(item => row.pushType.indexOf(item) !== -1) };
     },
     clearNotification () {
       this.notification = { ...this.defaultNotification, pushType: [] };
