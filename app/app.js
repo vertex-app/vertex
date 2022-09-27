@@ -26,15 +26,6 @@ logger.use(app);
 require('./routes/router.js')(app, express, router);
 
 const initPush = function () {
-  const sitePushSettng = JSON.parse(fs.readFileSync(path.join(__dirname, './data/setting/site-push-setting.json')));
-  if (sitePushSettng.push) {
-    global.sitePushJob = cron.schedule(sitePushSettng.cron, () => {
-      const pushTo = util.listPush().filter(item => item.id === sitePushSettng.pushTo)[0] || {};
-      pushTo.push = true;
-      const push = new Push(pushTo);
-      push.pushSiteData();
-    });
-  }
   const webhookPush = util.listPush().filter(item => item.id === global.webhookPushTo)[0];
   if (webhookPush) {
     global.webhookPush = new Push({ ...webhookPush, push: true });

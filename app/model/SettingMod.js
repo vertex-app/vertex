@@ -3,7 +3,6 @@ const path = require('path');
 const moment = require('moment');
 const util = require('../libs/util');
 const redis = require('../libs/redis');
-const cron = require('node-cron');
 const Push = require('../common/Push');
 const otp = require('../libs/otp');
 
@@ -11,7 +10,6 @@ const settingPath = path.join(__dirname, '../data/setting.json');
 const proxyPath = path.join(__dirname, '../data/setting/proxy.json');
 const torrentHistorySettingPath = path.join(__dirname, '../data/setting/torrent-history-setting.json');
 const torrentMixSettingPath = path.join(__dirname, '../data/setting/torrent-mix-setting.json');
-const sitePushSettingPath = path.join(__dirname, '../data/setting/site-push-setting.json');
 const torrentPushSettingPath = path.join(__dirname, '../data/setting/torrent-push-setting.json');
 
 class SettingMod {
@@ -109,23 +107,6 @@ class SettingMod {
 
   modifyTorrentPushSetting (options) {
     fs.writeFileSync(torrentPushSettingPath, JSON.stringify(options, null, 2));
-    return '修改成功';
-  };
-
-  getSitePushSetting () {
-    const settingStr = fs.readFileSync(sitePushSettingPath, { encoding: 'utf-8' });
-    return JSON.parse(settingStr);
-  };
-
-  modifySitePushSetting (options) {
-    fs.writeFileSync(sitePushSettingPath, JSON.stringify(options, null, 2));
-    if (global.sitePushJob) global.sitePushJob.stop();
-    global.sitePushJob = cron.schedule(options.cron, () => {
-      const pushTo = util.listPush().filter(item => item.id === options.pushTo)[0] || {};
-      pushTo.push = true;
-      const push = new Push(pushTo);
-      push.pushSiteData();
-    });
     return '修改成功';
   };
 

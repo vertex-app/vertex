@@ -432,7 +432,7 @@ const _getTorrentsHDBits = async function (rssUrl) {
   return torrents;
 };
 
-const _getHDTorrents = async function (rssUrl) {
+const _getTorrentsHDTorrents = async function (rssUrl) {
   const rss = await parseXml(await _getRssContent(rssUrl));
   const torrents = [];
   const items = rss.rss.channel[0].item;
@@ -457,7 +457,7 @@ const _getHDTorrents = async function (rssUrl) {
   return torrents;
 };
 
-const _getHDCityTorrents = async function (rssUrl) {
+const _getTorrentsHDCity = async function (rssUrl) {
   const rss = await parseXml(await _getRssContent(rssUrl));
   const torrents = [];
   const items = rss.rss.channel[0].item;
@@ -482,7 +482,7 @@ const _getHDCityTorrents = async function (rssUrl) {
   return torrents;
 };
 
-const _getIPTorrentsTorrents = async function (rssUrl) {
+const _getTorrentsIPTorrents = async function (rssUrl) {
   const rss = await parseXml(await _getRssContent(rssUrl));
   const torrents = [];
   const items = rss.rss.channel[0].item;
@@ -509,7 +509,7 @@ const _getIPTorrentsTorrents = async function (rssUrl) {
   return torrents;
 };
 
-const _getMikanProjectTorrents = async function (rssUrl) {
+const _getTorrentsMikanProject = async function (rssUrl) {
   const rss = await parseXml(await _getRssContent(rssUrl));
   const torrents = [];
   const items = rss.rss.channel[0].item;
@@ -536,7 +536,7 @@ const _getMikanProjectTorrents = async function (rssUrl) {
   return torrents;
 };
 
-const _getLearnFlakesTorrents = async function (rssUrl) {
+const _getTorrentsLearnFlakes = async function (rssUrl) {
   const rss = await parseXml(await _getRssContent(rssUrl, false));
   const torrents = [];
   const items = rss.rss.channel[0].item;
@@ -567,7 +567,7 @@ const _getLearnFlakesTorrents = async function (rssUrl) {
   return torrents;
 };
 
-const _getExoticaZTorrents = async function (rssUrl) {
+const _getTorrentsExoticaZ = async function (rssUrl) {
   const rss = await parseXml(await _getRssContent(rssUrl));
   const torrents = [];
   const items = rss.rss.channel[0].item;
@@ -603,6 +603,32 @@ const _getExoticaZTorrents = async function (rssUrl) {
   return torrents;
 };
 
+const _getTorrentsTorrentLeech = async function (rssUrl) {
+  const rss = await parseXml(await _getRssContent(rssUrl));
+  const torrents = [];
+  const items = rss.rss.channel[0].item;
+  for (let i = 0; i < items.length; ++i) {
+    const torrent = {
+      size: 0,
+      name: '',
+      hash: '',
+      id: 0,
+      url: '',
+      link: ''
+    };
+    torrent.size = 0;
+    torrent.name = items[i].title[0];
+    const link = items[i].link[0];
+    torrent.link = link;
+    torrent.hash = items[i].guid[0]._ || items[i].guid[0];
+    torrent.id = torrent.hash.substring(torrent.hash.indexOf('torrent/') + 8);
+    torrent.url = torrent.hash;
+    torrent.pubTime = moment(items[i].pubDate[0]).unix();
+    torrents.push(torrent);
+  }
+  return torrents;
+};
+
 const _getTorrentsWrapper = {
   'filelist.io': _getTorrentsFileList,
   'blutopia.xyz': _getTorrentsBlutopia,
@@ -614,13 +640,14 @@ const _getTorrentsWrapper = {
   'hdbits.org': _getTorrentsHDBits,
   'beyond-hd.me': _getTorrentsBeyondHD,
   'pt.sjtu.edu.cn': _getTorrentsPuTao,
-  'hd-torrents.org': _getHDTorrents,
-  'hdcity.leniter.org': _getHDCityTorrents,
-  'iptorrents.com': _getIPTorrentsTorrents,
-  'mikanani.me': _getMikanProjectTorrents,
-  'learnflakes.net': _getLearnFlakesTorrents,
-  'exoticaz.to': _getExoticaZTorrents,
-  'avistaz.to': _getExoticaZTorrents
+  'hd-torrents.org': _getTorrentsHDTorrents,
+  'hdcity.leniter.org': _getTorrentsHDCity,
+  'iptorrents.com': _getTorrentsIPTorrents,
+  'mikanani.me': _getTorrentsMikanProject,
+  'learnflakes.net': _getTorrentsLearnFlakes,
+  'exoticaz.to': _getTorrentsExoticaZ,
+  'avistaz.to': _getTorrentsExoticaZ,
+  'rss.torrentleech.org': _getTorrentsTorrentLeech
 };
 
 exports.getTorrents = async function (rssUrl) {
