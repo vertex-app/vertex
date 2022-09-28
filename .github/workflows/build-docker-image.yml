@@ -41,9 +41,15 @@ jobs:
           --header 'Content-Type: application/json' \
           --data-raw "{\"key\": \"$KEY\",\"time\": \"$PUSH_TIME\",\"message\": \"$CI_COMMIT_MESSAGE\",\"branch\": \"$CI_COMMIT_BRANCH\",\"sha1\": \"${CI_COMMIT_SHA:0:12}\", \"type\": \"start\"}"
     - name: Install Dependencies
-      working-directory: ./webui
       run: |
-        npm i --legacy-peer-deps
+        npm i --save-dev
+        cd webui
+        npm i --legacy-peer-deps --save-dev
+    - name: Eslint
+      run: |
+        npm run eslint
+        cd webui
+        npm run eslint
     - name: Prepare Theme Files
       working-directory: ./webui
       run: |
