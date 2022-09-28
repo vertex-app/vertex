@@ -29,8 +29,86 @@
 🌈 站点：提供站点的上传下载数据统计及历史信息。
 </p>
 <hr/>
-<h3>交流群组</h3>
-<p>QQ: 刷流 852643057 / 追剧 926921776</p>
+
+### Contribute
+#### 开发环境
+Node.js v14.17.0  
+npm 6.14.13
+
+#### 拉取代码
+Fork 本仓库后拉取到本地
+
+#### 安装依赖
+``` bash
+cd vertex
+npm i --save-dev
+cd webui
+npm i --save-dev --legacy-peer-deps
+```
+
+#### 目录结构
+```
+.
+├── app                   # 后端
+│   ├── app.js            # 程序入口
+│   ├── common            # 基本类
+│   ├── config            # 配置文件
+│   ├── controller        # Controller
+│   ├── data              # 持久数据存放目录 （具体生成逻辑参考 docker/start.sh）
+│   ├── libs              # 工具文件夹
+│   ├── model             # Model
+│   ├── routes            # 路由
+│   └── script            # 脚本文件夹 （已弃用）
+├── docker                # docker 相关
+│   ├── Dockerfile
+│   └── start.sh
+├── LICENSE
+├── nodemon.json
+├── package.json
+├── package-lock.json
+├── README.md
+├── webhook               # Webhook 资源相关
+│   └── EmbySXPackage
+└── webui                 # 前端
+    ├── babel.config.js
+    ├── cyber.js
+    ├── dark.js
+    ├── light.js
+    ├── package.json
+    ├── package-lock.json
+    ├── public
+    │   ├── assets
+    │   └── index.html
+    ├── src
+    │   ├── api           # 请求 api
+    │   ├── App.vue       #
+    │   ├── main.js       # 入口
+    │   ├── pages         # 页面 .vue
+    │   ├── routes        # 路由
+    │   ├── style         # 主题相关
+    │   └── util          # 工具类
+    └── vue.config.js
+```
+
+#### 启动
+``` bash
+# 安装 nodemon
+npm i -g nodemon
+
+# 终端 1 启动后端
+cd vertex
+npm run app
+
+# 终端 2 启动 vue-server
+cd webui
+npm run serve
+```
+
+### 交流群组
+QQ: 刷流 852643057 / 追剧 926921776
+
 <hr/>
-<h3>Wiki</h3>
+
+### Wiki
 <p><a href="https://wiki.vertex.icu">Wiki</a></p>
+<hr/>
