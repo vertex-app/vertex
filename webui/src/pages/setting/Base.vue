@@ -43,6 +43,11 @@
           <a-input size="small" v-model:value="setting.wechatProxy"/>
         </a-form-item>
         <a-form-item
+          label="隐藏报错提示"
+          extra="进入首页后不提示报错信息">
+          <a-checkbox v-model:checked="setting.ignoreError">启用</a-checkbox>
+        </a-form-item>
+        <a-form-item
           :wrapperCol="isMobile() ? { span:24 } : { span: 21, offset: 3 }">
           <a-button type="primary" html-type="submit" style="margin-top: 24px; margin-bottom: 48px;">保存</a-button>
         </a-form-item>
@@ -72,7 +77,8 @@ export default {
           userAgent: s.userAgent,
           loggerLevel: s.loggerLevel,
           telegramProxy: s.telegramProxy,
-          wechatProxy: s.wechatProxy
+          wechatProxy: s.wechatProxy,
+          ignoreError: s.ignoreError
         };
       } catch (e) {
         await this.$message().error(e.message);

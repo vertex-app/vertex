@@ -71,6 +71,7 @@ const init = function () {
   global.wechatProxy = setting.wechatProxy;
   global.checkFinishCron = setting.checkFinishCron || '30 * * * * *';
   global.userAgent = setting.userAgent;
+  global.ignoreError = setting.ignoreError;
   global.webhookPushTo = setting.webhookPushTo;
   global.doubanPush = setting.doubanPush;
   global.apiKey = setting.apiKey;

@@ -54,6 +54,7 @@ class SettingMod {
     global.menu = options.menu || [];
     global.dashboardContent = options.dashboardContent || [];
     global.userAgent = options.userAgent;
+    global.ignoreError = options.ignoreError;
     global.apiKey = options.apiKey;
     global.theme = options.theme;
     global.background = options.background;
@@ -139,7 +140,7 @@ class SettingMod {
     for (const tracker of Object.keys(perTrackerTodaySet)) {
       perTrackerToday.push({ tracker, ...perTrackerTodaySet[tracker] });
     }
-    const errors = JSON.parse(await redis.get('vertex:error:list') || '[]');
+    const errors = global.ignoreError ? [] : JSON.parse(await redis.get('vertex:error:list') || '[]');
     await redis.set('vertex:error:list', '[]');
     return {
       dashboardContent: global.dashboardContent,
