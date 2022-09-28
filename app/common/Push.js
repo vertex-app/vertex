@@ -99,7 +99,7 @@ class Push {
   };
 
   async connectClient (...args) {
-    await this.doRequest('connectClient', args);
+    return await this.doRequest('connectClient', args);
   }
 
   async clientLoginError (...args) {

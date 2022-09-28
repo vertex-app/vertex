@@ -7,6 +7,7 @@ class Wechat {
     this.corpid = wechat.corpid;
     this.corpsecret = wechat.corpsecret;
     this.agentid = wechat.agentid;
+    this.alias = wechat.alias;
     this.accessToken = {
       token: '',
       refreshTime: 0

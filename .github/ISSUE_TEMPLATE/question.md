@@ -1,5 +1,5 @@
 ---
-name: Problem
+name: Question
 about: 如果使用过程中有疑问，可以使用本模板提交
 title: 'question: 描述你的问题'
 labels: ''

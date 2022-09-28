@@ -6,6 +6,7 @@ class Telegram {
   constructor (telegram) {
     this.telegramBotToken = telegram.telegramBotToken;
     this.telegramChannel = telegram.telegramChannel;
+    this.alias = telegram.alias;
   };
 
   async pushTelegram (title, desp) {
@@ -14,7 +15,7 @@ class Telegram {
       method: 'POST',
       json: {
         chat_id: this.telegramChannel,
-        text: '#' + title + '\n```\n' + desp + '\n```',
+        text: '\\#' + title + '\n```\n' + desp + '\n```',
         parse_mode: 'MarkdownV2'
       }
     };
@@ -59,7 +60,7 @@ class Telegram {
     const res = await util.requestPromise(option);
     const json = res.body;
     if (!json.ok) {
-      logger.error('推送失败', this.alias, res.body);
+      logger.error('推送失败, 请检查本通知工具是否已勾选 下载器已链接 推送类型! ', this.alias, res.body);
     }
   }
 
