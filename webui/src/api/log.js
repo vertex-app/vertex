@@ -1,4 +1,4 @@
-import { get, post } from '../util/axios';
+import { get } from '../util/axios';
 
 export default {
   get: async (type) => {

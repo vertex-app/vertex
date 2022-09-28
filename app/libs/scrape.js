@@ -46,7 +46,7 @@ const _freeHDChina = async function (url, cookie) {
   }
   const tid = url.match(/id=(\d*)/)[1];
   const csrf = d.querySelector('meta[name=x-csrf]').content;
-  const promotion = await requestPromise({
+  const promotion = await util.requestPromise({
     url: 'https://hdchina.org/ajax_promotion.php',
     method: 'POST',
     headers: {

@@ -1,4 +1,3 @@
-const logger = require('../logger');
 const util = require('../util');
 const url = require('url');
 const fs = require('fs');

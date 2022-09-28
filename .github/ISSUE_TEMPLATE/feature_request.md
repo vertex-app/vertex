@@ -1,7 +1,7 @@
 ---
 name: Feature request
-about: Suggest an idea for this project
-title: 'feature: '
+about: 如果有需求，可以使用本模板提交
+title: 'feature: 描述你的需求'
 labels: ''
 assignees: ''
 

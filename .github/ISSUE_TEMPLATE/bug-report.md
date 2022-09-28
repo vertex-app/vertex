@@ -1,7 +1,7 @@
 ---
 name: Bug Report
 about: 如果有 Bug，可以使用本模板提交
-title: 'bug: '
+title: 'bug: 描述你的问题'
 labels: ''
 assignees: ''
 

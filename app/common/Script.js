@@ -1,4 +1,3 @@
-const util = require('../libs/util');
 const cron = require('node-cron');
 const logger = require('../libs/logger');
 

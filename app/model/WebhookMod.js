@@ -298,7 +298,6 @@ class WebhookMod {
       'media-scrobble': '播放超过 90%'
     };
     const event = eventMap[payload.event.replace('.', '-')] + ': ' + payload.Metadata.title + ' / ' + (payload.Metadata.originalTitle || '');
-    const server = payload.Server.title;
     const note = `用户: ${payload.Account.title}\n` +
       `媒体: ${payload.Metadata.title} / ${payload.Metadata.originalTitle || ''}\n` +
       `服务器: ${payload.Server.title}\n` +
@@ -326,7 +325,6 @@ class WebhookMod {
       playbackStop: '播放已停止'
     };
     const event = eventMap[payload.event] + ': ' + payload.itemName + ' / ' + (payload.originalName || '');
-    const server = payload.serverName;
     const note = `用户: ${payload.userName}\n` +
       `媒体: ${payload.itemName} / ${payload.originalName || ''}\n` +
       `服务器: ${payload.serverName}\n` +
@@ -348,7 +346,6 @@ class WebhookMod {
       PlaybackStop: '播放已停止'
     };
     const event = eventMap[payload.NotificationType] + ': ' + payload.Name + ' / ' + (payload.SeriesName || '');
-    const server = payload.serverName;
     const note = `用户: ${payload.NotificationUsername}\n` +
       `媒体: ${payload.Name} / ${payload.SeriesName || ''}\n` +
       `服务器: ${payload.ServerName}\n`;
