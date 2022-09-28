@@ -2,7 +2,6 @@ node_modules
 app/static
 webui/public/assets/styles
 logs
-package-lock.json
 app/data
 app/db/sql.db
 config.yaml

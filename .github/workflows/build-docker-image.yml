@@ -1,0 +1,97 @@
+name: Build Docker Image
+
+on:
+  push:
+    branches:
+    - dev
+    - stable
+    - release
+
+jobs:
+  build_docker_image:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - run: git fetch --prune --unshallow
+    - name: Use Node.js 14.x
+      uses: actions/setup-node@v3
+      with:
+        node-version: 14.x
+        cache: 'npm'
+    - name: Prepare ENV
+      run: |
+        CI_COMMIT_MESSAGE="${{ github.event.head_commit.message }}"
+        CI_COMMIT_MESSAGE=`echo $CI_COMMIT_MESSAGE | sed 's/\n//g'`
+        CI_COMMIT_BRANCH=$GITHUB_REF_NAME
+        CI_COMMIT_TIMESTAMP="${{ github.event.head_commit.timestamp }}"
+        KEY="${{ secrets.KEY }}"
+        PUSH_TIME=$(TZ=Asia/Shanghai date -d $CI_COMMIT_TIMESTAMP "+%Y-%m-%d %H:%M:%S")
+        echo "PUSH_TIME=$PUSH_TIME" >> $GITHUB_ENV
+        echo "CI_COMMIT_MESSAGE=$CI_COMMIT_MESSAGE" >> $GITHUB_ENV
+        echo "CI_COMMIT_BRANCH=$CI_COMMIT_BRANCH" >> $GITHUB_ENV
+        echo "CI_COMMIT_SHA=${{ github.event.head_commit.id }}" >> $GITHUB_ENV
+        echo "IMAGE_TAG_LATEST=lswl/vertex:latest" >> $GITHUB_ENV
+        echo "DOCKER_BUILDKIT=1" >> $GITHUB_ENV
+        echo "IMAGE_TAG_BRANCH=lswl/vertex:$CI_COMMIT_BRANCH" >> $GITHUB_ENV
+        echo "PUSH_TIME=$PUSH_TIME" >> $GITHUB_ENV
+        echo "KEY=$KEY" >> $GITHUB_ENV
+    - name: Push Start Message
+      run: |
+        curl --location --request POST 'https://vertex-push.lswl.workers.dev' \
+          --header 'Content-Type: application/json' \
+          --data-raw "{\"key\": \"$KEY\",\"time\": \"$PUSH_TIME\",\"message\": \"$CI_COMMIT_MESSAGE\",\"branch\": \"$CI_COMMIT_BRANCH\",\"sha1\": \"${CI_COMMIT_SHA:0:12}\", \"type\": \"start\"}"
+    - name: Install Dependencies
+      working-directory: ./webui
+      run: |
+        npm i --legacy-peer-deps
+    - name: Prepare Theme Files
+      working-directory: ./webui
+      run: |
+        mkdir ./public/assets/styles
+        node dark
+        node light
+        node cyber
+        echo '@import url(/api/setting/getBackground.less);' >> ./public/assets/styles/cyber.less
+        echo '.body-bg {' >> ./public/assets/styles/cyber.less
+        echo '  background:@vt-bg-image;' >> ./public/assets/styles/cyber.less
+        echo '  background-position-x:center;' >> ./public/assets/styles/cyber.less
+        echo '  background-position-y:center;' >> ./public/assets/styles/cyber.less
+        echo '  background-size:cover;' >> ./public/assets/styles/cyber.less
+        echo '}' >> ./public/assets/styles/cyber.less
+        echo '' >> ./public/assets/styles/cyber.less
+        echo '.login-layout {' >> ./public/assets/styles/cyber.less
+        echo '  background:@body-background;' >> ./public/assets/styles/cyber.less
+        echo '}' >> ./public/assets/styles/cyber.less
+        echo '' > ./public/assets/styles/follow.less
+    - name: Build Static Files
+      working-directory: ./webui
+      run: |
+        npm run build
+    - name: Prepare Docker Env
+      run: |
+        docker info
+        docker run --privileged --rm tonistiigi/binfmt --install all
+        mkdir -p ~/.docker/cli-plugins
+        wget "https://minio.lswl.in/share/buildx-v0.7.1.linux-arm64" -qO ~/.docker/cli-plugins/docker-buildx
+        chmod +x ~/.docker/cli-plugins/docker-buildx
+        docker context create context_name
+        docker buildx create --name buildx_name --use context_name
+        docker buildx inspect --bootstrap
+        docker login -u "${{ secrets.DOCKER_USERNAME }}" -p "${{ secrets.DOCKER_PASSWORD }}"
+        mkdir docker/src
+        mv app/static docker/src
+        cd docker
+        sed -i 's/COMMIT_ID/'$CI_COMMIT_SHA'/' Dockerfile
+        ls src/static
+        docker pull --platform linux/arm64 lswl/vertex:latest || echo 'fail'
+        docker pull --platform linux/amd64 lswl/vertex:latest || echo 'fail'
+    - name: Build Docker Images
+      working-directory: ./docker
+      run: |
+        docker buildx build --platform linux/amd64,linux/arm64 --cache-from lswl/vertex --tag $IMAGE_TAG_LATEST --build-arg BUILDKIT_INLINE_CACHE=1 . --push
+        docker buildx build --platform linux/amd64,linux/arm64 --cache-from lswl/vertex --tag $IMAGE_TAG_BRANCH --build-arg BUILDKIT_INLINE_CACHE=1 . --push
+    - name: Push Finish Message
+      run: |
+        curl --location --request POST 'https://vertex-push.lswl.workers.dev' \
+          --header 'Content-Type: application/json' \
+          --data-raw "{\"key\": \"$KEY\",\"time\": \"$PUSH_TIME\",\"message\": \"$COMMIT_MESSAGE\",\"branch\": \"$CI_COMMIT_BRANCH\",\"sha1\": \"${CI_COMMIT_SHA:0:12}\"}"

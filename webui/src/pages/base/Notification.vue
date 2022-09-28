@@ -268,7 +268,7 @@ export default {
           value: '识别种子失败'
         }, {
           key: 'finish',
-          value: '种子完成'
+          value: '追剧种子完成'
         }, {
           key: 'watch',
           value: '监控分类'
