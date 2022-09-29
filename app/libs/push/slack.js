@@ -5,7 +5,7 @@ const util = require('../util');
 class Slack {
   constructor (slack) {
     this.slackWebhook = slack.slackWebhook;
-    this.token = slack.token;
+    this.slackToken = slack.slackToken;
     this.alias = slack.alias;
   };
 
