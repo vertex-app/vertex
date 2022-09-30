@@ -495,3 +495,7 @@ exports.sleep = function (time) {
     }, time);
   });
 };
+
+exports.randomColor = function () {
+  return '#' + (new Array(6)).fill(1).map(() => '0123456789abcdef'[parseInt(Math.random() * 15)]).join('');
+};

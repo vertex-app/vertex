@@ -32,9 +32,9 @@
           <a-input size="small" v-model:value="setting.background"/>
         </a-form-item>
         <a-form-item
-          label="微信通知默认封面"
+          label="通知默认封面"
           name="wechatCover"
-          extra="企业微信通知时使用的默认封面, 留空显示 Vertex Logo">
+          extra="通知时使用的默认封面, 留空显示 Vertex Logo">
           <a-input size="small" v-model:value="setting.wechatCover"/>
         </a-form-item>
         <a-form-item

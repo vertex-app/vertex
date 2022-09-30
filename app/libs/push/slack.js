@@ -1,6 +1,7 @@
 const moment = require('moment');
 const logger = require('../logger');
 const util = require('../util');
+const path = require('path');
 
 class Slack {
   constructor (slack) {
@@ -10,48 +11,49 @@ class Slack {
   };
 
   async pushSlack (title, desp, poster) {
+    let _poster = poster || global.wechatCover || 'https://pic.lswl.in/images/2022/07/11/bf4eabf1afa841f4527db4d207d265c3.png';
+    _poster = `https://dash.vertex-app.top/api/image/cut/0.425/${path.basename(_poster)}/${encodeURIComponent(_poster)}`;
     const option = {
       url: this.slackWebhook,
       method: 'POST',
       json: {
-        text: title,
-        blocks: [
+        attachments: [
           {
-            type: 'header',
-            text: {
-              type: 'plain_text',
-              text: title,
-              emoji: true
-            }
-          },
-          {
-            type: 'image',
-            image_url: poster || 'https://pic.lswl.in/images/2022/07/11/bf4eabf1afa841f4527db4d207d265c3.png',
-            alt_text: 'inspiration'
-          },
-          {
-            type: 'context',
-            elements: [
+            color: util.randomColor(),
+            fallback: title,
+            blocks: [
               {
-                text: desp,
-                type: 'mrkdwn'
+                type: 'header',
+                text: {
+                  type: 'plain_text',
+                  text: title,
+                  emoji: true
+                }
+              },
+              {
+                type: 'image',
+                image_url: _poster,
+                alt_text: 'inspiration'
+              },
+              {
+                type: 'context',
+                elements: [
+                  {
+                    text: desp,
+                    type: 'mrkdwn'
+                  }
+                ]
+              },
+              {
+                type: 'context',
+                elements: [
+                  {
+                    text: '发送自: Vertex',
+                    type: 'mrkdwn'
+                  }
+                ]
               }
             ]
-          },
-          {
-            type: 'divider'
-          },
-          {
-            type: 'context',
-            elements: [
-              {
-                text: '发送自: Vertex',
-                type: 'plain_text'
-              }
-            ]
-          },
-          {
-            type: 'divider'
           }
         ]
       }
@@ -100,7 +102,7 @@ class Slack {
     if (note) {
       desp += note;
     } else {
-      desp += wish.episodes ? `无匹配结果或暂未更新 / 已完成至 ${wish.episodeNow} 集 / 全 ${wish.episodes} 集` : '无匹配结果或暂未更新';
+      desp += wish.episodes ? `*进度信息*: 已完成至 ${wish.episodeNow} 集 / 全 ${wish.episodes} 集` : '';
     }
     await this.pushSlack(title, desp);
   };
@@ -115,7 +117,7 @@ class Slack {
     desp += `*副标题*: ${torrent.subtitle}\n`;
     desp += `*体积*: ${util.formatSize(torrent.size)}\n`;
     desp += `*状态*: ${torrent.seeders} / ${torrent.leechers} / ${torrent.snatches}`;
-    desp += wish.episodes ? ` / 已完成至 ${wish.episodeNow} 集 / 全 ${wish.episodes} 集` : '';
+    desp += wish.episodes ? `\n*进度信息*: 已完成至 ${wish.episodeNow} 集 / 全 ${wish.episodes} 集` : '';
     await this.pushSlack(title, desp, wish.poster);
   };
 
@@ -128,7 +130,7 @@ class Slack {
     desp += `*种子标题*: ${torrent.title}\n`;
     desp += `*副标题*: ${torrent.subtitle}\n`;
     desp += `*状态*: ${torrent.seeders} / ${torrent.leechers} / ${torrent.snatches}`;
-    desp += wish.episodes ? ` / 已完成至 ${wish.episodeNow} 集 / 全 ${wish.episodes} 集` : '';
+    desp += wish.episodes ? `\n*进度信息*: 已完成至 ${wish.episodeNow} 集 / 全 ${wish.episodes} 集` : '';
     await this.pushSlack(title, desp, wish.poster);
   };
 
@@ -174,7 +176,7 @@ class Slack {
     let desp = `*${wish.name}*\n` +
       `*当前时间*: ${moment().format('YYYY-MM-DD HH:mm:ss')}\n`;
     desp += `*种子信息*: ${note.torrent.site} / ${note.torrent.title}`;
-    desp += wish.episodes ? ` / 已完成至 ${wish.episodeNow} 集 / 全 ${wish.episodes} 集` : '';
+    desp += wish.episodes ? `\n*进度信息*: 已完成至 $ {wish.episodeNow} 集 / 全 ${wish.episodes} 集` : '';
     await this.pushSlack(title, desp, wish.poster);
   };
 

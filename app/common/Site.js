@@ -107,7 +107,7 @@ class Site {
       this.info = info;
       this.retryCount = 0;
     } catch (e) {
-      logger.info(e);
+      logger.error(e);
       throw new Error(this.site + ' 站点数据抓取失败 (疑似是 Cookie 失效, 或绕过 CloudFlare 5s 盾失效)');
     }
     if (this.pullRemoteTorrent && global.panelKey) {

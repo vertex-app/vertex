@@ -15,7 +15,7 @@ class Telegram {
       method: 'POST',
       json: {
         chat_id: this.telegramChannel,
-        text: '\\#' + title + '\n```\n' + desp + '\n```',
+        text: '\\#' + title.replace(/-/g, '\\-') + '\n```\n' + desp + '\n```',
         parse_mode: 'MarkdownV2'
       }
     };
