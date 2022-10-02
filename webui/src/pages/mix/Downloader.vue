@@ -129,32 +129,40 @@ export default {
       {
         title: '客户端',
         dataIndex: 'clientAlias',
+        sorter: (a, b) => 0,
         width: 32,
         fixed: true
       }, {
         title: '种子名称',
         dataIndex: 'name',
+        sorter: (a, b) => 0,
+        defaultSortOrder: 'ascend',
         resizable: true,
         width: 144
       }, {
         title: '分类',
         dataIndex: 'category',
+        sorter: (a, b) => 0,
         width: 42
       }, {
         title: '标签',
         dataIndex: 'tags',
+        sorter: (a, b) => 0,
         width: 32
       }, {
         title: '种子大小',
         dataIndex: 'size',
+        sorter: (a, b) => 0,
         width: 32
       }, {
         title: '上传流量',
         dataIndex: 'uploaded',
+        sorter: (a, b) => 0,
         width: 32
       }, {
         title: '下载流量',
         dataIndex: 'downloaded',
+        sorter: (a, b) => 0,
         width: 32
       }, {
         title: '添加时间',
@@ -182,8 +190,8 @@ export default {
       length: 20,
       downloaders: [],
       keyword: '',
-      sortKey: '',
-      sortType: ''
+      sortKey: 'addedTime',
+      sortType: 'desc'
     };
     const pagination = {
       position: ['topRight', 'bottomRight'],
