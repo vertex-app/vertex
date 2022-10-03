@@ -87,5 +87,22 @@ class Rss {
       });
     }
   };
+
+  async dryrun (req, res) {
+    const options = req.body;
+    try {
+      const r = await rssMod.dryrun(options);
+      res.send({
+        success: true,
+        data: r
+      });
+    } catch (e) {
+      logger.error(e);
+      res.send({
+        success: false,
+        message: e.message
+      });
+    }
+  };
 }
 module.exports = Rss;

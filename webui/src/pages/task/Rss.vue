@@ -301,10 +301,58 @@
           :wrapperCol="isMobile() ? { span:24 } : { span: 21, offset: 3 }">
           <a-button type="primary" html-type="submit" style="margin-top: 24px; margin-bottom: 48px;">应用 | 完成</a-button>
           <a-button style="margin-left: 12px; margin-top: 24px; margin-bottom: 48px;"  @click="clearRss()">清空</a-button>
+          <a-button type="primary" style="margin-left: 12px; margin-top: 24px; margin-bottom: 48px;"  @click="dryrun()">试运行</a-button>
         </a-form-item>
       </a-form>
     </div>
   </div>
+  <a-modal
+    v-model:visible="modalVisible"
+    title="RSS 试运行"
+    width="1440px"
+    :footer="null">
+    <div style="text-align: left; ">
+      <a-alert message="注意事项" type="info" >
+        <template #description>
+          RSS 试运行仅判断是否符合 RSS 规则，不检测种子免费或 HR 状态。
+          <br>
+          RSS 链接: {{ rss.rssUrls[0] }}
+        </template>
+      </a-alert>
+      <a-form
+        labelAlign="right"
+        :labelWrap="true"
+        size="small"
+        :labelCol="{ span: 6 }"
+        :wrapperCol="{ span: 18 }"
+        autocomplete="off">
+        <a-form-item
+          :wrapperCol="{ span:24 }">
+          <a-table
+            :style="`font-size: ${isMobile() ? '12px': '14px'};`"
+            :columns="dryrunColumns"
+            size="small"
+            :data-source="dryrunResult"
+            :pagination="false"
+            :scroll="{ x: 960 }"
+          >
+            <template #title>
+              <span style="font-size: 16px; font-weight: bold;">种子列表</span>
+            </template>
+            <template #bodyCell="{ column, record }">
+              <template v-if="column.dataIndex === 'size'">
+                {{ $formatSize(record.size) }}
+              </template>
+            </template>
+          </a-table>
+        </a-form-item>
+        <a-form-item
+          :wrapperCol="isMobile() ? { span:24 } : { span: 6, offset: 18 }">
+          <a-button @click="() => modalVisible = false">取消</a-button>
+        </a-form-item>
+      </a-form>
+    </div>
+  </a-modal>
 </template>
 <script>
 export default {
@@ -338,8 +386,25 @@ export default {
         width: 28
       }
     ];
+    const dryrunColumns = [
+      {
+        title: '种子标题',
+        dataIndex: 'name',
+        width: 144
+      }, {
+        title: '种子大小',
+        dataIndex: 'size',
+        width: 14
+      }, {
+        title: '结果',
+        dataIndex: 'status',
+        width: 28
+      }
+    ];
     return {
       columns,
+      dryrunColumns,
+      modalVisible: false,
       rssList: [],
       downloaders: [],
       notifications: [],
@@ -413,6 +478,15 @@ export default {
         this.$message().success((this.rss.id ? '编辑' : '新增') + '成功, 列表正在刷新...');
         setTimeout(() => this.listRss(), 1000);
         this.clearRss();
+      } catch (e) {
+        this.$message().error(e.message);
+      }
+    },
+    async dryrun () {
+      try {
+        const res = await this.$api().rss.dryrun({ ...this.rss });
+        this.dryrunResult = res.data;
+        this.modalVisible = true;
       } catch (e) {
         this.$message().error(e.message);
       }

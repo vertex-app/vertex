@@ -47,6 +47,16 @@ class RssMod {
     }
     return rssList;
   };
+
+  async dryrun (options) {
+    const id = util.uuid.v4().split('-')[0];
+    const rssSet = { ...options };
+    rssSet.id = id;
+    rssSet.dryrun = true;
+    const rss = new Rss(rssSet);
+    const torrents = await rss.dryrun();
+    return torrents;
+  };
 }
 
 module.exports = RssMod;

@@ -190,6 +190,7 @@ module.exports = function (app, express, router) {
 
   router.get('/rss/list', ctrl.Rss.list);
   router.post('/rss/add', ctrl.Rss.add);
+  router.post('/rss/dryrun', ctrl.Rss.dryrun);
   router.post('/rss/modify', ctrl.Rss.modify);
   router.post('/rss/delete', ctrl.Rss.delete);
   router.post('/rss/deleteRecord', ctrl.Rss.deleteRecord);

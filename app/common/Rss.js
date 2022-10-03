@@ -38,7 +38,6 @@ class Rss {
     this.pushTorrentFile = rss.pushTorrentFile;
     this.notify = util.listPush().filter(item => item.id === rss.notify)[0] || {};
     this.notify.push = rss.pushNotify;
-    this.ntf = new Push(this.notify);
     this._acceptRules = rss.acceptRules || [];
     this._rejectRules = rss.rejectRules || [];
     this.acceptRules = util.listRssRule().filter(item => (this._acceptRules.indexOf(item.id) !== -1));
@@ -48,9 +47,12 @@ class Rss {
     this.maxClientUploadSpeed = util.calSize(rss.maxClientUploadSpeed, rss.maxClientUploadSpeedUnit);
     this.maxClientDownloadSpeed = util.calSize(rss.maxClientDownloadSpeed, rss.maxClientDownloadSpeedUnit);
     this.maxClientDownloadCount = +rss.maxClientDownloadCount;
-    this.rssJob = cron.schedule(rss.cron, async () => { try { await this.rss(); } catch (e) { logger.error(this.alias, e); } });
-    this.clearCount = cron.schedule('0 * * * *', () => { this.addCount = 0; });
-    logger.info('Rss 任务', this.alias, '初始化完毕');
+    if (!rss.dryrun) {
+      this.rssJob = cron.schedule(rss.cron, async () => { try { await this.rss(); } catch (e) { logger.error(this.alias, e); } });
+      this.clearCount = cron.schedule('0 * * * *', () => { this.addCount = 0; });
+      this.ntf = new Push(this.notify);
+      logger.info('Rss 任务', this.alias, '初始化完毕');
+    }
   }
 
   _all (str, keys) {
@@ -417,6 +419,35 @@ class Rss {
       }
     }
     this.lastRssTime = moment().unix();
+  }
+
+  async dryrun () {
+    const torrents = (await Promise.all(this.urls.map(url => rss.getTorrents(url)))).flat();
+    for (const torrent of torrents) {
+      let reject = false;
+      for (const rejectRule of this.rejectRules) {
+        if (this._fitRule(rejectRule, torrent)) {
+          torrent.status = '匹配到拒绝规则: ' + rejectRule.alias;
+          reject = true;
+          break;
+        }
+      }
+      if (reject) {
+        continue;
+      }
+      const fitRules = this.acceptRules.filter(item => this._fitRule(item, torrent));
+      if (this.acceptRules.length === 0) {
+        torrent.status = '无选择规则, 默认选中该种子';
+        continue;
+      } else if (fitRules.length === 0) {
+        torrent.status = '未匹配到规则';
+        continue;
+      } else {
+        torrent.status = '匹配到选择规则: ' + fitRules[0].alias;
+        continue;
+      }
+    }
+    return torrents;
   }
 }
 module.exports = Rss;

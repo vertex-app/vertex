@@ -69,7 +69,7 @@
       </template>
     </a-table>
   </div>
-    <a-modal
+  <a-modal
     v-model:visible="modalVisible"
     title="删除种子"
     width="1440px"

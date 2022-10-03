@@ -16,5 +16,9 @@ export default {
   delRecord: async (body) => {
     const url = '/api/rss/deleteRecord';
     return await post(url, body);
+  },
+  dryrun: async (rss) => {
+    const url = '/api/rss/dryrun';
+    return await post(url, rss);
   }
 };
