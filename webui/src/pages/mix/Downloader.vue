@@ -54,6 +54,9 @@
         <template v-if="['size', 'uploaded', 'downloaded'].indexOf(column.dataIndex) !== -1">
           {{ $formatSize(record[column.dataIndex]) }}
         </template>
+        <template v-if="column.dataIndex === 'ratio'">
+          {{ record.ratio.toFixed(3) }}
+        </template>
         <template v-if="['recordTime', 'deleteTime', 'addedTime'].indexOf(column.dataIndex) !== -1 && record[column.dataIndex]">
           {{ $moment(record[column.dataIndex] * 1000).format('YYYY-MM-DD HH:mm:ss') }}
         </template>
@@ -165,10 +168,15 @@ export default {
         sorter: (a, b) => 0,
         width: 32
       }, {
+        title: '分享率',
+        dataIndex: 'ratio',
+        sorter: (a, b) => 0,
+        width: 28
+      }, {
         title: '添加时间',
         dataIndex: 'addedTime',
         sorter: (a, b) => 0,
-        width: 48
+        width: 36
       }, {
         title: '操作',
         width: this.isMobile() ? 96 : 72

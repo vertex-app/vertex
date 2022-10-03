@@ -232,7 +232,7 @@ class TorrentMod {
     util.saveLinkMapping();
   }
 
-  async _linkTorrentFilesKeepStruct ({ hash, savePath, client, mediaName, libraryPath, linkRule, replaceTopDir, keepTopDir }) {
+  async _linkTorrentFilesKeepStruct ({ hash, savePath, client, mediaName = '', libraryPath, linkRule, replaceTopDir, keepTopDir }) {
     if (!global.linkMapping[hash]) {
       global.linkMapping[hash] = [];
     }
@@ -266,10 +266,13 @@ class TorrentMod {
       }
       const paths = [_linkRule.linkFilePath, libraryPath, mediaName, path.dirname(file._name)];
       const pathsKeepTopDir = [_linkRule.linkFilePath, libraryPath, path.dirname(file._name)];
-      const fileBasename = path.basename(filePathname);
-      const linkFilePath = path.join(...(keepTopDir ? pathsKeepTopDir : paths)).replace(/'/g, '\\\'');
-      const linkFile = path.join(linkFilePath, fileBasename).replace(/'/g, '\\\'');
-      const targetFile = filePathname.replace(/'/g, '\\\'');
+      const fileBasename = path.basename(filePathname)
+        .replace(/'/g, '\\\'');
+      const linkFilePath = path.join(...(keepTopDir ? pathsKeepTopDir : paths))
+        .replace(/'/g, '\\\'');
+      const linkFile = path.join(linkFilePath, fileBasename);
+      const targetFile = filePathname
+        .replace(/'/g, '\\\'');
       const linkMode = _linkRule.hardlink ? 'f' : 'sf';
       const command = `${_linkRule.umask ? 'umask ' + _linkRule.umask + ' && ' : ''}mkdir -p $'${linkFilePath}' && ln -${linkMode} $'${targetFile}' $'${linkFile}'`;
       logger.binge('手动链接', '执行链接命令', command);
