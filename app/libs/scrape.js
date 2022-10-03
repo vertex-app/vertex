@@ -108,6 +108,15 @@ const _freeHDArea = async function (url, cookie) {
   return state && ['free', 'twoupfree'].indexOf(state.className) !== -1;
 };
 
+const _freeByrPT = async function (url, cookie) {
+  const d = await getDocument(url, cookie);
+  if (d.body.innerHTML.indexOf('userdetails') === -1) {
+    throw new Error('疑似登录状态失效, 请检查 Cookie');
+  }
+  const state = d.querySelector('#share font[class]');
+  return state && ['free', 'twoupfree'].indexOf(state.className) !== -1;
+};
+
 const freeWrapper = {
   'pt.btschool.club': _free,
   'club.hares.top': _freeHaresClub,
@@ -132,7 +141,8 @@ const freeWrapper = {
   'totheglory.im': _freeToTheGlory,
   'u2.dmhy.org': _freeDmhy,
   'hdbits.org': _freeHDBits,
-  'www.hdarea.co': _freeHDArea
+  'www.hdarea.co': _freeHDArea,
+  'byr.pt': _freeByrPT
 };
 
 const _hr = async function (url, cookie) {
