@@ -15,6 +15,8 @@ class Push {
     this.push = push.push;
     this.alias = push.alias;
     this.type = push.type;
+    this.maxErrorCount = push.maxErrorCount;
+    this.clearCountCron = push.clearCountCron;
     this.pushType = push.pushType || [];
     const additionPushType = [
       'pushWeChat', 'pushWeChatSelector', 'modifyWechatMenu', 'edit',
@@ -108,6 +110,7 @@ class Push {
   }
 
   async getMaindataError (...args) {
+    this.errorCount += 1;
     await this.doRequest('getMaindataError', args);
   }
 
