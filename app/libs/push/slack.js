@@ -12,7 +12,7 @@ class Slack {
 
   async pushSlack (title, desp, poster) {
     let _poster = poster || global.wechatCover || 'https://pic.lswl.in/images/2022/07/11/bf4eabf1afa841f4527db4d207d265c3.png';
-    _poster = `https://dash.vertex-app.top/api/image/cut/0.425/${path.basename(_poster)}/${encodeURIComponent(_poster)}`;
+    _poster = `https://image.vertex-app.top/api/image/cut/0.425/${path.basename(_poster)}/${encodeURIComponent(_poster)}`;
     const option = {
       url: this.slackWebhook,
       method: 'POST',
@@ -176,7 +176,7 @@ class Slack {
     let desp = `*${wish.name}*\n` +
       `*当前时间*: ${moment().format('YYYY-MM-DD HH:mm:ss')}\n`;
     desp += `*种子信息*: ${note.torrent.site} / ${note.torrent.title}`;
-    desp += wish.episodes ? `\n*进度信息*: 已完成至 $ {wish.episodeNow} 集 / 全 ${wish.episodes} 集` : '';
+    desp += wish.episodes ? `\n*进度信息*: 已完成至 ${wish.episodeNow} 集 / 全 ${wish.episodes} 集` : '';
     await this.pushSlack(title, desp, wish.poster);
   };
 

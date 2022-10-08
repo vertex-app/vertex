@@ -20,7 +20,9 @@ class Push {
     this.pushType = push.pushType || [];
     const additionPushType = [
       'pushWeChat', 'pushWeChatSelector', 'modifyWechatMenu', 'edit',
-      'pushPlexStartOrStopToSlack', 'pushEmbyStartOrStopToSlack', 'pushSlackRaw', 'openSlackView'
+      'pushPlexStartOrStopToSlack', 'pushEmbyStartOrStopToSlack', 'pushSlackRaw',
+      'openSlackView', 'pushSlack',
+      'pushTelegram'
     ];
     this.pushType = this.pushType.concat(additionPushType);
     if (this.push) {
@@ -53,6 +55,9 @@ class Push {
       return 0;
     }
     try {
+      if (type === 'push') {
+        return await (this.p.pushWeChat || this.p.pushSlack || this.p.pushTelegram)(...args);
+      }
       return await this.p[type](...args);
     } catch (e) {
       logger.error('发送通知信息失败:\n', e);
@@ -178,6 +183,10 @@ class Push {
     await this.doRequest('scrapeTorrentFailed', args);
   }
 
+  async pushTelegram (...args) {
+    await this.doRequest('pushTelegram', args);
+  }
+
   async pushWeChat (...args) {
     await this.doRequest('pushWeChat', args);
   };
@@ -202,12 +211,20 @@ class Push {
     await this.doRequest('pushEmbyStartOrStopToSlack', args);
   }
 
+  async pushSlack (...args) {
+    await this.doRequest('pushSlack', args);
+  }
+
   async pushSlackRaw (...args) {
     await this.doRequest('pushSlackRaw', args);
   }
 
   async openSlackView (...args) {
     await this.doRequest('openSlackView', args);
+  }
+
+  async push (...args) {
+    await this.doRequest('push', args);
   }
 };
 
