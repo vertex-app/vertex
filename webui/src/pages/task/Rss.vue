@@ -28,6 +28,8 @@
           <span>
             <a @click="modifyClick(record)">编辑</a>
             <a-divider type="vertical" />
+            <a @click="cloneClick(record)">克隆</a>
+            <a-divider type="vertical" />
             <a-popover title="删除?" trigger="click" :overlayStyle="{ width: '84px', overflow: 'hidden' }">
               <template #content>
                 <a-button type="primary" danger @click="deleteRss(record)" size="small">删除</a-button>
@@ -503,6 +505,18 @@ export default {
     },
     modifyClick (row) {
       this.rss = { ...row };
+    },
+    cloneClick (row) {
+      this.rss = {
+        ...this.row,
+        acceptRules: [...row.acceptRules],
+        clientArr: [...row.clientArr],
+        rejectRules: [...row.rejectRules],
+        reseedClients: [...row.reseedClients],
+        rssUrls: [...row.rssUrls]
+      };
+      this.rss.id = null;
+      this.rss.alias = this.rss.alias + '-克隆';
     },
     async deleteRss (row) {
       try {

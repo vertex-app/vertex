@@ -303,6 +303,12 @@ class Slack {
     await this.pushSlack(title, desp);
   };
 
+  async selectWish (note) {
+    const title = '选择想看';
+    const desp = note;
+    await this.pushSlack(title, desp);
+  };
+
   async pushPlexStartOrStopToSlack (payload) {
     let text = '';
     let title = payload.Metadata.grandparentTitle || payload.Metadata.parentTitle || payload.Metadata.title;

@@ -199,7 +199,6 @@ export default {
         fiveminute: this.vnstat.fiveminute.interfaces[0].traffic.fiveminute,
         hour: this.vnstat.hour.interfaces[0].traffic.hour
       };
-      console.log(this.vnstatData);
     }
   },
   async mounted () {

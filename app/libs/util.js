@@ -229,7 +229,7 @@ exports.scrapeEpisodeByFilename = function (_filename) {
       .replace(/((1st)|(2nd)|(3rd))/g, '')
       .replace(/\[[.\dA-Za-z_-]*\]/g, '')
       .replace(/\d+[MmBbGg]/g, '')
-      .replace(/\d+[Xx]\d+/g, '')
+      .replace(/\d*[Xx]\d+/g, '')
       .match(/\d+/g)
       ?.map(item => +item.match(/\d+/))
       .filter(item => [0, 480, 720, 1080, 576, 2160, 1920].indexOf(item) === -1) || [];
