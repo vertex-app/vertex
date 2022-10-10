@@ -194,6 +194,8 @@ module.exports = function (app, express, router) {
   router.post('/rss/modify', ctrl.Rss.modify);
   router.post('/rss/delete', ctrl.Rss.delete);
   router.post('/rss/deleteRecord', ctrl.Rss.deleteRecord);
+  router.post('/rss/mikanSearch', ctrl.Rss.mikanSearch);
+  router.post('/rss/mikanPush', ctrl.Rss.mikanPush);
 
   router.get('/subscribe/list', ctrl.Douban.list);
   router.post('/subscribe/add', ctrl.Douban.add);

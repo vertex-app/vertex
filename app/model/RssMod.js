@@ -57,6 +57,24 @@ class RssMod {
     const torrents = await rss.dryrun();
     return torrents;
   };
+
+  async mikanSearch (options) {
+    const rssList = util.listRss();
+    const rssSet = rssList.filter(item => item.id === options.rss)[0];
+    rssSet.dryrun = true;
+    const rss = new Rss(rssSet);
+    const torrents = await rss.mikanSearch(options.name);
+    return torrents;
+  };
+
+  async mikanPush (options) {
+    const rssList = util.listRss();
+    const rssSet = rssList.filter(item => item.id === options.rss)[0];
+    rssSet.dryrun = true;
+    const rss = new Rss(rssSet);
+    rss.rss(options.torrents);
+    return '任务已开始执行。';
+  };
 }
 
 module.exports = RssMod;

@@ -156,6 +156,10 @@ class UserMod {
         path: '/tool',
         icon: ['fas', 'toolbox'],
         sub: [{
+          title: '蜜柑番剧历史',
+          path: '/tool/mikanHistory',
+          icon: ['fas', 'clock-rotate-left']
+        }, {
           title: '网络测试',
           path: '/tool/networkTest',
           icon: ['fas', 'square-check']

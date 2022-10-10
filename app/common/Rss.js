@@ -38,6 +38,8 @@ class Rss {
     this.pushTorrentFile = rss.pushTorrentFile;
     this.notify = util.listPush().filter(item => item.id === rss.notify)[0] || {};
     this.notify.push = rss.pushNotify;
+    this.notify.dryrun = rss.dryrun;
+    this.ntf = new Push(this.notify);
     this._acceptRules = rss.acceptRules || [];
     this._rejectRules = rss.rejectRules || [];
     this.acceptRules = util.listRssRule().filter(item => (this._acceptRules.indexOf(item.id) !== -1));
@@ -50,7 +52,6 @@ class Rss {
     if (!rss.dryrun) {
       this.rssJob = cron.schedule(rss.cron, async () => { try { await this.rss(); } catch (e) { logger.error(this.alias, e); } });
       this.clearCount = cron.schedule('0 * * * *', () => { this.addCount = 0; });
-      this.ntf = new Push(this.notify);
       logger.info('Rss 任务', this.alias, '初始化完毕');
     }
   }
@@ -361,8 +362,13 @@ class Rss {
     }
   }
 
-  async rss () {
-    const torrents = (await Promise.all(this.urls.map(url => rss.getTorrents(url)))).flat();
+  async rss (_torrents) {
+    let torrents = [];
+    if (_torrents) {
+      torrents = _torrents;
+    } else {
+      torrents = (await Promise.all(this.urls.map(url => rss.getTorrents(url)))).flat();
+    }
     const availableClients = this.clientArr
       .map(item => global.runningClient[item])
       .filter(item => {
@@ -423,6 +429,35 @@ class Rss {
 
   async dryrun () {
     const torrents = (await Promise.all(this.urls.map(url => rss.getTorrents(url)))).flat();
+    for (const torrent of torrents) {
+      let reject = false;
+      for (const rejectRule of this.rejectRules) {
+        if (this._fitRule(rejectRule, torrent)) {
+          torrent.status = '匹配到拒绝规则: ' + rejectRule.alias;
+          reject = true;
+          break;
+        }
+      }
+      if (reject) {
+        continue;
+      }
+      const fitRules = this.acceptRules.filter(item => this._fitRule(item, torrent));
+      if (this.acceptRules.length === 0) {
+        torrent.status = '无选择规则, 默认选中该种子';
+        continue;
+      } else if (fitRules.length === 0) {
+        torrent.status = '未匹配到规则';
+        continue;
+      } else {
+        torrent.status = '匹配到选择规则: ' + fitRules[0].alias;
+        continue;
+      }
+    }
+    return torrents;
+  }
+
+  async mikanSearch (name) {
+    const torrents = await util.mikanSearch(name);
     for (const torrent of torrents) {
       let reject = false;
       for (const rejectRule of this.rejectRules) {

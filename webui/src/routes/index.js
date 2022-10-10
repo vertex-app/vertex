@@ -30,6 +30,7 @@ import TaskScript from '@/pages/task/Script';
 import GuideRss from '@/pages/guide/Rss';
 import GuideSubsribe from '@/pages/guide/Subscribe';
 
+import ToolMikanHistory from '@/pages/tool/MikanHistory';
 import ToolNetworkTest from '@/pages/tool/NetworkTest';
 import ToolMTeamLogin from '@/pages/tool/MTeamLogin';
 import ToolHosts from '@/pages/tool/Hosts';
@@ -370,6 +371,12 @@ const tool = {
   redirect: '/tool/networkTest',
   children: [
     {
+      path: 'mikanHistory',
+      component: ToolMikanHistory,
+      meta: {
+        title: '蜜柑番剧历史 - 常用工具'
+      }
+    }, {
       path: 'networkTest',
       component: ToolNetworkTest,
       meta: {

@@ -9,6 +9,8 @@ const Database = require('better-sqlite3');
 const puppeteer = require('puppeteer-extra');
 const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 const url = require('url');
+const { JSDOM } = require('jsdom');
+const moment = require('moment');
 const redlock = require('./redlock');
 
 const logger = require('./logger');
@@ -498,4 +500,39 @@ exports.sleep = function (time) {
 
 exports.randomColor = function () {
   return '#' + (new Array(6)).fill(1).map(() => '0123456789abcdef'[parseInt(Math.random() * 15)]).join('');
+};
+
+exports.mikanSearch = async function (name) {
+  const url = `https://mikanani.me/Home/Search?searchstr=${encodeURIComponent(name)}`;
+  const html = (await exports.requestPromise({
+    url: url
+  })).body;
+  const document = new JSDOM(html).window.document;
+  const torrentDoms = document.querySelectorAll('.js-search-results-row');
+  const torrents = [];
+  for (const _torrent of torrentDoms) {
+    const torrent = {
+      size: 0,
+      name: '',
+      hash: '',
+      id: 0,
+      url: '',
+      link: ''
+    };
+    torrent.name = _torrent.querySelector('.magnet-link-wrap').innerHTML.trim();
+    torrent.size = _torrent.children[1].innerHTML.trim();
+    if (torrent.size) {
+      torrent.size = exports.calSize(...torrent.size.replace(/( ?[MGKT])B/, ' $1iB').split(' '));
+    } else {
+      torrent.size = 0;
+    }
+    const link = _torrent.querySelector('.magnet-link-wrap').href.trim();
+    torrent.link = 'https://mikanani.me' + link;
+    torrent.hash = link.match(/Episode\/(.*)/)[1];
+    torrent.id = torrent.hash;
+    torrent.url = 'https://mikanani.me' + _torrent.querySelector('a[href*=Download]').href.trim();
+    torrent.pubTime = moment(_torrent.children[2].innerHTML.trim().replace(/\//g, '-')).unix();
+    torrents.push(torrent);
+  }
+  return torrents;
 };

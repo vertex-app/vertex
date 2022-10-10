@@ -25,7 +25,7 @@ class Push {
       'pushTelegram'
     ];
     this.pushType = this.pushType.concat(additionPushType);
-    if (this.push) {
+    if (this.push && !push.dryrun) {
       this.p = new PUSH[this.type](push);
       this.clearCountCron = this.clearCountCron || '0 * * * *';
       this.clearCountJob = cron.schedule(this.clearCountCron, () => this._clearErrorCount());
