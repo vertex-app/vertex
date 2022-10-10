@@ -184,9 +184,11 @@ module.exports = function (app, express, router) {
   router.post('/script/delete', ctrl.Script.delete);
 
   router.get('/watch/list', ctrl.Watch.list);
+  router.get('/watch/listHistory', ctrl.Watch.listHistory);
   router.post('/watch/add', ctrl.Watch.add);
   router.post('/watch/modify', ctrl.Watch.modify);
   router.post('/watch/delete', ctrl.Watch.delete);
+  router.post('/watch/deleteRecord', ctrl.Watch.deleteRecord);
 
   router.get('/rss/list', ctrl.Rss.list);
   router.post('/rss/add', ctrl.Rss.add);

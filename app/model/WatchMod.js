@@ -33,6 +33,29 @@ class WatchMod {
     const watchList = util.listWatch();
     return watchList;
   };
+
+  listHistory () {
+    const watchList = util.listWatch();
+    const watchSetList = util.listWatchSet();
+    const history = watchSetList.map(item => Object.keys(item.torrents)
+      .map(subItem => ({
+        ...item.torrents[subItem],
+        hash: subItem,
+        task: watchList.filter(w => w.id === item.id)[0].alias,
+        taskId: item.id
+      })))
+      .flat()
+      .reverse();
+    return history;
+  };
+
+  deleteRecord (options) {
+    if (!global.runningWatch[options.taskId]) {
+      throw new Error('任务未启用');
+    }
+    global.runningWatch[options.taskId].delHistory(options.hash);
+    return '删除项目成功';
+  };
 }
 
 module.exports = WatchMod;

@@ -70,5 +70,37 @@ class Watch {
       });
     }
   };
+
+  async listHistory (req, res) {
+    try {
+      const r = watchMod.listHistory();
+      res.send({
+        success: true,
+        data: r
+      });
+    } catch (e) {
+      logger.error(e);
+      res.send({
+        success: false,
+        message: e.message
+      });
+    }
+  };
+
+  async deleteRecord (req, res) {
+    try {
+      const r = watchMod.deleteRecord(req.body);
+      res.send({
+        success: true,
+        message: r
+      });
+    } catch (e) {
+      logger.error(e);
+      res.send({
+        success: false,
+        message: e.message
+      });
+    }
+  };
 }
 module.exports = Watch;

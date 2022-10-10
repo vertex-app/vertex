@@ -57,6 +57,7 @@ import SubscribeSearch from '@/pages/subscribe/Search';
 
 import HistoryRss from '@/pages/history/Rss';
 import HistorySubsribe from '@/pages/history/Subscribe';
+import HistoryWatchCategory from '@/pages/history/WatchCategory';
 
 import MixSearch from '@/pages/mix/Search';
 import MixDownloader from '@/pages/mix/Downloader';
@@ -318,6 +319,12 @@ const history = {
       component: HistorySubsribe,
       meta: {
         title: '订阅历史 - 任务历史'
+      }
+    }, {
+      path: 'watchCategory',
+      component: HistoryWatchCategory,
+      meta: {
+        title: '监控分类历史 - 任务历史'
       }
     }
   ]

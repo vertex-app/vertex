@@ -324,6 +324,11 @@ class Watch {
       delete global.runningWatch[this.id];
     }
   }
+
+  delHistory (hash) {
+    delete this.torrents[hash];
+    this._saveSet();
+  };
 }
 
 module.exports = Watch;

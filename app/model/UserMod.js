@@ -150,6 +150,10 @@ class UserMod {
           title: '订阅历史',
           path: '/history/subscribe',
           icon: ['fas', 'calendar-check']
+        }, {
+          title: '监控分类历史',
+          path: '/history/watchCategory',
+          icon: ['fas', 'video']
         }]
       }, {
         title: '常用工具',
