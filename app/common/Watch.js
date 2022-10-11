@@ -73,7 +73,7 @@ class Watch {
             type = this.type;
             year = '';
           } else {
-            const scrapeRes = await util.scrapeNameByFile(_name || torrent.name, this.type === 'series' ? 'tv' : this.type ? 'movie' : '', true);
+            const scrapeRes = await util.scrapeNameByFile(_name || torrent.name, this.type === 'series' ? 'tv' : this.type ? 'movie' : '', true, true);
             name = scrapeRes.name;
             year = scrapeRes.year;
             type = scrapeRes.type;

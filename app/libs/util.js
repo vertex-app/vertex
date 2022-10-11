@@ -169,7 +169,7 @@ exports.uuid = uuid;
 exports.md5 = md5;
 exports.tar = tar;
 
-exports.scrapeNameByFile = async function (_filename, type, _year = false) {
+exports.scrapeNameByFile = async function (_filename, type, _year = false, useFullname = false) {
   const filename = _filename.replace(/[[\]]/g, '');
   if (!global.tmdbApiKey) {
     throw new Error('未填写 The Movie Database Api Key');
@@ -179,14 +179,18 @@ exports.scrapeNameByFile = async function (_filename, type, _year = false) {
     .replace(/[a-zA-z]+TV(\dK)?\.?/, '')
     .replace(/(Jade)\.?/, '')
     .replace(/[\u4e00-\u9fa5\uff01\uff1a]+\d+[\u4e00-\u9fa5\uff01\uff1a]+/g, '')
-    .replace(/[!\u4e00-\u9fa5\uff01\uff1a。:?？，,·・]/g, '')
+    .replace(/[\u4e00-\u9fa5\uff01\uff1a。:?？，,·・]/g, '')
     .replace(/\./g, ' ').trim();
   if (filename.match(/^[\u4e00-\u9fa5·]+[A-RT-Za-rt-z]*[\u4e00-\u9fa5·]+/)) {
     searchKey = filename.match(/^[\u4e00-\u9fa5·]+[A-RT-Za-rt-z]*[\u4e00-\u9fa5·]+/)[0].replace(/[^\u4e00-\u9fa5A-Za-z]/g, ' ').replace(/第.*季/g, '');
   }
-  url += encodeURI(searchKey);
-  const year = filename.match(/[^d](19\d{2}|20\d{2})[^d]/);
+  let year = filename.match(/[^d](19\d{2}|20\d{2})[^d]/);
   const season = filename.match(/S0[^1]/);
+  if (useFullname) {
+    searchKey = _filename.replace(/\.\d{4}$/, '');
+    year = _filename.match(/\.(\d{4})$/, '');
+  }
+  url += encodeURI(searchKey);
   if (year && !season) {
     url += `&first_air_date_year=${year[1]}&primary_release_year=${year[1]}`;
   }
