@@ -10,11 +10,14 @@ loggerConfig.appenders.error.layout.tokens = {
     const f = async () => {
       if (!redis) redis = require('./redis');
       const errorList = JSON.parse((await redis.get('vertex:error:list') || '[]'));
+      delete logEvent.data.cert;
       errorList.push(logEvent.data);
       while (errorList.length > 5) {
         errorList.shift();
       }
-      redis.set('vertex:error:list', JSON.stringify(errorList));
+      try {
+        redis.set('vertex:error:list', JSON.stringify(errorList));
+      } catch (e) {};
     };
     f();
     return '';

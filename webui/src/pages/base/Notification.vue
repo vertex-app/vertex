@@ -130,6 +130,7 @@
           v-if="notification.type === 'slack'"
           label="Token"
           name="slackToken"
+          extra="如果仅使用推送通知功能，可随意填写内容"
           :rules="[{ required: true, message: '${label}不可为空! ' }]">
           <a-input size="small" v-model:value="notification.slackToken"/>
         </a-form-item>

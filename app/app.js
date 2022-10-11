@@ -82,6 +82,7 @@ const init = function () {
   global.embyCover = setting.embyCover;
   global.plexCover = setting.plexCover;
   global.theme = setting.theme;
+  global.trustAllCerts = setting.trustAllCerts;
   global.menu = setting.menu || [];
   global.dashboardContent = setting.dashboardContent || [];
   global.wechatToken = setting.wechatToken;

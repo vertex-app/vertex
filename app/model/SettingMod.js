@@ -57,6 +57,7 @@ class SettingMod {
     global.ignoreError = options.ignoreError;
     global.apiKey = options.apiKey;
     global.theme = options.theme;
+    global.trustAllCerts = options.trustAllCerts;
     global.background = options.background;
     global.tmdbApiKey = options.tmdbApiKey;
     global.dataPath = options.dataPath || '/';

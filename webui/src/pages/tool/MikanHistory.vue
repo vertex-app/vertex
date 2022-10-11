@@ -62,6 +62,13 @@
             <a-divider type="vertical" />
             <a-switch @change="filterTorrent(record)" v-model:checked="unfilter" checked-children="显示" un-checked-children="隐藏"/>
           </template>
+          <template #headerCell="{ column }">
+            <template v-if="column.dataIndex === 'checked'">
+              <a-checkbox @change="selectAll" />
+              <a-divider type="vertical" />
+              选中
+            </template>
+          </template>
           <template #bodyCell="{ column, record }">
             <template v-if="column.dataIndex === 'checked'">
               <a-checkbox v-model:checked="record.checked" />
@@ -157,6 +164,11 @@ export default {
       }));
       console.log(this.filteredTorrents);
       this.loading = false;
+    },
+    async selectAll (e) {
+      for (const t of this.filteredTorrents) {
+        t.checked = e.target.checked;
+      }
     }
   },
   async mounted () {
