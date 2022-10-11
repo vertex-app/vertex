@@ -338,41 +338,49 @@ class Slack {
     if (payload.Metadata.summary) {
       text += `*简介:* ${payload.Metadata.summary}`;
     }
+    let _poster = global.wechatCover || 'https://pic.lswl.in/images/2022/07/11/bf4eabf1afa841f4527db4d207d265c3.png';
+    _poster = `https://image.vertex-app.top/api/image/cut/0.425/${path.basename(_poster)}/${encodeURIComponent(_poster)}`;
     const option = {
       url: this.slackWebhook,
       method: 'POST',
       json: {
-        text: title,
-        blocks: [
+        attachments: [
           {
-            type: 'header',
-            text: {
-              type: 'plain_text',
-              text: title
-            }
-          }, {
-            type: 'divider'
-          }, {
-            type: 'section',
-            text: {
-              type: 'mrkdwn',
-              text
-            },
-            accessory: {
-              type: 'image',
-              image_url: 'https://pic.lswl.in/images/2022/07/10/5ae104f82f39eb4059861393ef24d440.png',
-              alt_text: 'vertex logo'
-            }
-          }, {
-            type: 'context',
-            elements: [
+            color: util.randomColor(),
+            fallback: title,
+            blocks: [
               {
-                type: 'plain_text',
-                text: `发送自: ${payload.Server.title} / ${payload.Metadata.librarySectionTitle} / ${payload.Account.title}`
+                type: 'header',
+                text: {
+                  type: 'plain_text',
+                  text: title,
+                  emoji: true
+                }
+              },
+              {
+                type: 'image',
+                image_url: _poster,
+                alt_text: 'inspiration'
+              },
+              {
+                type: 'context',
+                elements: [
+                  {
+                    text: text,
+                    type: 'mrkdwn'
+                  }
+                ]
+              },
+              {
+                type: 'context',
+                elements: [
+                  {
+                    text: `发送自: ${payload.Server.title} / ${payload.Metadata.librarySectionTitle} / ${payload.Account.title}`,
+                    type: 'mrkdwn'
+                  }
+                ]
               }
             ]
-          }, {
-            type: 'divider'
           }
         ]
       }
@@ -413,41 +421,49 @@ class Slack {
     } else {
       text += '*简介:* 暂无';
     }
+    let _poster = global.wechatCover || 'https://pic.lswl.in/images/2022/07/11/bf4eabf1afa841f4527db4d207d265c3.png';
+    _poster = `https://image.vertex-app.top/api/image/cut/0.425/${path.basename(_poster)}/${encodeURIComponent(_poster)}`;
     const option = {
       url: this.slackWebhook,
       method: 'POST',
       json: {
-        text: title,
-        blocks: [
+        attachments: [
           {
-            type: 'header',
-            text: {
-              type: 'plain_text',
-              text: title
-            }
-          }, {
-            type: 'divider'
-          }, {
-            type: 'section',
-            text: {
-              type: 'mrkdwn',
-              text
-            },
-            accessory: {
-              type: 'image',
-              image_url: 'https://pic.lswl.in/images/2022/07/10/5ae104f82f39eb4059861393ef24d440.png',
-              alt_text: 'vertex logo'
-            }
-          }, {
-            type: 'context',
-            elements: [
+            color: util.randomColor(),
+            fallback: title,
+            blocks: [
               {
-                type: 'plain_text',
-                text: `发送自: ${payload.server_name} / ${payload.item_library_name} / ${payload.username || ''}`
+                type: 'header',
+                text: {
+                  type: 'plain_text',
+                  text: title,
+                  emoji: true
+                }
+              },
+              {
+                type: 'image',
+                image_url: _poster,
+                alt_text: 'inspiration'
+              },
+              {
+                type: 'context',
+                elements: [
+                  {
+                    text: text,
+                    type: 'mrkdwn'
+                  }
+                ]
+              },
+              {
+                type: 'context',
+                elements: [
+                  {
+                    text: `发送自: ${payload.Server.title} / ${payload.Metadata.librarySectionTitle} / ${payload.Account.title}`,
+                    type: 'mrkdwn'
+                  }
+                ]
               }
             ]
-          }, {
-            type: 'divider'
           }
         ]
       }

@@ -84,10 +84,9 @@ const getSelectMediaRaw = function (result, douban) {
   const sName = global.runningDouban[douban].alias;
   const list = [];
   for (const r of result) {
-    logger.info(r);
     list.push({
       type: 'image',
-      image_url: `https://dash.vertex-app.top/api/image/cut/0.425/${path.basename(r.poster)}/${encodeURIComponent(r.poster)}`,
+      image_url: `https://image.vertex-app.top/api/image/cut/0.425/${path.basename(r.poster)}/${encodeURIComponent(r.poster)}`,
       alt_text: r.title
     });
     list.push({
@@ -257,7 +256,6 @@ class WebhookMod {
       }
       const obj = getSelectMediaRaw(result, douban);
       obj.trigger_id = event.trigger_id;
-      logger.info(obj);
       global.doubanPush.openSlackView(obj);
     }
     if (event.view.external_id.indexOf('select_wish') === 0) {
