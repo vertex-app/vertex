@@ -169,12 +169,12 @@ exports.uuid = uuid;
 exports.md5 = md5;
 exports.tar = tar;
 
+exports.formatQSString = function (qs) {
+  return Object.keys(qs).filter(item => qs[item]).map(item => `${item}=${encodeURIComponent(qs[item])}`).join('&');
+};
+
 exports.scrapeNameByFile = async function (_filename, type, _year = false, useFullname = false) {
   const filename = _filename.replace(/[[\]]/g, '');
-  if (!global.tmdbApiKey) {
-    throw new Error('未填写 The Movie Database Api Key');
-  }
-  let url = `https://api.themoviedb.org/3/search/${type || 'multi'}?language=zh-CN&api_key=${global.tmdbApiKey}&query=`;
   let searchKey = filename.split(/19\d\d|20\d\d|S\d\d/)[0]
     .replace(/[a-zA-z]+TV(\dK)?\.?/, '')
     .replace(/(Jade)\.?/, '')
@@ -190,23 +190,29 @@ exports.scrapeNameByFile = async function (_filename, type, _year = false, useFu
     searchKey = _filename.replace(/\.\d{4}$/, '');
     year = _filename.match(/\.(\d{4})$/, '');
   }
-  url += encodeURI(searchKey);
-  if (year && !season) {
-    url += `&first_air_date_year=${year[1]}&primary_release_year=${year[1]}`;
+  if (year) {
+    year = year[1];
   }
+  if (season) {
+    year = undefined;
+  }
+  const qs = {
+    year,
+    name: searchKey,
+    type,
+    apiKey: global.panelKey
+  };
+  const url = 'https://dash.vertex-app.top/api/tmdb/search?' + exports.formatQSString(qs);
   const res = await exports.requestPromise(url);
-  const body = JSON.parse(res.body);
-  if (body.status_code === 7) {
+  let body = JSON.parse(res.body);
+  if (!body.success) {
     logger.error(filename, searchKey, body);
-    throw new Error('The Movie Database Api Key 失效, 请重试');
+    throw new Error('请求 TMDB 信息返回有误, 请重试');
   }
-  if (!body.results) {
-    logger.error(filename, searchKey, body);
-    throw new Error('请求 TMDB Api 返回有误, 请重试');
-  }
+  body = body.data;
   body.results = body.results.sort((a, b) => b.popularity - a.popularity);
   logger.debug('根据文件名抓取影视剧名', filename, searchKey, body.results[0]?.name || body.results[0]?.title || '');
-  logger.debug('tmdb api url', url);
+  logger.debug(`请求信息 名: ${searchKey}, 年份: ${year}, 类型: ${type}`);
   if (_year) {
     return {
       name: body.results[0]?.name || body.results[0]?.title || '',
