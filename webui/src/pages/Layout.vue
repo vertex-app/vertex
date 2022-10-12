@@ -9,7 +9,7 @@
         mode="inline"
         style="height: calc(var(--vh, 1vh) * 100); overflow: auto; overflow-x: hidden; "
       >
-        <div class="logo">
+        <div class="logo" @click="gotoWiki">
           <div style="width: 32px; float: left;">
             <img src="/assets/images/logo.svg"/>
           </div>
@@ -135,6 +135,9 @@ export default {
         }
         this.openKeys = keys;
       }, 100);
+    },
+    async gotoWiki () {
+      window.open('https://Wiki.vertex.icu');
     }
   },
   async mounted () {
@@ -171,6 +174,7 @@ export default {
   height: 32px;
   margin: 24px auto;
   width: 148px;
+  cursor: pointer;
 }
 
 .user-badge {

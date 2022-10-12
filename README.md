@@ -5,12 +5,13 @@
   <h1 align="center">Vertex</h1>
   <h3 align="center">适用于 PT 玩家的追剧刷流一体化综合管理工具</h3>
   <p align="center">
-    <a href="https://github.com/vertex-app/vertex"><img src="https://img.shields.io/github/stars/vertex-app/vertex" /></a>
-    <a href="https://github.com/vertex-app/vertex"><img src="https://img.shields.io/github/last-commit/vertex-app/vertex" /></a>
-    <a href="https://github.com/vertex-app/vertex"><img src="https://img.shields.io/github/license/vertex-app/vertex"></a>
-    <a href="https://github.com/vertex-app/vertex"><img src="https://img.shields.io/github/languages/top/vertex-app/vertex"></a>
-    <a href="https://hub.docker.com/r/lswl/vertex"><img src="https://img.shields.io/docker/pulls/lswl/vertex.svg" /></a>
-    <a href="https://hub.docker.com/r/lswl/vertex"><img src="https://img.shields.io/docker/image-size/lswl/vertex" /></a>
+    <a href="https://github.com/vertex-app/vertex"><img src="https://img.shields.io/github/stars/vertex-app/vertex?style=for-the-badge" /></a>
+    <a href="https://github.com/vertex-app/vertex"><img src="https://img.shields.io/github/last-commit/vertex-app/vertex?style=for-the-badge" /></a>
+    <a href="https://github.com/vertex-app/vertex"><img src="https://img.shields.io/github/license/vertex-app/vertex?style=for-the-badge"></a>
+    <a href="https://github.com/vertex-app/vertex"><img src="https://img.shields.io/github/languages/top/vertex-app/vertex?style=for-the-badge"></a>
+    <a href="https://hub.docker.com/r/lswl/vertex"><img src="https://img.shields.io/docker/pulls/lswl/vertex?style=for-the-badge" /></a>
+    <a href="https://hub.docker.com/r/lswl/vertex"><img src="https://img.shields.io/docker/image-size/lswl/vertex?style=for-the-badge" /></a>
+    <a href="https://hub.docker.com/r/lswl/vertex"><img src="https://img.shields.io/badge/platform-amd64/arm64-pink?style=for-the-badge" /></a>
   </p>
 </div>
 <hr/>

@@ -71,8 +71,9 @@ class Douban {
   };
 
   async _searchRemoteTorrents (keyword) {
+    const ids = this.sites.map(i => global.runningSite[i].siteId).filter(item => item);
     const result = (await util.requestPromise({
-      url: `https://dash.vertex-app.top/api/torrent/search?keyword=${encodeURIComponent(keyword)}&apiKey=${global.panelKey}`
+      url: `https://dash.vertex-app.top/api/torrent/search?keyword=${encodeURIComponent(keyword)}&apiKey=${global.panelKey}&site=${JSON.stringify(ids)}`
     })).body;
     return result;
   };
