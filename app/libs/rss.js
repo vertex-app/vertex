@@ -616,13 +616,13 @@ const _getTorrentsTorrentLeech = async function (rssUrl) {
       url: '',
       link: ''
     };
+    const guid = items[i].guid[0]._ || items[i].guid[0];
     torrent.size = 0;
     torrent.name = items[i].title[0];
-    const link = items[i].link[0];
-    torrent.link = link;
-    torrent.hash = items[i].guid[0]._ || items[i].guid[0];
-    torrent.id = torrent.hash.substring(torrent.hash.indexOf('torrent/') + 8);
-    torrent.url = torrent.hash;
+    torrent.url = items[i].link[0];
+    torrent.link = guid;
+    torrent.id = guid.substring(torrent.hash.indexOf('torrent/') + 8);
+    torrent.hash = 'fakehash' + torrent.id + 'fakehash';
     torrent.pubTime = moment(items[i].pubDate[0]).unix();
     torrents.push(torrent);
   }
