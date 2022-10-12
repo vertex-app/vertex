@@ -146,7 +146,7 @@ export default {
     async getItem () {
       try {
         this.item = (await this.$api().subscribe.getItem(this.$route.params.id, this.$route.params.douban)).data;
-        this.item = this.item.downloaded || false;
+        this.item.downloaded = this.item.downloaded || false;
       } catch (e) {
         await this.$message().error(e.message);
       }
