@@ -77,6 +77,12 @@
           </a-select>
         </a-form-item>
         <a-form-item
+          label="优先级"
+          name="priority"
+          extra="优先级最高的规则最先匹配, 留空则按默认顺序">
+          <a-input size="small" v-model:value="rssRule.priority"/>
+        </a-form-item>
+        <a-form-item
           label="类型"
           name="type"
           :rules="[{ required: true, message: '${label}不可为空! ' }]">

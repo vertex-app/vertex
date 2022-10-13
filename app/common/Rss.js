@@ -42,8 +42,8 @@ class Rss {
     this.ntf = new Push(this.notify);
     this._acceptRules = rss.acceptRules || [];
     this._rejectRules = rss.rejectRules || [];
-    this.acceptRules = util.listRssRule().filter(item => (this._acceptRules.indexOf(item.id) !== -1));
-    this.rejectRules = util.listRssRule().filter(item => (this._rejectRules.indexOf(item.id) !== -1));
+    this.acceptRules = util.listRssRule().filter(item => (this._acceptRules.indexOf(item.id) !== -1)).sort((a, b) => +b.priority - +a.priority);
+    this.rejectRules = util.listRssRule().filter(item => (this._rejectRules.indexOf(item.id) !== -1)).sort((a, b) => +b.priority - +a.priority);
     this.downloadLimit = util.calSize(rss.downloadLimit, rss.downloadLimitUnit);
     this.uploadLimit = util.calSize(rss.uploadLimit, rss.uploadLimitUnit);
     this.maxClientUploadSpeed = util.calSize(rss.maxClientUploadSpeed, rss.maxClientUploadSpeedUnit);

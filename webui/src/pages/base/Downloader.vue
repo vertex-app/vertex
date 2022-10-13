@@ -309,7 +309,7 @@ export default {
       }, {
         title: '自动删种',
         dataIndex: 'autoDelete',
-        width: 20
+        width: 15
       }, {
         title: '状态',
         dataIndex: 'status',

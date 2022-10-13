@@ -157,6 +157,11 @@ export default {
         sorter: (a, b) => a.download - b.download,
         width: 30
       }, {
+        title: '优先级',
+        dataIndex: 'priority',
+        sorter: (a, b) => +a.priority - +b.priority,
+        width: 20
+      }, {
         title: '上次刷新时间',
         dataIndex: 'updateTime',
         sorter: (a, b) => a.updateTime - b.updateTime,
@@ -217,6 +222,7 @@ export default {
       for (const site of siteList) {
         site.id = site.name;
         site.display = site.display === undefined ? true : site.display;
+        site.priority = site.priority || 0;
         this.siteList.push({ ...site });
       }
     },
