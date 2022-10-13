@@ -70,6 +70,12 @@
           <a-input size="small" v-model:value="deleteRule.deleteNum"/>
         </a-form-item>
         <a-form-item
+          label="暂停种子"
+          name="pause"
+          extra="默认为删除种子，启用该选项后用暂停种子替代，其它流程照旧">
+          <a-checkbox v-model:checked="deleteRule.pause">暂停种子</a-checkbox>
+        </a-form-item>
+        <a-form-item
           label="类型"
           name="type"
           :rules="[{ required: true, message: '${label}不可为空! ' }]">

@@ -361,7 +361,11 @@ class Client {
           isDeleteFiles = false;
         }
       }
-      await this.client.deleteTorrent(this.clientUrl, this.cookie, torrent.hash, isDeleteFiles);
+      if (rule.pause) {
+        await this.pauseTorrent(torrent.hash);
+      } else {
+        await this.client.deleteTorrent(this.clientUrl, this.cookie, torrent.hash, isDeleteFiles);
+      }
       logger.info('下载器', this.alias, '删除种子成功:', torrent.name, rule.alias);
       await this.ntf.deleteTorrent(this._client, torrent, rule, isDeleteFiles);
     } catch (error) {
