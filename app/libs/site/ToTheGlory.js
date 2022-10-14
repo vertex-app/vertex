@@ -9,9 +9,11 @@ class Site {
 
   async getInfo () {
     const info = {};
-    const document = await this._getDocument('https://totheglory.im/', false, 10);
+    const document = await this._getDocument(this.index, false, 10);
     // 用户名
     info.username = document.querySelector('a[href*=userdetails]').innerHTML;
+    // uid
+    info.uid = +document.querySelector('a[href*=userdetails]').href.match(/id=(\d+)/)[1];
     // 上传
     info.upload = document.querySelector('font[color=green]').nextElementSibling.children[0].innerHTML.trim().replace(/(\w)B/, '$1iB');
     info.upload = util.calSize(...info.upload.split(' '));
@@ -22,12 +24,21 @@ class Site {
     info.seeding = +document.querySelector('img[src="/pic/arrowup.gif"]').nextSibling.nodeValue.trim();
     // 下载
     info.leeching = +document.querySelector('img[src="/pic/arrowdown.gif"]').nextSibling.nodeValue.trim();
+    // 做种体积
+    const seedingDocument = await this._getDocument(`${this.index}userdetails.php?id=${info.uid}`);
+    const seedingTorrent = [...seedingDocument.querySelectorAll('#ka2 tr')];
+    seedingTorrent.shift();
+    info.seedingSize = 0;
+    for (const torrent of seedingTorrent) {
+      const siteStr = torrent.childNodes[4].innerHTML.replace('<br>', ' ').replace(/([KMGTP])B/, '$1iB');
+      info.seedingSize += util.calSize(...siteStr.split(' '));
+    }
     return info;
   };
 
   async searchTorrent (keyword) {
     const torrentList = [];
-    const document = await this._getDocument(`https://totheglory.im/browse.php?search_field=${encodeURIComponent(keyword)}&c=M`);
+    const document = await this._getDocument(`${this.index}browse.php?search_field=${encodeURIComponent(keyword)}&c=M`);
     const torrents = document.querySelectorAll('#torrent_table tbody tr:not(:first-child)');
     for (const _torrent of torrents) {
       const torrent = {};
@@ -47,8 +58,8 @@ class Site {
         }
       }
       torrent.category = _torrent.querySelector('td a[href*=cat] img').alt.trim();
-      torrent.link = 'https://totheglory.im/' + _torrent.querySelector('a[href*="/t/"]').href.trim();
-      torrent.downloadLink = 'https://totheglory.im/' + _torrent.querySelector('a[href*="/dl/"]').href;
+      torrent.link = this.index + _torrent.querySelector('a[href*="/t/"]').href.trim();
+      torrent.downloadLink = this.index + _torrent.querySelector('a[href*="/dl/"]').href;
       torrent.id = +torrent.link.match(/\/t\/(\d*)/)[1];
       torrent.seeders = +(_torrent.querySelector('a[href*=toseeders] a font') || _torrent.querySelector('a[href*=toseeders] font') || _torrent.querySelector('span[class=red]')).innerHTML.trim();
       const zeroLeechers = _torrent.innerHTML.match(/\/\n0/);

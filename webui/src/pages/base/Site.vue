@@ -8,7 +8,7 @@
       size="small"
       :data-source="siteList"
       :pagination="false"
-      :scroll="{ x: 640 }"
+      :scroll="{ x: 1200 }"
     >
       <template #title>
         <span style="font-size: 16px; font-weight: bold;">站点列表</span>
@@ -21,11 +21,18 @@
         </template>
       </template>
       <template #bodyCell="{ column, record }">
-        <template v-if="column.dataIndex === 'upload'">
-          {{ $formatSize(record.upload) }}
+        <template v-if="column.dataIndex === 'data'">
+          <span style="color: green; font-weight: bold;">↑</span> {{ $formatSize(record.upload) }}
+          <br>
+          <span style="color: red; font-weight: bold;">↓</span> {{ $formatSize(record.download) }}
         </template>
-        <template v-if="column.dataIndex === 'download'">
-          {{ $formatSize(record.download) }}
+        <template v-if="column.dataIndex === 'conn'">
+          <span style="color: green; font-weight: bold;">↑</span> {{ record.seeding }}
+          <br>
+          <span style="color: red; font-weight: bold;">↓</span> {{ record.leeching }}
+        </template>
+        <template v-if="column.dataIndex === 'seedingSize'">
+          <span style="color: green; font-weight: bold;">↑</span> {{ $formatSize(record.seedingSize) }}
         </template>
         <template v-if="column.dataIndex === 'updateTime'">
           {{ $moment(record.updateTime * 1000).format('MM-DD HH:mm:ss') }}
@@ -138,29 +145,38 @@ export default {
       {
         title: '站点',
         dataIndex: 'name',
-        width: 32,
+        width: 24,
         sorter: (a, b) => a.name.localeCompare(b.name),
         fixed: true
+      }, {
+        title: 'UID',
+        dataIndex: 'uid',
+        width: 12
       }, {
         title: '用户名',
         dataIndex: 'username',
         sorter: (a, b) => a.username.localeCompare(b.username),
-        width: 30
+        width: 20
       }, {
-        title: '上传',
-        dataIndex: 'upload',
+        title: '数据',
+        dataIndex: 'data',
         sorter: (a, b) => a.upload - b.upload,
-        width: 30
+        width: 20
       }, {
-        title: '下载',
-        dataIndex: 'download',
-        sorter: (a, b) => a.download - b.download,
-        width: 30
+        title: '做种体积',
+        dataIndex: 'seedingSize',
+        sorter: (a, b) => a.seedingSize - b.seedingSize,
+        width: 20
+      }, {
+        title: '连接',
+        dataIndex: 'conn',
+        sorter: (a, b) => a.seeding - b.seeding,
+        width: 16
       }, {
         title: '优先级',
         dataIndex: 'priority',
         sorter: (a, b) => +a.priority - +b.priority,
-        width: 20
+        width: 12
       }, {
         title: '上次刷新时间',
         dataIndex: 'updateTime',

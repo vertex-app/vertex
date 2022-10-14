@@ -1,5 +1,6 @@
 const util = require('../util');
 const moment = require('moment');
+const { JSDOM } = require('jsdom');
 
 class Site {
   constructor () {
@@ -14,7 +15,8 @@ class Site {
     const document = await this._getDocument('https://hdchina.org/', false, 10);
     // 用户名
     info.username = document.querySelector('a[href^=userdetails] b').innerHTML;
-
+    // uid
+    info.uid = +document.querySelector('a[href^=userdetails]').href.match(/id=(\d+)/)[1];
     // 基本信息
     const baseInfo = document.querySelectorAll('div[class="userinfo"] p')[2].innerHTML;
     // 上传
@@ -27,6 +29,29 @@ class Site {
     info.seeding = +document.querySelector('i[class="fas fa-arrow-up"]').nextSibling.nodeValue.trim();
     // 下载
     info.leeching = +document.querySelector('i[class="fas fa-arrow-down"]').nextSibling.nodeValue.trim().replace(')', '');
+    // 做种体积
+    const csrf = document.querySelector('meta[name=x-csrf]').content;
+    const { body: stats } = await util.requestPromise({
+      url: `${this.index}ajax_getusertorrentlist.php`,
+      method: 'POST',
+      headers: {
+        cookie: this.cookie
+      },
+      form: {
+        userid: info.uid,
+        type: 'seeding',
+        csrf
+      }
+    });
+    const statsJson = JSON.parse(stats);
+    const seedingDocument = new JSDOM(statsJson.message).window.document;
+    const seedingTorrent = [...seedingDocument.querySelectorAll('tr')];
+    seedingTorrent.shift();
+    info.seedingSize = 0;
+    for (const torrent of seedingTorrent) {
+      const siteStr = torrent.childNodes[3].innerHTML.replace('<br>', ' ').replace(/([KMGTP])B/, '$1iB');
+      info.seedingSize += util.calSize(...siteStr.split(' '));
+    }
     return info;
   };
 

@@ -10,9 +10,11 @@ class Site {
 
   async getInfo () {
     const info = {};
-    const document = await this._getDocument('https://hdatmos.club/', false, 10);
+    const document = await this._getDocument(this.index, false, 10);
     // 用户名
     info.username = document.querySelector('a[href*=userdetails] b').innerHTML;
+    // uid
+    info.uid = +document.querySelector('a[href*=userdetails]').href.match(/id=(\d+)/)[1];
     // 上传
     info.upload = document.querySelector('font[class=color_uploaded]').nextSibling.nodeValue.trim().replace(/(\w)B/, '$1iB');
     info.upload = util.calSize(...info.upload.split(' '));
@@ -23,12 +25,16 @@ class Site {
     info.seeding = +document.querySelector('img[class=arrowup]').nextSibling.nodeValue.trim();
     // 下载
     info.leeching = +document.querySelector('img[class=arrowdown]').nextSibling.nodeValue.trim();
+    // 做种体积
+    const seedingDocument = await this._getDocument(`${this.index}getusertorrentlistajax.php?userid=${info.uid}&type=seeding`, true);
+    const seedingSize = (seedingDocument.match(/总大小\uff1a(\d+\.\d+ [KMGTP]B)/) || [0, '0 B'])[1].replace(/([KMGTP])B/, '$1iB');
+    info.seedingSize = util.calSize(...seedingSize.split(' '));
     return info;
   };
 
   async searchTorrent (keyword) {
     const torrentList = [];
-    const document = await this._getDocument(`https://hdatmos.club/torrents.php?incldead=1&spstate=0&inclbookmarked=0&search=${encodeURIComponent(keyword)}&search_area=${keyword.match(/tt\d+/) ? 4 : 0}&search_mode=0`);
+    const document = await this._getDocument(`${this.index}torrents.php?incldead=1&spstate=0&inclbookmarked=0&search=${encodeURIComponent(keyword)}&search_area=${keyword.match(/tt\d+/) ? 4 : 0}&search_mode=0`);
     const torrents = document.querySelectorAll('.torrents tbody tr:not(:first-child)');
     for (const _torrent of torrents) {
       const torrent = {};
@@ -37,7 +43,7 @@ class Site {
       torrent.subtitle = (_torrent.querySelector('.torrentname > tbody > tr .embedded span[class*=label]:last-of-type') || _torrent.querySelector('.torrentname > tbody > tr .embedded br')).nextSibling.nodeValue;
       torrent.subtitle = torrent.subtitle ? torrent.subtitle.trim() : '';
       torrent.category = _torrent.querySelector('td a[href*=cat] img').title.trim();
-      torrent.link = 'https://hdatmos.club/' + _torrent.querySelector('a[href*=details]').href.trim();
+      torrent.link = this.index + _torrent.querySelector('a[href*=details]').href.trim();
       torrent.id = +torrent.link.match(/id=(\d*)/)[1];
       torrent.seeders = +(_torrent.querySelector('a[href*=seeders] font') || _torrent.querySelector('a[href*=seeders]') || _torrent.querySelector('span[class=red]')).innerHTML.trim();
       torrent.leechers = +(_torrent.querySelector('a[href*=leechers]') || _torrent.childNodes[9]).innerHTML.trim();

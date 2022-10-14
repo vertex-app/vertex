@@ -764,6 +764,9 @@ class Douban {
       remote ? logger.advanced(...args) : logger.binge(...args);
     };
     const wish = { ..._wish };
+    if (!this.categories[wish.tag]) {
+      throw new Error(`**** 追剧任务: ${wish.name} 所在的标签: ${wish.tag} 已不存在, 请注意同步修改该任务标签`);
+    }
     wish.doubanId = this.id;
     const searchKey = (wish.searchKey || wish.name.split('/')[0]).replace(/[!\uff01\uff1a.。:?？，,·・]/g, ' ').replace(/([^\d]?)([\d一二三四五六七八九十]+)([^\d])/g, '$1 $2 $3').replace(/([^\d])([\d一二三四五六七八九十]+)([^\d]?)/g, '$1 $2 $3').replace(/ +/g, ' ').trim();
     if (!wish.imdb && imdb) {

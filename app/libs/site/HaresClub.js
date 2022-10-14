@@ -11,7 +11,7 @@ class Site {
 
   async getInfo () {
     const info = {};
-    const document = await this._getDocument('https://club.hares.top/', false, 10);
+    const document = await this._getDocument(this.index, false, 10);
     // 用户名
     info.username = document.querySelector('a[href^=userdetails] b,a[href^=userdetails] em').innerHTML;
     // uid
@@ -27,15 +27,21 @@ class Site {
     // 下载
     info.leeching = +document.querySelector('i[class="fas fa-download layui-font-red fa-fw"]').nextElementSibling.innerHTML.trim();
     // 做种体积
-    const seedingDocument = await this._getDocument(`https://club.hares.top/getusertorrentlistajax.php?userid=${info.uid}&type=seeding`, true);
-    const seedingSize = (seedingDocument.match(/总大小\uff1a(\d+\.\d+ [KMGTP]B)/) || [0, '0 B'])[1].replace(/([KMGTP])B/, '$1iB');
+    const { body: seedingInfo } = await util.requestPromise({
+      url: `${this.index}getusertorrentlistajax.php?page=1&limit=50&uid=${info.uid}&type=seeding`,
+      headers: {
+        cookie: this.cookie,
+        accept: 'application/json, text/javascript, */*; q=0.01'
+      }
+    });
+    const seedingSize = JSON.parse(seedingInfo).size.replace(/([KMGTP])B/, '$1iB');
     info.seedingSize = util.calSize(...seedingSize.split(' '));
     return info;
   };
 
   async searchTorrent (keyword) {
     const torrentList = [];
-    const document = await this._getDocument(`https://club.hares.top/torrents.php?search_area=${keyword.match(/tt\d+/) ? 4 : 0}&search=${encodeURIComponent(keyword)}&search_mode=0&incldead=0&spstate=0&check_state=0&can_claim=0&inclbookmarked=0`);
+    const document = await this._getDocument(`${this.index}torrents.php?search_area=${keyword.match(/tt\d+/) ? 4 : 0}&search=${encodeURIComponent(keyword)}&search_mode=0&incldead=0&spstate=0&check_state=0&can_claim=0&inclbookmarked=0`);
     const torrents = document.querySelectorAll('.torrents tbody tr');
     for (const _torrent of torrents) {
       const torrent = {};
@@ -43,7 +49,7 @@ class Site {
       torrent.title = _torrent.querySelector('.layui-torrents-title-width a').title.trim();
       torrent.subtitle = _torrent.querySelector('.layui-torrents-descr-width').innerHTML.trim();
       torrent.category = _torrent.querySelector('a[href*="cat"] img').title;
-      torrent.link = 'https://club.hares.top/' + _torrent.querySelector('.layui-torrents-title-width a').href.trim();
+      torrent.link = this.index + _torrent.querySelector('.layui-torrents-title-width a').href.trim();
       torrent.id = +torrent.link.match(/id=(\d*)/)[1];
       torrent.seeders = +(_torrent.querySelector('a[href*=seeders] font') || _torrent.querySelector('a[href*=seeders]') || _torrent.childNodes[6].querySelector('span')).innerHTML.trim() || 0;
       torrent.leechers = +(_torrent.querySelector('a[href*=leechers]') || _torrent.childNodes[7]).innerHTML.trim();

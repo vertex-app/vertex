@@ -11,9 +11,11 @@ class Site {
 
   async getInfo () {
     const info = {};
-    const document = await this._getDocument('https://www.tjupt.org/', false, 10);
+    const document = await this._getDocument(this.index, false, 10);
     // 用户名
     info.username = document.querySelector('a[href^=userdetails] b span').innerHTML;
+    // uid
+    info.uid = +document.querySelector('a[href*=userdetails]').href.match(/id=(\d+)/)[1];
     // 上传
     info.upload = document.querySelector('font[class=color_uploaded]').nextSibling.nodeValue.trim();
     info.upload = util.calSize(...info.upload.split(' '));
@@ -23,12 +25,16 @@ class Site {
     info.seeding = +document.querySelector('img[class=arrowup]').nextSibling.nodeValue.trim();
     // 下载
     info.leeching = +document.querySelector('img[class=arrowdown]').nextSibling.nodeValue.trim();
+    // 做种体积
+    const seedingDocument = await this._getDocument(`${this.index}getusertorrentlistajax.php?userid=${info.uid}&type=seeding`, true);
+    const seedingSize = (seedingDocument.match(/总大小(\d+\.\d+ [KMGTP]iB)/) || [0, '0 B'])[1];
+    info.seedingSize = util.calSize(...seedingSize.split(' '));
     return info;
   };
 
   async searchTorrent (keyword) {
     const torrentList = [];
-    const document = await this._getDocument(`https://www.tjupt.org/torrents.php?incldead=0&spstate=0&picktype=0&inclbookmarked=0&keepseed=0&search=${encodeURIComponent(keyword)}&search_area=${keyword.match(/tt\d+/) ? 4 : 0}&search_mode=0`);
+    const document = await this._getDocument(`${this.index}torrents.php?incldead=0&spstate=0&picktype=0&inclbookmarked=0&keepseed=0&search=${encodeURIComponent(keyword)}&search_area=${keyword.match(/tt\d+/) ? 4 : 0}&search_mode=0`);
     const torrents = document.querySelectorAll('.torrents > tbody > tr:not(:first-child)');
     for (const _torrent of torrents) {
       const torrent = {};
@@ -37,7 +43,7 @@ class Site {
       const subtitle = _torrent.querySelector('.torrentname > tbody > tr .embedded br');
       torrent.subtitle = subtitle ? subtitle.nextSibling.nodeValue.trim() : '';
       torrent.category = _torrent.querySelector('td a[href*=cat] img').title.trim();
-      torrent.link = 'https://www.tjupt.org/' + _torrent.querySelector('a[href*=details]').href.trim();
+      torrent.link = this.index + _torrent.querySelector('a[href*=details]').href.trim();
       torrent.id = +torrent.link.match(/id=(\d*)/)[1];
       torrent.seeders = +(_torrent.querySelector('a[href*=seeders] font') || _torrent.querySelector('a[href*=seeders]') || _torrent.querySelector('span[class=red]')).innerHTML.trim();
       torrent.leechers = +(_torrent.querySelector('a[href*=leechers]') || _torrent.childNodes[7]).innerHTML.trim();

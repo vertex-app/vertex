@@ -110,7 +110,7 @@ const siteProxy = function (req, res, next) {
       return proxyReqOpts;
     },
     userResDecorator: function (proxyRes, proxyResData, userReq, userRes) {
-      if (proxyRes.headers['content-type'].indexOf('text/html') !== -1) {
+      if (proxyRes.headers['content-type']?.indexOf('text/html') !== -1) {
         proxyResData = proxyResData.toString('utf8').replace(/src=(['"])\//g, 'src=$1').replace(/href=(["'])\//g, 'href=$1');
       }
       return proxyResData;

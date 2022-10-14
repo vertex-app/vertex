@@ -11,9 +11,11 @@ class Site {
 
   async getInfo () {
     const info = {};
-    const document = await this._getDocument('https://pterclub.com/', false, 10);
+    const document = await this._getDocument(this.index, false, 10);
     // 用户名
     info.username = document.querySelector('a[href^=userdetails] b').innerHTML;
+    // uid
+    info.uid = +document.querySelector('a[href*=userdetails]').href.match(/id=(\d+)/)[1];
     // 彩虹 ID
     if (info.username.indexOf('</span>') !== -1) {
       info.username = info.username.match(/">.*?<\/span/g).map(item => item.replace(/">(.*?)<\/span/, '$1')).join('');
@@ -28,12 +30,21 @@ class Site {
     info.seeding = +document.querySelector('img[class=arrowup]').nextSibling.nodeValue.trim();
     // 下载
     info.leeching = +document.querySelector('img[class=arrowdown]').nextSibling.nodeValue.trim();
+    // 做种体积
+    const seedingDocument = await this._getDocument(`${this.index}getusertorrentlist.php?do_ajax=1&userid=${info.uid}&type=seeding`);
+    const seedingTorrent = [...seedingDocument.querySelectorAll('tr')];
+    seedingTorrent.shift();
+    info.seedingSize = 0;
+    for (const torrent of seedingTorrent) {
+      const siteStr = torrent.childNodes[5].innerHTML.replace('<br>', ' ').replace(/([KMGTP])B/, '$1iB');
+      info.seedingSize += util.calSize(...siteStr.split(' '));
+    }
     return info;
   };
 
   async searchTorrent (keyword) {
     const torrentList = [];
-    const document = await this._getDocument(`https://pterclub.com/torrents.php?tag_exclusive=&tag_internal=&tag_mandarin=&tag_cantonese=&tag_doityourself=&tag_master=&incldead=1&spstate=0&inclbookmarked=0&search=${encodeURIComponent(keyword)}&search_area=${keyword.match(/tt\d+/) ? 4 : 0}&search_mode=0`);
+    const document = await this._getDocument(`${this.index}torrents.php?tag_exclusive=&tag_internal=&tag_mandarin=&tag_cantonese=&tag_doityourself=&tag_master=&incldead=1&spstate=0&inclbookmarked=0&search=${encodeURIComponent(keyword)}&search_area=${keyword.match(/tt\d+/) ? 4 : 0}&search_mode=0`);
     const torrents = document.querySelectorAll('.torrents tbody tr:not(:first-child)');
     for (const _torrent of torrents) {
       const torrent = {};
@@ -41,8 +52,8 @@ class Site {
       torrent.title = _torrent.querySelector('td[class="embedded"] a[href*="details"]').title.trim();
       torrent.subtitle = _torrent.querySelector('.torrentname > tbody > tr .embedded > div > div:nth-child(2) span').innerHTML.trim();
       torrent.category = _torrent.querySelector('td a[href*=cat] img').title.trim();
-      torrent.link = 'https://pterclub.com/' + _torrent.querySelector('a[href*=details]').href.trim();
-      torrent.downloadLink = 'https://pterclub.com/' + _torrent.querySelector('a[href*="download.php"]').href;
+      torrent.link = this.index + _torrent.querySelector('a[href*=details]').href.trim();
+      torrent.downloadLink = this.index + _torrent.querySelector('a[href*="download.php"]').href;
       torrent.id = +torrent.link.match(/id=(\d*)/)[1];
       torrent.seeders = +(_torrent.querySelector('a[href*=seeders] font') || _torrent.querySelector('a[href*=seeders]') || _torrent.querySelector('span[class=red]')).innerHTML.trim();
       torrent.leechers = +(_torrent.querySelector('a[href*=leechers]') || _torrent.childNodes[9]).innerHTML.trim();

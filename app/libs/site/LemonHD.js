@@ -11,9 +11,11 @@ class Site {
 
   async getInfo () {
     const info = {};
-    const document = await this._getDocument('https://lemonhd.org/', false, 10);
+    const document = await this._getDocument(this.index, false, 10);
     // 用户名
     info.username = document.querySelector('a[href^=userdetails] b').innerHTML;
+    // uid
+    info.uid = +document.querySelector('a[href*=userdetails]').href.match(/id=(\d+)/)[1];
     // 上传
     info.upload = document.querySelectorAll('td[class="bottom nowrap"]')[6].innerHTML.trim().replace(/(\w)B/, '$1iB');
     info.upload = util.calSize(...info.upload.split(' '));
@@ -24,12 +26,16 @@ class Site {
     info.seeding = +document.querySelectorAll('td[class="bottom nowrap"]')[8].innerHTML.split('<')[0];
     // 下载
     info.leeching = +document.querySelectorAll('td[class="bottom nowrap"]')[24].innerHTML.split('<')[0];
+    // 做种体积
+    const seedingDocument = await this._getDocument(`${this.index}userdetails.php?id=${info.uid}`, true);
+    const seedingSize = (seedingDocument.match(/总做种体积: (\d+\.\d+ [KMGTP]B)/) || [0, '0 B'])[1].replace(/([KMGTP])B/, '$1iB');
+    info.seedingSize = util.calSize(...seedingSize.split(' '));
     return info;
   };
 
   async searchTorrent (keyword) {
     const torrentList = [];
-    const document = await this._getDocument(`https://lemonhd.org/torrents.php?search=${encodeURIComponent(keyword)}&suggest=0&search_area=name`);
+    const document = await this._getDocument(`${this.index}torrents.php?search=${encodeURIComponent(keyword)}&suggest=0&search_area=name`);
     const torrents = document.querySelectorAll('.torrents tbody tr:not(:first-child)');
     for (const _torrent of torrents) {
       const torrent = {};
@@ -37,7 +43,7 @@ class Site {
       torrent.title = _torrent.querySelector('a[href*="details_"] b').innerHTML.trim();
       torrent.subtitle = _torrent.children[2].children[1].innerHTML.trim();
       torrent.category = _torrent.querySelector('td img[class*=cat]').getAttribute('class').trim();
-      torrent.link = 'https://lemonhd.org/' + _torrent.querySelector('a[href*=details]').href.trim();
+      torrent.link = this.index + _torrent.querySelector('a[href*=details]').href.trim();
       torrent.id = +torrent.link.match(/id=(\d*)/)[1];
       torrent.seeders = +(_torrent.querySelector('a[href*=seeders] font') || _torrent.querySelector('a[href*=seeders]') || _torrent.querySelector('a[href*=seeders] span') || _torrent.querySelector('td span[class="red"]')).innerHTML.trim();
       torrent.leechers = +(_torrent.querySelector('a[href*=leechers]') || _torrent.children[7]).innerHTML.trim();

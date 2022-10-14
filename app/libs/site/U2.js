@@ -10,9 +10,11 @@ class Site {
 
   async getInfo () {
     const info = {};
-    const document = await this._getDocument('https://u2.dmhy.org/', false, 10);
+    const document = await this._getDocument(this.index, false, 10);
     // 用户名
     info.username = document.querySelector('a[href^=userdetails] b bdo').innerHTML;
+    // uid
+    info.uid = +document.querySelector('a[href*=userdetails]').href.match(/id=(\d+)/)[1];
     // 上传
     info.upload = document.querySelector('span[class=color_uploaded]').nextSibling.nodeValue.trim();
     info.upload = util.calSize(...info.upload.split(' '));
@@ -23,12 +25,16 @@ class Site {
     info.seeding = +document.querySelector('img[class=arrowup]').nextElementSibling.innerHTML.trim();
     // 下载
     info.leeching = +(document.querySelector('a[href*=leech]') ? document.querySelector('a[href*=leech]').innerHTML : +document.querySelector('img[class=arrowdown]').nextSibling.nodeValue.replace(')', ''));
+    // 做种体积
+    const seedingDocument = await this._getDocument(`${this.index}getusertorrentlistajax.php?userid=${info.uid}&type=seeding`, true);
+    const seedingSize = (seedingDocument.match(/大小&nbsp;(\d+\.\d+ [KMGTP]iB)/) || [0, '0 B'])[1];
+    info.seedingSize = util.calSize(...seedingSize.split(' '));
     return info;
   };
 
   async searchTorrent (keyword) {
     const torrentList = [];
-    const document = await this._getDocument(`https://u2.dmhy.org/torrents.php?search=${encodeURIComponent(keyword)}&notnewword=1`);
+    const document = await this._getDocument(`${this.index}torrents.php?search=${encodeURIComponent(keyword)}&notnewword=1`);
     const torrents = document.querySelectorAll('.torrents > tbody > tr:not(:first-child)');
     for (const _torrent of torrents) {
       const torrent = {};
@@ -36,7 +42,7 @@ class Site {
       torrent.title = _torrent.querySelector('td[class~="embedded"] > a[href*="details"]').innerHTML.trim();
       torrent.subtitle = (_torrent.querySelector('span[class=tooltip]').innerHTML || '').trim();
       torrent.category = _torrent.querySelector('td a[href*=cat]').innerHTML.trim();
-      torrent.link = 'https://u2.dmhy.org/' + _torrent.querySelector('a[href*=details]').href.trim();
+      torrent.link = this.index + _torrent.querySelector('a[href*=details]').href.trim();
       torrent.id = +torrent.link.match(/id=(\d*)/)[1];
       torrent.seeders = +(_torrent.querySelector('a[href*=seeders] font') || _torrent.querySelector('a[href*=seeders]') || _torrent.querySelector('span[class=red]')).innerHTML.trim();
       torrent.leechers = +(_torrent.querySelector('a[href*=leechers]') || _torrent.childNodes[7]).innerHTML.trim();

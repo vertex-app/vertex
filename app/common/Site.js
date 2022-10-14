@@ -23,6 +23,7 @@ class Site {
     this.getDownloadLink = global.SITE.getDownloadLinkWrapper[this.site];
     this.torrentDownloadLink = global.SITE.torrentDownloadLinkMap[this.site];
     this.siteUrl = global.SITE.siteUrlMap[this.site];
+    this.index = global.SITE.siteUrlMap[this.site];
     this.siteId = global.SITE.siteIdMap[this.site];
     this.retryCount = 0;
     this.cron = site.cron || '0 */4 * * *';
