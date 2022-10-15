@@ -180,7 +180,7 @@ class Watch {
             suffixKeys.push(key);
           }
         }
-        const suffix = suffixKeys[0] ? '-' + suffixKeys.filter(key => !suffixKeys.some(item => item.indexOf(key) !== -1 && item !== key)).join('.') : '';
+        const suffix = suffixKeys[0] ? '.' + suffixKeys.filter(key => !suffixKeys.some(item => item.indexOf(key) !== -1 && item !== key)).join('.') : '';
         let group = '';
         if (linkRule.group) {
           group = (filename.match(/[-￡][^-￡]*?$/) || [''])[0].replace(/[-￡]/, '-');
@@ -217,7 +217,7 @@ class Watch {
             suffixKeys.push(key);
           }
         }
-        const suffix = suffixKeys[0] ? '-' + suffixKeys.filter(key => !suffixKeys.some(item => item.indexOf(key) !== -1 && item !== key)).join('.') : '';
+        const suffix = suffixKeys[0] ? '.' + suffixKeys.filter(key => !suffixKeys.some(item => item.indexOf(key) !== -1 && item !== key)).join('.') : '';
         let group = '';
         if (linkRule.group) {
           group = (filename.match(/[-￡][^-￡]*?$/) || [''])[0].replace(/[-￡]/, '-');

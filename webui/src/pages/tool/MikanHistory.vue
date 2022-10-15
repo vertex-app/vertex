@@ -162,7 +162,6 @@ export default {
         ...item,
         checked: item.status.indexOf('匹配到选择规则') === 0 || item.status.indexOf('无选择规则') === 0
       }));
-      console.log(this.filteredTorrents);
       this.loading = false;
     },
     async selectAll (e) {

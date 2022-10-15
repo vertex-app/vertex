@@ -98,7 +98,6 @@ export default {
     },
     async modify () {
       try {
-        console.log(this.menuChecked);
         this.setting.menu = this.allKeys.filter(item => this.menuChecked.checked.indexOf(item) === -1);
         await this.$api().setting.modify(this.setting);
         await this.$message().success('修改成功, 部分设置可能需要刷新页面生效.');
