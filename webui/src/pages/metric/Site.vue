@@ -15,6 +15,11 @@
         <span style="font-size: 16px; font-weight: bold;">站点数据</span>
       </template>
       <template #bodyCell="{ column, record }">
+        <template v-if="column.dataIndex === 'name'">
+          <img :src="`/proxy/site/${record.name}/favicon.ico`" style="width: 32px; height: 32px; border-radius: 16px;" />
+          <a-divider type="vertical" />
+          <span style="">{{ record.name }}</span>
+        </template>
         <template v-if="['upload', 'download'].indexOf(column.dataIndex) !== -1">
           {{ $formatSize(record[column.dataIndex]) }}
         </template>

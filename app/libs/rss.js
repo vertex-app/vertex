@@ -646,6 +646,7 @@ const _getTorrentsWrapper = {
   'exoticaz.to': _getTorrentsExoticaZ,
   'avistaz.to': _getTorrentsExoticaZ,
   'cinemaz.to': _getTorrentsExoticaZ,
+  'privatehd.to': _getTorrentsExoticaZ,
   'rss.torrentleech.org': _getTorrentsTorrentLeech
 };
 

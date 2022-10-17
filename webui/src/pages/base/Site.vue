@@ -21,6 +21,11 @@
         </template>
       </template>
       <template #bodyCell="{ column, record }">
+        <template v-if="column.dataIndex === 'name'">
+          <img :src="`/proxy/site/${record.name}/favicon.ico`" style="width: 32px; height: 32px; border-radius: 16px;" />
+          <a-divider type="vertical" />
+          <span style="">{{ record.name }}</span>
+        </template>
         <template v-if="column.dataIndex === 'data'">
           <span style="color: green; font-weight: bold;">↑</span> {{ $formatSize(record.upload) }}
           <br>
@@ -36,6 +41,11 @@
         </template>
         <template v-if="column.dataIndex === 'updateTime'">
           {{ $moment(record.updateTime * 1000).format('MM-DD HH:mm:ss') }}
+        </template>
+        <template v-if="column.dataIndex === 'username'">
+          {{ record.username }}
+          <br>
+          {{ record.uid }}
         </template>
         <template v-if="column.title === '操作'">
           <span>
@@ -149,11 +159,7 @@ export default {
         sorter: (a, b) => a.name.localeCompare(b.name),
         fixed: true
       }, {
-        title: 'UID',
-        dataIndex: 'uid',
-        width: 12
-      }, {
-        title: '用户名',
+        title: '用户名 / UID',
         dataIndex: 'username',
         sorter: (a, b) => a.username.localeCompare(b.username),
         width: 20

@@ -14,6 +14,13 @@ module.exports = {
         ws: true,
         pathRewrite: { '^/api': '/api' },
         secure: false
+      },
+      '/proxy/': {
+        target: 'http://172.20.99.3:4000',
+        changeOrigin: true,
+        ws: true,
+        pathRewrite: { '^/proxy': '/proxy' },
+        secure: false
       }
     }
   },

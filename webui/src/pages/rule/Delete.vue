@@ -88,6 +88,7 @@
           label="限制条件"
           v-if="deleteRule.type === 'normal'"
           name="conditions"
+          extra="关于各个条件的介绍，可以查看下方的说明"
           :rules="[{ required: true, message: '${label}不可为空! ' }]">
           <a-table
             :style="`font-size: ${isMobile() ? '12px': '14px'};`"
