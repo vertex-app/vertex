@@ -1,7 +1,84 @@
 <template>
-  <div style="font-size: 24px; font-weight: bold;">站点数据</div>
+  <div style="font-size: 24px; font-weight: bold;">
+    站点数据
+    <a-radio-group v-model:value="siteSetting.theme" name="theme">
+      <a-radio value="card">卡片</a-radio>
+      <a-radio value="list">列表</a-radio>
+    </a-radio-group>
+  </div>
   <a-divider></a-divider>
-  <div class="site-metric" >
+  <div class="site-metric" v-if="siteSetting.theme === 'card'">
+    <div
+      v-for="site of sites"
+      :key="site.name"
+      :style="`display: inline-block; text-align: left; width: ${isMobile() ? 'calc(100% - 24px)' : '400px'}; vertical-align: top; margin: 16px;`">
+      <div :class="(site.name === 'total' ? 'highlight-3 ' : 'highlight-2 ') + (isMobile() ? 'item-class-mobile' : 'item-class-pc')">
+        <div class="site-name">
+          <img :src="site.icon || `/assets/icons/${site.name}.ico`" style="width: 40px; height: 40px; border-radius: 20px; background: rgba(255,255,255,0.6);" />
+          <a-divider type="vertical" />
+          <span style="">{{ site.name }}</span>
+        </div>
+        <div class="site-user" v-if="site.name !== '总计'">
+          <span style="">{{ site.username }}</span>
+          <br>
+          <span style="">{{ site.uid }}</span>
+        </div>
+        <div class="site-data">
+          <span style="font-weight: bold; color: green;"><fa style="width: 16px;" :icon="['fas', 'arrow-up']"></fa></span>
+          <span style=""> 上传</span>
+          <a-divider type="vertical" />
+          <span style="">{{ $formatSize(site.upload) }}</span>
+          <br>
+          <span style="font-weight: bold; color: red;"><fa style="width: 16px;" :icon="['fas', 'arrow-down']"></fa></span>
+          <span style=""> 下载</span>
+          <a-divider type="vertical" />
+          <span style="">{{ $formatSize(site.download) }}</span>
+          <br>
+          <span style="font-weight: bold; color: green;"><fa style="width: 16px;" :icon="['fas', 'network-wired']"></fa></span>
+          <span style=""> 连接</span>
+          <a-divider type="vertical" />
+          <span style="">{{ site.seeding }} / {{ site.leeching }}</span>
+          <br>
+          <span style="font-weight: bold; color: green;"><fa style="width: 16px;" :icon="['fas', 'hard-drive']"></fa></span>
+          <span style=""> 做种</span>
+          <a-divider type="vertical" />
+          <span style="">{{ $formatSize(site.seedingSize) }}</span>
+        </div>
+        <div class="site-inc-data">
+          <span style="font-weight: bold; color: green;"><fa style="width: 12px;" :icon="['fas', 'arrow-up']"></fa></span>
+          <span style=""> 昨日上传</span>
+          <a-divider type="vertical" />
+          <span style="">{{ $formatSize(siteIncrease.yesterday[site.name].upload) }}</span>
+          <br>
+          <span style="font-weight: bold; color: red;"><fa style="width: 12px;" :icon="['fas', 'arrow-down']"></fa></span>
+          <span style=""> 昨日下载</span>
+          <a-divider type="vertical" />
+          <span style="">{{ $formatSize(siteIncrease.yesterday[site.name].download) }}</span>
+          <br>
+          <span style="font-weight: bold; color: green;"><fa style="width: 12px;" :icon="['fas', 'arrow-up']"></fa></span>
+          <span style=""> 本周上传</span>
+          <a-divider type="vertical" />
+          <span style="">{{ $formatSize(siteIncrease.week[site.name].upload) }}</span>
+          <br>
+          <span style="font-weight: bold; color: red;"><fa style="width: 12px;" :icon="['fas', 'arrow-down']"></fa></span>
+          <span style=""> 本周下载</span>
+          <a-divider type="vertical" />
+          <span style="">{{ $formatSize(siteIncrease.week[site.name].download) }}</span>
+          <br>
+          <span style="font-weight: bold; color: green;"><fa style="width: 12px;" :icon="['fas', 'arrow-up']"></fa></span>
+          <span style=""> 本月上传</span>
+          <a-divider type="vertical" />
+          <span style="">{{ $formatSize(siteIncrease.month[site.name].upload) }}</span>
+          <br>
+          <span style="font-weight: bold; color: red;"><fa style="width: 12px;" :icon="['fas', 'arrow-down']"></fa></span>
+          <span style=""> 本月下载</span>
+          <a-divider type="vertical" />
+          <span style="">{{ $formatSize(siteIncrease.month[site.name].download) }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="site-metric" v-if="siteSetting.theme === 'list'">
     <a-table
       :style="`font-size: ${isMobile() ? '12px': '14px'};`"
       :columns="columns"
@@ -16,7 +93,7 @@
       </template>
       <template #bodyCell="{ column, record }">
         <template v-if="column.dataIndex === 'name'">
-          <img :src="`/assets/icons/${record.name}.ico`" style="width: 32px; height: 32px; border-radius: 16px;" />
+          <img :src="record.icon || `/assets/icons/${record.name}.ico`" style="width: 32px; height: 32px; border-radius: 16px;" />
           <a-divider type="vertical" />
           <span style="">{{ record.name }}</span>
         </template>
@@ -83,6 +160,9 @@ export default {
       }
     ];
     return {
+      siteSetting: {
+        theme: ''
+      },
       loading: true,
       columns,
       scrollHeight: 640,
@@ -105,10 +185,14 @@ export default {
         this.sites = res.siteList;
         this.siteIncrease = res.increase;
         if (this.sites[1]) {
-          this.sites.push({
+          this.sites.unshift({
             name: 'total',
+            icon: '/assets/images/logo.svg',
             upload: this.sites.map(item => item.upload).reduce((a, b) => a + b),
-            download: this.sites.map(item => item.download).reduce((a, b) => a + b)
+            download: this.sites.map(item => item.download).reduce((a, b) => a + b),
+            seeding: this.sites.map(item => item.seeding).reduce((a, b) => a + b),
+            leeching: this.sites.map(item => item.leeching).reduce((a, b) => a + b),
+            seedingSize: this.sites.map(item => item.seedingSize).reduce((a, b) => a + b)
           });
         }
         for (const site of this.sites) {
@@ -133,6 +217,7 @@ export default {
     */
   },
   async mounted () {
+    this.siteSetting.theme = this.isMobile() ? 'card' : 'list';
     this.listSite();
     this.scrollHeight = window.innerHeight - 32 - 38 - 49 - 41 - 60 - (this.isMobile() ? 60 : 0);
     window.onresize = () => {
@@ -143,9 +228,92 @@ export default {
 </script>
 <style scoped>
 .site-metric {
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+}
+
+.style-setting {
   height: calc(100% - 92px);
   width: 100%;
   max-width: 1440px;
   margin: 0 auto;
+  text-align: center;
+}
+
+.highlight-1 {
+  background: rgba(74, 90, 196, 0.4);
+  backdrop-filter: blur(4px);
+}
+
+.highlight-2 {
+  background: rgba(255, 184, 194, 0.3);
+  backdrop-filter: blur(4px);
+}
+
+.highlight-3 {
+  background: rgba(58, 143, 183, 0.3);
+  backdrop-filter: blur(4px);
+}
+
+.highlight-4 {
+  background: rgba(0, 137, 108, 0.4);
+}
+
+.item-class-pc {
+  width: 100%;
+  height: 220px;
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+  font-size: 14px;
+}
+
+.item-class-mobile {
+  width: 100%;
+  height: 220px;
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+  font-size: 14px;
+}
+
+.site-name {
+  color: black;
+  top: 24px;
+  left: 12px;
+  font-size: 24px;
+  border-radius: 8px;
+  position: absolute;
+}
+
+.site-data {
+  color: black;
+  top: 84px;
+  left: 12px;
+  font-size: 16px;
+  border-radius: 8px;
+  position: absolute;
+}
+
+.site-inc-data {
+  color: black;
+  top: 84px;
+  right: 12px;
+  width: 160px;
+  font-size: 12px;
+  border-radius: 8px;
+  position: absolute;
+}
+
+.site-user {
+  color: black;
+  top: 24px;
+  right: 12px;
+  width: 96px;
+  line-height: 20px;
+  font-size: 16px;
+  border-radius: 8px;
+  position: absolute;
 }
 </style>

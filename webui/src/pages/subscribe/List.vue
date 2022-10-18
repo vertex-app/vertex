@@ -82,7 +82,7 @@ export default {
       } catch (e) {
         await this.$message().error(e.message);
       }
-    },
+    }
   },
   async mounted () {
     this.list();
