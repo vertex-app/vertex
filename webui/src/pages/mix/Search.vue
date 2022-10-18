@@ -294,10 +294,10 @@ export default {
       this.qs.page = pagination.current;
       this.pagination.current = pagination.current;
       if (filters.site && filters.site[0]) {
-        this.torrents = this.torrentsOri.filter(item => filters.site.indexOf(item.site) !== -1);
+        this.torrents = this.torrents.filter(item => filters.site.indexOf(item.site) !== -1);
         this.pagination.total = this.torrents.length;
       } else {
-        this.torrents = [...this.torrentsOri];
+        this.torrents = [...this.torrents];
         this.pagination.total = this.torrents.length;
       }
     },

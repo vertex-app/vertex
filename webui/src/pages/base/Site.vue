@@ -8,7 +8,7 @@
       size="small"
       :data-source="siteList"
       :pagination="false"
-      :scroll="{ x: 1200 }"
+      :scroll="{ x: 1440 }"
     >
       <template #title>
         <span style="font-size: 16px; font-weight: bold;">站点列表</span>
@@ -22,7 +22,7 @@
       </template>
       <template #bodyCell="{ column, record }">
         <template v-if="column.dataIndex === 'name'">
-          <img :src="`/proxy/site/${record.name}/favicon.ico`" style="width: 32px; height: 32px; border-radius: 16px;" />
+          <img :src="`/assets/icons/${record.name}.ico`" style="width: 32px; height: 32px; border-radius: 16px;" />
           <a-divider type="vertical" />
           <span style="">{{ record.name }}</span>
         </template>

@@ -42,9 +42,9 @@ class Douban {
     this.selectTorrentToday = {};
     this.wishes = (util.listDoubanSet().filter(item => item.id === this.id)[0] || {}).wishes || [];
     for (const wish of this.wishes) {
-      if (!wish.downloaded) {
+      if (!wish.downloaded && !this.refreshWishJobs[wish.id]) {
         this.refreshWishJobs[wish.id] = cron.schedule(this.defaultRefreshCron, () => this._refreshWish(wish.id));
-        if (this.advancedMode) {
+        if (this.advancedMode && !this.searchRemoteTorrentJobs[wish.id]) {
           this.searchRemoteTorrentJobs[wish.id] = cron.schedule('*/2 * * * *', () => this._refreshWish(wish.id, true));
         }
       }

@@ -28,7 +28,7 @@
     "matrix-org-irc": "^1.2.1",
     "md5-node": "^1.0.1",
     "moment": "^2.29.1",
-    "node-cron": "^3.0.0",
+    "node-cron": "~2.0.3",
     "puppeteer": "^13.4.0",
     "puppeteer-extra": "^3.2.3",
     "puppeteer-extra-plugin-stealth": "^2.9.0",
