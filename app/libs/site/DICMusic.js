@@ -29,9 +29,9 @@ class Site {
     });
     const statsJson = JSON.parse(stats);
     // 做种
-    info.seeding = statsJson.response.seeding;
+    info.seeding = +statsJson.response.seeding;
     // 下载
-    info.leeching = statsJson.response.leeching;
+    info.leeching = +statsJson.response.leeching;
     // 做种体积
     const seedingDocument = await this._getDocument(`${this.index}torrents.php?type=seeding&userid=${info.uid}`);
     const seedingTorrent = [...seedingDocument.querySelectorAll('.td_size.number_column')];

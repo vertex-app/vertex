@@ -223,10 +223,11 @@ exports.scrapeNameByFile = async function (_filename, type, _year = false, useFu
   return body.results[0]?.name || body.results[0]?.title || '';
 };
 
-exports.scrapeEpisodeByFilename = function (_filename) {
-  const filename = _filename
+exports.scrapeEpisodeByFilename = function (_filename, ignoreKeys = '') {
+  let filename = _filename
     .replace(/【/g, '[')
     .replace(/】/g, ']');
+  ignoreKeys.split(',').forEach((item) => { filename = filename.replace(new RegExp(item, 'gi'), ''); });
   let episode = +(filename.match(/[Ee][Pp]?(\d+)[. ]+/) || [])[1];
   if (!episode) {
     episode = +(filename.match(/\[(\d+)[Vv]?\d?\]/) || [])[1];
@@ -535,7 +536,7 @@ exports.mikanSearch = async function (name) {
     torrent.name = _torrent.querySelector('.magnet-link-wrap').innerHTML.trim();
     torrent.size = _torrent.children[1].innerHTML.trim();
     if (torrent.size) {
-      torrent.size = exports.calSize(...torrent.size.replace(/( ?[MGKT])B/, ' $1iB').split(' '));
+      torrent.size = exports.calSize(...torrent.size.replace(/ ?([MGKT])B/, ' $1iB').replace(/,/g, '').split(' '));
     } else {
       torrent.size = 0;
     }

@@ -44,7 +44,7 @@ class Site {
       upload: record.upload,
       download: record.download,
       seedingSize: record.seeding_size,
-      seeding: record.seeding_num,
+      seeding: +record.seeding_num,
       updateTime: record.update_time,
       leeching: 0
     };

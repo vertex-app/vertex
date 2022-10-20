@@ -7,7 +7,7 @@
     </a-radio-group>
   </div>
   <a-divider></a-divider>
-  <div class="site-metric" v-if="siteSetting.theme === 'card'">
+  <div class="site-metric" style="text-align: center;" v-if="siteSetting.theme === 'card'">
     <div
       v-for="site of sites"
       :key="site.name"
@@ -192,7 +192,7 @@ export default {
             download: this.sites.map(item => item.download).reduce((a, b) => a + b),
             seeding: this.sites.map(item => item.seeding).reduce((a, b) => a + b),
             leeching: this.sites.map(item => item.leeching).reduce((a, b) => a + b),
-            seedingSize: this.sites.map(item => item.seedingSize).reduce((a, b) => a + b)
+            seedingSize: this.sites.map(item => item.seedingSize).reduce((a, b) => +a + +b)
           });
         }
         for (const site of this.sites) {

@@ -80,7 +80,7 @@
           <a-checkbox-group style="width: 100%;" v-model:value="subscribe.sites">
             <a-row>
               <a-col v-for="site of sites" :span="8" :key="site.name">
-                <a-checkbox  v-model:value="site.name">{{ site.name }}</a-checkbox>
+                <a-checkbox v-model:value="site.name">{{ site.name }}</a-checkbox>
               </a-col>
             </a-row>
           </a-checkbox-group>

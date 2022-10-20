@@ -604,7 +604,7 @@ class Douban {
         if (linkRule.excludeKeys && linkRule.excludeKeys.split(',').some(item => filename.indexOf(item) !== -1)) continue;
         const seriesName = wish.name.split('/')[0].trim().replace(/ +/g, '.').replace(/\.?[第].*[季部]/, '').replace(/\..*篇[\d一二三四五六七八九十]*/, '');
         let season = (filename.match(/[. ]S(\d+)/) || [0, null])[1];
-        let episode = util.scrapeEpisodeByFilename(filename);
+        let episode = util.scrapeEpisodeByFilename(filename, wish.removeKeyword);
         if (!episode) {
           continue;
         }
@@ -836,7 +836,19 @@ class Douban {
     let episodeList = [];
     let maxEpisode = 0;
     if (wish.episodes) {
-      episodeList = Array.from(new Set(torrents.map(item => this.scrapeEpisode(item.subtitle)).flat()));
+      episodeList = Array.from(new Set(torrents.map(item => {
+        let _subtitle = item.subtitle;
+        if (wish.removeKeyword) {
+          wish.removeKeyword.split(',').forEach((item) => { _subtitle = _subtitle.replace(new RegExp(item, 'gi'), ''); });
+        }
+        let episodes = [];
+        if (item.site === 'MikanProject') {
+          episodes = [util.scrapeEpisodeByFilename(_subtitle)];
+        } else {
+          episodes = this.scrapeEpisode(_subtitle);
+        }
+        return episodes;
+      }).flat()));
       maxEpisode = Math.max(...episodeList);
     }
     let matched = false;
@@ -925,9 +937,13 @@ class Douban {
             if (wish.episodes) {
               let _subtitle = torrent.subtitle;
               if (wish.removeKeyword) {
-                _subtitle = torrent.subtitle.replace(new RegExp(wish.removeKeyword), '');
+                wish.removeKeyword.split(',').forEach((item) => { _subtitle = _subtitle.replace(new RegExp(item, 'gi'), ''); });
               }
-              episodes = this.scrapeEpisode(_subtitle);
+              if (torrent.site === 'MikanProject') {
+                episodes = [util.scrapeEpisodeByFilename(_subtitle)];
+              } else {
+                episodes = this.scrapeEpisode(_subtitle);
+              }
               episodes = episodes.filter(item => +item <= wish.episodes).map(item => +item);
               episodes = [...new Set(episodes)];
               logdebug(this.alias, '选种规则', rulesName, '种子', `[${torrent.site}]`, torrent.title, '/', torrent.subtitle, '识别到分集', episodes, '已完成至', wish.episodeNow);
