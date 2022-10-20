@@ -98,9 +98,16 @@
         <a-form-item
           label="密码"
           name="password"
-          extra="填写 ssh 登录服务器所需的密码"
-          :rules="[{ required: true, message: '${label}不可为空! ' }]">
+          extra="填写 ssh 登录服务器所需的密码, 密码与密钥二选一即可。"
+          :rules="[{ validator: async (rule, value) => { if (server.password || server.privateKey) return; throw '密码和密钥至少填写一个!' } }]">
           <a-input size="small" v-model:value="server.password"/>
+        </a-form-item>
+        <a-form-item
+          label="密钥"
+          name="privateKey"
+          extra="填写 ssh 登录服务器所需的密钥, 密码与密钥二选一即可。"
+          :rules="[{ validator: async (rule, value) => { if (server.password || server.privateKey) return; throw '密码和密钥至少填写一个!' } }]">
+          <a-textarea v-model:value="server.privateKey" type="textarea" :rows="10"></a-textarea >
         </a-form-item>
         <a-form-item
           label="端口"
