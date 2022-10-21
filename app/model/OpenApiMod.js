@@ -1,23 +1,60 @@
+const logger = require('../libs/logger');
 const util = require('../libs/util');
+const SettingMod = require('../model/SettingMod');
+
+const settingMod = new SettingMod();
 
 class OpenApiMod {
   async widget (options) {
+    if (!global.trustVertexPanel) {
+      throw new Error('未信任 Vertex Panel, 如需使用本功能, 请前往 系统设置 - 安全设置 信任 Vertex Panel');
+    }
+    const runInfo = await settingMod.getRunInfo();
     const res = await util.requestPromise({
-      url: 'http://172.20.99.3:4000/api/user/widget',
+      url: 'https://dash.vertex-app.top/api/user/widget',
       method: 'POST',
       encoding: null,
       json: {
-        apiKey: '412f38cf-56c3-4a67-b6cb-90b11e71ec7c',
+        apiKey: global.panelKey,
         data: {
-          upload: 1024000,
-          download: 1024000,
-          todayDownload: 1024000,
-          todayUpload: 1024000
+          upload: runInfo.uploaded,
+          download: runInfo.downloaded,
+          todayDownload: runInfo.downloadedToday,
+          todayUpload: runInfo.uploadedToday
         }
       }
     });
     const buffer = Buffer.from(res.body, 'utf-8');
     return buffer;
+  }
+
+  async siteInfo (options) {
+    if (!global.trustVertexPanel) {
+      throw new Error('未信任 Vertex Panel, 如需使用本功能, 请前往 系统设置 - 安全设置 信任 Vertex Panel');
+    }
+    const siteList = util.listSite()
+      .map(item => ({ name: item.name }));
+    for (let site of siteList) {
+      site = Object.assign(site, global.runningSite[site.name]?.info || {});
+    }
+    const res = await util.requestPromise({
+      url: 'https://dash.vertex-app.top/api/user/siteInfo',
+      method: 'POST',
+      encoding: null,
+      json: {
+        apiKey: global.panelKey,
+        data: {
+          siteList
+        }
+      }
+    });
+    try {
+      const buffer = Buffer.from(res.body, 'utf-8');
+      return buffer;
+    } catch (e) {
+      logger.error(res.body);
+      throw new Error('下载总览图片失败! 请查看日志');
+    }
   }
 }
 

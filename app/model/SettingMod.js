@@ -56,6 +56,7 @@ class SettingMod {
     global.userAgent = options.userAgent;
     global.ignoreError = options.ignoreError;
     global.apiKey = options.apiKey;
+    global.trustVertexPanel = options.trustVertexPanel;
     global.theme = options.theme;
     global.trustAllCerts = options.trustAllCerts;
     global.background = options.background;

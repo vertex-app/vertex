@@ -168,6 +168,7 @@ module.exports = function (app, express, router) {
   router.get('/site/search', ctrl.Site.search);
   router.post('/site/pushTorrent', ctrl.Site.pushTorrent);
   router.get('/site/listSite', ctrl.Site.listSite);
+  router.get('/site/overview', ctrl.Site.overview);
 
   router.get('/downloader/list', ctrl.Client.list);
   router.get('/downloader/listTop10', ctrl.Client.listTop10);
@@ -284,6 +285,7 @@ module.exports = function (app, express, router) {
   router.all('/openapi/:apiKey/slack', ctrl.Webhook.slack);
 
   router.all('/openapi/:apiKey/widget', ctrl.OpenApi.widget);
+  router.all('/openapi/:apiKey/siteInfo', ctrl.OpenApi.siteInfo);
 
   app.use('/api', router);
   app.use('/proxy/client/:client', clientProxy);

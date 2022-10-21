@@ -5,6 +5,7 @@
       <a-radio value="card">卡片</a-radio>
       <a-radio value="list">列表</a-radio>
     </a-radio-group>
+    <a-button size="small" type="link" @click="gotoSiteOverview">导出总览图片</a-button>
   </div>
   <a-divider></a-divider>
   <div class="site-metric" style="text-align: center;" v-if="siteSetting.theme === 'card'">
@@ -205,6 +206,9 @@ export default {
         await this.$message().error(e.message);
       }
       this.loading = false;
+    },
+    async gotoSiteOverview () {
+      window.open('/api/site/overview');
     }
     /*
     async listRecord () {

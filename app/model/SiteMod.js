@@ -4,6 +4,9 @@ const Site = require('../common/Site');
 const logger = require('../libs/logger');
 const moment = require('moment');
 const util = require('../libs/util');
+const OpenApiMod = require('./OpenApiMod');
+
+const openApiMod = new OpenApiMod();
 
 class SiteMod {
   add (options) {
@@ -172,6 +175,10 @@ class SiteMod {
       return siteList.filter(item => global.SITE.searchTorrentWrapper[item.name]).map(item => item.name);
     }
     return siteList.map(item => item.name);
+  }
+
+  async overview (options) {
+    return await openApiMod.siteInfo();
   }
 }
 

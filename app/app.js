@@ -76,6 +76,7 @@ const init = function () {
   global.doubanPush = setting.doubanPush;
   global.apiKey = setting.apiKey;
   global.tmdbApiKey = setting.tmdbApiKey;
+  global.trustVertexPanel = setting.trustVertexPanel;
   global.transparent = setting.transparent;
   global.background = setting.background;
   global.wechatCover = setting.wechatCover;

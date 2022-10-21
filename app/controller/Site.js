@@ -156,5 +156,19 @@ class Site {
       });
     }
   };
+
+  async overview (req, res) {
+    try {
+      const image = await siteMod.overview(req.query);
+      res.setHeader('content-type', 'image/png');
+      res.send(image);
+    } catch (e) {
+      logger.error(e);
+      res.send({
+        success: false,
+        message: e.message
+      });
+    }
+  };
 }
 module.exports = Site;
