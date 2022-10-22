@@ -50,18 +50,24 @@ class Site {
     };
   }
 
-  async _getDocument (url, origin = false, expire = 300) {
+  async _getDocument (url, origin = false, expire = 300, retCookies = false) {
     const cache = await redis.get(`vertex:document:body:${url}`);
     if (!cache) {
-      const html = (await util.requestPromise({
+      const res = (await util.requestPromise({
         url: url,
         headers: {
           cookie: this.cookie
         }
-      })).body;
-      if (origin) return html;
-      await redis.setWithExpire(`vertex:document:body:${url}`, html, expire);
-      const dom = new JSDOM(html);
+      }));
+      if (origin) return res.body;
+      await redis.setWithExpire(`vertex:document:body:${url}`, res.body, expire);
+      const dom = new JSDOM(res.body);
+      if (retCookies) {
+        return {
+          dom: dom.window.document,
+          cookie: res.headers['set-cookie']
+        };
+      }
       return dom.window.document;
     } else {
       if (origin) return cache;

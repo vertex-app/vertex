@@ -58,6 +58,7 @@ class SettingMod {
     global.apiKey = options.apiKey;
     global.trustVertexPanel = options.trustVertexPanel;
     global.theme = options.theme;
+    global.siteInfo = options.siteInfo;
     global.trustAllCerts = options.trustAllCerts;
     global.background = options.background;
     global.tmdbApiKey = options.tmdbApiKey;

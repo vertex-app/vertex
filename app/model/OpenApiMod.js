@@ -33,7 +33,8 @@ class OpenApiMod {
       throw new Error('未信任 Vertex Panel, 如需使用本功能, 请前往 系统设置 - 安全设置 信任 Vertex Panel');
     }
     const siteList = util.listSite()
-      .map(item => ({ name: item.name }));
+      .map(item => ({ name: item.name, hide: global.siteInfo.hideName.indexOf(item.name) !== -1 }))
+      .filter(item => global.siteInfo.hide.indexOf(item.name) === -1);
     for (let site of siteList) {
       site = Object.assign(site, global.runningSite[site.name]?.info || {});
     }
@@ -44,7 +45,8 @@ class OpenApiMod {
       json: {
         apiKey: global.panelKey,
         data: {
-          siteList
+          siteList,
+          watermark: global.siteInfo.watermark
         }
       }
     });

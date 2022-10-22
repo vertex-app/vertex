@@ -4,8 +4,8 @@
     <a-radio-group v-model:value="siteSetting.theme" name="theme">
       <a-radio value="card">卡片</a-radio>
       <a-radio value="list">列表</a-radio>
+      <a-radio value="overview">总览</a-radio>
     </a-radio-group>
-    <a-button size="small" type="link" @click="gotoSiteOverview">导出总览图片</a-button>
   </div>
   <a-divider></a-divider>
   <div class="site-metric" style="text-align: center;" v-if="siteSetting.theme === 'card'">
@@ -112,6 +112,60 @@
       </template>
     </a-table>
   </div>
+  <div class="site-metric" v-if="siteSetting.theme === 'overview'" style="text-align: center;">
+    <div :class="`site-overview-${isMobile() ? 'mobile' : 'pc'}`">
+      <div style="text-align: left; margin: 24px;">
+        <a-form
+          labelAlign="right"
+          :labelWrap="true"
+          :model="setting.siteInfo"
+          size="small"
+          @finish="modify"
+          :labelCol="{ span: 4 }"
+          :wrapperCol="{ span: 20 }"
+          autocomplete="off"
+          :class="`container-form-${ isMobile() ? 'mobile' : 'pc' }`">
+          <a-form-item
+            label="隐藏站点"
+            name="hide"
+            extra="在图中隐藏选中的站点">
+            <a-checkbox-group style="width: 100%;" v-model:value="setting.siteInfo.hide">
+              <a-row>
+                <a-col v-for="site of sites.filter(item => item.name !== 'total')" :span="8" :key="site.name">
+                  <a-checkbox  v-model:value="site.name">{{ site.name }}</a-checkbox>
+                </a-col>
+              </a-row>
+            </a-checkbox-group>
+          </a-form-item>
+          <a-form-item
+            label="隐藏站点名称"
+            name="hideName"
+            extra="在图中隐藏选中的站点名称, 仍显示数据信息">
+            <a-checkbox-group style="width: 100%;" v-model:value="setting.siteInfo.hideName">
+              <a-row>
+                <a-col v-for="site of sites.filter(item => item.name !== 'total')" :span="8" :key="site.name">
+                  <a-checkbox  v-model:value="site.name">{{ site.name }}</a-checkbox>
+                </a-col>
+              </a-row>
+            </a-checkbox-group>
+          </a-form-item>
+          <a-form-item
+            label="水印"
+            name="watermark"
+            extra="在图中添加水印">
+            <a-input size="small" v-model:value="setting.siteInfo.watermark"/>
+          </a-form-item>
+          <a-form-item
+            :wrapperCol="isMobile() ? { span:24 } : { span: 20, offset: 4 }">
+            <a-button type="primary" html-type="submit" style="margin-top: 24px; margin-bottom: 48px;">保存</a-button>
+          </a-form-item>
+        </a-form>
+      </div>
+    </div>
+    <div :class="`site-overview-${isMobile() ? 'mobile' : 'pc'}`">
+      <img :src="overviewSrc" style="max-width: 100%; margin: 0 auto;"/>
+    </div>
+  </div>
 </template>
 <script>
 export default {
@@ -166,9 +220,17 @@ export default {
       },
       loading: true,
       columns,
+      overviewSrc: '/api/site/overview',
       scrollHeight: 640,
       sites: [],
-      siteIncrease: {}
+      siteIncrease: {},
+      setting: {
+        siteInfo: {
+          hide: [],
+          hideName: [],
+          watermark: 'vertex'
+        }
+      }
     };
   },
   methods: {
@@ -207,6 +269,26 @@ export default {
       }
       this.loading = false;
     },
+    async get () {
+      try {
+        const s = (await this.$api().setting.get()).data;
+        this.setting = {
+          siteInfo: s.siteInfo || this.setting.siteInfo
+        };
+      } catch (e) {
+        await this.$message().error(e.message);
+      }
+    },
+    async modify () {
+      try {
+        await this.$api().setting.modify(this.setting);
+        await this.$message().success('修改成功, 部分设置可能需要刷新页面生效.');
+        this.overviewSrc = '/api/site/overview?_=' + Math.random();
+        this.get();
+      } catch (e) {
+        await this.$message().error(e.message);
+      }
+    },
     async gotoSiteOverview () {
       window.open('/api/site/overview');
     }
@@ -223,6 +305,7 @@ export default {
   async mounted () {
     this.siteSetting.theme = this.isMobile() ? 'card' : 'list';
     this.listSite();
+    this.get();
     this.scrollHeight = window.innerHeight - 32 - 38 - 49 - 41 - 60 - (this.isMobile() ? 60 : 0);
     window.onresize = () => {
       this.scrollHeight = window.innerHeight - 32 - 38 - 49 - 41 - 60 - (this.isMobile() ? 60 : 0);
@@ -319,5 +402,13 @@ export default {
   font-size: 16px;
   border-radius: 8px;
   position: absolute;
+}
+
+.site-overview-pc {
+  width: 50%; float: left;
+}
+
+.site-overview-mobile {
+  width: 100%;
 }
 </style>

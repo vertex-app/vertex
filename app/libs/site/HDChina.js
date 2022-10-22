@@ -12,7 +12,7 @@ class Site {
 
   async getInfo () {
     const info = {};
-    const document = await this._getDocument('https://hdchina.org/', false, 10);
+    const { dom: document, cookie } = await this._getDocument(this.index, false, 10, true);
     // 用户名
     info.username = document.querySelector('a[href^=userdetails] b').innerHTML;
     // uid
@@ -31,11 +31,13 @@ class Site {
     info.leeching = +document.querySelector('i[class="fas fa-arrow-down"]').nextSibling.nodeValue.trim().replace(')', '');
     // 做种体积
     const csrf = document.querySelector('meta[name=x-csrf]').content;
+    const sessid = ((cookie || ['']).join(' ').split(';').filter(item => item.indexOf('PHPSESSID') === 0) || [''])[0];
+    const _cookie = this.cookie.split(';').filter(item => item.trim().indexOf('PHPSESSID') !== 0).concat([sessid]).join(';');
     const { body: stats } = await util.requestPromise({
       url: `${this.index}ajax_getusertorrentlist.php`,
       method: 'POST',
       headers: {
-        cookie: this.cookie
+        cookie: _cookie
       },
       form: {
         userid: info.uid,
@@ -57,7 +59,7 @@ class Site {
 
   async searchTorrent (keyword) {
     const torrentList = [];
-    const document = await this._getDocument(`https://hdchina.org/torrents.php?incldead=1&spstate=0&inclbookmarked=0&seeders=&search=${encodeURIComponent(keyword)}&search_area=${keyword.match(/tt\d+/) ? 4 : 0}&search_mode=0`);
+    const document = await this._getDocument(`${this.index}torrents.php?incldead=1&spstate=0&inclbookmarked=0&seeders=&search=${encodeURIComponent(keyword)}&search_area=${keyword.match(/tt\d+/) ? 4 : 0}&search_mode=0`);
     const torrents = document.querySelectorAll('.torrent_list tbody tr:not(:first-child)');
     for (const _torrent of torrents) {
       const torrent = {};
@@ -65,8 +67,8 @@ class Site {
       torrent.title = _torrent.querySelector('td[class="t_name"] a[href*="details"]').title.trim();
       torrent.subtitle = _torrent.querySelector('td[class="t_name"] h4').innerHTML.trim();
       torrent.category = _torrent.querySelector('td a[href*=cat] img').title.trim();
-      torrent.link = 'https://hdchina.org/' + _torrent.querySelector('a[href*=details]').href.trim();
-      torrent.downloadLink = 'https://hdchina.org/' + _torrent.querySelector('a[href*="download.php"]').href;
+      torrent.link = this.index + _torrent.querySelector('a[href*=details]').href.trim();
+      torrent.downloadLink = this.index + _torrent.querySelector('a[href*="download.php"]').href;
       torrent.id = +torrent.link.match(/id=(\d*)/)[1];
       torrent.seeders = +(_torrent.querySelector('a[href*=seeders] font') || _torrent.querySelector('a[href*=seeders]') || _torrent.querySelector('span[class=red]')).innerHTML.trim();
       torrent.leechers = +(_torrent.querySelector('a[href*=leechers]') || _torrent.childNodes[9]).innerHTML.trim();
