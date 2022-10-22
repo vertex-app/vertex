@@ -41,5 +41,37 @@ module.exports = {
       });
       return args;
     });
+  },
+  pwa: {
+    name: 'VERTEX', // 名字
+    themeColor: '#373737', // 背景颜色
+    appleMobileWebAppCapable: true, // 苹果WebApp支持
+    manifestPath: 'assets/manifest.json',
+    appleMobileWebAppStatusBarStyle: 'black-translucent',
+    // manifest 设置
+    manifestOptions: {
+      name: 'VERTEX',
+      short_name: 'VERTEX',
+      theme_color: '#373737',
+      start_url: '/',
+      display: 'standalone',
+      background_color: '#000000',
+      icons: require('./public/assets/pwaicons/icons.json').icons
+    },
+
+    // workbox
+    workboxOptions: {
+      swDest: 'service-worker.js'
+    },
+
+    // 图标
+    iconPaths: {
+      faviconSVG: 'assets/images/logo.svg',
+      favicon32: 'assets/pwaicons/ios/32.png',
+      favicon16: 'assets/pwaicons/ios/16.png',
+      appleTouchIcon: 'assets/pwaicons/ios/512.png',
+      maskIcon: '',
+      msTileImage: ''
+    }
   }
 };

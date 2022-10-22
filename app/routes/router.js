@@ -30,13 +30,16 @@ const checkAuth = async function (req, res, next) {
     '/api/user/login',
     '/api/setting/getBackground.less',
     '/api/setting/getCss.css',
-    '/user/login'
+    '/user/login',
+    '/service-worker.js',
+    '/service-worker.js.map'
   ];
   if (req.session?.user && ['/', '/user/login'].includes(pathname)) {
     return res.redirect(302, '/index');
   }
   if (excludePath.includes(pathname) ||
     pathname.startsWith('/assets') ||
+    pathname.startsWith('/workbox') ||
     pathname.startsWith('/api/openapi') ||
     pathname === '/favicon.ico') {
     return next();
@@ -300,6 +303,24 @@ module.exports = function (app, express, router) {
       return res.end('Not Found');
     }
     if (pathname.startsWith('/assets')) {
+      try {
+        return res.download(path.join(__dirname, '../static', pathname));
+      } catch (err) {
+        logger.error(err);
+        res.status(404);
+        return res.end('Not Found');
+      }
+    }
+    if (pathname.startsWith('/workbox')) {
+      try {
+        return res.download(path.join(__dirname, '../static', pathname));
+      } catch (err) {
+        logger.error(err);
+        res.status(404);
+        return res.end('Not Found');
+      }
+    }
+    if (pathname.startsWith('/service-worker.js')) {
       try {
         return res.download(path.join(__dirname, '../static', pathname));
       } catch (err) {

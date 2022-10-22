@@ -31,6 +31,7 @@ import VueLazyLoad from 'vue-lazyload-next';
 import md5 from 'md5-node';
 
 import router from './routes';
+import './registerServiceWorker';
 
 library.add(fas);
 library.add(fab);
