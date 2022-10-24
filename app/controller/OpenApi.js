@@ -11,7 +11,7 @@ class OpenApi {
 
   async siteInfo (req, res) {
     const image = await openApiMod.siteInfo(req.query);
-    res.setHeader('content-type', 'image/png');
+    res.setHeader('content-type', 'image/jpeg');
     res.send(image);
   }
 }

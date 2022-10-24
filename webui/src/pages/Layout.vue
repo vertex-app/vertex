@@ -90,9 +90,9 @@
         <div style="margin: 0 auto; width: calc(100% - 32px); position: absolute; display: inline-block">
           <div style="margin: 0 auto; width: 144px;">
             <div style="width: 24px; float: left;">
-              <img src="/assets/images/logo.svg"/>
+              <img style="background: rgba(255,255,255,0.2); border-radius: 4px;" src="/assets/images/logo.svg"/>
             </div>
-            <span style="font-size: 22px; padding-left: 6px;">
+            <span style="font-size: 22px; padding-left: 6px; line-height: 68px;">
               Vertex
             </span>
           </div>

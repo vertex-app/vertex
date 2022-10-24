@@ -3,9 +3,10 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <link rel="shortcut icon" href="/assets/images/logo.svg">
-    <meta property="og:image" content="/assets/images/logo.svg">
+    <link rel="shortcut icon" href="assets/pwaicons/ios/256.png">
+    <meta property="og:image" content="assets/pwaicons/ios/256.png">
     <meta name="viewport" content="width=device-width,initial-scale=0.9">
+    <meta name="vertex-theme" content="VERTEX-THEME">
     <title><%= htmlWebpackPlugin.options.title %></title>
   </head>
   <body style="margin: 0;" class="body-bg">
@@ -17,12 +18,8 @@
   </body>
   <link rel="stylesheet/less" type="text/css" href="/assets/styles/theme.less" >
   <script>
-    window.less = {
-      async: false,
-      env:"production"
-    };
     let customVH = window.innerHeight * 0.01
-    document.documentElement.style.setProperty('--vh', customVH + 'px')
+    document.documentElement.style.setProperty('--vh', customVH + 'px');
     window.addEventListener('resize', () => {
       let customVH = window.innerHeight * 0.01
       document.documentElement.style.setProperty(
@@ -30,5 +27,23 @@
         customVH + 'px',
       )
     });
+    if (document.querySelector('meta[name=vertex-theme]').content === 'follow') {
+      const themeMedia = window.matchMedia('(prefers-color-scheme: light)');
+      if (themeMedia.matches) {
+        document.querySelector('meta[name=theme-color]').content = '#0099E3';
+      } else {
+        document.querySelector('meta[name=theme-color]').content = '#000000';
+      }
+      themeMedia.addListener(e => {
+        if (e.matches) {
+          document.querySelector('meta[name=theme-color]').content = '#0099E3';
+        } else {
+          document.querySelector('meta[name=theme-color]').content = '#000000';
+        }
+      });
+    }
+    if (document.querySelector('meta[name=theme-color]').content = '#0099E3' && window.location.pathname === '/user/login') {
+      document.querySelector('body').style.backgroundColor = '#ffffff';
+    }
   </script>
 </html>

@@ -160,7 +160,7 @@ class Site {
   async overview (req, res) {
     try {
       const image = await siteMod.overview(req.query);
-      res.setHeader('content-type', 'image/png');
+      res.setHeader('content-type', 'image/jpeg');
       res.send(image);
     } catch (e) {
       logger.error(e);

@@ -330,7 +330,12 @@ module.exports = function (app, express, router) {
       }
     }
     try {
-      res.send(fs.readFileSync(path.join(__dirname, '../static/index.html'), 'utf-8'));
+      let indexHTML = fs.readFileSync(path.join(__dirname, '../static/index.html'), 'utf-8');
+      if (global.theme === 'dark') {
+        indexHTML = indexHTML.replace('<meta name="theme-color" content="#0099E3">', '<meta name="theme-color" content="#000">');
+      }
+      indexHTML = indexHTML.replace('VERTEX-THEME', global.theme);
+      res.send(indexHTML);
     } catch (err) {
       logger.error(err);
       res.status(404);
