@@ -1,7 +1,7 @@
 <template>
   <div style="font-size: 24px; font-weight: bold;">
     站点数据
-    <a-radio-group v-model:value="siteSetting.theme" name="theme">
+    <a-radio-group v-model:value="siteSetting.theme" @change="handleRatioChange" name="theme">
       <a-radio value="card">卡片</a-radio>
       <a-radio value="list">列表</a-radio>
       <a-radio value="overview">总览</a-radio>
@@ -273,7 +273,8 @@ export default {
       try {
         const s = (await this.$api().setting.get()).data;
         this.setting = {
-          siteInfo: s.siteInfo || this.setting.siteInfo
+          siteInfo: s.siteInfo || this.setting.siteInfo,
+          trustAllCerts: screen.trustAllCerts
         };
       } catch (e) {
         await this.$message().error(e.message);
@@ -291,6 +292,11 @@ export default {
     },
     async gotoSiteOverview () {
       window.open('/api/site/overview');
+    },
+    handleRatioChange () {
+      if (this.siteSetting.theme === 'overview' && !this.setting.trustAllCerts) {
+        this.$message().error('未开启信任 Vertex Panel, 总览图可能无法显示');
+      }
     }
     /*
     async listRecord () {

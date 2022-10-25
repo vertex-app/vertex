@@ -73,6 +73,7 @@ class TorrentMod {
     const { keyword } = options;
     const clients = global.runningClient;
     const torrents = [];
+    const torrentKeys = {};
     for (const clientId of Object.keys(clients)) {
       if (options.client && clientId !== options.client) continue;
       if (!clients[clientId].maindata) continue;
@@ -89,6 +90,11 @@ class TorrentMod {
         const _torrent = { hash: torrent.hash, name: torrent.name, size: torrent.size, savePath: torrent.savePath };
         _torrent.clientAlias = clients[clientId].alias;
         _torrent.client = clientId;
+        const key = `${torrent.savePath}-${torrent.name}-${torrent.size}`;
+        if (torrentKeys[key]) {
+          continue;
+        }
+        torrentKeys[key] = 1;
         torrents.push(_torrent);
       }
     }
