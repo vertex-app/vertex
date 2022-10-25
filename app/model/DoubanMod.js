@@ -10,8 +10,8 @@ class DoubanMod {
     const doubanSet = { ...options };
     doubanSet.id = id;
     fs.writeFileSync(path.join(__dirname, '../data/douban/', id + '.json'), JSON.stringify(doubanSet, null, 2));
-    if (options.enable) {
-      global.runningDouban[options.id] = new Douban(doubanSet);
+    if (doubanSet.enable) {
+      global.runningDouban[id] = new Douban(doubanSet);
     }
     return '添加豆瓣成功';
   };
@@ -31,13 +31,13 @@ class DoubanMod {
 
   modify (options) {
     const doubanSet = { ...options };
-    if (global.runningDouban[options.id]) {
-      global.runningDouban[options.id].destroy();
+    if (global.runningDouban[doubanSet.id]) {
+      global.runningDouban[doubanSet.id].destroy();
     }
-    if (options.enable) {
-      global.runningDouban[options.id] = new Douban(doubanSet);
+    if (doubanSet.enable) {
+      global.runningDouban[doubanSet.id] = new Douban(doubanSet);
     }
-    fs.writeFileSync(path.join(__dirname, '../data/douban/', options.id + '.json'), JSON.stringify(doubanSet, null, 2));
+    fs.writeFileSync(path.join(__dirname, '../data/douban/', doubanSet.id + '.json'), JSON.stringify(doubanSet, null, 2));
     return '修改豆瓣成功';
   };
 
@@ -93,6 +93,7 @@ class DoubanMod {
   }
 
   editWish (options) {
+    logger.info(global.runningDouban);
     if (!global.runningDouban[options.doubanId]) {
       throw new Error('豆瓣账号未启用');
     }

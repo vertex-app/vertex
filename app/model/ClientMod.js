@@ -27,7 +27,7 @@ class ClientMod {
     const clientSet = { ...options };
     clientSet.deleteRules = clientSet.deleteRules || [];
     clientSet.sameServerClients = clientSet.sameServerClients || [];
-    if (global.runningClient[options.id]) global.runningClient[options.id].destroy();
+    if (global.runningClient[clientSet.id]) global.runningClient[options.id].destroy();
     if (clientSet.enable) global.runningClient[options.id] = new Client(clientSet);
     fs.writeFileSync(path.join(__dirname, '../data/client/', options.id + '.json'), JSON.stringify(clientSet, null, 2));
     return '修改下载器成功';
