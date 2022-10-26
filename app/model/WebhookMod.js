@@ -97,10 +97,70 @@ const getAddWishRawObject = function () {
   };
 };
 
+const getRefreshWishRawObject = function () {
+  return {
+    attachments: [
+      {
+        color: util.randomColor(),
+        fallback: '刷新想看',
+        blocks: [
+          {
+            type: 'header',
+            text: {
+              type: 'plain_text',
+              text: '刷新想看',
+              emoji: true
+            }
+          },
+          {
+            type: 'input',
+            block_id: 'wish_id|' + util.uuid.v4(),
+            element: {
+              type: 'static_select',
+              options: Object.keys(global.runningDouban).map(item => {
+                return global.runningDouban[item].wishes
+                  .filter(subitem => !subitem.downloaded)
+                  .map(subitem => ({
+                    text: {
+                      type: 'plain_text',
+                      text: global.runningDouban[item].alias + '-' + subitem.name,
+                      emoji: true
+                    },
+                    value: global.runningDouban[item].id + '|' + subitem.id
+                  }));
+              }).flat(),
+              action_id: 'wish_id'
+            },
+            label: {
+              type: 'plain_text',
+              text: '选择订阅项目',
+              emoji: true
+            }
+          },
+          {
+            type: 'actions',
+            elements: [
+              {
+                type: 'button',
+                text: {
+                  type: 'plain_text',
+                  text: '提交',
+                  emoji: true
+                },
+                value: 'refresh_wish',
+                action_id: 'refresh_wish'
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  };
+};
+
 const getSelectMediaRaw = function (result, douban) {
   const sName = global.runningDouban[douban].alias;
   const list = [];
-  logger.info(result);
   for (const r of result) {
     list.push({
       type: 'image',
@@ -244,10 +304,17 @@ const getNoneResultRaw = function () {
 
 class WebhookMod {
   async handleSlackShortCuts (id, event) {
-    if (id === 'add_wish') {
-      const obj = getAddWishRawObject();
-      obj.trigger_id = event.trigger_id;
-      global.doubanPush.pushSlackRaw(obj);
+    switch (id) {
+    case 'add_wish':
+      const addWishObj = getAddWishRawObject();
+      addWishObj.trigger_id = event.trigger_id;
+      global.doubanPush.pushSlackRaw(addWishObj);
+      break;
+    case 'refresh_wish':
+      const refreshWishObj = getRefreshWishRawObject();
+      refreshWishObj.trigger_id = event.trigger_id;
+      global.doubanPush.pushSlackRaw(refreshWishObj);
+      break;
     }
   }
 
@@ -290,6 +357,18 @@ class WebhookMod {
         await global.doubanPush.selectWish('添加成功');
         await global.runningDouban[douban].refreshWishList(true);
       })();
+      return '';
+    }
+    if (event.actions[0].action_id === 'refresh_wish') {
+      for (const key of Object.keys(event.state.values)) {
+        event.state.values[key.split('|')[0]] = event.state.values[key];
+      }
+      const id = event.state.values.wish_id.wish_id.selected_option.value;
+      const wishId = id.split('|')[1];
+      const douban = global.runningDouban[id.split('|')[0]];
+      if (douban && douban.enableWechatLink) {
+        douban.wechatLink('refreshWish', { key: wishId });
+      }
       return '';
     }
   }

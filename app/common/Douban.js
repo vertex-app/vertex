@@ -327,6 +327,7 @@ class Douban {
       return;
     }
     this.refreshStat[id] = 1;
+    logger.info(!!remote, this.alias, wish.name);
     if (!remote) this.ntf.startRefreshWish(`${this.alias} / ${wish.name}`);
     wish.downloaded = await this.selectTorrent(wish, false, remote);
     if (!remote && !wish.downloaded) {
@@ -1025,7 +1026,7 @@ class Douban {
       this.refreshWishList();
       break;
     case 'refreshWish':
-      const wishes = this.wishes.filter(item => item.name.indexOf(options.key) !== -1);
+      const wishes = this.wishes.filter(item => item.name.indexOf(options.key) !== -1 || item.id === options.key);
       for (const wish of wishes) {
         await this.refreshWish(wish.id, true);
       }
