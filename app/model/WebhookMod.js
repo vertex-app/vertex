@@ -5,6 +5,10 @@ const redis = require('../libs/redis');
 const logger = require('../libs/logger');
 const parser = require('xml2js').parseString;
 
+const OpenApiMod = require('./OpenApiMod');
+
+const openApiMod = new OpenApiMod();
+
 const parseXml = util.promisify(parser);
 
 const PKCS7Encoder = {};
@@ -151,6 +155,35 @@ const getRefreshWishRawObject = function () {
                 action_id: 'refresh_wish'
               }
             ]
+          }
+        ]
+      }
+    ]
+  };
+};
+
+const getSiteInfoRawObject = async function () {
+  return {
+    attachments: [
+      {
+        color: util.randomColor(),
+        fallback: '站点数据',
+        blocks: [
+          {
+            type: 'header',
+            text: {
+              type: 'plain_text',
+              text: '站点数据',
+              emoji: true
+            }
+          },
+          {
+            type: 'divider'
+          },
+          {
+            type: 'image',
+            image_url: await openApiMod.siteInfo({ retUrl: true }),
+            alt_text: '站点数据'
           }
         ]
       }
@@ -314,6 +347,11 @@ class WebhookMod {
       const refreshWishObj = getRefreshWishRawObject();
       refreshWishObj.trigger_id = event.trigger_id;
       global.doubanPush.pushSlackRaw(refreshWishObj);
+      break;
+    case 'site_info':
+      const siteInfoObj = await getSiteInfoRawObject();
+      siteInfoObj.trigger_id = event.trigger_id;
+      global.doubanPush.pushSlackRaw(siteInfoObj);
       break;
     }
   }

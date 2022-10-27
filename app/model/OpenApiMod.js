@@ -28,7 +28,7 @@ class OpenApiMod {
     return buffer;
   }
 
-  async siteInfo (options) {
+  async siteInfo (options = {}) {
     if (!global.trustVertexPanel) {
       throw new Error('未信任 Vertex Panel, 如需使用本功能, 请前往 系统设置 - 安全设置 信任 Vertex Panel');
     }
@@ -44,6 +44,7 @@ class OpenApiMod {
       encoding: null,
       json: {
         apiKey: global.panelKey,
+        retUrl: options.retUrl,
         data: {
           siteList,
           watermark: global.siteInfo.watermark
@@ -51,6 +52,9 @@ class OpenApiMod {
       }
     });
     try {
+      if (options.retUrl) {
+        return 'https://dash.vertex-app.top' + '/images/' + res.body.data.url;
+      }
       const buffer = Buffer.from(res.body, 'utf-8');
       return buffer;
     } catch (e) {

@@ -274,7 +274,7 @@ export default {
         const s = (await this.$api().setting.get()).data;
         this.setting = {
           siteInfo: s.siteInfo || this.setting.siteInfo,
-          trustAllCerts: screen.trustAllCerts
+          trustVertexPanel: s.trustVertexPanel
         };
       } catch (e) {
         await this.$message().error(e.message);
@@ -294,7 +294,7 @@ export default {
       window.open('/api/site/overview');
     },
     handleRatioChange () {
-      if (this.siteSetting.theme === 'overview' && !this.setting.trustAllCerts) {
+      if (this.siteSetting.theme === 'overview' && !this.setting.trustVertexPanel) {
         this.$message().error('未开启信任 Vertex Panel, 总览图可能无法显示');
       }
     }
