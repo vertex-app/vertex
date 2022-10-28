@@ -412,7 +412,7 @@ class WebhookMod {
       break;
     case 'refresh_subscribe':
       const refreshSubscribe = await getRefreshSubscribeRawObject();
-      siteInfoObj.trigger_id = event.trigger_id;
+      refreshSubscribe.trigger_id = event.trigger_id;
       global.doubanPush.pushSlackRaw(refreshSubscribe);
       break;
     }
