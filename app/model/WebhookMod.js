@@ -162,6 +162,63 @@ const getRefreshWishRawObject = function () {
   };
 };
 
+const getRefreshSubscribeRawObject = function () {
+  return {
+    attachments: [
+      {
+        color: util.randomColor(),
+        fallback: '刷新订阅任务',
+        blocks: [
+          {
+            type: 'header',
+            text: {
+              type: 'plain_text',
+              text: '刷新订阅任务',
+              emoji: true
+            }
+          },
+          {
+            type: 'input',
+            block_id: 'subscribe_id|' + util.uuid.v4(),
+            element: {
+              type: 'static_select',
+              options: Object.keys(global.runningDouban).map(item => ({
+                text: {
+                  type: 'plain_text',
+                  text: global.runningDouban[item].alias,
+                  emoji: true
+                },
+                value: global.runningDouban[item].id
+              })),
+              action_id: 'subscribe_id'
+            },
+            label: {
+              type: 'plain_text',
+              text: '选择订阅任务',
+              emoji: true
+            }
+          },
+          {
+            type: 'actions',
+            elements: [
+              {
+                type: 'button',
+                text: {
+                  type: 'plain_text',
+                  text: '提交',
+                  emoji: true
+                },
+                value: 'refresh_subscribe',
+                action_id: 'refresh_subscribe'
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  };
+};
+
 const getSiteInfoRawObject = async function () {
   return {
     attachments: [
@@ -353,6 +410,11 @@ class WebhookMod {
       siteInfoObj.trigger_id = event.trigger_id;
       global.doubanPush.pushSlackRaw(siteInfoObj);
       break;
+    case 'refresh_subscribe':
+      const refreshSubscribe = await getRefreshSubscribeRawObject();
+      siteInfoObj.trigger_id = event.trigger_id;
+      global.doubanPush.pushSlackRaw(refreshSubscribe);
+      break;
     }
   }
 
@@ -406,6 +468,17 @@ class WebhookMod {
       const douban = global.runningDouban[id.split('|')[0]];
       if (douban && douban.enableWechatLink) {
         douban.wechatLink('refreshWish', { key: wishId });
+      }
+      return '';
+    }
+    if (event.actions[0].action_id === 'refresh_subscribe') {
+      for (const key of Object.keys(event.state.values)) {
+        event.state.values[key.split('|')[0]] = event.state.values[key];
+      }
+      const subscribeId = event.state.values.subscribe_id.subscribe_id.selected_option.value;
+      const subscribe = global.runningDouban[subscribeId];
+      if (subscribe && subscribe.enableWechatLink) {
+        subscribe.wechatLink('refresh');
       }
       return '';
     }

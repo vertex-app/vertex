@@ -313,8 +313,18 @@ export default {
       try {
         const res = await this.$api().subscribe.list();
         this.subscribes = res.data;
-        this.categories = [{ value: '手动输入' }, ...this.subscribes.map(item => item.categories).flat().map(item => ({ value: item.category }))];
-        this.savePaths = [{ value: '手动输入' }, ...this.subscribes.map(item => item.categories).flat().map(item => ({ value: item.savePath }))];
+        this.categories = [{ value: '手动输入' }];
+        for (const item of this.subscribes.map(item => item.categories).flat()) {
+          if (this.categories.map(subitem => subitem.value).indexOf(item.category) === -1) {
+            this.categories.push({ value: item.category });
+          }
+        }
+        this.savePaths = [{ value: '手动输入' }];
+        for (const item of this.subscribes.map(item => item.categories).flat()) {
+          if (this.savePaths.map(subitem => subitem.value).indexOf(item.savePath) === -1) {
+            this.savePaths.push({ value: item.savePath });
+          }
+        }
       } catch (e) {
         this.$message().error(e.message);
       }
