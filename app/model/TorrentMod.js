@@ -177,7 +177,7 @@ class TorrentMod {
         episode = 'E' + '0'.repeat(Math.max(0, 2 - ('' + (fakeEpisode || episode)).length)) + (fakeEpisode || episode);
         season = 'S' + '0'.repeat(2 - ('' + season).length) + season;
         const linkFilePath = path.join(_linkRule.linkFilePath, libraryPath, seriesName, season).replace(/'/g, '\\\'');
-        const linkFile = path.join(linkFilePath, prefix + season + episode + suffix + group + fileExt).replace(/'/g, '\\\'');
+        const linkFile = path.join(linkFilePath, (prefix + season + episode + suffix + group + fileExt).replace(/'/g, '\\\''));
         const targetFile = path.join(savePath.replace(_linkRule.targetPath.split('##')[0], _linkRule.targetPath.split('##')[1]), file.name).replace(/'/g, '\\\'');
         const linkMode = _linkRule.hardlink ? 'f' : 'sf';
         logger.binge(_linkRule, _linkRule.hardlink, linkMode);
@@ -216,7 +216,7 @@ class TorrentMod {
         const fileExt = path.extname(filename);
         group = group.replace(fileExt, '');
         const linkFilePath = path.join(_linkRule.linkFilePath, libraryPath, `${movieName}${year}`).replace(/'/g, '\\\'');
-        const linkFile = path.join(linkFilePath, `${movieName}${year}${suffix + group}${fileExt}`).replace(/'/g, '\\\'');
+        const linkFile = path.join(linkFilePath, `${movieName}${year}${suffix + group}${fileExt}`.replace(/'/g, '\\\''));
         const targetFile = path.join(savePath.replace(_linkRule.targetPath.split('##')[0], _linkRule.targetPath.split('##')[1]), file.name).replace(/'/g, '\\\'');
         const linkMode = _linkRule.hardlink ? 'f' : 'sf';
         const command = `${_linkRule.umask ? 'umask ' + _linkRule.umask + ' && ' : ''}mkdir -p $'${linkFilePath}' && ln -${linkMode} $'${targetFile}' $'${linkFile}'`;
@@ -313,7 +313,7 @@ class TorrentMod {
         let season = _file.season;
         season = 'S' + '0'.repeat(2 - ('' + season).length) + season;
         const linkFilePath = path.join(_linkRule.linkFilePath, libraryPath, _file.seriesName, season).replace(/'/g, '\\\'');
-        const linkFile = path.join(linkFilePath, _file.linkFile).replace(/'/g, '\\\'');
+        const linkFile = path.join(linkFilePath, _file.linkFile.replace(/'/g, '\\\''));
         const targetFile = path.join(savePath.replace(_linkRule.targetPath.split('##')[0], _linkRule.targetPath.split('##')[1]), file.name).replace(/'/g, '\\\'');
         const linkMode = _linkRule.hardlink ? 'f' : 'sf';
         const command = `${_linkRule.umask ? 'umask ' + _linkRule.umask + ' && ' : ''}mkdir -p $'${linkFilePath}' && ln -${linkMode} $'${targetFile}' $'${linkFile}'`;
@@ -331,7 +331,7 @@ class TorrentMod {
         const _file = _files.filter(item => item.filepath === file.name)[0];
         if (!_file) continue;
         const linkFilePath = path.join(_linkRule.linkFilePath, libraryPath, _file.folderName).replace(/'/g, '\\\'');
-        const linkFile = path.join(linkFilePath, _file.linkFile).replace(/'/g, '\\\'');
+        const linkFile = path.join(linkFilePath, _file.linkFile.replace(/'/g, '\\\''));
         const targetFile = path.join(savePath.replace(_linkRule.targetPath.split('##')[0], _linkRule.targetPath.split('##')[1]), file.name).replace(/'/g, '\\\'');
         const linkMode = _linkRule.hardlink ? 'f' : 'sf';
         const command = `${_linkRule.umask ? 'umask ' + _linkRule.umask + ' && ' : ''}mkdir -p $'${linkFilePath}' && ln -${linkMode} $'${targetFile}' $'${linkFile}'`;

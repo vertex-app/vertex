@@ -225,7 +225,7 @@ class Watch {
         const fileExt = path.extname(filename);
         group = group.replace(fileExt, '');
         const linkFilePath = path.join(linkRule.linkFilePath, this.libraryPath.split(':')[0], `${movieName}${_year}`).replace(/'/g, '\\\'');
-        const linkFile = path.join(linkFilePath, `${movieName}${_year}${suffix + group}${fileExt}`).replace(/'/g, '\\\'');
+        const linkFile = path.join(linkFilePath, `${movieName}${_year}${suffix + group}${fileExt}`.replace(/'/g, '\\\''));
         const targetFile = path.join(torrent.savePath.replace(linkRule.targetPath.split('##')[0], linkRule.targetPath.split('##')[1]), file.name).replace(/'/g, '\\\'');
         const linkMode = linkRule.hardlink ? 'f' : 'sf';
         const command = `${linkRule.umask ? 'umask ' + linkRule.umask + ' && ' : ''}mkdir -p $'${linkFilePath}' && ln -${linkMode} $'${targetFile}' $'${linkFile}'`;
@@ -288,7 +288,7 @@ class Watch {
       const pathsKeepTopDir = [_linkRule.linkFilePath, libraryPath, path.dirname(file._name)];
       const fileBasename = path.basename(filePathname);
       const linkFilePath = path.join(...(keepTopDir ? pathsKeepTopDir : paths)).replace(/'/g, '\\\'');
-      const linkFile = path.join(linkFilePath, fileBasename).replace(/'/g, '\\\'');
+      const linkFile = path.join(linkFilePath, fileBasename.replace(/'/g, '\\\''));
       const targetFile = filePathname.replace(/'/g, '\\\'');
       const linkMode = _linkRule.hardlink ? 'f' : 'sf';
       const command = `${_linkRule.umask ? 'umask ' + _linkRule.umask + ' && ' : ''}mkdir -p $'${linkFilePath}' && ln -${linkMode} $'${targetFile}' $'${linkFile}'`;
