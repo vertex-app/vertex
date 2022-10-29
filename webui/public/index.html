@@ -37,13 +37,22 @@
       themeMedia.addListener(e => {
         if (e.matches) {
           document.querySelector('meta[name=theme-color]').content = '#0099E3';
+          if (window.location.pathname === '/user/login') {
+            document.querySelector('body').style.backgroundColor = '#fff';
+          }
         } else {
           document.querySelector('meta[name=theme-color]').content = '#000000';
+          if (window.location.pathname === '/user/login') {
+            document.querySelector('body').style.backgroundColor = '#000';
+          }
         }
       });
-    }
-    if (document.querySelector('meta[name=theme-color]').content === '#0099E3' && window.location.pathname === '/user/login') {
-      document.querySelector('body').style.backgroundColor = '#ffffff';
+      if (
+        document.querySelector('meta[name=theme-color]').content === '#0099E3' &&
+        window.location.pathname === '/user/login'
+      ) {
+        document.querySelector('body').style.backgroundColor = !themeMedia.matches ? '#000' : '#fff';
+      }
     }
   </script>
 </html>
