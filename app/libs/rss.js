@@ -175,7 +175,7 @@ const _getTorrentsBeyondHD = async function (rssUrl) {
   return torrents;
 };
 
-const _getTorrentsBlutopia = async function (rssUrl) {
+const _getTorrentsUnit3D2 = async function (rssUrl) {
   const rss = await parseXml(await _getRssContent(rssUrl));
   const torrents = [];
   const items = rss.rss.channel[0].item;
@@ -629,8 +629,9 @@ const _getTorrentsTorrentLeech = async function (rssUrl) {
 
 const _getTorrentsWrapper = {
   'filelist.io': _getTorrentsFileList,
-  'blutopia.xyz': _getTorrentsBlutopia,
+  'blutopia.xyz': _getTorrentsUnit3D2,
   'jptv.club': _getTorrentsUnit3D,
+  'monikadesign.uk': _getTorrentsUnit3D2,
   'torrentdb.net': _getTorrentsTorrentDB,
   'uhdbits.org': _getTorrentsUHDBits,
   'www.empornium.is': _getTorrentsEmpornium,
