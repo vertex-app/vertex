@@ -70,5 +70,22 @@ class Script {
       });
     }
   };
+
+  async run (req, res) {
+    const options = req.body;
+    try {
+      const r = scriptMod.run(options);
+      res.send({
+        success: true,
+        message: r
+      });
+    } catch (e) {
+      logger.error(e);
+      res.send({
+        success: false,
+        message: e.message
+      });
+    }
+  };
 }
 module.exports = Script;

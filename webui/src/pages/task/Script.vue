@@ -75,6 +75,7 @@
         <a-form-item
           :wrapperCol="isMobile() ? { span:24 } : { span: 21, offset: 3 }">
           <a-button type="primary" html-type="submit" style="margin-top: 24px; margin-bottom: 48px;">应用 | 完成</a-button>
+          <a-button type="primary" @click="run" style="margin-left: 12px; margin-top: 24px; margin-bottom: 48px;">立即执行一次</a-button>
           <a-button style="margin-left: 12px; margin-top: 24px; margin-bottom: 48px;"  @click="clearScript()">清空</a-button>
         </a-form-item>
       </a-form>
@@ -143,6 +144,15 @@ export default {
         this.$message().success((this.script.id ? '编辑' : '新增') + '成功, 列表正在刷新...');
         setTimeout(() => this.listScript(), 1000);
         this.clearScript();
+      } catch (e) {
+        this.$message().error(e.message);
+      }
+    },
+    async run () {
+      try {
+        await this.$api().script.run({ ...this.script });
+        this.$message().success('执行成功, 执行结果或报错请查看日志');
+        setTimeout(() => this.listScript(), 1000);
       } catch (e) {
         this.$message().error(e.message);
       }

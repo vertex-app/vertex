@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const logger = require('../libs/logger');
 const Script = require('../common/Script');
 
 const util = require('../libs/util');
@@ -32,6 +33,18 @@ class ScriptMod {
     const scriptList = util.listCrontabJavaScript();
     return scriptList;
   };
+
+  run (options) {
+    (async () => {
+      try {
+        // eslint-disable-next-line no-eval
+        const f = eval(options.script);
+        await f();
+      } catch (e) {
+        logger.error(e);
+      }
+    })();
+  }
 }
 
 module.exports = ScriptMod;

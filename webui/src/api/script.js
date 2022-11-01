@@ -12,5 +12,9 @@ export default {
   delete: async (id) => {
     const url = '/api/script/delete';
     return await post(url, { id });
+  },
+  run: async (script) => {
+    const url = '/api/script/run';
+    return await post(url, script);
   }
 };
