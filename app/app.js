@@ -2,6 +2,8 @@ const express = require('express');
 const moment = require('moment');
 const fs = require('fs');
 const path = require('path');
+const https = require('https');
+const http = require('http');
 const app = express();
 const router = express.Router();
 const cron = require('node-cron');
@@ -155,7 +157,25 @@ const init = function () {
   } catch (e) {
     logger.error('初始化任务报错\n', e);
   }
-  app.listen(process.env.PORT, () => {
-    logger.info('Server started, listening', process.env.PORT);
-  });
+  try {
+    http.createServer(app).listen(process.env.PORT);
+    logger.info('HTTP 服务器启动, 监听端口: ', process.env.PORT);
+  } catch (e) {
+    logger.error(e);
+    logger.error('HTTP 服务器启动失败, 监听端口: ', process.env.PORT);
+  }
+  if (process.env.HTTPS_ENABLE !== 'true') {
+    return;
+  }
+  try {
+    const options = {
+      key: fs.readFileSync(path.join(__dirname, './data/ssl/https.key')),
+      cert: fs.readFileSync(path.join(__dirname, './data/ssl/https.crt'))
+    };
+    https.createServer(options, app).listen(process.env.HTTPS_PORT);
+    logger.info('HTTPS 服务器启动, 监听端口: ', process.env.HTTPS_PORT);
+  } catch (e) {
+    logger.error(e);
+    logger.error('HTTPS 服务器启动失败, 监听端口: ', process.env.HTTPS_PORT);
+  }
 })();
