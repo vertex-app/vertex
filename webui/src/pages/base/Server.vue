@@ -117,6 +117,12 @@
           <a-input size="small" v-model:value="server.port"/>
         </a-form-item>
         <a-form-item
+          label="固定网卡"
+          name="fixedInterface"
+          extra="填写希望显示速度信息的网卡接口, 例: enp1s0">
+          <a-input size="small" v-model:value="server.fixedInterface"/>
+        </a-form-item>
+        <a-form-item
           :wrapperCol="isMobile() ? { span:24 } : { span: 21, offset: 3 }">
           <a-button type="primary" html-type="submit" style="margin-top: 24px; margin-bottom: 48px;">应用 | 完成</a-button>
           <a-button style="margin-left: 12px; margin-top: 24px; margin-bottom: 48px;" @click="clearServer()">清空</a-button>

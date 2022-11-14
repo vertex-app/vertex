@@ -13,6 +13,7 @@ class Server {
     this.connected = false;
     this.connect(this.server);
     this.connectFailCount = 0;
+    this.fixedInterface = server.fixedInterface;
     logger.info('服务器', this.server.alias, '初始化完毕');
   };
 
@@ -122,7 +123,7 @@ class Server {
   async getNetSpeed () {
     const stdout = await this.run('sar -n DEV 1 1');
     const lines = stdout.trim().split('\n');
-    const netSpeed = [];
+    let netSpeed = [];
     for (const line of lines) {
       if (!line.startsWith('Average') || line.indexOf('IFACE') !== -1) continue;
       const values = line.split(/\s+/);
@@ -134,6 +135,12 @@ class Server {
         txPackets: parseInt(values[3])
       };
       netSpeed.push(_interface);
+    }
+    if (this.fixedInterface) {
+      const filteredInterfaces = netSpeed.filter(item => item.interfaces === this.fixedInterface);
+      if (filteredInterfaces.length !== 0) {
+        netSpeed = filteredInterfaces;
+      }
     }
     return netSpeed;
   };
