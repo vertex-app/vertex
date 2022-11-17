@@ -54,5 +54,13 @@
         document.querySelector('body').style.backgroundColor = !themeMedia.matches ? '#000' : '#fff';
       }
     }
+    if (document.querySelector('meta[name=vertex-theme]').content === 'light') {
+      if (['/user/login'].indexOf(window.location.pathname) !== -1) {
+        document.querySelector('body').style.backgroundColor = '#fff';
+      }
+    }
+    if (document.querySelector('meta[name=vertex-theme]').content === 'cyber') {
+      document.querySelector('meta[name=apple-mobile-web-app-status-bar-style]').content='default'
+    }
   </script>
 </html>
