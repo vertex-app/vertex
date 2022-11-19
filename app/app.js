@@ -4,6 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const https = require('https');
 const http = require('http');
+const ws = require('express-ws');
 const app = express();
 const router = express.Router();
 const cron = require('node-cron');
@@ -24,8 +25,6 @@ const util = require('./libs/util');
 const config = require('./libs/config');
 const { execSync } = require('child_process');
 logger.use(app);
-
-require('./routes/router.js')(app, express, router);
 
 const initPush = function () {
   const webhookPush = util.listPush().filter(item => item.id === global.webhookPushTo)[0];
@@ -158,7 +157,8 @@ const init = function () {
     logger.error('初始化任务报错\n', e);
   }
   try {
-    http.createServer(app).listen(process.env.PORT);
+    const server = http.createServer(app).listen(process.env.PORT);
+    ws(app, server);
     logger.info('HTTP 服务器启动, 监听端口: ', process.env.PORT);
   } catch (e) {
     logger.error(e);
@@ -172,10 +172,12 @@ const init = function () {
       key: fs.readFileSync(path.join(__dirname, './data/ssl/https.key')),
       cert: fs.readFileSync(path.join(__dirname, './data/ssl/https.crt'))
     };
-    https.createServer(options, app).listen(process.env.HTTPS_PORT);
+    const server = https.createServer(options, app).listen(process.env.HTTPS_PORT);
+    ws(app, server);
     logger.info('HTTPS 服务器启动, 监听端口: ', process.env.HTTPS_PORT);
   } catch (e) {
     logger.error(e);
     logger.error('HTTPS 服务器启动失败, 监听端口: ', process.env.HTTPS_PORT);
   }
+  require('./routes/router.js')(app, express, router);
 })();

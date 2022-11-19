@@ -1,6 +1,5 @@
 const Multipart = require('connect-multiparty');
 const session = require('express-session');
-const ws = require('express-ws');
 const proxy = require('express-http-proxy');
 const redis = require('redis');
 const path = require('path');
@@ -123,7 +122,6 @@ const siteProxy = function (req, res, next) {
 };
 
 module.exports = function (app, express, router) {
-  ws(app);
   app.use(session({
     genid: () => util.uuid.v4().replace(/-/g, ''),
     resave: false,
