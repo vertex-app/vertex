@@ -164,20 +164,19 @@ const init = function () {
     logger.error(e);
     logger.error('HTTP 服务器启动失败, 监听端口: ', process.env.PORT);
   }
-  if (process.env.HTTPS_ENABLE !== 'true') {
-    return;
-  }
-  try {
-    const options = {
-      key: fs.readFileSync(path.join(__dirname, './data/ssl/https.key')),
-      cert: fs.readFileSync(path.join(__dirname, './data/ssl/https.crt'))
-    };
-    const server = https.createServer(options, app).listen(process.env.HTTPS_PORT);
-    ws(app, server);
-    logger.info('HTTPS 服务器启动, 监听端口: ', process.env.HTTPS_PORT);
-  } catch (e) {
-    logger.error(e);
-    logger.error('HTTPS 服务器启动失败, 监听端口: ', process.env.HTTPS_PORT);
+  if (process.env.HTTPS_ENABLE === 'true') {
+    try {
+      const options = {
+        key: fs.readFileSync(path.join(__dirname, './data/ssl/https.key')),
+        cert: fs.readFileSync(path.join(__dirname, './data/ssl/https.crt'))
+      };
+      const server = https.createServer(options, app).listen(process.env.HTTPS_PORT);
+      ws(app, server);
+      logger.info('HTTPS 服务器启动, 监听端口: ', process.env.HTTPS_PORT);
+    } catch (e) {
+      logger.error(e);
+      logger.error('HTTPS 服务器启动失败, 监听端口: ', process.env.HTTPS_PORT);
+    }
   }
   require('./routes/router.js')(app, express, router);
 })();
