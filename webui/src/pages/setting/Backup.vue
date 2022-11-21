@@ -23,6 +23,8 @@
         <a-form-item
           label="恢复">
           <a-upload
+            :capture="null"
+            :accept="null"
             action="/api/setting/restoreVertex"
             :showUploadList="true"
             @change="handleChange">
