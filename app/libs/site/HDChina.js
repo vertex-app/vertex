@@ -12,6 +12,7 @@ class Site {
 
   async getInfo () {
     const info = {};
+    this.cookie = this.cookie.split(';').filter(item => item.trim().indexOf('PHPSESSID') !== 0).join(';');
     const { dom: document, cookie } = await this._getDocument(this.index, false, 10, true);
     // 用户名
     info.username = document.querySelector('a[href^=userdetails] b').innerHTML;
