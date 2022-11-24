@@ -26,7 +26,7 @@ class Site {
     info.seeding = +document.querySelector('img[class=arrowup]').nextSibling.nodeValue.trim();
     // 下载
     info.leeching = +document.querySelector('img[class=arrowdown]').nextSibling.nodeValue.trim();
-    // 做种体积
+    // 做种体积 (这块其实可以用正则，但是我懒，先这样吧)
     const seedingDocument = await this._getDocument(`${this.index}getusertorrentlistajax.php?userid=${info.uid}&type=seeding`);
     const seedingTorrent = [...seedingDocument.querySelectorAll('tr')];
     seedingTorrent.shift();

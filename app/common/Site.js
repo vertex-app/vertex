@@ -60,6 +60,22 @@ class Site {
         }
       }));
       if (origin) return res.body;
+      if (url.indexOf('getusertorrentlistajax') !== -1) {
+        res.body = res.body
+          .replace(/ *href=".*?"/g, '')
+          .replace(/ *title=".*?"/g, '')
+          .replace(/ *class=".*?"/g, '')
+          .replace(/ *align=".*?"/g, '')
+          .replace(/ *id=".*?"/g, '')
+          .replace(/ *src=".*?"/g, '')
+          .replace(/ *alt=".*?"/g, '')
+          .replace(/ *color=".*?"/g, '')
+          .replace(/ *type=".*?"/g, '')
+          .replace(/ *onclick=".*?"/g, '')
+          .replace(/ *width=".*?"/g, '')
+          .replace(/ *<b>.*?<\/b>/g, '')
+          .replace(/ *style=".*?"/g, '');
+      }
       await redis.setWithExpire(`vertex:document:body:${url}`, res.body, expire);
       const dom = new JSDOM(res.body);
       if (retCookies) {
