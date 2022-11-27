@@ -45,9 +45,9 @@ class Site {
       torrent.category = _torrent.querySelector('td a[href*=cat] img').title.trim();
       torrent.link = this.index + _torrent.querySelector('a[href*=details]').href.trim();
       torrent.id = +torrent.link.match(/id=(\d*)/)[1];
-      torrent.seeders = +(_torrent.querySelector('a[href*=seeders] font') || _torrent.querySelector('a[href*=seeders]') || _torrent.querySelector('span[class=red]')).innerHTML.trim();
-      torrent.leechers = +(_torrent.querySelector('a[href*=leechers]') || _torrent.childNodes[7]).innerHTML.trim();
-      torrent.snatches = +(_torrent.querySelector('a[href*=snatches] b') || _torrent.childNodes[9]).innerHTML.trim();
+      torrent.seeders = +(_torrent.querySelector('a[href*=seeders] font') || _torrent.querySelector('a[href*=seeders]') || _torrent.querySelector('span[class=red]')).innerHTML.trim().replace(',', '');
+      torrent.leechers = +(_torrent.querySelector('a[href*=leechers]') || _torrent.childNodes[7]).innerHTML.trim().replace(',', '');
+      torrent.snatches = +(_torrent.querySelector('a[href*=snatches] b') || _torrent.childNodes[9]).innerHTML.trim().replace(',', '');
       torrent.size = _torrent.childNodes[4].innerHTML.trim().replace('<br>', ' ');
       torrent.time = moment(_torrent.childNodes[3].querySelector('span') ? _torrent.childNodes[3].querySelector('span').title : _torrent.childNodes[3].innerHTML.replace(/<br>/, ' ')).unix();
       torrent.size = util.calSize(...torrent.size.split(' '));
