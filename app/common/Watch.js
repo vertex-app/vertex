@@ -194,7 +194,12 @@ class Watch {
         const command = `${linkRule.umask ? 'umask ' + linkRule.umask + ' && ' : ''}mkdir -p $'${linkFilePath}' && ln -${linkMode} $'${targetFile}' $'${linkFile}'`;
         logger.watch(this.alias, '执行链接命令', command);
         try {
-          await global.runningServer[linkRule.server].run(command);
+          if (linkRule.local) {
+            await util.exec(command, { shell: '/bin/bash' });
+          } else {
+            await global.runningServer[linkRule.server].run(command);
+          }
+          global.linkMapping[torrent.hash].push((linkRule.server || '$local$') + '####' + linkFile);
         } catch (e) {
           logger.error(e);
           isError = true;
@@ -231,8 +236,12 @@ class Watch {
         const command = `${linkRule.umask ? 'umask ' + linkRule.umask + ' && ' : ''}mkdir -p $'${linkFilePath}' && ln -${linkMode} $'${targetFile}' $'${linkFile}'`;
         logger.watch(this.alias, '执行链接命令', command);
         try {
-          await global.runningServer[linkRule.server].run(command);
-          global.linkMapping[torrent.hash].push(linkRule.server + '####' + linkFile);
+          if (linkRule.local) {
+            await util.exec(command, { shell: '/bin/bash' });
+          } else {
+            await global.runningServer[linkRule.server].run(command);
+          }
+          global.linkMapping[torrent.hash].push((linkRule.server || '$local$') + '####' + linkFile);
         } catch (e) {
           logger.error(e);
           isError = true;
@@ -294,8 +303,12 @@ class Watch {
       const command = `${_linkRule.umask ? 'umask ' + _linkRule.umask + ' && ' : ''}mkdir -p $'${linkFilePath}' && ln -${linkMode} $'${targetFile}' $'${linkFile}'`;
       logger.binge('手动链接', '执行链接命令', command);
       try {
-        await global.runningServer[_linkRule.server].run(command);
-        global.linkMapping[torrent.hash].push(_linkRule.server + '####' + linkFile);
+        if (_linkRule.local) {
+          await util.exec(command, { shell: '/bin/bash' });
+        } else {
+          await global.runningServer[_linkRule.server].run(command);
+        }
+        global.linkMapping[torrent.hash].push((_linkRule.server || '$local$') + '####' + linkFile);
       } catch (e) {
         logger.error(e);
         isError = true;

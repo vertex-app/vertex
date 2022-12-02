@@ -111,7 +111,7 @@
             </template>
             <template #bodyCell="{ column, record }">
               <template v-if="column.dataIndex === 'server'">
-                {{ (servers.filter(item => item.id === record.server)[0] || {}).alias || '已删除' }}
+                {{ record.server === '$local$' ? '本地' : (servers.filter(item => item.id === record.server)[0] || {}).alias || '已删除' }}
               </template>
             </template>
           </a-table>

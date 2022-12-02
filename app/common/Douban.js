@@ -674,8 +674,12 @@ class Douban {
         const command = `${linkRule.umask ? 'umask ' + linkRule.umask + ' && ' : ''}mkdir -p $'${linkFilePath}' && ln -${linkMode} $'${targetFile}' $'${linkFile}'`;
         logger.binge(this.alias, '执行链接命令', command);
         try {
-          await global.runningServer[linkRule.server].run(command);
-          global.linkMapping[torrent.hash].push(linkRule.server + '####' + linkFile);
+          if (linkRule.local) {
+            await util.exec(command, { shell: '/bin/bash' });
+          } else {
+            await global.runningServer[linkRule.server].run(command);
+          }
+          global.linkMapping[torrent.hash].push((linkRule.server || '$local$') + '####' + linkFile);
         } catch (e) {
           logger.error(e);
           isError = true;
@@ -717,8 +721,12 @@ class Douban {
         const command = `${linkRule.umask ? 'umask ' + linkRule.umask + ' && ' : ''}mkdir -p $'${linkFilePath}' && ln -${linkMode} $'${targetFile}' $'${linkFile}'`;
         logger.binge(this.alias, '执行链接命令', command);
         try {
-          await global.runningServer[linkRule.server].run(command);
-          global.linkMapping[torrent.hash].push(linkRule.server + '####' + linkFile);
+          if (linkRule.local) {
+            await util.exec(command, { shell: '/bin/bash' });
+          } else {
+            await global.runningServer[linkRule.server].run(command);
+          }
+          global.linkMapping[torrent.hash].push((linkRule.server || '$local$') + '####' + linkFile);
         } catch (e) {
           logger.error(e);
           isError = true;

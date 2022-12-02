@@ -18,7 +18,7 @@
           {{ record.hardlink ? '硬链接' : '软链接' }}
         </template>
         <template v-if="column.dataIndex === 'server'">
-          {{ this.serverList.filter(item => item.id === record.server)[0].alias }}
+          {{ record.server ? this.serverList.filter(item => item.id === record.server)[0].alias : '本地' }}
         </template>
         <template v-if="column.title === '操作'">
           <span>
@@ -55,10 +55,18 @@
           <a-input size="small" v-model:value="linkRule.alias"/>
         </a-form-item>
         <a-form-item
+          label="本地链接"
+          name="local"
+          extra="启用后本地执行链接文件, 需要将对应目录映射进 Docker"
+          :rules="[{ required: true, message: '${label}不可为空! ' }]">
+          <a-checkbox v-model:checked="linkRule.local">本地链接</a-checkbox>
+        </a-form-item>
+        <a-form-item
+          v-if="!linkRule.local"
           label="服务器"
           name="server"
           :rules="[{ required: true, message: '${label}不可为空! ' }]">
-          <a-select size="small" v-model:value="linkRule.server"  >
+          <a-select :allowClear="true" size="small" v-model:value="linkRule.server"  >
             <a-select-option v-for="server of serverList" v-model:value="server.id" :key="server.id">{{ server.alias }}</a-select-option>
           </a-select>
         </a-form-item>
@@ -196,6 +204,9 @@ export default {
     },
     async modifyLinkRule () {
       try {
+        if (this.linkRule.local) {
+          this.linkRule.server = '';
+        }
         await this.$api().linkRule.modify({ ...this.linkRule });
         this.$message().success((this.linkRule.id ? '编辑' : '新增') + '成功, 列表正在刷新...');
         setTimeout(() => this.listLinkRule(), 1000);

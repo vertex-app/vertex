@@ -184,8 +184,12 @@ class TorrentMod {
         const command = `${_linkRule.umask ? 'umask ' + _linkRule.umask + ' && ' : ''}mkdir -p $'${linkFilePath}' && ln -${linkMode} $'${targetFile}' $'${linkFile}'`;
         logger.binge('手动链接', '执行链接命令', command);
         try {
-          await global.runningServer[_linkRule.server].run(command);
-          global.linkMapping[hash].push(_linkRule.server + '####' + linkFile);
+          if (_linkRule.local) {
+            await util.exec(command, { shell: '/bin/bash' });
+          } else {
+            await global.runningServer[_linkRule.server].run(command);
+          }
+          global.linkMapping[hash].push((_linkRule.server || '$local$') + '####' + linkFile);
         } catch (e) {
           logger.error(e);
           isError = true;
@@ -222,8 +226,12 @@ class TorrentMod {
         const command = `${_linkRule.umask ? 'umask ' + _linkRule.umask + ' && ' : ''}mkdir -p $'${linkFilePath}' && ln -${linkMode} $'${targetFile}' $'${linkFile}'`;
         logger.binge('手动链接', '执行链接命令', command);
         try {
-          await global.runningServer[_linkRule.server].run(command);
-          global.linkMapping[hash].push(_linkRule.server + '####' + linkFile);
+          if (_linkRule.local) {
+            await util.exec(command, { shell: '/bin/bash' });
+          } else {
+            await global.runningServer[_linkRule.server].run(command);
+          }
+          global.linkMapping[hash].push((_linkRule.server || '$local$') + '####' + linkFile);
         } catch (e) {
           logger.error(e);
           isError = true;
@@ -283,8 +291,12 @@ class TorrentMod {
       const command = `${_linkRule.umask ? 'umask ' + _linkRule.umask + ' && ' : ''}mkdir -p $'${linkFilePath}' && ln -${linkMode} $'${targetFile}' $'${linkFile}'`;
       logger.binge('手动链接', '执行链接命令', command);
       try {
-        await global.runningServer[_linkRule.server].run(command);
-        global.linkMapping[hash].push(_linkRule.server + '####' + linkFile);
+        if (_linkRule.local) {
+          await util.exec(command, { shell: '/bin/bash' });
+        } else {
+          await global.runningServer[_linkRule.server].run(command);
+        }
+        global.linkMapping[hash].push((_linkRule.server || '$local$') + '####' + linkFile);
       } catch (e) {
         logger.error(e);
         isError = true;
@@ -319,8 +331,12 @@ class TorrentMod {
         const command = `${_linkRule.umask ? 'umask ' + _linkRule.umask + ' && ' : ''}mkdir -p $'${linkFilePath}' && ln -${linkMode} $'${targetFile}' $'${linkFile}'`;
         logger.binge('手动链接', '执行链接命令', command);
         try {
-          await global.runningServer[_linkRule.server].run(command);
-          global.linkMapping[hash].push(_linkRule.server + '####' + linkFile);
+          if (_linkRule.local) {
+            await util.exec(command, { shell: '/bin/bash' });
+          } else {
+            await global.runningServer[_linkRule.server].run(command);
+          }
+          global.linkMapping[hash].push((_linkRule.server || '$local$') + '####' + linkFile);
         } catch (e) {
           logger.error(e);
           isError = true;
@@ -337,8 +353,12 @@ class TorrentMod {
         const command = `${_linkRule.umask ? 'umask ' + _linkRule.umask + ' && ' : ''}mkdir -p $'${linkFilePath}' && ln -${linkMode} $'${targetFile}' $'${linkFile}'`;
         logger.binge('手动链接', '执行链接命令', command);
         try {
-          await global.runningServer[_linkRule.server].run(command);
-          global.linkMapping[hash].push(_linkRule.server + '####' + linkFile);
+          if (_linkRule.local) {
+            await util.exec(command, { shell: '/bin/bash' });
+          } else {
+            await global.runningServer[_linkRule.server].run(command);
+          }
+          global.linkMapping[hash].push((_linkRule.server || '$local$') + '####' + linkFile);
         } catch (e) {
           logger.error(e);
           isError = true;
@@ -534,7 +554,11 @@ class TorrentMod {
       const { server, filepath } = file;
       try {
         logger.info(global.runningServer[server].server.alias, '执行删除文件命令:', `rm -f $'${filepath}'`);
-        await global.runningServer[server].run(`rm -f $'${filepath}'`);
+        if (server === '$local') {
+          await util.exec(`rm -f $'${filepath}'`);
+        } else {
+          await global.runningServer[server].run(`rm -f $'${filepath}'`);
+        }
       } catch (e) {
         isError = true;
         logger.error(global.runningServer[server].server.alias, '执行删除文件命令报错:\n');
