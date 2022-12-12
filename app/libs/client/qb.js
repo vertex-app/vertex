@@ -97,9 +97,14 @@ exports.addTorrentTag = async function (clientUrl, cookie, hash, tag) {
 
 exports.deleteTorrent = async function (clientUrl, cookie, hash, isDeleteFiles) {
   const message = {
-    url: clientUrl + `/api/v2/torrents/delete?hashes=${hash}${isDeleteFiles ? '&deleteFiles=true' : '&deleteFiles=false'}`,
+    url: clientUrl + '/api/v2/torrents/delete',
+    method: 'POST',
     headers: {
       cookie
+    },
+    formData: {
+      hashes: hash,
+      deleteFiles: isDeleteFiles + ''
     }
   };
   const res = await util.requestPromise(message);
