@@ -6,6 +6,7 @@ class Site {
     this.name = 'HHClub';
     this.downloadLink = 'https://hhanclub.top/download.php?id={ID}';
     this.url = 'https://hhanclub.top/';
+    this.id = 22;
   };
 
   async getInfo () {
