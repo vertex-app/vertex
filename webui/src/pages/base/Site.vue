@@ -104,7 +104,7 @@
           name="enable"
           extra="选择是否启用站点"
           :rules="[{ required: true, message: '${label}不可为空! ' }]">
-          <a-checkbox :disable="site.used" v-model:checked="site.enable">启用</a-checkbox>
+          <a-checkbox :disabled="site.used" v-model:checked="site.enable">启用</a-checkbox>
         </a-form-item>
         <a-form-item
           label="更新周期"
@@ -124,14 +124,14 @@
           name="pullRemoteTorrent"
           extra="豆瓣任务启动超级模式时, 将使用本站点拉取远程种子"
           :rules="[{ required: true, message: '${label}不可为空! ' }]">
-          <a-checkbox :disable="site.used" v-model:checked="site.pullRemoteTorrent">拉取远程种子</a-checkbox>
+          <a-checkbox v-model:checked="site.pullRemoteTorrent">拉取远程种子</a-checkbox>
         </a-form-item>
         <a-form-item
           label="搜索 R18 分区"
           name="adult"
           v-if="site.name === 'MTeam'"
           :rules="[{ required: true, message: '${label}不可为空! ' }]">
-          <a-checkbox :disable="site.used" v-model:checked="site.adult">搜索 R18 分区</a-checkbox>
+          <a-checkbox v-model:checked="site.adult">搜索 R18 分区</a-checkbox>
         </a-form-item>
         <a-form-item
           label="Cookie"

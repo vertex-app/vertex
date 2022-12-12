@@ -15,8 +15,7 @@
       </template>
       <template #bodyCell="{ column, record }">
         <template v-if="column.dataIndex === 'enable'">
-          <a-tag color="success" v-if="record.enable">启用</a-tag>
-          <a-tag color="error" v-if="!record.enable">禁用</a-tag>
+          <a-switch @change="enableDownloader(record)" :disabled="record.used" v-model:checked="record.enable" checked-children="启用" un-checked-children="禁用"/>
         </template>
         <template v-if="column.dataIndex === 'autoDelete'">
           <a-tag color="success" v-if="record.autoDelete">启用</a-tag>
@@ -86,7 +85,7 @@
           name="enable"
           extra="选择是否启用下载器"
           :rules="[{ required: true, message: '${label}不可为空! ' }]">
-          <a-checkbox :disable="downloader.used" v-model:checked="downloader.enable">启用</a-checkbox>
+          <a-checkbox :disabled="downloader.used" v-model:checked="downloader.enable">启用</a-checkbox>
         </a-form-item>
         <a-form-item
           label="下载器类型"
@@ -406,6 +405,16 @@ export default {
         await this.$api().downloader.delete(row.id);
         this.$message().success('删除成功, 列表正在刷新...');
         await this.listDownloader();
+      } catch (e) {
+        this.$message().error(e.message);
+      }
+    },
+    async enableDownloader (record) {
+      try {
+        await this.$api().downloader.modify({ ...record });
+        this.$message().success('修改成功, 列表正在刷新...');
+        setTimeout(() => this.listDownloader(), 1000);
+        this.clearDownloader();
       } catch (e) {
         this.$message().error(e.message);
       }

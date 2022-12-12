@@ -65,7 +65,7 @@
           name="enable"
           extra="选择是否启用 RSS 任务"
           :rules="[{ required: true, message: '${label}不可为空! ' }]">
-          <a-checkbox :disable="rss.used" v-model:checked="rss.enable">启用</a-checkbox>
+          <a-checkbox v-model:checked="rss.enable">启用</a-checkbox>
         </a-form-item>
         <a-form-item
           label="下载器"
@@ -496,7 +496,7 @@ export default {
     async enableTask (record) {
       try {
         await this.$api().rss.modify({ ...record });
-        this.$message().success((this.rss.id ? '编辑' : '新增') + '成功, 列表正在刷新...');
+        this.$message().success('修改成功, 列表正在刷新...');
         setTimeout(() => this.listRss(), 1000);
         this.clearRss();
       } catch (e) {

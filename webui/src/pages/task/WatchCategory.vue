@@ -60,7 +60,7 @@
           name="enable"
           extra="选择是否启用 监控分类"
           :rules="[{ required: true, message: '${label}不可为空! ' }]">
-          <a-checkbox :disable="watch.used" v-model:checked="watch.enable">启用</a-checkbox>
+          <a-checkbox v-model:checked="watch.enable">启用</a-checkbox>
         </a-form-item>
         <a-form-item
           label="执行周期"

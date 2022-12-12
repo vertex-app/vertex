@@ -79,7 +79,7 @@
           name="enable"
           extra="选择是否启用服务器"
           :rules="[{ required: true, message: '${label}不可为空! ' }]">
-          <a-checkbox :disable="server.used" v-model:checked="server.enable">启用</a-checkbox>
+          <a-checkbox :disabled="server.used" v-model:checked="server.enable">启用</a-checkbox>
         </a-form-item>
         <a-form-item
           label="域名/IP"

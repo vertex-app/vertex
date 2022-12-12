@@ -57,7 +57,7 @@
           name="enable"
           extra="选择是否启用 定时脚本"
           :rules="[{ required: true, message: '${label}不可为空! ' }]">
-          <a-checkbox :disable="script.used" v-model:checked="script.enable">启用</a-checkbox>
+          <a-checkbox v-model:checked="script.enable">启用</a-checkbox>
         </a-form-item>
         <a-form-item
           label="执行周期"
