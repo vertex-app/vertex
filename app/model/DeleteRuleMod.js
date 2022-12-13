@@ -32,7 +32,7 @@ class DeleteRuleMod {
     fs.writeFileSync(path.join(__dirname, '../data/rule/delete/', options.id + '.json'), JSON.stringify(deleteRuleSet, null, 2));
     Object.keys(global.runningClient)
       .map(item => global.runningClient[item])
-      .filter(item => (item._deleteRules.some(i => i === options.id) && !!item.autoDeleteJob))
+      .filter(item => ((item._deleteRules.some(i => i === options.id) || item._rejectDeleteRules.some(i => i === options.id)) && !!item.autoDeleteJob))
       .forEach(item => item.reloadDeleteRule());
     return '修改规则成功';
   };
@@ -41,7 +41,7 @@ class DeleteRuleMod {
     const deleteRuleList = util.listDeleteRule();
     const clientList = util.listClient();
     for (const deleteRule of deleteRuleList) {
-      deleteRule.used = clientList.some(item => item.deleteRules.indexOf(deleteRule.id) !== -1);
+      deleteRule.used = clientList.some(item => (item.deleteRules.indexOf(deleteRule.id) !== -1 || (item.rejectDeleteRules || []).indexOf(deleteRule.id) !== -1));
     }
     return deleteRuleList;
   };

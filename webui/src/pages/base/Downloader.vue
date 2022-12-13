@@ -260,6 +260,19 @@
         </a-form-item>
         <a-form-item
           v-if="downloader.autoDelete"
+          label="拒绝删种规则"
+          name="rejectDeleteRules"
+          extra="拒绝删种规则, 种子状态符合其中一个时该种子不会被删除">
+          <a-checkbox-group style="width: 100%;" v-model:value="downloader.rejectDeleteRules">
+            <a-row>
+              <a-col v-for="deleteRule of deleteRules" :span="8" :key="deleteRule.id">
+                <a-checkbox  v-model:value="deleteRule.id">{{ deleteRule.alias }}</a-checkbox>
+              </a-col>
+            </a-row>
+          </a-checkbox-group>
+        </a-form-item>
+        <a-form-item
+          v-if="downloader.autoDelete"
           label="删种规则"
           name="deleteRules"
           extra="删种规则, 种子状态符合其中一个时即触发删除种子操作"

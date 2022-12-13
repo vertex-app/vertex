@@ -47,7 +47,9 @@ class Client {
     }
     this.reannouncedHash = [];
     this._deleteRules = client.deleteRules;
-    this.deleteRules = util.listDeleteRule().filter(item => client.deleteRules.indexOf(item.id) !== -1).sort((a, b) => b.priority - a.priority);
+    this.deleteRules = util.listDeleteRule().filter(item => this._deleteRules.indexOf(item.id) !== -1).sort((a, b) => b.priority - a.priority);
+    this._rejectDeleteRules = client.rejectDeleteRules || [];
+    this.rejectDeleteRules = util.listDeleteRule().filter(item => this._rejectDeleteRules.indexOf(item.id) !== -1).sort((a, b) => b.priority - a.priority);
     if (client.autoDelete) {
       this.autoDeleteJob = cron.schedule(client.autoDeleteCron, () => this.autoDelete());
       this.fitTime = {};
@@ -204,6 +206,7 @@ class Client {
       }
     }
     this.deleteRules = util.listDeleteRule().filter(item => this._deleteRules.indexOf(item.id) !== -1).sort((a, b) => +b.priority - +a.priority);
+    this.rejectDeleteRules = util.listDeleteRule().filter(item => this._rejectDeleteRules.indexOf(item.id) !== -1).sort((a, b) => b.priority - a.priority);
     for (const rule of this.deleteRules) {
       if (rule.fitTime) {
         this.fitTime[rule.id] = {};
@@ -401,11 +404,20 @@ class Client {
       (a.completedTime <= 0 ? moment().unix() : a.completedTime) - (b.completedTime <= 0 ? moment().unix() : b.completedTime) ||
         a.addedTime - b.addedTime);
     const deletedTorrentHash = [];
+    const rejectDeleteHash = {};
+    for (const torrent of torrents) {
+      if (this.rejectDeleteRules.some(item => this._fitDeleteRule({ ...item }, torrent))) {
+        rejectDeleteHash[torrent.hash] = 1;
+      }
+    }
     for (const _rule of this.deleteRules) {
       const rule = { ..._rule };
       rule.deleteNum = rule.deleteNum || 1;
       let deletedNum = 0;
       for (const torrent of torrents) {
+        if (rejectDeleteHash[torrent.hash]) {
+          continue;
+        }
         if (rule.deleteNum <= deletedNum) {
           logger.debug('规则', rule.alias, ', 单次删除种子数量已达上限', rule.deleteNum, '退出删种任务');
           break;
