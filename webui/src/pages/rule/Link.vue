@@ -170,6 +170,7 @@ export default {
       linkRule: {},
       defaultLinkRule: {
         hardlink: false,
+        local: false,
         keepSeriesName: false,
         group: false
       },
