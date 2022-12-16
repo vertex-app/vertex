@@ -55,6 +55,7 @@ class SettingMod {
     global.dashboardContent = options.dashboardContent || [];
     global.userAgent = options.userAgent;
     global.ignoreError = options.ignoreError;
+    global.ignoreDependCheck = options.ignoreDependCheck;
     global.apiKey = options.apiKey;
     global.trustVertexPanel = options.trustVertexPanel;
     global.theme = options.theme;

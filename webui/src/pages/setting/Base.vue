@@ -48,6 +48,11 @@
           <a-checkbox v-model:checked="setting.ignoreError">启用</a-checkbox>
         </a-form-item>
         <a-form-item
+          label="取消部分依赖检查"
+          extra="取消部分依赖检查，请谨慎使用">
+          <a-checkbox v-model:checked="setting.ignoreDependCheck">启用</a-checkbox>
+        </a-form-item>
+        <a-form-item
           :wrapperCol="isMobile() ? { span:24 } : { span: 21, offset: 3 }">
           <a-button type="primary" html-type="submit" style="margin-top: 24px; margin-bottom: 48px;">保存</a-button>
         </a-form-item>
@@ -78,7 +83,8 @@ export default {
           loggerLevel: s.loggerLevel,
           telegramProxy: s.telegramProxy,
           wechatProxy: s.wechatProxy,
-          ignoreError: s.ignoreError
+          ignoreError: s.ignoreError,
+          ignoreDependCheck: s.ignoreDependCheck
         };
       } catch (e) {
         await this.$message().error(e.message);

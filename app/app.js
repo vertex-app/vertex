@@ -73,6 +73,7 @@ const init = function () {
   global.checkFinishCron = setting.checkFinishCron || '30 * * * * *';
   global.userAgent = setting.userAgent;
   global.ignoreError = setting.ignoreError;
+  global.ignoreDependCheck = setting.ignoreDependCheck;
   global.webhookPushTo = setting.webhookPushTo;
   global.doubanPush = setting.doubanPush;
   global.apiKey = setting.apiKey;

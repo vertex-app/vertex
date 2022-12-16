@@ -22,7 +22,17 @@ const _getRssContent = async function (rssUrl, suffix = true) {
     if (suffix) {
       url += (rssUrl.indexOf('?') === -1 ? '?' : '&') + '____=' + Math.random();
     }
-    const res = await util.requestPromise(url, true);
+    let res;
+    if (rssUrl.includes('https://pt.soulvoice.club/') && global.runningSite.SoulVoice) {
+      res = await util.requestPromise({
+        url,
+        headers: {
+          cookie: global.runningSite.SoulVoice.cookie
+        }
+      }, true);
+    } else {
+      res = await util.requestPromise(url, true);
+    }
     body = res.body;
     const isHTML = body.indexOf('xml-viewer-style') !== -1;
     if (isHTML) {
