@@ -76,6 +76,12 @@
           <a-checkbox v-model:checked="deleteRule.pause">暂停种子</a-checkbox>
         </a-form-item>
         <a-form-item
+          label="限制下载速度"
+          name="limitSpeed"
+          extra="默认为删除种子，启用该选项后用限制种子下载速度替代, 优先级高于暂停种子及删除种子, 单位为字节每秒 Byte/s, 留空为不启用">
+          <a-input size="small" v-model:value="deleteRule.limitSpeed"/>
+        </a-form-item>
+        <a-form-item
           label="类型"
           name="type"
           :rules="[{ required: true, message: '${label}不可为空! ' }]">
