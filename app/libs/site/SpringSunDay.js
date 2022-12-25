@@ -45,8 +45,8 @@ class Site {
     for (const _torrent of torrents) {
       const torrent = {};
       torrent.site = this.site;
-      torrent.title = _torrent.querySelector('td[class="embedded"] > a[href*="details"]').title.trim();
-      torrent.subtitle = (_torrent.querySelector('.torrentname > tbody > tr .embedded br:last-of-type') || _torrent.querySelector('.torrentname > tbody > tr .embedded br')).nextSibling.nodeValue.trim();
+      torrent.title = _torrent.querySelector('td[class="embedded"] a[href*="details"]').title.trim();
+      torrent.subtitle = _torrent.querySelector('.torrent-smalldescr').lastChild.nodeValue.trim();
       torrent.category = _torrent.querySelector('td a[href*=cat] img').title.trim();
       torrent.link = this.index + _torrent.querySelector('a[href*=details]').href.trim();
       torrent.id = +torrent.link.match(/id=(\d*)/)[1];
@@ -57,7 +57,7 @@ class Site {
       torrent.time = moment(_torrent.childNodes[7].querySelector('span') ? _torrent.childNodes[7].querySelector('span').title : _torrent.childNodes[7].innerHTML.replace(/<br>/, ' ')).unix();
       torrent.size = util.calSize(...torrent.size.split(' '));
       torrent.tags = [];
-      const tagsDom = _torrent.querySelectorAll('a[href*=torrents] span');
+      const tagsDom = _torrent.querySelectorAll('a[href*=torrents] span[class*=badge]');
       for (const tag of tagsDom) {
         torrent.tags.push(tag.innerHTML.trim());
       }
