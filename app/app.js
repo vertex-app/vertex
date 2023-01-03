@@ -84,7 +84,7 @@ const init = function () {
   global.wechatCover = setting.wechatCover;
   global.embyCover = setting.embyCover;
   global.plexCover = setting.plexCover;
-  global.theme = setting.theme;
+  global.theme = setting.theme || 'light';
   global.siteInfo = setting.siteInfo || {
     hide: [],
     hideName: [],

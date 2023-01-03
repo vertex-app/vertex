@@ -6,7 +6,15 @@ class Site {
 
   async getInfo () {
     const info = {};
-    const document = await this._getDocument(this.index + 'api/user/getInfo', true, 10);
+    const _document = await this._getDocument(this.index + 'index');
+    const csrf = _document.querySelector('meta[name=x-csrf-token]').content;
+    const document = (await require('../util').requestPromise({
+      url: this.index + 'api/user/getInfo',
+      headers: {
+        cookie: this.cookie,
+        'x-csrf-token': csrf
+      }
+    })).body;
     const _info = JSON.parse(document).data;
     // 用户名
     info.username = _info.username;
