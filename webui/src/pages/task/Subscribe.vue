@@ -291,6 +291,12 @@
             </a-row>
           </a-checkbox-group>
         </a-form-item>
+        <a-form-item
+          label="默认集数"
+          name="defaultEpisodes"
+          extra="若豆瓣词条无集数信息，则按照默认集数处理, 仅支持剧集类型">
+          <a-input size="small" v-model:value="expandCategory.defaultEpisodes"/>
+        </a-form-item>
       </a-form>
     </div>
   </a-modal>

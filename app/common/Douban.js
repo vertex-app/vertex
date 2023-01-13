@@ -461,6 +461,10 @@ class Douban {
             wish.episodeNow = 0;
           } else {
             delete wish.episodes;
+            if (this.categories[wish.tag].defaultEpisodes) {
+              wish.episodes = +this.categories[wish.tag].defaultEpisodes;
+              wish.episodeNow = 0;
+            }
           }
           try {
             this.wishes.push(wish);
