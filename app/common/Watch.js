@@ -186,6 +186,7 @@ class Watch {
           group = (filename.match(/[-￡][^-￡]*?$/) || [''])[0].replace(/[-￡]/, '-');
         }
         const fileExt = path.extname(file.name);
+        file.name = file.name.replace(/\\/g, '/');
         group = group.replace(fileExt, '');
         const linkFilePath = path.join(linkRule.linkFilePath, this.libraryPath.split(':')[1], `${seriesName}(${year})`, season).replace(/'/g, '\\\'');
         const linkFile = path.join(linkFilePath, prefix + season + episode + suffix + group + fileExt).replace(/'/g, '\\\'');
@@ -228,6 +229,7 @@ class Watch {
           group = (filename.match(/[-￡][^-￡]*?$/) || [''])[0].replace(/[-￡]/, '-');
         }
         const fileExt = path.extname(filename);
+        file.name = file.name.replace(/\\/g, '/');
         group = group.replace(fileExt, '');
         const linkFilePath = path.join(linkRule.linkFilePath, this.libraryPath.split(':')[0], `${movieName}${_year}`).replace(/'/g, '\\\'');
         const linkFile = path.join(linkFilePath, `${movieName}${_year}${suffix + group}${fileExt}`.replace(/'/g, '\\\''));

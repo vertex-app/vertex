@@ -138,6 +138,7 @@ class TorrentMod {
           group = (filename.match(/[-￡][^-￡]*?$/) || [''])[0].replace(/[-￡]/, '-');
         }
         const fileExt = path.extname(file.name);
+        file.name = file.name.replace(/\\/g, '/');
         group = group.replace(fileExt, '');
         let season = (filename.match(/[. ]S(\d+)/) || [0, null])[1];
         let episode = util.scrapeEpisodeByFilename(filename);
@@ -218,6 +219,7 @@ class TorrentMod {
           group = (filename.match(/[-￡][^-￡]*?$/) || [''])[0].replace(/[-￡]/, '-');
         }
         const fileExt = path.extname(filename);
+        file.name = file.name.replace(/\\/g, '/');
         group = group.replace(fileExt, '');
         const linkFilePath = path.join(_linkRule.linkFilePath, libraryPath, `${movieName}${year}`).replace(/'/g, '\\\'');
         const linkFile = path.join(linkFilePath, `${movieName}${year}${suffix + group}${fileExt}`.replace(/'/g, '\\\''));
@@ -401,6 +403,7 @@ class TorrentMod {
           group = (filename.match(/[-￡][^-￡]*?$/) || [''])[0].replace(/[-￡]/, '-');
         }
         const fileExt = path.extname(file.name);
+        file.name = file.name.replace(/\\/g, '/');
         group = group.replace(fileExt, '');
         let season = (filename.match(/[. ]S(\d+)/) || [0, null])[1];
         let episode = util.scrapeEpisodeByFilename(filename);
@@ -477,6 +480,7 @@ class TorrentMod {
           group = (filename.match(/[-￡][^-￡]*?$/) || [''])[0].replace(/[-￡]/, '-');
         }
         const fileExt = path.extname(filename);
+        file.name = file.name.replace(/\\/g, '/');
         group = group.replace(fileExt, '');
         dryrunResult.push({
           file: filename,

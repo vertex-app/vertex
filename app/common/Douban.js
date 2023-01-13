@@ -666,6 +666,7 @@ class Douban {
           group = (filename.match(/[-￡][^-￡]*?$/) || [''])[0].replace(/[-￡]/, '-');
         }
         const fileExt = path.extname(file.name);
+        file.name = file.name.replace(/\\/g, '/');
         group = group.replace(fileExt, '');
         const linkFilePath = path.join(linkRule.linkFilePath, category.libraryPath, seriesName, season).replace(/'/g, '\\\'');
         const linkFile = path.join(linkFilePath, (prefix + season + episode + suffix + group + fileExt).replace(/'/g, '\\\''));
@@ -713,6 +714,7 @@ class Douban {
           group = (filename.match(/[-￡][^-￡]*?$/) || [''])[0].replace(/[-￡]/, '-');
         }
         const fileExt = path.extname(filename);
+        file.name = file.name.replace(/\\/g, '/');
         group = group.replace(fileExt, '');
         const linkFilePath = path.join(linkRule.linkFilePath, category.libraryPath, `${movieName}${year}`).replace(/'/g, '\\\'');
         const linkFile = path.join(linkFilePath, `${movieName}${year}${suffix + group}${fileExt}`.replace(/'/g, '\\\''));

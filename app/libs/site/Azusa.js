@@ -4,8 +4,8 @@ const moment = require('moment');
 class Site {
   constructor () {
     this.name = 'Azusa';
-    this.downloadLink = 'https://azusa.ru/download.php?id={ID}';
-    this.url = 'https://azusa.ru/';
+    this.downloadLink = 'https://azusa.wiki/download.php?id={ID}';
+    this.url = 'https://azusa.wiki/';
   };
 
   async getInfo () {
