@@ -831,8 +831,6 @@ class WebhookMod {
     if (event.type === 'view_submission') {
       return await this.handleViewSubmission(event);
     }
-    logger.info(event);
-    logger.info('收到 Slack 消息:', event.text);
     return event;
   }
 }

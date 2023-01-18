@@ -86,9 +86,14 @@ exports.addTorrentByTorrentFile = async function (clientUrl, cookie, filepath, i
 
 exports.addTorrentTag = async function (clientUrl, cookie, hash, tag) {
   const message = {
-    url: clientUrl + `/api/v2/torrents/addTags?hashes=${hash}&tags=${encodeURIComponent(tag)}`,
+    url: clientUrl + '/api/v2/torrents/addTags',
+    method: 'POST',
     headers: {
       cookie
+    },
+    formData: {
+      hashes: hash,
+      tags: tag
     }
   };
   const res = await util.requestPromise(message);
@@ -114,9 +119,13 @@ exports.deleteTorrent = async function (clientUrl, cookie, hash, isDeleteFiles) 
 
 exports.reannounceTorrent = async (clientUrl, cookie, hash) => {
   const message = {
-    url: clientUrl + `/api/v2/torrents/reannounce?hashes=${hash}`,
+    url: clientUrl + '/api/v2/torrents/reannounce',
+    method: 'POST',
     headers: {
       cookie
+    },
+    formData: {
+      hashes: hash
     }
   };
   const res = await util.requestPromise(message);
@@ -125,9 +134,13 @@ exports.reannounceTorrent = async (clientUrl, cookie, hash) => {
 
 exports.resumeTorrent = async (clientUrl, cookie, hash) => {
   const message = {
-    url: clientUrl + `/api/v2/torrents/resume?hashes=${hash}`,
+    url: clientUrl + '/api/v2/torrents/resume',
+    method: 'POST',
     headers: {
       cookie
+    },
+    formData: {
+      hashes: hash
     }
   };
   const res = await util.requestPromise(message);
@@ -136,9 +149,13 @@ exports.resumeTorrent = async (clientUrl, cookie, hash) => {
 
 exports.pauseTorrent = async (clientUrl, cookie, hash) => {
   const message = {
-    url: clientUrl + `/api/v2/torrents/pause?hashes=${hash}`,
+    url: clientUrl + '/api/v2/torrents/pause',
+    method: 'POST',
     headers: {
       cookie
+    },
+    formData: {
+      hashes: hash
     }
   };
   const res = await util.requestPromise(message);
