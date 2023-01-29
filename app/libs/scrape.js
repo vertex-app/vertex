@@ -143,7 +143,8 @@ const freeWrapper = {
   'u2.dmhy.org': _freeDmhy,
   'hdbits.org': _freeHDBits,
   'www.hdarea.co': _freeHDArea,
-  'byr.pt': _freeByrPT
+  'byr.pt': _freeByrPT,
+  'pt.msg.vg': _free
 };
 
 const _hr = async function (url, cookie) {
