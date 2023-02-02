@@ -69,7 +69,7 @@ export default {
         const res = await this.$api().log.get(this.type);
         this.log = res.data;
         this.log = res ? '[202' + res.data.split('[202').reverse().join('[202') : '';
-        this.log = this.log.replace(/\[2022-/g, '[').replace(/\[[^\d]*? console\] \d*/g, '').replace(/\[202/g, '');
+        this.log = this.log.replace(new RegExp(`\\[${this.$moment().format('YYYY')}-`, 'g'), '[').replace(/\[[^\d]*? console\] \d*/g, '').replace(/\[202/g, '');
       } catch (e) {
         await this.$message().error(e.message);
       }
