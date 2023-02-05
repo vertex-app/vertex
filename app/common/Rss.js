@@ -76,7 +76,10 @@ class Rss {
     return a + b;
   };
 
-  async _downloadTorrent (url) {
+  async _downloadTorrent (url, _hash) {
+    if (_hash && fs.existsSync(path.join(__dirname, '../../torrents', _hash + '.torrent'))) {
+      return { hash: _hash, filepath: path.join(__dirname, '../../torrents', _hash + '.torrent') };
+    }
     const res = await util.requestPromise({
       url: url,
       method: 'GET',
@@ -337,7 +340,7 @@ class Rss {
       try {
         this.addCount += 1;
         if (this.pushTorrentFile) {
-          const { filepath, hash } = await this._downloadTorrent(torrent.url);
+          const { filepath, hash } = await this._downloadTorrent(torrent.url, torrent.hash);
           await client.addTorrentByTorrentFile(filepath, hash, false, this.uploadLimit, this.downloadLimit, savePath, category, this.autoTMM, this.paused);
         } else {
           await client.addTorrent(torrent.url, torrent.hash, false, this.uploadLimit, this.downloadLimit, savePath, category, this.autoTMM, this.paused);

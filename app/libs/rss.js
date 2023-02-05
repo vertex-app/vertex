@@ -1,6 +1,8 @@
 const parser = require('xml2js').parseString;
 const crypto = require('crypto');
 const moment = require('moment');
+const path = require('path');
+const fs = require('fs');
 const bencode = require('bencode');
 const util = require('./util');
 const redis = require('./redis');
@@ -48,7 +50,10 @@ const _getRssContent = async function (rssUrl, suffix = true) {
 const _getTorrents = async function (rssUrl) {
   const rss = await parseXml(await _getRssContent(rssUrl));
   const torrents = [];
-  const items = rss.rss.channel[0].item;
+  let items = rss.rss.channel[0].item;
+  if (['chdbits', 'ourbits', 'totheglory'].some(item => rssUrl.indexOf(item) !== -1)) {
+    items = items.slice(0, 10);
+  }
   for (let i = 0; i < items.length; ++i) {
     const torrent = {
       size: 0,
@@ -65,7 +70,7 @@ const _getTorrents = async function (rssUrl) {
     torrent.id = link.substring(link.indexOf('?id=') + 4);
     torrent.url = items[i].enclosure[0].$.url;
     torrent.hash = items[i].guid[0]._ || items[i].guid[0];
-    if (torrent.url.indexOf('chdbits') !== -1) {
+    if (['chdbits', 'ourbits', 'totheglory'].some(item => torrent.url.indexOf(item) !== -1)) {
       const cache = await redis.get(`vertex:hash:${torrent.url}`);
       if (cache) {
         torrent.hash = cache;
@@ -726,6 +731,8 @@ exports.getTorrentNameByBencode = async function (url) {
   for (const v of md5) {
     hash += v < 16 ? '0' + v.toString(16) : v.toString(16);
   }
+  const filepath = path.join(__dirname, '../../torrents', hash + '.torrent');
+  fs.writeFileSync(filepath, buffer);
   return {
     hash,
     size,
