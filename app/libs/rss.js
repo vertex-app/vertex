@@ -51,7 +51,7 @@ const _getTorrents = async function (rssUrl) {
   const rss = await parseXml(await _getRssContent(rssUrl));
   const torrents = [];
   let items = rss.rss.channel[0].item;
-  if (['chdbits', 'ourbits', 'totheglory'].some(item => rssUrl.indexOf(item) !== -1)) {
+  if (['chdbits', 'totheglory'].some(item => rssUrl.indexOf(item) !== -1)) {
     items = items.slice(0, 10);
   }
   for (let i = 0; i < items.length; ++i) {
@@ -70,7 +70,7 @@ const _getTorrents = async function (rssUrl) {
     torrent.id = link.substring(link.indexOf('?id=') + 4);
     torrent.url = items[i].enclosure[0].$.url;
     torrent.hash = items[i].guid[0]._ || items[i].guid[0];
-    if (['chdbits', 'ourbits', 'totheglory'].some(item => torrent.url.indexOf(item) !== -1)) {
+    if (['chdbits', 'totheglory'].some(item => torrent.url.indexOf(item) !== -1)) {
       const cache = await redis.get(`vertex:hash:${torrent.url}`);
       if (cache) {
         torrent.hash = cache;

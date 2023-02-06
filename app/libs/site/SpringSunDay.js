@@ -26,15 +26,10 @@ class Site {
     info.seeding = +document.querySelector('img[class=arrowup]').nextSibling.nodeValue.trim();
     // 下载
     info.leeching = +document.querySelector('img[class=arrowdown]').nextSibling.nodeValue.trim();
-    // 做种体积 (这块其实可以用正则，但是我懒，先这样吧)
-    const seedingDocument = await this._getDocument(`${this.index}getusertorrentlistajax.php?userid=${info.uid}&type=seeding`);
-    const seedingTorrent = [...seedingDocument.querySelectorAll('tr')];
-    seedingTorrent.shift();
-    info.seedingSize = 0;
-    for (const torrent of seedingTorrent) {
-      const siteStr = torrent.childNodes[3].innerHTML.replace('<br>', ' ').replace(/([KMGTP])B/, '$1iB');
-      info.seedingSize += util.calSize(...siteStr.split(' '));
-    }
+    // 做种体积
+    const mybonus = await this._getDocument(`${this.index}mybonus.php`, false, 10);
+    const seedingSize = mybonus.querySelector('#outer > table > tbody > tr > td > table:nth-child(3) > tbody > tr:nth-child(2) > td > table > tbody > tr:nth-child(1) > td:nth-child(3)')?.innerHTML;
+    info.seedingSize = util.calSize(seedingSize, 'GiB');
     return info;
   };
 
