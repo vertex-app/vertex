@@ -6,6 +6,7 @@ class Site {
     this.name = 'HDDolby';
     this.downloadLink = 'https://www.hddolby.com/download.php?id={ID}';
     this.url = 'https://www.hddolby.com/';
+    this.id = 17;
   };
 
   async getInfo () {
