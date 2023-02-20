@@ -69,6 +69,8 @@ class Client {
     this.trackerStatus = {};
     this.pausedTorrentHashes = [];
     this.getMaindata();
+    this.avgUploadSpeed = 0;
+    this.avgDownloadSpeed = 0;
     this.lastCookie = 0;
     logger.info('下载器', this.alias, '初始化完毕');
   };
@@ -92,8 +94,8 @@ class Client {
     torrent.secondFromZero = moment().unix() - moment().startOf('day').unix();
     torrent.leechingCount = this.maindata.leechingCount;
     torrent.seedingCount = this.maindata.seedingCount;
-    torrent.globalUploadSpeed = this.maindata.uploadSpeed;
-    torrent.globalDownloadSpeed = this.maindata.downloadSpeed;
+    torrent.globalUploadSpeed = this.avgUploadSpeed;
+    torrent.globalDownloadSpeed = this.avgDownloadSpeed;
     for (const condition of conditions) {
       let value;
       switch (condition.compareType) {
@@ -283,6 +285,8 @@ class Client {
           this.maindata.seedingCount += 1;
         }
       });
+      this.avgDownloadSpeed = maindata.downloadSpeed * 0.1 + this.avgDownloadSpeed * 0.9;
+      this.avgUploadSpeed = maindata.uploadSpeed * 0.1 + this.avgUploadSpeed * 0.9;
       /*
       let serverSpeed;
       if (this.sameServerClients) {

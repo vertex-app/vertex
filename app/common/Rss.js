@@ -236,8 +236,8 @@ class Rss {
         };
       } else {
         speed = {
-          uploadSpeed: _client.maindata.uploadSpeed,
-          downloadSpeed: _client.maindata.downloadSpeed
+          uploadSpeed: _client.avgUploadSpeed,
+          downloadSpeed: _client.avgDownloadSpeed
         };
       }
       if (_client.maxUploadSpeed && speed.uploadSpeed > _client.maxUploadSpeed) {
@@ -376,14 +376,14 @@ class Rss {
       .map(item => global.runningClient[item])
       .filter(item => {
         return !!item && !!item.status && !!item.maindata &&
-          (!this.maxClientUploadSpeed || this.maxClientUploadSpeed > item.maindata.uploadSpeed) &&
-          (!this.maxClientDownloadSpeed || this.maxClientDownloadSpeed > item.maindata.downloadSpeed) &&
+          (!this.maxClientUploadSpeed || this.maxClientUploadSpeed > item.avgUploadSpeed) &&
+          (!this.maxClientDownloadSpeed || this.maxClientDownloadSpeed > item.avgDownloadSpeed) &&
           (!this.maxClientDownloadCount || this.maxClientDownloadCount > item.maindata.leechingCount);
       });
     const firstClient = availableClients
       .filter(item => {
-        return (!item.maxDownloadSpeed || item.maxDownloadSpeed > item.maindata.downloadSpeed) &&
-          (!item.maxUploadSpeed || item.maxUploadSpeed > item.maindata.uploadSpeed) &&
+        return (!item.maxDownloadSpeed || item.maxDownloadSpeed > item.avgDownloadSpeed) &&
+          (!item.maxUploadSpeed || item.maxUploadSpeed > item.avgUploadSpeed) &&
           (!item.maxLeechNum || item.maxLeechNum > item.maindata.leechingCount) &&
           (!item.minFreeSpace || item.minFreeSpace < item.maindata.freeSpaceOnDisk);
       })
