@@ -67,6 +67,7 @@ class Client {
     this.messageId = 0;
     this.errorCount = 0;
     this.trackerStatus = {};
+    this.pausedTorrentHashes = [];
     this.getMaindata();
     this.lastCookie = 0;
     logger.info('下载器', this.alias, '初始化完毕');
@@ -426,6 +427,10 @@ class Client {
         }
         if (deletedTorrentHash.indexOf(torrent.hash) !== -1) {
           logger.debug('规则', rule.alias, ', 种子', torrent.name, '已删除', '跳过');
+          continue;
+        }
+        if ((rule.limitSpeed || rule.pause) && this.pausedTorrentHashes.includes(torrent.hash)) {
+          logger.debug('规则', rule.alias, ', 种子', torrent.name, '已暂停或限速', '跳过');
           continue;
         }
         if (this._fitDeleteRule(rule, torrent)) {
