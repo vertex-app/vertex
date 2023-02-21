@@ -13,9 +13,9 @@ class Site {
     const info = {};
     const document = await this._getDocument(this.index, false, 10);
     // 用户名
-    info.username = document.querySelector('a[href^=userdetails] b,a[href^=userdetails] em').innerHTML;
+    info.username = document.querySelector('a[href*=userdetails] b,a[href*=userdetails] em').innerHTML;
     // uid
-    info.uid = +document.querySelector('a[href^=userdetails]').href.match(/id=(\d+)/)[1];
+    info.uid = +document.querySelector('a[href*=userdetails]').href.match(/id=(\d+)/)[1];
     // 上传
     info.upload = document.querySelector('i[class="fa fa-arrow-up text-success fa-fw"]').nextElementSibling.innerHTML.trim().replace(/(\w)B/, '$1iB');
     info.upload = util.calSize(...info.upload.split(' '));

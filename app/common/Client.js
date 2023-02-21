@@ -371,8 +371,10 @@ class Client {
       }
       if (rule.limitSpeed) {
         await this.setSpeedLimit(torrent.hash, 'download', rule.limitSpeed);
+        this.pausedTorrentHashes.push(torrent.hash);
       } else if (rule.pause) {
         await this.pauseTorrent(torrent.hash);
+        this.pausedTorrentHashes.push(torrent.hash);
       } else {
         await this.client.deleteTorrent(this.clientUrl, this.cookie, torrent.hash, isDeleteFiles);
       }

@@ -15,9 +15,9 @@ class Site {
     this.cookie = this.cookie.split(';').filter(item => item.trim().indexOf('PHPSESSID') !== 0).join(';');
     const { dom: document, cookie } = await this._getDocument(this.index, false, 10, true);
     // 用户名
-    info.username = document.querySelector('a[href^=userdetails] b').innerHTML;
+    info.username = document.querySelector('a[href*=userdetails] b').innerHTML;
     // uid
-    info.uid = +document.querySelector('a[href^=userdetails]').href.match(/id=(\d+)/)[1];
+    info.uid = +document.querySelector('a[href*=userdetails]').href.match(/id=(\d+)/)[1];
     // 基本信息
     const baseInfo = document.querySelectorAll('div[class="userinfo"] p')[2].innerHTML;
     // 上传
