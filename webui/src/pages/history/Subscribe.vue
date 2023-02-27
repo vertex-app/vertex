@@ -15,6 +15,13 @@
       <template #title>
         <span style="font-size: 16px; font-weight: bold;">订阅历史</span>
       </template>
+      <template #headerCell="{ column }">
+        <template v-if="column.dataIndex === 'name'">
+          种子名称
+          <a-input style="margin-left: 14px; width: 140px;" size="small" placeholder="筛选关键词" v-model:value="qs.key"></a-input>
+          <a-button @click="() => { qs.page = 1; listHistory(); }" style="margin-left: 4px;" size="small">筛选</a-button>
+        </template>
+      </template>
       <template #bodyCell="{ column, record }">
         <template v-if="column.dataIndex === 'mediaName' && [6, 99].indexOf(record.recordType) !== -1">
           {{ JSON.parse(record.recordNote).wish.name }}
@@ -97,7 +104,8 @@ export default {
       page: 1,
       length: 20,
       type: 'bingewatching',
-      rss: ''
+      rss: '',
+      key: ''
     };
     const pagination = {
       position: ['topRight', 'bottomRight'],

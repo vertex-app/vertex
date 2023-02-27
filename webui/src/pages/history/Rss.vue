@@ -16,6 +16,13 @@
         <span style="font-size: 16px; font-weight: bold;">RSS 历史</span>
         <span style="font-size: 14px; font-weight: bold; color: red; margin-left: 12px;">遇到问题先去看 Wiki，特别是 Wiki 里的常见问题, 实在找不到再去交流群问, 别 TM Wiki 不看直接在群里问。</span>
       </template>
+      <template #headerCell="{ column }">
+        <template v-if="column.dataIndex === 'name'">
+          种子名称
+          <a-input style="margin-left: 14px; width: 140px;" size="small" placeholder="筛选关键词" v-model:value="qs.key"></a-input>
+          <a-button @click="() => { qs.page = 1; listHistory(); }" style="margin-left: 4px;" size="small">筛选</a-button>
+        </template>
+      </template>
       <template #bodyCell="{ column, record }">
         <template v-if="column.dataIndex === 'rssId'">
           {{ (rssList.filter(item => item.id === record.rssId)[0] || { alias: '已删除' }).alias }}
@@ -91,7 +98,8 @@ export default {
       page: 1,
       length: 20,
       type: 'rss',
-      rss: ''
+      rss: '',
+      key: ''
     };
     const pagination = {
       position: ['topRight', 'bottomRight'],
