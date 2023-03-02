@@ -667,6 +667,32 @@ const _getTorrentsFSM = async function (rssUrl) {
   return torrents;
 };
 
+const _getTorrentsHappyFappy = async function (rssUrl) {
+  const rss = await parseXml(await _getRssContent(rssUrl));
+  const torrents = [];
+  const items = rss.rss.channel[0].item;
+  for (let i = 0; i < items.length; ++i) {
+    const torrent = {
+      size: 0,
+      name: '',
+      hash: '',
+      id: 0,
+      url: '',
+      link: ''
+    };
+    torrent.size = items[i].torrent[0].contentLength[0];
+    torrent.name = items[i].title[0];
+    const link = items[i].link[0];
+    torrent.link = link;
+    torrent.id = link.substring(link.indexOf('?id=') + 4);
+    torrent.url = items[i].enclosure[0].$.url;
+    torrent.hash = items[i].torrent[0].infoHash[0];
+    torrent.hash = Buffer.from(unescape(torrent.hash), 'binary').toString('hex');
+    torrents.push(torrent);
+  }
+  return torrents;
+};
+
 const _getTorrentsWrapper = {
   'filelist.io': _getTorrentsFileList,
   'blutopia.xyz': _getTorrentsUnit3D2,
@@ -689,7 +715,8 @@ const _getTorrentsWrapper = {
   'cinemaz.to': _getTorrentsExoticaZ,
   'privatehd.to': _getTorrentsExoticaZ,
   'rss.torrentleech.org': _getTorrentsTorrentLeech,
-  'nextpt.net': _getTorrentsFSM
+  'nextpt.net': _getTorrentsFSM,
+  'www.happyfappy.org': _getTorrentsHappyFappy
 };
 
 exports.getTorrents = async function (rssUrl) {
