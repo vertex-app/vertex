@@ -137,14 +137,15 @@ const freeWrapper = {
   'piggo.me': _free,
   'hdatmos.club': _free,
   'hhanclub.top': _free,
+  'pt.msg.vg': _free,
+  'sharkpt.net': _free,
   'open.cd': _freeOpencd,
   'www.open.cd': _freeOpencd,
   'totheglory.im': _freeToTheGlory,
   'u2.dmhy.org': _freeDmhy,
   'hdbits.org': _freeHDBits,
   'www.hdarea.co': _freeHDArea,
-  'byr.pt': _freeByrPT,
-  'pt.msg.vg': _free
+  'byr.pt': _freeByrPT
 };
 
 const _hr = async function (url, cookie) {
@@ -181,6 +182,7 @@ const hrWrapper = {
   'ourbits.club': _hr,
   'piggo.me': _hr,
   'hhanclub.top': _hr,
+  'sharkpt.net': _hr,
   'totheglory.im': _hrToTheGlory,
   'chdbits.co': _hrToCHDBits
 };
