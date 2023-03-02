@@ -386,7 +386,7 @@ export default {
     async listDeleteRule () {
       try {
         const res = await this.$api().deleteRule.list();
-        this.deleteRules = res.data;
+        this.deleteRules = res.data.sort((a, b) => a.alias.localeCompare(b.alias));
       } catch (e) {
         this.$message().error(e.message);
       }
