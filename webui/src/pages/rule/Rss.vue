@@ -207,6 +207,9 @@ export default {
       }, {
         name: '种子大小',
         key: 'size'
+      }, {
+        name: '种子简介',
+        key: 'description'
       }],
       condition: {
         key: '',

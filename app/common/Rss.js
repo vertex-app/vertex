@@ -111,6 +111,7 @@ class Rss {
   _fitConditions (_torrent, conditions) {
     let fit = true;
     const torrent = { ..._torrent };
+    torrent.description = torrent.description || '';
     for (const condition of conditions) {
       let value;
       switch (condition.compareType) {

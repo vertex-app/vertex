@@ -67,6 +67,7 @@ const _getTorrents = async function (rssUrl) {
     torrent.name = items[i].title[0];
     const link = items[i].link[0];
     torrent.link = link;
+    torrent.description = items[i].description ? items[i].description[0] : '';
     torrent.id = link.substring(link.indexOf('?id=') + 4);
     torrent.url = items[i].enclosure[0].$.url;
     torrent.hash = items[i].guid[0]._ || items[i].guid[0];
