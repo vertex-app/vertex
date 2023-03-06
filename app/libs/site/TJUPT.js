@@ -34,7 +34,7 @@ class Site {
 
   async searchTorrent (keyword) {
     const torrentList = [];
-    const document = await this._getDocument(`${this.index}torrents.php?incldead=0&spstate=0&picktype=0&inclbookmarked=0&keepseed=0&search=${encodeURIComponent(keyword)}&search_area=${keyword.match(/tt\d+/) ? 4 : 0}&search_mode=0`);
+    const document = await this._getDocument(`${this.index}torrents.php?notnewword=1&incldead=0&spstate=0&picktype=0&inclbookmarked=0&keepseed=0&search=${encodeURIComponent(keyword)}&search_area=${keyword.match(/tt\d+/) ? 4 : 0}&search_mode=0`);
     const torrents = document.querySelectorAll('.torrents > tbody > tr:not(:first-child)');
     for (const _torrent of torrents) {
       const torrent = {};

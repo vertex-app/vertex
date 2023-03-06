@@ -34,7 +34,7 @@ class Site {
 
   async searchTorrent (keyword) {
     const torrentList = [];
-    const document = await this._getDocument(`${this.index}torrents.php?search=${encodeURIComponent(keyword)}&notnewword=1`);
+    const document = await this._getDocument(`${this.index}torrents.php?notnewword=1&search=${encodeURIComponent(keyword)}&notnewword=1`);
     const torrents = document.querySelectorAll('.torrents > tbody > tr:not(:first-child)');
     for (const _torrent of torrents) {
       const torrent = {};
