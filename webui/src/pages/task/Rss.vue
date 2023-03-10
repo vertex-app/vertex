@@ -453,7 +453,7 @@ export default {
     async listNotification () {
       try {
         const res = await this.$api().notification.list();
-        this.notifications = res.data;
+        this.notifications = res.data.sort((a, b) => a.alias.localeCompare(b.alias));
       } catch (e) {
         this.$message().error(e.message);
       }
@@ -461,7 +461,7 @@ export default {
     async listRssRule () {
       try {
         const res = await this.$api().rssRule.list();
-        this.rssRules = res.data;
+        this.rssRules = res.data.sort((a, b) => a.alias.localeCompare(b.alias));
       } catch (e) {
         this.$message().error(e.message);
       }
