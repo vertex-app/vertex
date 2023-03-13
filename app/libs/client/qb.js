@@ -279,6 +279,7 @@ exports.getMaindata = async function (clientUrl, cookie) {
     uploadSpeed: 'upspeed',
     downloadSpeed: 'dlspeed',
     size: 'size',
+    totalSize: 'total_size',
     progress: 'progress',
     tracker: 'tracker',
     completed: 'completed',

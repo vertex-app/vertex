@@ -88,6 +88,7 @@ class Client {
     const torrent = { ..._torrent };
     torrent.ratio = torrent.uploaded / torrent.size;
     torrent.trueRatio = torrent.uploaded / ((torrent.downloaded === 0 && torrent.uploaded !== 0) ? torrent.size : torrent.downloaded);
+    torrent.ratio3 = torrent.uploaded / torrent.totalSize;
     torrent.addedTime = moment().unix() - torrent.addedTime;
     torrent.completedTime = moment().unix() - (torrent.completedTime <= 0 ? moment().unix() : torrent.completedTime);
     torrent.freeSpace = this.maindata.freeSpaceOnDisk;
