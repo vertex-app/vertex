@@ -17,7 +17,7 @@ class Site {
     // uid
     info.uid = +document.querySelector('a[href*=userdetails]').href.match(/id=(\d+)/)[1];
     // 上传
-    info.upload = document.querySelector('font[class=color_uploaded]').nextSibling.nodeValue.trim();
+    info.upload = document.querySelector('span[class=color_uploaded]').nextSibling.nodeValue.trim();
     info.upload = util.calSize(...info.upload.split(' '));
     // 下载
     info.download = 0;
