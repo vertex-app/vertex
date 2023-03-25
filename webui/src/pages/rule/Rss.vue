@@ -15,7 +15,14 @@
       </template>
       <template #bodyCell="{ column, record }">
         <template v-if="column.dataIndex === 'downloader'">
-          {{ (downloaders.filter(item => item.id === record.client)[0] || {}).alias || '' }}
+          <a-select size="small" :allowClear="true" v-model:value="record.client" style="width: 100%;" @change="modifyRssRuleDownloader(record)">
+            <template v-for="downloader of downloaders" :key="downloader.id">
+              <a-select-option
+                :value="downloader.id">
+                {{ downloader.alias }}
+              </a-select-option>
+            </template>
+          </a-select>
         </template>
         <template v-if="column.title === '操作'">
           <span>
@@ -246,6 +253,16 @@ export default {
       try {
         const res = await this.$api().rssRule.list();
         this.rssRuleList = res.data;
+      } catch (e) {
+        this.$message().error(e.message);
+      }
+    },
+    async modifyRssRuleDownloader (rssRule) {
+      try {
+        await this.$api().rssRule.modify({ ...rssRule });
+        this.$message().success((rssRule.id ? '编辑' : '新增') + '成功, 列表正在刷新...');
+        setTimeout(() => this.listRssRule(), 1000);
+        this.clearRssRule();
       } catch (e) {
         this.$message().error(e.message);
       }
