@@ -331,7 +331,9 @@ class Client {
       this.login();
       throw new Error('状态码: ' + statusCode);
     }
-    this.maindata.leechingCount += 1;
+    if (this.maindata) {
+      this.maindata.leechingCount += 1;
+    }
     await util.runRecord('insert into torrent_flow (hash, upload, download, time) values (?, ?, ?, ?)',
       [hash, 0, 0, moment().unix() - moment().unix() % 300]);
   };
@@ -348,7 +350,9 @@ class Client {
       this.login();
       throw new Error('状态码: ' + statusCode);
     }
-    this.maindata.leechingCount += 1;
+    if (this.maindata) {
+      this.maindata.leechingCount += 1;
+    }
     await util.runRecord('insert into torrent_flow (hash, upload, download, time) values (?, ?, ?, ?)',
       [hash, 0, 0, moment().unix() - moment().unix() % 300]);
   };
