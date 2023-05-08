@@ -164,7 +164,7 @@
         <a-form-item
           label="自动汇报"
           name="autoReannounce"
-          extra="自动在种子添加后的 5 分钟内每分钟汇报一次, 获取更多 Peers"
+          extra="自动在种子添加后的第 5 分钟时汇报一次, 获取更多 Peers"
           :rules="[{ required: true, message: '${label}不可为空! ' }]">
           <a-checkbox v-model:checked="downloader.autoReannounce">自动汇报</a-checkbox>
         </a-form-item>

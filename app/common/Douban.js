@@ -455,6 +455,9 @@ class Douban {
             continue;
           }
           wish.tag = fitTag[0];
+          if (this.categories[wish.tag].defaultrestrictYear) {
+            wish.restrictYear = true;
+          }
           const episodes = wish.episodes;
           if (episodes.length !== 0) {
             wish.episodes = +episodes[episodes.length - 1].href.match(/episode\/(\d+)/)[1];

@@ -195,7 +195,8 @@
           <br>
           若想删除等待下载状态下的种子, 应填写 stalledDL
           <br>
-          更多状态请参照 qBittorrent Wiki
+          更多状态请参照
+          <a href="https://github.com/qbittorrent/qBittorrent/wiki/WebUI-API-(qBittorrent-4.1)#get-torrent-list">qBittorrent Wiki</a>
         </a-descriptions-item>
         <a-descriptions-item label="09. 返回信息">种子 Tracker 列表中由 Tracker 返回的信息</a-descriptions-item>
         <a-descriptions-item label="10. 当前时间">

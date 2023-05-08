@@ -43,7 +43,7 @@ class Client {
     this.ntf = new Push(this.notify);
     this.mnt = new Push(this.monitor);
     if (client.type === 'qBittorrent' && client.autoReannounce) {
-      this.reannounceJob = cron.schedule('*/11 * * * * *', () => this.autoReannounce());
+      this.reannounceJob = cron.schedule('3 * * * * *', () => this.autoReannounce());
     }
     this.reannouncedHash = [];
     this._deleteRules = client.deleteRules;
@@ -331,6 +331,7 @@ class Client {
       this.login();
       throw new Error('状态码: ' + statusCode);
     }
+    this.maindata.leechingCount += 1;
     await util.runRecord('insert into torrent_flow (hash, upload, download, time) values (?, ?, ?, ?)',
       [hash, 0, 0, moment().unix() - moment().unix() % 300]);
   };
@@ -347,6 +348,7 @@ class Client {
       this.login();
       throw new Error('状态码: ' + statusCode);
     }
+    this.maindata.leechingCount += 1;
     await util.runRecord('insert into torrent_flow (hash, upload, download, time) values (?, ?, ?, ?)',
       [hash, 0, 0, moment().unix() - moment().unix() % 300]);
   };
@@ -390,7 +392,6 @@ class Client {
 
   async autoReannounce () {
     if (!this.maindata) return;
-    this.reannouncedHash = [];
     logger.debug(this.alias, moment().format(), '启动重新汇报任务');
     for (const torrent of this.maindata.torrents) {
       if (!torrent.tracker || torrent.tracker.indexOf('btschool') !== -1) {
@@ -398,12 +399,11 @@ class Client {
       }
       if (this.reannouncedHash.includes(torrent.hash)) {
         continue;
-      } else {
-        this.reannouncedHash.push(torrent.hash);
       }
       const now = moment().unix();
-      if (now - torrent.addedTime < 300 && now - torrent.addedTime > 60 && (now - torrent.addedTime) % 60 < 10) {
+      if (now - torrent.addedTime <= 360 && now - torrent.addTime >= 300) {
         await this.reannounceTorrent(torrent);
+        this.reannouncedHash.push(torrent.hash);
       }
     }
   }
