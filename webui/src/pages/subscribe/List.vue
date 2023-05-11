@@ -1,9 +1,25 @@
 <template>
   <div style="font-size: 24px; font-weight: bold;">订阅列表</div>
   <a-divider></a-divider>
+  <div>
+    <a-space>
+      <span>类型</span>
+      <a-select v-model:value="type" style="width: 96px" size="small" @change="doFilte">
+        <a-select-option value="all">全部</a-select-option>
+        <a-select-option value="movie">电影</a-select-option>
+        <a-select-option value="series">电视剧</a-select-option>
+      </a-select>
+      <span>状态</span>
+      <a-select v-model:value="status" style="width: 96px" size="small" @change="doFilte">
+        <a-select-option value="complele">已完成</a-select-option>
+        <a-select-option value="uncomplete">未完成</a-select-option>
+      </a-select>
+    </a-space>
+  </div>
+  <a-divider></a-divider>
   <div class="subscribe-list">
     <div
-      v-for="item of items"
+      v-for="item of filteredItems"
       :key="'' + item.id + item.doubanId"
       :style="`display: inline-block; margin: 12px; text-align: center; width: ${isMobile() ? '160px' : '200px'}; vertical-align: top;`">
       <div :class="isMobile() ? 'item-class-mobile' : 'item-class-pc'">
@@ -45,7 +61,10 @@
 export default {
   data () {
     return {
-      items: []
+      items: [],
+      status: 'uncomplete',
+      type: 'all',
+      filteredItems: []
     };
   },
   methods: {
@@ -56,9 +75,26 @@ export default {
         return false;
       }
     },
+    doFilte () {
+      let filteredItems = this.items;
+      if (this.type === 'movie') {
+        filteredItems = filteredItems.filter(item => !item.episodes);
+      }
+      if (this.type === 'series') {
+        filteredItems = filteredItems.filter(item => item.episodes);
+      }
+      if (this.status === 'complete') {
+        filteredItems = filteredItems.filter(item => item.downloaded);
+      }
+      if (this.status === 'uncomplete') {
+        filteredItems = filteredItems.filter(item => !item.downloaded);
+      }
+      this.filteredItems = filteredItems;
+    },
     async list () {
       try {
         this.items = (await this.$api().subscribe.listSubscribeItem()).data.wishes;
+        this.doFilte();
       } catch (e) {
         this.$message().error(e.message);
       }

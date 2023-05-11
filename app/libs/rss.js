@@ -41,8 +41,11 @@ const _getRssContent = async function (rssUrl, suffix = true) {
       body = '<?xml version="1.0" encoding="utf-8"?>\n' + res.body.match(/<rss[\s\S]*<\/rss>/)[0];
     }
     const host = new URL(rssUrl).host;
-    const cacheTime = ['lemon', 'hhanclub'].some(item => host.indexOf(item) !== -1) ? 150 : 40;
-    await redis.setWithExpire(`vertex:rss:${rssUrl}`, body, isHTML ? 290 : cacheTime);
+    let cacheTime = ['lemon', 'hhanclub'].some(item => host.indexOf(item) !== -1) ? 150 : 40;
+    if (host.indexOf('sharkpt') !== -1) {
+      cacheTime = 310;
+    }
+    await redis.setWithExpire(`vertex:rss:${rssUrl}`, body, isHTML ? 310 : cacheTime);
   }
   return body;
 };
