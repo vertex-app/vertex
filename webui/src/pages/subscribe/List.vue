@@ -7,11 +7,12 @@
       <a-select v-model:value="type" style="width: 96px" size="small" @change="doFilte">
         <a-select-option value="all">全部</a-select-option>
         <a-select-option value="movie">电影</a-select-option>
-        <a-select-option value="series">电视剧</a-select-option>
+        <a-select-option value="series">剧集</a-select-option>
       </a-select>
       <span>状态</span>
       <a-select v-model:value="status" style="width: 96px" size="small" @change="doFilte">
-        <a-select-option value="complele">已完成</a-select-option>
+        <a-select-option value="all">全部</a-select-option>
+        <a-select-option value="complete">已完成</a-select-option>
         <a-select-option value="uncomplete">未完成</a-select-option>
       </a-select>
     </a-space>
