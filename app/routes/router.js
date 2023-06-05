@@ -43,10 +43,10 @@ const checkAuth = async function (req, res, next) {
     pathname === '/favicon.ico') {
     return next();
   }
-  if (!req.session.user && !pathname.startsWith('/api')) {
+  if (!req.session?.user && !pathname.startsWith('/api')) {
     return res.redirect(302, '/user/login');
   }
-  if (!req.session.user) {
+  if (!req.session?.user) {
     res.status(401);
     return res.send({
       success: false,
