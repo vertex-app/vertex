@@ -187,7 +187,8 @@ const hrWrapper = {
   'hhanclub.top': _hr,
   'sharkpt.net': _hr,
   'totheglory.im': _hrToTheGlory,
-  'chdbits.co': _hrToCHDBits
+  'chdbits.co': _hrToCHDBits,
+  'ptchdbits.co': _hrToCHDBits
 };
 
 exports.free = async (url, cookie) => {
