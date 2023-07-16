@@ -55,7 +55,7 @@ const _getTorrents = async function (rssUrl) {
   const torrents = [];
   let items = rss.rss.channel[0].item;
   if (['chdbits', 'totheglory'].some(item => rssUrl.indexOf(item) !== -1)) {
-    items = items.slice(0, 10);
+    items = items.slice(0, 5);
   }
   for (let i = 0; i < items.length; ++i) {
     const torrent = {

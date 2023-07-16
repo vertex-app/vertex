@@ -125,6 +125,7 @@ const freeWrapper = {
   'hdsky.me': _free,
   'ourbits.club': _free,
   'chdbits.co': _free,
+  'ptchdbits.co': _free,
   'audiences.me': _free,
   'www.hddolby.com': _free,
   'pthome.net': _free,
@@ -145,6 +146,8 @@ const freeWrapper = {
   'u2.dmhy.org': _freeDmhy,
   'hdbits.org': _freeHDBits,
   'www.hdarea.co': _freeHDArea,
+  'www.hdarea.club': _freeHDArea,
+  'hdarea.club': _freeHDArea,
   'byr.pt': _freeByrPT
 };
 

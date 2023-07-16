@@ -76,6 +76,12 @@
           <a-checkbox v-model:checked="deleteRule.pause">暂停种子</a-checkbox>
         </a-form-item>
         <a-form-item
+          label="仅删除种子"
+          name="onlyDeleteTorrent"
+          extra="仅删除种子，若勾选，删除种子时不删除文件">
+          <a-checkbox v-model:checked="deleteRule.onlyDeleteTorrent">仅删除种子</a-checkbox>
+        </a-form-item>
+        <a-form-item
           label="限制下载速度"
           name="limitSpeed"
           extra="默认为删除种子，启用该选项后用限制种子下载速度替代, 优先级高于暂停种子及删除种子, 单位为字节每秒 Byte/s, 留空为不启用">
