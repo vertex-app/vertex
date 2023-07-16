@@ -336,7 +336,9 @@ class Rss {
       }
       const fitRule = fitRules[0] || {};
       let savePath = fitRule.savePath || this.savePath;
-      savePath = savePath.replace('{RANDOM}', util.uuid.v4().replace(/-/g, ''));
+      if (savePath) {
+        savePath = savePath.replace('{RANDOM}', util.uuid.v4().replace(/-/g, ''));
+      }
       const category = fitRule.category || this.category;
       const client = fitRule.client ? global.runningClient[fitRule.client] : _client;
       try {
