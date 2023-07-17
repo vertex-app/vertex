@@ -4,8 +4,8 @@ const moment = require('moment');
 class Site {
   constructor () {
     this.name = 'CHDBits';
-    this.downloadLink = 'https://chdbits.co/download.php?id={ID}';
-    this.url = 'https://chdbits.co/';
+    this.downloadLink = 'https://ptchdbits.co/download.php?id={ID}';
+    this.url = 'https://ptchdbits.co/';
     this.id = 16;
   };
 

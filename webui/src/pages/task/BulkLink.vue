@@ -235,7 +235,7 @@ export default {
         if (this.bulkLinkInfo.linkMode === 'keepStruct-3') {
           torrent.status = '已识别';
           torrent.scrapedName = '不需要~';
-          return;
+          continue;
         }
         torrent.status = '识别中';
         await this.scrapeName(torrent);
