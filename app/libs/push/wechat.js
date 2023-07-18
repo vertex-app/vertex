@@ -1,6 +1,7 @@
 const moment = require('moment');
 const logger = require('../logger');
 const util = require('../util');
+const path = require('path');
 
 class Wechat {
   constructor (wechat) {
@@ -63,7 +64,7 @@ class Wechat {
             title: text,
             description: desp,
             url: 'https://vertex.icu',
-            picurl: _poster
+            picurl: `https://image.vertex-app.top/api/image/cut/0.425/${path.basename(_poster)}/${encodeURIComponent(_poster)}`
           }
         ]
       };
