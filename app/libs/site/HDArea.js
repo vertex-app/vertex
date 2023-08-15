@@ -4,8 +4,8 @@ const moment = require('moment');
 class Site {
   constructor () {
     this.name = 'HDArea';
-    this.downloadLink = 'https://www.hdarea.co/download.php?id={ID}';
-    this.url = 'https://www.hdarea.co/';
+    this.downloadLink = 'https://www.hdarea.club/download.php?id={ID}';
+    this.url = 'https://www.hdarea.club/';
   };
 
   async getInfo () {
