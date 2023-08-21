@@ -17,15 +17,15 @@ class Site {
     // uid
     info.uid = +document.querySelector('a[href*=userdetails]').href.match(/id=(\d+)/)[1];
     // 上传
-    info.upload = document.querySelector('font[class=color_uploaded]').nextSibling.nodeValue.trim().replace(/(\w)B/, '$1iB');
+    info.upload = document.querySelector('img[src*=icon-user-upload]').nextSibling.nodeValue.trim().replace(/(\w)B/, '$1iB');
     info.upload = util.calSize(...info.upload.split(' '));
     // 下载
-    info.download = document.querySelector('font[class=color_downloaded]').nextSibling.nodeValue.trim().replace(/(\w)B/, '$1iB');
+    info.download = document.querySelector('img[src*=icon-user-download]').nextSibling.nodeValue.trim().replace(/(\w)B/, '$1iB');
     info.download = util.calSize(...info.download.split(' '));
     // 做种
-    info.seeding = +document.querySelector('img[class=arrowup]').nextSibling.nodeValue.trim();
+    info.seeding = +document.querySelector('img[src*=icon-now-upload]').nextSibling.nodeValue.trim();
     // 下载
-    info.leeching = +document.querySelector('img[class=arrowdown]').nextSibling.nodeValue.trim();
+    info.leeching = +document.querySelector('img[src*=icon-downloading]').nextSibling.nodeValue.trim();
     // 做种体积
     const seedingDocument = await this._getDocument(`${this.index}getusertorrentlistajax.php?userid=${info.uid}&type=seeding`, true);
     const seedingSize = (seedingDocument.match(/总大小\uff1a(\d+\.\d+ [KMGTP]B)/) || [0, '0 B'])[1].replace(/([KMGTP])B/, '$1iB');
@@ -36,21 +36,20 @@ class Site {
   async searchTorrent (keyword) {
     const torrentList = [];
     const document = await this._getDocument(`${this.index}torrents.php?notnewword=1&incldead=0&spstate=0&inclbookmarked=0&search=${encodeURIComponent(keyword)}&search_area=${keyword.match(/tt\d+/) ? 4 : 0}&search_mode=0&tag=`);
-    const torrents = document.querySelectorAll('.torrents tbody tr:not(:first-child)');
+    const torrents = [...document.querySelectorAll('#mainContent .torrents-table > .m-auto > .m-auto.flex > div')].slice(4);
     for (const _torrent of torrents) {
       const torrent = {};
       torrent.site = this.site;
-      torrent.title = _torrent.querySelector('td[class="embedded"] > a[href*="details"]').title.trim();
-      torrent.subtitle = (_torrent.querySelector('.torrentname > tbody > tr .embedded span[style^=background]:last-of-type') ||
-      _torrent.querySelector('.torrentname > tbody > tr .embedded br')).nextSibling.nodeValue.trim();
-      torrent.category = _torrent.querySelector('td a[href*=cat] img').title.trim();
+      torrent.title = _torrent.querySelector('.torrent-title a[href*="details"]').innerHTML.trim();
+      torrent.subtitle = _torrent.querySelector('.torrent-title > div > div > div').innerHTML.trim();
+      torrent.category = _torrent.querySelector('a[href*=cat] img').src.match(/icon-(.*).svg$/)[1];
       torrent.link = this.index + _torrent.querySelector('a[href*=details]').href.trim();
       torrent.id = +torrent.link.match(/id=(\d*)/)[1];
-      torrent.seeders = +(_torrent.querySelector('a[href*=seeders] font') || _torrent.querySelector('a[href*=seeders]') || _torrent.querySelector('span[class=red]')).innerHTML.trim().replace(',', '');
-      torrent.leechers = +(_torrent.querySelector('a[href*=leechers]') || _torrent.childNodes[9]).innerHTML.trim().replace(',', '');
-      torrent.snatches = +(_torrent.querySelector('a[href*=snatches] b') || _torrent.childNodes[11]).innerHTML.trim().replace(',', '');
-      torrent.size = _torrent.childNodes[6].innerHTML.trim().replace('<br>', ' ').replace(/([KMGPT])B/, '$1iB');
-      torrent.time = moment(_torrent.childNodes[5].querySelector('span') ? _torrent.childNodes[5].querySelector('span').title : _torrent.childNodes[5].innerHTML.replace(/<br>/, ' ')).unix();
+      torrent.seeders = +(_torrent.querySelectorAll('.torrent-info-text > a')[0]?.innerHTML || _torrent.querySelectorAll('.torrent-info-text')[2].innerHTML).trim().replace(',', '');
+      torrent.leechers = +(_torrent.querySelectorAll('.torrent-info-text > a')[1]?.innerHTML || _torrent.querySelectorAll('.torrent-info-text')[3].innerHTML).trim().replace(',', '');
+      torrent.snatches = +(_torrent.querySelectorAll('.torrent-info-text')[4].innerHTML).trim().replace(',', '');
+      torrent.size = _torrent.querySelectorAll('.torrent-info-text')[0].innerHTML.trim().replace('<br>', ' ').replace(/([KMGPT])B/, '$1iB');
+      torrent.time = moment(_torrent.querySelectorAll('.torrent-info-text > span')[0].title.trim().replace(',', '')).unix();
       torrent.size = util.calSize(...torrent.size.split(' '));
       torrent.tags = [];
       const tagsDom = _torrent.querySelectorAll('span[style*=background]');
