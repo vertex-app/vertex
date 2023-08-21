@@ -3,8 +3,8 @@ const moment = require('moment');
 
 class Site {
   constructor () {
-    this.name = 'HDFans';
-    this.url = 'https://hdfans.org/';
+    this.name = 'Panda';
+    this.url = 'https://pandapt.net/';
   };
 
   async getInfo () {
@@ -39,7 +39,7 @@ class Site {
       const torrent = {};
       torrent.site = this.site;
       torrent.title = _torrent.querySelector('td[class="embedded"] > a[href*="details"]').title.trim();
-      torrent.subtitle = _torrent.querySelector('.torrentname > tbody > tr .embedded').lastChild.nodeValue?.trim() || '';
+      torrent.subtitle = _torrent.querySelector('.torrentname > tbody > tr :nth-child(2)').lastChild.nodeValue.trim();
       torrent.category = _torrent.querySelector('td a[href*=cat] img').title.trim();
       torrent.link = this.index + _torrent.querySelector('a[href*=details]').href.trim();
       torrent.id = +torrent.link.match(/id=(\d*)/)[1];
