@@ -11,7 +11,7 @@ class Site {
     const info = {};
     const _document = await this._getDocument(this.index + 'index');
     const csrf = _document.querySelector('meta[name=x-csrf-token]').content;
-    const document = (util.requestPromise({
+    const document = (await util.requestPromise({
       url: this.index + 'api/user/getInfo',
       headers: {
         cookie: this.cookie,
