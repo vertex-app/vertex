@@ -117,6 +117,15 @@ const _freeByrPT = async function (url, cookie) {
   return state && ['free', 'twoupfree'].indexOf(state.className) !== -1;
 };
 
+const _freeHHanClub = async function (url, cookie) {
+  const d = await getDocument(url, cookie);
+  if (d.body.innerHTML.indexOf('userdetails') === -1) {
+    throw new Error('疑似登录状态失效, 请检查 Cookie');
+  }
+  const state = d.querySelector('promotion-tag');
+  return state && (state.className || '').include('free');
+};
+
 const freeWrapper = {
   'pt.btschool.club': _free,
   'club.hares.top': _freeHaresClub,
@@ -137,7 +146,6 @@ const freeWrapper = {
   'discfan.net': _free,
   'piggo.me': _free,
   'hdatmos.club': _free,
-  'hhanclub.top': _free,
   'pt.msg.vg': _free,
   'sharkpt.net': _free,
   'open.cd': _freeOpencd,
@@ -148,7 +156,8 @@ const freeWrapper = {
   'www.hdarea.co': _freeHDArea,
   'www.hdarea.club': _freeHDArea,
   'hdarea.club': _freeHDArea,
-  'byr.pt': _freeByrPT
+  'byr.pt': _freeByrPT,
+  'hhanclub.top': _freeHHanClub
 };
 
 const _hr = async function (url, cookie) {
@@ -160,7 +169,7 @@ const _hr = async function (url, cookie) {
   return hr;
 };
 
-const _hrToCHDBits = async function (url, cookie) {
+const _hrCHDBits = async function (url, cookie) {
   const d = await getDocument(url, cookie);
   if (d.body.innerHTML.indexOf('userdetails') === -1) {
     throw new Error('疑似登陆状态失效, 请检查 Cookie');
@@ -170,7 +179,7 @@ const _hrToCHDBits = async function (url, cookie) {
   return hr3 !== -1 || hr5 !== -1;
 };
 
-const _hrToTheGlory = async function (url, cookie) {
+const _hrTheGlory = async function (url, cookie) {
   const d = await getDocument(url, cookie);
   if (d.body.innerHTML.indexOf('userdetails') === -1) {
     throw new Error('疑似登录状态失效, 请检查 Cookie');
@@ -186,9 +195,10 @@ const hrWrapper = {
   'piggo.me': _hr,
   'hhanclub.top': _hr,
   'sharkpt.net': _hr,
-  'totheglory.im': _hrToTheGlory,
-  'chdbits.co': _hrToCHDBits,
-  'ptchdbits.co': _hrToCHDBits
+  'totheglory.im': _hrTheGlory,
+  'chdbits.co': _hrCHDBits,
+  'ptchdbits.co': _hrCHDBits,
+  'audiences.me': _hr
 };
 
 exports.free = async (url, cookie) => {
