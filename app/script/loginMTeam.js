@@ -2,7 +2,7 @@ const request = require('util').promisify(require('request'));
 
 (async () => {
   const { body } = await request({
-    url: 'https://kp.m-team.cc/index.php',
+    url: 'https://xp.m-team.io/index.php',
     method: 'GET',
     headers: {
       cookie: process.argv[3],
@@ -19,7 +19,7 @@ const request = require('util').promisify(require('request'));
     return;
   }
   const { headers } = await request({
-    url: 'https://kp.m-team.cc/verify.php?returnto=%2F',
+    url: 'https://xp.m-team.io/verify.php?returnto=%2F',
     method: 'POST',
     headers: {
       cookie: process.argv[3],
@@ -29,7 +29,7 @@ const request = require('util').promisify(require('request'));
       otp: process.argv[4]
     }
   });
-  if (headers.location === 'https://kp.m-team.cc/') {
+  if (headers.location === 'https://xp.m-team.io/') {
     console.log('登录成功');
   } else {
     console.log('登录失败, 请重试');

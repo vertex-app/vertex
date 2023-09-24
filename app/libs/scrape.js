@@ -143,6 +143,7 @@ const freeWrapper = {
   'hdfans.org': _free,
   'www.nicept.net': _free,
   'kp.m-team.cc': _free,
+  'xp.m-team.io': _free,
   'discfan.net': _free,
   'piggo.me': _free,
   'hdatmos.club': _free,

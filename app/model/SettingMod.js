@@ -200,7 +200,7 @@ class SettingMod {
 
   async loginMTeam (options) {
     const { body } = await util.requestPromise({
-      url: 'https://kp.m-team.cc/index.php',
+      url: 'https://xp.m-team.io/index.php',
       headers: {
         cookie: options.cookie
       }
@@ -213,7 +213,7 @@ class SettingMod {
       throw new Error('疑似遇到 5s 盾, 请手动获取 Cookie 并重试');
     }
     const { headers } = await util.requestPromise({
-      url: 'https://kp.m-team.cc/verify.php?returnto=%2F',
+      url: 'https://xp.m-team.io/verify.php?returnto=%2F',
       method: 'POST',
       headers: {
         cookie: options.cookie

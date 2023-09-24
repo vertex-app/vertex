@@ -74,21 +74,6 @@ const _getTorrents = async function (rssUrl) {
     torrent.id = link.substring(link.indexOf('?id=') + 4);
     torrent.url = items[i].enclosure[0].$.url;
     torrent.hash = items[i].guid[0]._ || items[i].guid[0];
-    if (['chdbits', 'totheglory'].some(item => torrent.url.indexOf(item) !== -1)) {
-      const cache = await redis.get(`vertex:hash:${torrent.url}`);
-      if (cache) {
-        torrent.hash = cache;
-      } else {
-        try {
-          const { hash } = await exports.getTorrentNameByBencode(torrent.url);
-          torrent.hash = hash;
-          await redis.set(`vertex:hash:${torrent.url}`, hash);
-        } catch (e) {
-          await redis.set(`vertex:hash:${torrent.url}`, 'chd' + moment().unix() + 'chd');
-          throw e;
-        }
-      }
-    }
     torrent.pubTime = moment(items[i].pubDate[0]).unix();
     torrents.push(torrent);
   }
