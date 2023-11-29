@@ -704,7 +704,7 @@ const _getTorrentsWrapper = {
   'cinemaz.to': _getTorrentsExoticaZ,
   'privatehd.to': _getTorrentsExoticaZ,
   'rss.torrentleech.org': _getTorrentsTorrentLeech,
-  'fsm.name': _getTorrentsFSM,
+  'api.fsm.name': _getTorrentsFSM,
   'www.happyfappy.org': _getTorrentsHappyFappy
 };
 
