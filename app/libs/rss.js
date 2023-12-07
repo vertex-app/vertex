@@ -687,6 +687,7 @@ const _getTorrentsWrapper = {
   'blutopia.xyz': _getTorrentsUnit3D2,
   'jptv.club': _getTorrentsUnit3D,
   'monikadesign.uk': _getTorrentsUnit3D2,
+  'kimoji.club': _getTorrentsUnit3D2,
   'torrentdb.net': _getTorrentsTorrentDB,
   'uhdbits.org': _getTorrentsUHDBits,
   'www.empornium.is': _getTorrentsEmpornium,
@@ -704,7 +705,7 @@ const _getTorrentsWrapper = {
   'cinemaz.to': _getTorrentsExoticaZ,
   'privatehd.to': _getTorrentsExoticaZ,
   'rss.torrentleech.org': _getTorrentsTorrentLeech,
-  'fsm.name': _getTorrentsFSM,
+  'api.fsm.name': _getTorrentsFSM,
   'www.happyfappy.org': _getTorrentsHappyFappy
 };
 

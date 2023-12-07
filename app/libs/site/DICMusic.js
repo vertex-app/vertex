@@ -3,7 +3,7 @@ const util = require('../util');
 class Site {
   constructor () {
     this.name = 'DICMusic';
-    this.url = 'https://dicmusic.club/';
+    this.url = 'https://dicmusic.com/';
   };
 
   async getInfo () {
