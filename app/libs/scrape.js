@@ -150,6 +150,7 @@ const freeWrapper = {
   'pt.msg.vg': _free,
   'sharkpt.net': _free,
   'azusa.wiki': _free,
+  'kamept.com': _free,
   'open.cd': _freeOpencd,
   'www.open.cd': _freeOpencd,
   'totheglory.im': _freeToTheGlory,
