@@ -682,12 +682,45 @@ const _getTorrentsHappyFappy = async function (rssUrl) {
   return torrents;
 };
 
+const _getTorrentsKimoji = async function (rssUrl) {
+  const rss = await parseXml(await _getRssContent(rssUrl));
+  const torrents = [];
+  const items = rss.rss.channel[0].item;
+  for (let i = 0; i < items.length; ++i) {
+    const torrent = {
+      size: 0,
+      name: '',
+      hash: '',
+      id: 0,
+      url: '',
+      link: ''
+    };
+    const size = items[i].description[0].match(/Size<\/strong>: (\d*\.\d*|\d*).(GiB|MiB|TiB|KiB)/)[0];
+    const map = {
+      KiB: 1024,
+      MiB: 1024 * 1024,
+      GiB: 1024 * 1024 * 1024,
+      TiB: 1024 * 1024 * 1024 * 1024
+    };
+    const regRes = size.match(/Size<\/strong>: (\d*\.\d*|\d*).(GiB|MiB|TiB|KiB)/);
+    torrent.size = parseFloat(regRes[1]) * map[regRes[2]];
+    torrent.name = items[i].title[0];
+    const link = items[i].link[0];
+    torrent.id = link.match(/download\/(\d*)\./)[1];
+    torrent.hash = 'fakehash' + torrent.id + 'fakehash';
+    torrent.url = link;
+    torrent.link = link.replace(/\/torrent\/download\/(\d+).*/, '/torrents/$1');
+    torrents.push(torrent);
+  }
+  return torrents;
+};
+
 const _getTorrentsWrapper = {
   'filelist.io': _getTorrentsFileList,
   'blutopia.xyz': _getTorrentsUnit3D2,
   'jptv.club': _getTorrentsUnit3D,
   'monikadesign.uk': _getTorrentsUnit3D2,
-  'kimoji.club': _getTorrentsUnit3D2,
+  'kimoji.club': _getTorrentsKimoji,
   'torrentdb.net': _getTorrentsTorrentDB,
   'uhdbits.org': _getTorrentsUHDBits,
   'www.empornium.is': _getTorrentsEmpornium,
