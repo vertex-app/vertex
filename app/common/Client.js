@@ -528,7 +528,7 @@ class Client {
       try {
         if (await redis.get(`vertex:torrent_tracker:${torrent.hash}`)) continue;
         const sqlRes = await util.getRecord('SELECT * FROM torrents WHERE hash = ?', [torrent.hash]);
-        if (!sqlRes || !!sqlRes.delete_time) {
+        if (sqlRes && !!sqlRes.delete_time) {
           await redis.set(`vertex:torrent_tracker:${torrent.hash}`, 1);
           continue;
         };
