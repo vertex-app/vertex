@@ -21,9 +21,9 @@ class Site {
     info.download = document.querySelector('font[color=darkred]').nextElementSibling.children[0].innerHTML.trim().replace(/(\w)B/, '$1iB');
     info.download = util.calSize(...info.download.split(' '));
     // 做种
-    info.seeding = +document.querySelector('img[src="/pic/arrowup.gif"]').nextSibling.nodeValue.trim();
+    info.seeding = +document.querySelector('img[src="/pic/arrowup.gif"]').nextElementSibling.textContent;
     // 下载
-    info.leeching = +document.querySelector('img[src="/pic/arrowdown.gif"]').nextSibling.nodeValue.trim();
+    info.leeching = +document.querySelector('img[src="/pic/arrowdown.gif"]').nextElementSibling.textContent;
     // 做种体积
     const seedingDocument = await this._getDocument(`${this.index}userdetails.php?id=${info.uid}`);
     const seedingTorrent = [...seedingDocument.querySelectorAll('#ka2 tr')];
