@@ -14,6 +14,16 @@
       <template #title>
         <span style="font-size: 16px; font-weight: bold;">监控分类任务历史</span>
       </template>
+      <template #headerCell="{ column }">
+        <template v-if="column.dataIndex === 'name'">
+          <a-input style="margin-left: 14px; width: 140px;" size="small" placeholder="筛选种子名称" v-model:value="qs.name"></a-input>
+          <a-button @click="() => { qs.page = 1; listHistory(); }" style="margin-left: 4px;" size="small">筛选</a-button>
+        </template>
+        <template v-if="column.dataIndex === 'task'">
+          <a-input style="margin-left: 14px; width: 140px;" size="small" placeholder="筛选任务名称" v-model:value="qs.task"></a-input>
+          <a-button @click="() => { qs.page = 1; listHistory(); }" style="margin-left: 4px;" size="small">筛选</a-button>
+        </template>
+      </template>
       <template #bodyCell="{ column, record }">
         <template v-if="column.dataIndex === 'size'">
           {{ $formatSize(record.size) }}
@@ -46,11 +56,11 @@ export default {
       }, {
         title: '年份',
         dataIndex: 'year',
-        width: 24
+        width: 16
       }, {
         title: '类型',
         dataIndex: 'type',
-        width: 24
+        width: 16
       }, {
         title: '种子大小',
         dataIndex: 'size',
@@ -58,7 +68,7 @@ export default {
       }, {
         title: '所属任务',
         dataIndex: 'task',
-        width: 24
+        width: 60
       }, {
         title: '操作',
         dataIndex: 'option',
@@ -69,7 +79,8 @@ export default {
       page: 1,
       length: 20,
       type: 'rss',
-      rss: ''
+      task: '',
+      name: ''
     };
     const pagination = {
       position: ['topRight', 'bottomRight'],
@@ -98,6 +109,12 @@ export default {
       try {
         const res = (await this.$api().watch.listHistory(this.qs)).data;
         this.history = res;
+        if (this.qs.task) {
+          this.history = this.history.filter(item => item.task.includes(this.qs.task));
+        }
+        if (this.qs.name) {
+          this.history = this.history.filter(item => item.name.includes(this.qs.name));
+        }
         this.pagination.total = res.length;
       } catch (e) {
         await this.$message().error(e.message);
