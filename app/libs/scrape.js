@@ -126,6 +126,16 @@ const _freeHHanClub = async function (url, cookie) {
   return state && (state.className || '').includes('free');
 };
 
+const _freeHUDBT = async function (url, cookie) {
+  const d = await getDocument(url, cookie);
+  if (d.body.innerHTML.indexOf('userdetails') === -1) {
+    throw new Error('疑似登录状态失效, 请检查 Cookie');
+  }
+  const state = d.querySelector('div[class=minor-list] img[class=free]') ||
+    d.querySelector('div[class=minor-list] img[class=twoupfree]');
+  return state;
+};
+
 const freeWrapper = {
   'pt.btschool.club': _free,
   'club.hares.top': _freeHaresClub,
@@ -151,6 +161,9 @@ const freeWrapper = {
   'sharkpt.net': _free,
   'azusa.wiki': _free,
   'kamept.com': _free,
+  'pt.eastgame.org': _free,
+  'pt.0ff.cc': _free,
+  'wintersakura.net': _free,
   'open.cd': _freeOpencd,
   'www.open.cd': _freeOpencd,
   'totheglory.im': _freeToTheGlory,
@@ -160,7 +173,9 @@ const freeWrapper = {
   'www.hdarea.club': _freeHDArea,
   'hdarea.club': _freeHDArea,
   'byr.pt': _freeByrPT,
-  'hhanclub.top': _freeHHanClub
+  'hhanclub.top': _freeHHanClub,
+  'zeus.hamsters.space': _freeHUDBT,
+  'hudbt.hust.edu.cn': _freeHUDBT
 };
 
 const _hr = async function (url, cookie) {
