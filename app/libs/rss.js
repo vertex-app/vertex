@@ -717,7 +717,7 @@ const _getTorrentsKimoji = async function (rssUrl) {
 
 const _getTorrentsWrapper = {
   'filelist.io': _getTorrentsFileList,
-  'blutopia.xyz': _getTorrentsUnit3D2,
+  'blutopia.cc': _getTorrentsUnit3D2,
   'jptv.club': _getTorrentsUnit3D,
   'monikadesign.uk': _getTorrentsUnit3D2,
   'kimoji.club': _getTorrentsKimoji,
