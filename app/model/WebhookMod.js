@@ -728,7 +728,7 @@ class WebhookMod {
       await redis.del('vertex:select:douban');
       const keys = [];
       for (const [index, value] of result.entries()) {
-        await global.doubanPush.pushWeChat(`${index}: ${value.title} - ${value.year}`, '', value.poster);
+        await global.doubanPush.pushWeChat(`${index}: ${value.title} - ${value.year}`, value.subtitle || '', value.poster);
         keys.push({ id: index, text: `${value.title} - ${value.year}` });
       }
       const selectors = [

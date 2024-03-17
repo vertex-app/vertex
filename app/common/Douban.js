@@ -1091,16 +1091,16 @@ class Douban {
   }
 
   async search (key) {
-    const json = await this._getJson('https://movie.douban.com/j/subject_suggest?q=' + encodeURIComponent(key));
+    const json = await this._getJson('https://www.douban.com/j/search_suggest?debug=true&q=' + encodeURIComponent(key));
     const result = [];
-    for (const detail of json) {
+    for (const detail of json.cards.filter(item => item.url?.indexOf('movie') !== -1)) {
       const item = {};
       item.doubanId = this.id;
       item.title = detail.title;
-      item.subtitle = detail.sub_title;
+      item.subtitle = detail.card_subtitle;
       item.link = detail.url;
-      item.poster = detail.img?.replace(/img\d/, 'img9').replace('s_ratio', 'l_ratio').replace('webp', 'jpg');
-      item.id = detail.id;
+      item.poster = detail.cover_url?.replace(/img\d/, 'img9').replace('s_ratio', 'l_ratio').replace('webp', 'jpg');
+      item.id = detail.url.match(/\/(\d+)\//)[1];
       item.type = detail.type;
       item.year = detail.year;
       result.push(item);
