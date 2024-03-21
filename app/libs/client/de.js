@@ -18,7 +18,7 @@ exports.login = async function (username, clientUrl, password) {
   return res.headers['set-cookie'][0].substring(0, res.headers['set-cookie'][0].indexOf(';'));
 };
 
-exports.addTorrent = async function (clientUrl, cookie, torrentUrl, isSkipChecking, uploadLimit, downloadLimit, savePath, label) {
+exports.addTorrent = async function (link,clientUrl, cookie, torrentUrl, isSkipChecking, uploadLimit, downloadLimit, savePath, label) {
   let message = {
     method: 'POST',
     url: clientUrl + '/json',

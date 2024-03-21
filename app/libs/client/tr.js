@@ -22,7 +22,7 @@ exports.login = async function (username, clientUrl, password) {
   };
 };
 
-exports.addTorrentByTorrentFile = async function (clientUrl, cookie, filepath, isSkipChecking, uploadLimit, downloadLimit, savePath, category, autoTMM) {
+exports.addTorrentByTorrentFile = async function (link,clientUrl, cookie, filepath, isSkipChecking, uploadLimit, downloadLimit, savePath, category, autoTMM) {
   const message = {
     method: 'POST',
     url: clientUrl + '/transmission/rpc',

@@ -24,7 +24,7 @@ exports.login = async function (username, clientUrl, password) {
   }
 };
 
-exports.addTorrent = async function (clientUrl, cookie, torrentUrl, isSkipChecking, uploadLimit, downloadLimit, savePath, category, autoTMM, firstLastPiecePrio, paused) {
+exports.addTorrent = async function (link,clientUrl, cookie, torrentUrl, isSkipChecking, uploadLimit, downloadLimit, savePath, category, autoTMM, firstLastPiecePrio, paused) {
   const message = {
     url: clientUrl + '/api/v2/torrents/add',
     method: 'POST',
@@ -48,6 +48,9 @@ exports.addTorrent = async function (clientUrl, cookie, torrentUrl, isSkipChecki
   }
   if (autoTMM) {
     message.formData.autoTMM = '' + autoTMM;
+  }
+  if (paused) {
+    message.formData.tags = link;
   }
   const res = await util.requestPromise(message);
   logger.debug(clientUrl, '添加种子', torrentUrl, '\n返回信息', { body: res.body, statusCode: res.statusCode });
