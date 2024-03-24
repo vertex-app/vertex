@@ -12,7 +12,7 @@ class Site {
     const info = {};
     const document = await this._getDocument(this.index, false, 10);
     // 用户名
-    info.username = document.querySelector('a[href*=userdetails] b').childNodes[0].nodeValue;
+    info.username = document.querySelector('a[href*=userdetails] b').childNodes[0].nodeValue || document.querySelector('a[href*=userdetails] b').childNodes[0].textContent;
     // uid
     info.uid = +document.querySelector('a[href*=userdetails]').href.match(/id=(\d+)/)[1];
     // 上传

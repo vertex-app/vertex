@@ -1,5 +1,6 @@
 const util = require('./util');
 const redis = require('./redis');
+const logger = require('./logger');
 const { JSDOM } = require('jsdom');
 
 const getDocument = async function (url, cookie) {
@@ -27,6 +28,28 @@ const _free = async function (url, cookie) {
   }
   const state = d.querySelector('#top font[class]');
   return state && ['free', 'twoupfree'].indexOf(state.className) !== -1;
+};
+
+// cookie = apikey
+const _freeMTeam = async function (url, cookie) {
+  const tid = url.match(/\/(\d+)/)[1];
+  const host = new URL(url).host;
+  const { body } = await util.requestPromise({
+    url: `https://${host}/api/torrent/detail`,
+    method: 'POST',
+    headers: {
+      'x-api-key': cookie
+    },
+    formData: {
+      id: tid
+    },
+    json: true
+  });
+  if (!body.data) {
+    logger.error(body);
+    throw new Error('疑似登录状态失效, 请检查 Api Key');
+  }
+  return body.data.status?.discount.indexOf('FREE') !== -1;
 };
 
 const _freeOpencd = async function (url, cookie) {
@@ -152,8 +175,8 @@ const freeWrapper = {
   'et8.org': _free,
   'hdfans.org': _free,
   'www.nicept.net': _free,
-  'kp.m-team.cc': _free,
-  'xp.m-team.io': _free,
+  'kp.m-team.cc': _freeMTeam,
+  'xp.m-team.io': _freeMTeam,
   'discfan.net': _free,
   'piggo.me': _free,
   'hdatmos.club': _free,
