@@ -135,7 +135,7 @@
         </a-form-item>
         <a-form-item
           label="Cookie"
-          name="cookie"
+          name="cookie, M-Team 为 api key"
           :rules="[{ required: true, message: '${label}不可为空! ' }]">
           <a-input size="small" v-model:value="site.cookie"/>
         </a-form-item>

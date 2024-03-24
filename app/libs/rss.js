@@ -766,7 +766,8 @@ const _getTorrentsWrapper = {
   'privatehd.to': _getTorrentsExoticaZ,
   'rss.torrentleech.org': _getTorrentsTorrentLeech,
   'api.fsm.name': _getTorrentsFSM,
-  'www.happyfappy.org': _getTorrentsHappyFappy
+  'www.happyfappy.org': _getTorrentsHappyFappy,
+  'fearnopeer.com': _getTorrentsUnit3D2
 };
 
 exports.getTorrents = async function (rssUrl) {

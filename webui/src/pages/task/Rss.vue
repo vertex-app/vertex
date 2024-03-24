@@ -162,7 +162,7 @@
         <a-form-item
           label="Cookie"
           v-if="rss.scrapeHr || rss.scrapeFree"
-          name="cookie"
+          name="cookie, M-Team 为 api key"
           :rules="[{ required: true, message: '${label}不可为空! ' }]">
           <a-input size="small" v-model:value="rss.cookie"/>
         </a-form-item>
