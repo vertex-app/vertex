@@ -160,7 +160,7 @@
           <a-checkbox v-model:checked="rss.scrapeHr">排除 HR</a-checkbox>
         </a-form-item>
         <a-form-item
-          label="Cookie"
+          label="Cookie, M-Team 为 api key"
           v-if="rss.scrapeHr || rss.scrapeFree"
           name="cookie"
           :rules="[{ required: true, message: '${label}不可为空! ' }]">

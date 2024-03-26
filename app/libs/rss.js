@@ -80,6 +80,33 @@ const _getTorrents = async function (rssUrl) {
   return torrents;
 };
 
+const _getTorrentsMTeam = async function (rssUrl) {
+  const rss = await parseXml(await _getRssContent(rssUrl, false));
+  const torrents = [];
+  const items = rss.rss.channel[0].item;
+  for (let i = 0; i < items.length; ++i) {
+    const torrent = {
+      size: 0,
+      name: '',
+      hash: '',
+      id: 0,
+      url: '',
+      link: ''
+    };
+    torrent.size = items[i].enclosure[0].$.length;
+    torrent.name = items[i].title[0];
+    const link = items[i].link[0];
+    torrent.link = link;
+    torrent.description = items[i].description ? items[i].description[0] : '';
+    torrent.id = link.match(/\/(\d+)/)[1];
+    torrent.url = items[i].enclosure[0].$.url;
+    torrent.hash = items[i].guid[0]._ || items[i].guid[0];
+    torrent.pubTime = moment(items[i].pubDate[0]).unix();
+    torrents.push(torrent);
+  }
+  return torrents;
+};
+
 const _getTorrentsPuTao = async function (rssUrl) {
   const rss = await parseXml(await _getRssContent(rssUrl));
   const torrents = [];
@@ -717,7 +744,7 @@ const _getTorrentsKimoji = async function (rssUrl) {
 
 const _getTorrentsWrapper = {
   'filelist.io': _getTorrentsFileList,
-  'blutopia.xyz': _getTorrentsUnit3D2,
+  'blutopia.cc': _getTorrentsUnit3D2,
   'jptv.club': _getTorrentsUnit3D,
   'monikadesign.uk': _getTorrentsUnit3D2,
   'kimoji.club': _getTorrentsKimoji,
@@ -739,12 +766,16 @@ const _getTorrentsWrapper = {
   'privatehd.to': _getTorrentsExoticaZ,
   'rss.torrentleech.org': _getTorrentsTorrentLeech,
   'api.fsm.name': _getTorrentsFSM,
-  'www.happyfappy.org': _getTorrentsHappyFappy
+  'www.happyfappy.org': _getTorrentsHappyFappy,
+  'fearnopeer.com': _getTorrentsUnit3D2
 };
 
 exports.getTorrents = async function (rssUrl) {
   const host = new URL(rssUrl).host;
   try {
+    if (host.indexOf('m-team') !== -1) {
+      return await _getTorrentsMTeam(rssUrl);
+    }
     if (_getTorrentsWrapper[host]) {
       return await _getTorrentsWrapper[host](rssUrl);
     }
