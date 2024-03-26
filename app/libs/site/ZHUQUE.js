@@ -32,7 +32,7 @@ class Site {
     // 下载
     info.leeching = _info.leeching;
     // 做种体积
-    info.seedingSize = 0;
+    info.seedingSize = _info.seedSize;
     return info;
   };
 

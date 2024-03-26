@@ -101,7 +101,7 @@ class Site {
       torrent.subtitle = _torrent.smallDescr;
       torrent.category = categorymap[_torrent.category]?.nameChs || '';
       torrent.id = _torrent.id;
-      torrent.link = this.url + `detail/${torrent.id}`;
+      torrent.link = this.siteUrl + `detail/${torrent.id}`;
       torrent.seeders = +_torrent.status.seeders;
       torrent.leechers = +_torrent.status.leechers;
       torrent.snatches = +_torrent.status.timesCompleted;
@@ -131,7 +131,7 @@ class Site {
         torrent.subtitle = _torrent.smallDescr;
         torrent.category = categorymap[_torrent.category]?.nameChs || '';
         torrent.id = _torrent.id;
-        torrent.link = this.url + `detail/${torrent.id}`;
+        torrent.link = this.siteUrl + `detail/${torrent.id}`;
         torrent.seeders = +_torrent.status.seeders;
         torrent.leechers = +_torrent.status.leechers;
         torrent.snatches = +_torrent.status.timesCompleted;
@@ -159,7 +159,7 @@ class Site {
   async getDownloadLink (link) {
     const tid = link.match(/\/(\d+)/)[1];
     const dltoken = await _api(this.cookie, '/api/torrent/genDlToken', { id: tid });
-    return dltoken.data;
+    return dltoken;
   }
 };
 module.exports = Site;
