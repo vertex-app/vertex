@@ -304,45 +304,6 @@ const _getTorrentsTorrentDB = async function (rssUrl) {
   return torrents;
 };
 
-const _getTorrentsUHDBits = async function (rssUrl) {
-  const rss = await parseXml(await _getRssContent(rssUrl));
-  const torrents = [];
-  const items = rss.rss.channel[0].item;
-  for (let i = 0; i < items.length; ++i) {
-    const torrent = {
-      size: 0,
-      name: '',
-      hash: '',
-      id: 0,
-      url: '',
-      link: ''
-    };
-    torrent.name = items[i].title[0];
-    const link = items[i].comments[0];
-    torrent.link = link;
-    torrent.url = items[i].link[0];
-    torrent.id = +torrent.url.match(/id=(\d+)/)[1];
-    const cache = await redis.get(`vertex:hash:${torrent.url}`);
-    if (cache) {
-      const _torrent = JSON.parse(cache);
-      torrent.hash = _torrent.hash;
-      torrent.size = _torrent.size;
-    } else {
-      try {
-        const { hash, size } = await exports.getTorrentNameByBencode(torrent.url);
-        torrent.hash = hash;
-        torrent.size = size;
-        await redis.set(`vertex:hash:${torrent.url}`, JSON.stringify(torrent));
-      } catch (e) {
-        await redis.set(`vertex:hash:${torrent.url}`, JSON.stringify({ hash: 'uhd' + moment().unix() + 'uhd', size: 0 }));
-        throw e;
-      }
-    }
-    torrents.push(torrent);
-  }
-  return torrents;
-};
-
 const _getTorrentsEmpornium = async function (rssUrl) {
   const rss = await parseXml(await _getRssContent(rssUrl));
   const torrents = [];
@@ -379,6 +340,54 @@ const _getTorrentsEmpornium = async function (rssUrl) {
     }
     torrent.pubTime = moment(items[i].pubDate[0]).unix();
     torrents.push(torrent);
+  }
+
+  return torrents;
+};
+
+const _getTorrentsGazelle = async function (rssUrl) {
+  const rss = await parseXml(await _getRssContent(rssUrl));
+  const torrents = [];
+  const items = rss.rss.channel[0].item;
+  for (let i = 0; i < items.length; ++i) {
+    const torrent = {
+      size: 0,
+      name: '',
+      hash: '',
+      id: 0,
+      url: '',
+      link: ''
+    };
+    torrent.name = items[i].title[0];
+    const link = items[i].comments[0];
+    torrent.link = link;
+    torrent.url = items[i].link[0];
+    torrent.id = +torrent.url.match(/id=(\d+)/)[1];
+    const cache = await redis.get(`vertex:hash:${torrent.url}`);
+    if (cache) {
+      const _torrent = JSON.parse(cache);
+      torrent.hash = _torrent.hash;
+      torrent.size = _torrent.size;
+    } else {
+      try {
+        const { exists, hash, size } = await exports.getTorrentNameByBencode(torrent.url);
+        if (!exists) {
+          continue;
+        }
+        torrent.hash = hash;
+        torrent.size = size;
+        await redis.set(`vertex:hash:${torrent.url}`, JSON.stringify(torrent));
+      } catch (e) {
+        await redis.set(`vertex:hash:${torrent.url}`, JSON.stringify({ hash: 'gzl' + moment().unix() + 'gzl', size: 0 }));
+        throw e;
+      }
+    }
+    torrent.pubTime = moment(items[i].pubDate[0]).unix();
+    torrents.push(torrent);
+  }
+  const allPubTimeSame = torrents.every(torrent => torrent.pubTime === torrents[0].pubTime);
+  if (allPubTimeSame) {
+    torrents.forEach(torrent => {delete torrent.pubTime;});
   }
   return torrents;
 };
@@ -646,13 +655,30 @@ const _getTorrentsTorrentLeech = async function (rssUrl) {
       link: ''
     };
     const guid = items[i].guid[0]._ || items[i].guid[0];
-    torrent.size = 0;
     torrent.name = items[i].title[0];
     torrent.url = items[i].link[0];
     torrent.link = guid;
     torrent.id = guid.substring(torrent.hash.indexOf('torrent/') + 8);
-    torrent.hash = 'fakehash' + torrent.id + 'fakehash';
     torrent.pubTime = moment(items[i].pubDate[0]).unix();
+    const cache = await redis.get(`vertex:hash:${torrent.url}`);
+    if (cache) {
+      const _torrent = JSON.parse(cache);
+      torrent.hash = _torrent.hash;
+      torrent.size = _torrent.size;
+    } else {
+      try {
+        const { exists, hash, size } = await exports.getTorrentNameByBencode(torrent.url);
+        if (!exists) {
+          continue;
+        }
+        torrent.hash = hash;
+        torrent.size = size;
+        await redis.set(`vertex:hash:${torrent.url}`, JSON.stringify(torrent));
+      } catch (e) {
+        await redis.set(`vertex:hash:${torrent.url}`, JSON.stringify({ hash: 'tl' + moment().unix() + 'tl', size: 0 }));
+        throw e;
+      }
+    }
     torrents.push(torrent);
   }
   return torrents;
@@ -749,7 +775,7 @@ const _getTorrentsWrapper = {
   'monikadesign.uk': _getTorrentsUnit3D2,
   'kimoji.club': _getTorrentsKimoji,
   'torrentdb.net': _getTorrentsTorrentDB,
-  'uhdbits.org': _getTorrentsUHDBits,
+  'uhdbits.org': _getTorrentsGazelle,
   'www.empornium.is': _getTorrentsEmpornium,
   'www.skyey2.com': _getTorrentsSkyeySnow,
   'hdbits.org': _getTorrentsHDBits,
@@ -767,7 +793,10 @@ const _getTorrentsWrapper = {
   'rss.torrentleech.org': _getTorrentsTorrentLeech,
   'api.fsm.name': _getTorrentsFSM,
   'www.happyfappy.org': _getTorrentsHappyFappy,
-  'fearnopeer.com': _getTorrentsUnit3D2
+  'fearnopeer.com': _getTorrentsUnit3D2,
+  'jpopsuki.eu': _getTorrentsGazelle,
+  'dicmusic.com': _getTorrentsGazelle,
+  'greatposterwall.com': _getTorrentsGazelle,
 };
 
 exports.getTorrents = async function (rssUrl) {
@@ -802,21 +831,33 @@ exports.getTorrentNameByBencode = async function (url) {
     method: 'GET',
     encoding: null
   });
-  const buffer = Buffer.from(res.body, 'utf-8');
-  const torrent = bencode.decode(buffer);
-  const size = torrent.info.length || torrent.info.files.map(i => i.length).reduce(_getSum, 0);
-  const fsHash = crypto.createHash('sha1');
-  fsHash.update(bencode.encode(torrent.info));
-  const md5 = fsHash.digest('md5');
-  let hash = '';
-  for (const v of md5) {
-    hash += v < 16 ? '0' + v.toString(16) : v.toString(16);
+  const contentType = res.headers['content-type'];
+  if (contentType.includes('application/x-bittorrent')) {
+    const buffer = Buffer.from(res.body, 'utf-8');
+    const torrent = bencode.decode(buffer);
+    const size = torrent.info.length || torrent.info.files.map(i => i.length).reduce(_getSum, 0);
+    const fsHash = crypto.createHash('sha1');
+    fsHash.update(bencode.encode(torrent.info));
+    const md5 = fsHash.digest('md5');
+    let hash = '';
+    for (const v of md5) {
+      hash += v < 16 ? '0' + v.toString(16) : v.toString(16);
+    }
+    const filepath = path.join(__dirname, '../../torrents', hash + '.torrent');
+    fs.writeFileSync(filepath, buffer);
+    return {
+      exists: true,
+      hash,
+      size,
+      name: torrent.info.name.toString()
+    };
   }
-  const filepath = path.join(__dirname, '../../torrents', hash + '.torrent');
-  fs.writeFileSync(filepath, buffer);
-  return {
-    hash,
-    size,
-    name: torrent.info.name.toString()
-  };
+  else {
+    return {
+      exists: false,
+      hash: "",
+      size: 0,
+      name: ""
+    };
+  }
 };
