@@ -507,14 +507,7 @@ export default {
       this.rss = { ...row };
     },
     cloneClick (row) {
-      this.rss = {
-        ...this.row,
-        acceptRules: [...row.acceptRules],
-        clientArr: [...row.clientArr],
-        rejectRules: [...row.rejectRules],
-        reseedClients: [...row.reseedClients],
-        rssUrls: [...row.rssUrls]
-      };
+      this.rss = JSON.parse(JSON.stringify(row));
       this.rss.id = null;
       this.rss.alias = this.rss.alias + '-克隆';
     },
