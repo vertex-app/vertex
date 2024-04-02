@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="https://wiki.vertex.icu/logo-vertex.png" width="144"/>
+  <img src="https://raw.githubusercontent.com/vertex-app/vertex/stable/webui/public/assets/images/logo.svg" width="144"/>
 </div>
 <div align="center">
   <h1 align="center">Vertex</h1>
