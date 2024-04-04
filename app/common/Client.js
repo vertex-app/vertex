@@ -322,11 +322,11 @@ class Client {
     }
   };
 
-  async addTorrent (torrentUrl, hash, isSkipChecking = false, uploadLimit = 0, downloadLimit = 0, savePath, category, autoTMM, paused) {
+  async addTorrent (link,torrentUrl, hash, isSkipChecking = false, uploadLimit = 0, downloadLimit = 0, savePath, category, autoTMM, paused) {
     if (!this.status) {
       throw new Error('客户端' + this.alias + '当前状态为不可用');
     }
-    const { statusCode } = await this.client.addTorrent(this.clientUrl, this.cookie, torrentUrl, isSkipChecking, uploadLimit, downloadLimit, savePath, category, autoTMM, this.firstLastPiecePrio, paused);
+    const { statusCode } = await this.client.addTorrent(link,this.clientUrl, this.cookie, torrentUrl, isSkipChecking, uploadLimit, downloadLimit, savePath, category, autoTMM, this.firstLastPiecePrio, paused);
     if (statusCode !== 200) {
       this.login();
       throw new Error('状态码: ' + statusCode);
@@ -370,6 +370,7 @@ class Client {
 
   async deleteTorrent (torrent, rule) {
     let isDeleteFiles = true;
+    let isSendNTF = true;
     try {
       for (const _torrent of this.maindata.torrents) {
         if (_torrent.name === torrent.name && _torrent.size === torrent.size && _torrent.hash !== torrent.hash && _torrent.savePath === torrent.savePath) {
@@ -388,8 +389,13 @@ class Client {
       } else {
         await this.client.deleteTorrent(this.clientUrl, this.cookie, torrent.hash, isDeleteFiles);
       }
-      logger.info('下载器', this.alias, '删除种子成功:', torrent.name, rule.alias);
-      await this.ntf.deleteTorrent(this._client, torrent, rule, isDeleteFiles);
+      logger.info('下载器', this.alias, '删除种子成功:', torrent.name, rule.alias);      
+      if (rule.doNotSendNotify){
+        isSendNTF = false;
+      } 
+      if (isSendNTF){
+        await this.ntf.deleteTorrent(this._client, torrent, rule, isDeleteFiles);
+      }
     } catch (error) {
       logger.error('下载器', this.alias, '删除种子失败:', torrent.name, '\n', error);
       await this.ntf.deleteTorrentError(this._client, torrent, rule);
