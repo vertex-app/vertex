@@ -76,6 +76,7 @@
             <a-select-option value="telegram">Telegram</a-select-option>
             <a-select-option value="wechat">WeChat</a-select-option>
             <a-select-option value="slack">Slack</a-select-option>
+            <a-select-option value="ntfy">Ntfy</a-select-option>
           </a-select>
         </a-form-item>
         <a-form-item
@@ -118,6 +119,40 @@
           name="telegramChannel"
           :rules="[{ required: true, message: '${label}不可为空! ' }]">
           <a-input size="small" v-model:value="notification.telegramChannel"/>
+        </a-form-item>
+        <a-form-item
+          v-if="notification.type === 'ntfy'"
+          label="Ntfy URL"
+          name="ntfyUrl"
+          extra="格式: https://ntfy.sh/mytopic"
+          :rules="[{ required: true, message: '${label}不可为空! ' }]">
+          <a-input size="small" v-model:value="notification.ntfyUrl"/>
+        </a-form-item>
+        <a-form-item
+          v-if="notification.type === 'ntfy'"
+          label="用户名"
+          name="ntfyUsername">
+          <a-input size="small" v-model:value="notification.ntfyUsername"/>
+        </a-form-item>
+        <a-form-item
+          v-if="notification.type === 'ntfy'"
+          label="密码"
+          name="ntfyPassword">
+          <a-input size="small" v-model:value="notification.ntfyPassword"/>
+        </a-form-item>
+        <a-form-item
+          v-if="notification.type === 'ntfy'"
+          label="Token"
+          name="ntfyToken"
+          extra="使用Token或用户名+密码进行认证">
+          <a-input size="small" v-model:value="notification.ntfyToken"/>
+        </a-form-item>
+        <a-form-item
+          v-if="notification.type === 'ntfy'"
+          label="优先级"
+          name="ntfyPriority"
+          extra="5最高, 1最低, 不填写为默认值3">
+          <a-input size="small" v-model:value="notification.ntfyPriority"/>
         </a-form-item>
         <a-form-item
           v-if="notification.type === 'slack'"
