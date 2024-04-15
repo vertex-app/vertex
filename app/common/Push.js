@@ -3,11 +3,13 @@ const logger = require('../libs/logger');
 const Wechat = require('../libs/push/wechat');
 const Slack = require('../libs/push/slack');
 const Telegram = require('../libs/push/telegram');
+const Ntfy = require('../libs/push/ntfy');
 
 const PUSH = {
   wechat: Wechat,
   slack: Slack,
-  telegram: Telegram
+  telegram: Telegram,
+  ntfy: Ntfy
 };
 
 class Push {
@@ -22,7 +24,7 @@ class Push {
       'pushWeChat', 'pushWeChatSelector', 'modifyWechatMenu', 'edit',
       'pushPlexStartOrStopToSlack', 'pushEmbyStartOrStopToSlack', 'pushSlackRaw',
       'openSlackView', 'pushSlack',
-      'pushTelegram'
+      'pushTelegram', 'pushNtfy'
     ];
     this.pushType = this.pushType.concat(additionPushType);
     if (this.push && !push.dryrun) {
@@ -56,7 +58,7 @@ class Push {
     }
     try {
       if (type === 'push') {
-        return await (this.p.pushWeChat || this.p.pushSlack || this.p.pushTelegram)(...args);
+        return await (this.p.pushWeChat || this.p.pushSlack || this.p.pushTelegram || this.p.pushNtfy)(...args);
       }
       return await this.p[type](...args);
     } catch (e) {
@@ -185,6 +187,10 @@ class Push {
 
   async pushTelegram (...args) {
     await this.doRequest('pushTelegram', args);
+  }
+
+  async pushNtfy (...args) {
+    await this.doRequest('pushNtfy', args);
   }
 
   async pushWeChat (...args) {
