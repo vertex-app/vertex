@@ -276,6 +276,28 @@
           <a-checkbox v-model:checked="rss.pushTorrentFile">推送种子文件</a-checkbox>
         </a-form-item>
         <a-form-item
+          label="自定义正则替换"
+          v-if="!rss.pushTorrentFile"
+          name="useCustomRegex"
+          extra="对种子下载链接进行自定义正则表达式替换, 仅在推送方式为推送种子下载链接时生效。不完全理解本功能请勿设置, 不恰当的配置可能导致你的账号被ban。">
+          <a-checkbox v-model:checked="rss.useCustomRegex">使用自定义正则</a-checkbox>
+        </a-form-item>
+        <a-form-item
+          label="正则表达式"
+          v-if="(!rss.pushTorrentFile) && rss.useCustomRegex"
+          name="regexStr"
+          extra="格式: /pattern/flags"
+          :rules="[{ required: true, message: '${label}不可为空! ' }]">
+          <a-input size="small" v-model:value="rss.regexStr"/>
+        </a-form-item>
+        <a-form-item
+          label="替换为"
+          v-if="(!rss.pushTorrentFile) && rss.useCustomRegex"
+          name="replaceStr"
+          :rules="[{ required: true, message: '${label}不可为空! ' }]">
+          <a-input size="small" v-model:value="rss.replaceStr"/>
+        </a-form-item>
+        <a-form-item
           label="拒绝规则"
           name="rejectRules"
           extra="拒绝规则, 种子状态符合其中一个时即触发拒绝种子操作">

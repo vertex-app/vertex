@@ -33,6 +33,9 @@ class Rss {
     this.category = rss.category;
     this.paused = rss.paused;
     this.autoTMM = rss.autoTMM;
+    this.useCustomRegex = rss.useCustomRegex;
+    this.regexStr = rss.regexStr;
+    this.replaceStr = rss.replaceStr;
     this.addCountPerHour = +rss.addCountPerHour || 20;
     this.addCount = 0;
     this.pushTorrentFile = rss.pushTorrentFile;
@@ -347,7 +350,16 @@ class Rss {
           const { filepath, hash } = await this._downloadTorrent(torrent.url, torrent.hash);
           await client.addTorrentByTorrentFile(filepath, hash, false, this.uploadLimit, this.downloadLimit, savePath, category, this.autoTMM, this.paused);
         } else {
-          await client.addTorrent(torrent.url, torrent.hash, false, this.uploadLimit, this.downloadLimit, savePath, category, this.autoTMM, this.paused);
+          if (this.useCustomRegex) {
+            const match = this.regexStr.match(/^\/(.*)\/([gimuy]*)$/);
+            if (match) {
+              const [, pattern, flags] = match;
+              const regex = new RegExp(pattern, flags);
+              await client.addTorrent(torrent.url.replace(regex, this.replaceStr), torrent.hash, false, this.uploadLimit, this.downloadLimit, savePath, category, this.autoTMM, this.paused);
+            }
+          } else {
+            await client.addTorrent(torrent.url, torrent.hash, false, this.uploadLimit, this.downloadLimit, savePath, category, this.autoTMM, this.paused);
+          }
         }
         try {
           await this.ntf.addTorrent(this._rss, client, torrent);

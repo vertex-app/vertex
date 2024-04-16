@@ -768,6 +768,37 @@ const _getTorrentsKimoji = async function (rssUrl) {
   return torrents;
 };
 
+const _getTorrentsFappaizuri = async function (rssUrl) {
+  const rss = await parseXml(await _getRssContent(rssUrl, false));
+  const torrents = [];
+  const items = rss.rss.channel[0].item;
+  for (let i = 0; i < items.length; ++i) {
+    const torrent = {
+      size: 0,
+      name: '',
+      hash: '',
+      id: 0,
+      url: '',
+      link: ''
+    };
+    torrent.size = items[i].description[0].match(/Size: (\d+\.\d+ [MGKT]B)/);
+    if (torrent.size) {
+      torrent.size = util.calSize(...torrent.size[1].replace(/([MGKT])B/, '$1iB').split(' '));
+    } else {
+      torrent.size = 0;
+    }
+    torrent.name = items[i].title[0];
+    const url = items[i].link[0];
+    torrent.id = url.match(/id=(\d+)/)[1];
+    torrent.link = 'https://fappaizuri.me/torrents-details.php?id=' + torrent.id;
+    torrent.url = url;
+    torrent.hash = 'fappaizuri' + torrent.id + 'fappaizuri';
+    torrent.pubTime = moment(items[i].pubDate[0]).unix();
+    torrents.push(torrent);
+  }
+  return torrents;
+};
+
 const _getTorrentsWrapper = {
   'filelist.io': _getTorrentsFileList,
   'blutopia.cc': _getTorrentsUnit3D2,
@@ -791,12 +822,15 @@ const _getTorrentsWrapper = {
   'cinemaz.to': _getTorrentsExoticaZ,
   'privatehd.to': _getTorrentsExoticaZ,
   'rss.torrentleech.org': _getTorrentsTorrentLeech,
+  'rss24h.torrentleech.org': _getTorrentsTorrentLeech,
   'fsm.name': _getTorrentsFSM,
   'www.happyfappy.org': _getTorrentsHappyFappy,
   'fearnopeer.com': _getTorrentsUnit3D2,
   'jpopsuki.eu': _getTorrentsGazelle,
   'dicmusic.com': _getTorrentsGazelle,
-  'greatposterwall.com': _getTorrentsGazelle
+  'greatposterwall.com': _getTorrentsGazelle,
+  'libble.me': _getTorrentsGazelle,
+  'fappaizuri.me': _getTorrentsFappaizuri
 };
 
 exports.getTorrents = async function (rssUrl) {
