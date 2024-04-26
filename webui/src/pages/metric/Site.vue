@@ -251,11 +251,11 @@ export default {
           this.sites.unshift({
             name: 'total',
             icon: '/assets/images/logo.svg',
-            upload: this.sites.map(item => item.upload).reduce((a, b) => a + b),
-            download: this.sites.map(item => item.download).reduce((a, b) => a + b),
-            seeding: this.sites.map(item => item.seeding).reduce((a, b) => a + b),
-            leeching: this.sites.map(item => item.leeching).reduce((a, b) => a + b),
-            seedingSize: this.sites.map(item => item.seedingSize).reduce((a, b) => +a + +b)
+            upload: this.sites.map(item => +item.upload).reduce((a, b) => a + b),
+            download: this.sites.map(item => +item.download).reduce((a, b) => a + b),
+            seeding: this.sites.map(item => +item.seeding).reduce((a, b) => a + b),
+            leeching: this.sites.map(item => +item.leeching).reduce((a, b) => a + b),
+            seedingSize: this.sites.map(item => +item.seedingSize).reduce((a, b) => +a + +b)
           });
         }
         for (const site of this.sites) {

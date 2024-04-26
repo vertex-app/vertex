@@ -248,6 +248,9 @@ class Douban {
         searchKey: ''
       };
       newWish = Object.assign(newWish, wish);
+      if (!newWish.episodes) {
+        delete newWish.episodes;
+      }
       this.wishes.push(newWish);
       this._saveSet();
       return true;
