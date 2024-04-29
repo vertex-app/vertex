@@ -18,8 +18,7 @@
       >
       <a-descriptions-item label="Telegram 频道"><a @click="gotoChannel">前往</a></a-descriptions-item>
       <a-descriptions-item label="Telegram 群组"><a @click="gotoGroup">前往</a></a-descriptions-item>
-      <a-descriptions-item label="刷流交流群">852643057</a-descriptions-item>
-      <a-descriptions-item label="追剧交流群">926921776</a-descriptions-item>
+      <a-descriptions-item label="交流群">852643057</a-descriptions-item>
     </a-descriptions>
     <a-divider></a-divider>
     <a-descriptions
