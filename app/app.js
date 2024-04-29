@@ -149,6 +149,8 @@ const init = function () {
       global.runningIRC[irc.id] = new IRC(irc);
     }
   }
+  // cookiecloud
+  util.initCookieCloud();
 };
 
 (async () => {

@@ -4,6 +4,8 @@ const path = require('path');
 const uuid = require('uuid');
 const tar = require('tar');
 const md5 = require('md5-node');
+const CryptoJS = require('crypto-js');
+const cron = require('node-cron');
 const request = require('request');
 const Database = require('better-sqlite3');
 const puppeteer = require('puppeteer-extra');
@@ -549,4 +551,68 @@ exports.mikanSearch = async function (name) {
     torrents.push(torrent);
   }
   return torrents;
+};
+
+exports.syncCookieCloud = async (cc) => {
+  const { uuid, passwd, host, sites, douban } = cc;
+  const { body } = await exports.requestPromise(`${host}/get/${uuid}`);
+  const { encrypted } = JSON.parse(body);
+  const key = CryptoJS.MD5(uuid + '-' + passwd).toString().substring(0, 16);
+  const decrypted = CryptoJS.AES.decrypt(encrypted, key).toString(CryptoJS.enc.Utf8);
+  const parsed = JSON.parse(decrypted);
+  const cookies = Object.values(parsed.cookie_data).flat().map(item => ({
+    domain: item.domain,
+    cookie: `${item.name}=${item.value}`
+  }));
+
+  const _sites = exports.listSite();
+  const _doubans = exports.listDouban();
+  for (const s of sites) {
+    // 判断站点是否启用
+    const __site = _sites.filter(item => item.name === s)[0];
+    if (!__site || !global.runningSite[s]) {
+      continue;
+    }
+    // 拿到 host
+    const sitehost = new URL(global.runningSite[s].index).host;
+    // 过滤出 cookie
+    const cookie = cookies.filter(item => item.domain.replace(/^\./, '') === sitehost).map(item => item.cookie).join(';');
+    __site.cookie = cookie;
+    // 写入文件
+    fs.writeFileSync(path.join(__dirname, '../data/site', __site.name + '.json'), JSON.stringify(__site, null, 2));
+    global.runningSite[s].cookie = __site.cookie;
+    logger.debug('站点', __site.name, '重新加载 Cookie');
+  }
+
+  // douban
+  if (douban) {
+    for (const d of Object.values(global.runningDouban)) {
+      const _douban = _doubans.filter(item => item.id === d.id)[0];
+      const cookie = cookies.filter(item => item.domain.endsWith('douban.com')).map(item => item.cookie).join(';');
+      _douban.cookie = cookie;
+      global.runningDouban[_douban.id].cookie = cookie;
+      fs.writeFileSync(path.join(__dirname, '../data/douban/', d.id + '.json'), JSON.stringify(_douban, null, 2));
+    }
+    return '修改豆瓣成功';
+  }
+};
+
+exports.initCookieCloud = function () {
+  const setting = JSON.parse(fs.readFileSync(path.join(__dirname, '../data/setting.json')));
+  if (global.cookiecloud) {
+    global.cookiecloud.stop();
+    delete global.cookiecloud;
+  }
+  if (!setting.cookiecloud?.enable) {
+    return;
+  }
+  const cc = setting.cookiecloud;
+  global.cookiecloud = cron.schedule(cc.cron, async () => {
+    try {
+      await exports.syncCookieCloud(cc);
+    } catch (e) {
+      logger.error('cookiecloud 同步失败: \n', e);
+    };
+  });
+  // init
 };

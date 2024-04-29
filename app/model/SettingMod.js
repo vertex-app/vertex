@@ -82,6 +82,8 @@ class SettingMod {
       global.doubanPush = new Push({ ...doubanPush, push: true });
       global.doubanPush.modifyWechatMenu();
     }
+    // cookiecloud
+    util.initCookieCloud();
     return '修改全局设置成功, 部分设定需要刷新页面生效';
   };
 

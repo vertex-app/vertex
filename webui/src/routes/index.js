@@ -49,6 +49,7 @@ import SettingSecurity from '@/pages/setting/Security';
 import SettingInteraction from '@/pages/setting/Interaction';
 import SettingMenu from '@/pages/setting/Menu';
 import SettingBackup from '@/pages/setting/Backup';
+import SettingCookieCloud from '@/pages/setting/CookieCloud';
 
 import SubscribeList from '@/pages/subscribe/List';
 import SubscribeDetail from '@/pages/subscribe/Detail';
@@ -247,6 +248,12 @@ const setting = {
       component: SettingMenu,
       meta: {
         title: '菜单设置 - 系统设置'
+      }
+    }, {
+      path: 'cc',
+      component: SettingCookieCloud,
+      meta: {
+        title: 'CookieCloud - 系统设置'
       }
     }, {
       path: 'backup',

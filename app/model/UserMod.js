@@ -226,6 +226,10 @@ class UserMod {
           path: '/setting/menu',
           icon: ['fas', 'bars']
         }, {
+          title: 'CookieCloud',
+          path: '/setting/cc',
+          icon: ['fas', 'cookie']
+        }, {
           title: '备份还原',
           path: '/setting/backup',
           icon: ['fas', 'floppy-disk']
