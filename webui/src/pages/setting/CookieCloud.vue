@@ -14,30 +14,30 @@
         autocomplete="off"
         :class="`container-form-${ isMobile() ? 'mobile' : 'pc' }`">
         <a-form-item
-          label="启用同步">
+          label="启用同步"
+          name="cookiecloud.enable">
           <a-checkbox v-model:checked="setting.cookiecloud.enable">启用</a-checkbox>
         </a-form-item>
         <a-form-item
           label="同步周期"
-          name="cron"
+          name="cookiecloud.cron"
           extra="同步周期 cron 表达式，默认为每小时一次">
           <a-input size="small" v-model:value="setting.cookiecloud.cron"/>
         </a-form-item>
         <a-form-item
           label="Host"
-          name="host"
+          name="cookiecloud.host"
           extra="cookie cloud 的 host, 格式: http://192.168.1.1:8088">
           <a-input size="small" v-model:value="setting.cookiecloud.host"/>
         </a-form-item>
         <a-form-item
           label="uuid"
-          name="uuid">
+          name="cookiecloud.uuid">
           <a-input size="small" v-model:value="setting.cookiecloud.uuid"/>
         </a-form-item>
         <a-form-item
           label="password"
-          :rules="[{ required: true, message: '${label}不可为空! ' }]"
-          name="passwd">
+          name="cookiecloud.passwd">
           <a-input size="small" v-model:value="setting.cookiecloud.passwd"/>
         </a-form-item>
         <a-form-item
@@ -54,7 +54,7 @@
         </a-form-item>
         <a-form-item
           label="同步豆瓣 Cookie"
-          name="douban">
+          name="cookiecloud.douban">
           <a-checkbox v-model:checked="setting.cookiecloud.douban">启用</a-checkbox>
         </a-form-item>
         <a-form-item
