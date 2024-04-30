@@ -36,6 +36,7 @@
         </a-form-item>
         <a-form-item
           label="password"
+          :rules="[{ required: true, message: '${label}不可为空! ' }]"
           name="passwd">
           <a-input size="small" v-model:value="setting.cookiecloud.passwd"/>
         </a-form-item>

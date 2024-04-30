@@ -134,8 +134,9 @@
           <a-checkbox v-model:checked="site.adult">搜索 R18 分区</a-checkbox>
         </a-form-item>
         <a-form-item
-          label="Cookie, M-Team 为 api key"
+          label="Cookie"
           name="cookie"
+          extra="Cookie, M-Team 为 api key"
           :rules="[{ required: true, message: '${label}不可为空! ' }]">
           <a-input size="small" v-model:value="site.cookie"/>
         </a-form-item>

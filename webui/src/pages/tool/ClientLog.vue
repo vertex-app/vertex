@@ -15,7 +15,7 @@
       </template>
       <template #bodyCell="{ column, record }">
         <template v-if="column.dataIndex === 'timestamp'">
-          {{ $moment(record.timestamp).format('YYYY-MM-DD HH:mm:ss') }}
+          {{ $moment(record.timestamp > 1e11 ? record.timestamp : record.timestamp * 1e3).format('YYYY-MM-DD HH:mm:ss') }}
         </template>
         <template v-if="column.dataIndex === 'message'">
           <span :style="`${record.type === 4 ? 'color: red' : ''}`">{{ record.message }}</span>

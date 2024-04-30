@@ -175,8 +175,6 @@ const freeWrapper = {
   'et8.org': _free,
   'hdfans.org': _free,
   'www.nicept.net': _free,
-  'kp.m-team.cc': _freeMTeam,
-  'xp.m-team.io': _freeMTeam,
   'discfan.net': _free,
   'piggo.me': _free,
   'hdatmos.club': _free,
@@ -244,6 +242,9 @@ const hrWrapper = {
 
 exports.free = async (url, cookie) => {
   const host = new URL(url).host;
+  if (host.includes('m-team')) {
+    return await _freeMTeam(url, cookie);
+  }
   if (freeWrapper[host]) {
     return await freeWrapper[host](url, cookie);
   }

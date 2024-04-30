@@ -577,11 +577,15 @@ exports.syncCookieCloud = async (cc) => {
     const sitehost = new URL(global.runningSite[s].index).host;
     // 过滤出 cookie
     const cookie = cookies.filter(item => item.domain.replace(/^\./, '') === sitehost).map(item => item.cookie).join(';');
+    if (__site.cookie === cookie) {
+      logger.info('站点', __site.name, 'Cookie 未改变');
+      continue;
+    }
     __site.cookie = cookie;
     // 写入文件
     fs.writeFileSync(path.join(__dirname, '../data/site', __site.name + '.json'), JSON.stringify(__site, null, 2));
     global.runningSite[s].cookie = __site.cookie;
-    logger.debug('站点', __site.name, '重新加载 Cookie');
+    logger.info('站点', __site.name, '同步 Cookie');
   }
 
   // douban
@@ -589,11 +593,15 @@ exports.syncCookieCloud = async (cc) => {
     for (const d of Object.values(global.runningDouban)) {
       const _douban = _doubans.filter(item => item.id === d.id)[0];
       const cookie = cookies.filter(item => item.domain.endsWith('douban.com')).map(item => item.cookie).join(';');
+      if (_douban.cookie === cookie) {
+        logger.info('豆瓣 Cookie 未改变');
+        continue;
+      }
       _douban.cookie = cookie;
       global.runningDouban[_douban.id].cookie = cookie;
       fs.writeFileSync(path.join(__dirname, '../data/douban/', d.id + '.json'), JSON.stringify(_douban, null, 2));
+      logger.info('豆瓣同步 Cookie');
     }
-    return '修改豆瓣成功';
   }
 };
 
