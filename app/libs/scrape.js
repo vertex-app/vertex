@@ -35,7 +35,7 @@ const _freeMTeam = async function (url, cookie) {
   const tid = url.match(/\/(\d+)/)[1];
   // const host = new URL(url).host;
   const { body } = await util.requestPromise({
-    url: 'https://xp.m-team.io/api/torrent/detail',
+    url: 'https://kp.m-team.cc/api/torrent/detail',
     method: 'POST',
     headers: {
       'x-api-key': cookie

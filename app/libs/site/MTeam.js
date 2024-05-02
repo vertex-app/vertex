@@ -4,7 +4,7 @@ const moment = require('moment');
 const _api = async function (cookie, path, data, type = 'form') {
   if (type === 'form') {
     const { body } = await util.requestPromise({
-      url: `https://xp.m-team.io${path}`,
+      url: `https://kp.m-team.cc${path}`,
       method: 'POST',
       headers: {
         'x-api-key': cookie
@@ -16,7 +16,7 @@ const _api = async function (cookie, path, data, type = 'form') {
   }
   if (type === 'json') {
     const { body } = await util.requestPromise({
-      url: `https://xp.m-team.io${path}`,
+      url: `https://kp.m-team.cc${path}`,
       method: 'POST',
       headers: {
         'x-api-key': cookie
@@ -31,8 +31,8 @@ const _api = async function (cookie, path, data, type = 'form') {
 class Site {
   constructor () {
     this.name = 'MTeam';
-    this.downloadLink = 'https://xp.m-team.io/download.php?id={ID}&https=1';
-    this.url = 'https://xp.m-team.io/';
+    this.downloadLink = 'https://kp.m-team.cc/download.php?id={ID}&https=1';
+    this.url = 'https://kp.m-team.cc/';
     this.id = 3;
   };
 
