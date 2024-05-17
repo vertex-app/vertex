@@ -38,7 +38,7 @@ class Site {
 
   async getInfo () {
     const info = {};
-    const profile = await _api(this.cookie, '/api/member/profile', {});
+    const profile = await _api(this.cookie, '/api/member/profile', {}, 'json');
     if (!profile) {
       throw new Error('疑似登录状态失效, 请检查 Api Key');
     }
@@ -51,7 +51,7 @@ class Site {
     // 下载
     info.download = profile.memberCount.downloaded;
 
-    const peerlist = await _api(this.cookie, '/api/tracker/myPeerStatus', {});
+    const peerlist = await _api(this.cookie, '/api/tracker/myPeerStatus', {}, 'json');
     if (!peerlist) {
       throw new Error('疑似登录状态失效, 请检查 Api Key');
     }
@@ -158,7 +158,7 @@ class Site {
 
   async getDownloadLink (link) {
     const tid = link.match(/\/(\d+)/)[1];
-    const dltoken = await _api(this.cookie, '/api/torrent/genDlToken', { id: tid });
+    const dltoken = await _api(this.cookie, '/api/torrent/genDlToken', { id: tid }, 'json');
     return dltoken;
   }
 };
