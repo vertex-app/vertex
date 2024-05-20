@@ -158,7 +158,7 @@ class Site {
 
   async getDownloadLink (link) {
     const tid = link.match(/\/(\d+)/)[1];
-    const dltoken = await _api(this.cookie, '/api/torrent/genDlToken', { id: tid }, 'json');
+    const dltoken = await _api(this.cookie, '/api/torrent/genDlToken', { id: tid }, 'form');
     return dltoken;
   }
 };
