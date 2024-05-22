@@ -77,6 +77,7 @@
             <a-select-option value="wechat">WeChat</a-select-option>
             <a-select-option value="slack">Slack</a-select-option>
             <a-select-option value="ntfy">Ntfy</a-select-option>
+            <a-select-option value="webhook">Webhook</a-select-option>
           </a-select>
         </a-form-item>
         <a-form-item
@@ -168,6 +169,22 @@
           extra="如果仅使用推送通知功能，可随意填写内容"
           :rules="[{ required: true, message: '${label}不可为空! ' }]">
           <a-input size="small" v-model:value="notification.slackToken"/>
+        </a-form-item>
+        <a-form-item
+          v-if="notification.type === 'webhook'"
+          label="Url"
+          name="webhookurl"
+          extra="填写目标地址, 请注意推送内容中包含敏感信息, 因此必须保证目标地址可信"
+          :rules="[{ required: true, message: '${label}不可为空! ' }]">
+          <a-input size="small" v-model:value="notification.webhookurl"/>
+        </a-form-item>
+        <a-form-item
+          v-if="notification.type === 'webhook'"
+          label="Token"
+          name="token"
+          extra="在请求时会将 token 放入请求头的 x-vertex-token 中"
+          :rules="[{ required: true, message: '${label}不可为空! ' }]">
+          <a-input size="small" v-model:value="notification.token"/>
         </a-form-item>
         <a-form-item
           label="推送类型"

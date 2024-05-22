@@ -311,15 +311,17 @@ export default {
     },
     async listSubscribe () {
       try {
+        const _categories = localStorage.getItem('vertex-search-categories').split(',').map(item => ({ value: item }));
+        const _savepaths = localStorage.getItem('vertex-search-savepaths').split(',').map(item => ({ value: item }));
         const res = await this.$api().subscribe.list();
         this.subscribes = res.data;
-        this.categories = [{ value: '手动输入' }];
+        this.categories = [{ value: '手动输入' }].concat(_categories);
         for (const item of this.subscribes.map(item => item.categories).flat()) {
           if (this.categories.map(subitem => subitem.value).indexOf(item.category) === -1) {
             this.categories.push({ value: item.category });
           }
         }
-        this.savePaths = [{ value: '手动输入' }];
+        this.savePaths = [{ value: '手动输入' }].concat(_savepaths);
         for (const item of this.subscribes.map(item => item.categories).flat()) {
           if (this.savePaths.map(subitem => subitem.value).indexOf(item.savePath) === -1) {
             this.savePaths.push({ value: item.savePath });
