@@ -311,8 +311,8 @@ export default {
     },
     async listSubscribe () {
       try {
-        const _categories = localStorage.getItem('vertex-search-categories').split(',').map(item => ({ value: item }));
-        const _savepaths = localStorage.getItem('vertex-search-savepaths').split(',').map(item => ({ value: item }));
+        const _categories = (localStorage.getItem('vertex-search-categories') || '').split(',').filter(item => item).map(item => ({ value: item }));
+        const _savepaths = (localStorage.getItem('vertex-search-savepaths') || '').split(',').filter(item => item).map(item => ({ value: item }));
         const res = await this.$api().subscribe.list();
         this.subscribes = res.data;
         this.categories = [{ value: '手动输入' }].concat(_categories);
