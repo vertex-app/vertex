@@ -168,10 +168,6 @@ class UserMod {
           path: '/tool/networkTest',
           icon: ['fas', 'square-check']
         }, {
-          title: 'MTEAM 登录',
-          path: '/tool/mteamLogin',
-          icon: ['fas', 'arrow-right-to-bracket']
-        }, {
           title: '修改 HOSTS',
           path: '/tool/hosts',
           icon: ['fas', 'route']

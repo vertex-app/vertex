@@ -200,37 +200,6 @@ class SettingMod {
     });
   }
 
-  async loginMTeam (options) {
-    const { body } = await util.requestPromise({
-      url: 'https://kp.m-team.cc/index.php',
-      headers: {
-        cookie: options.cookie
-      }
-    }, false);
-    const username = body.match(/userdetails.*?<b>(.*)<\/b>/);
-    if (username) {
-      return '无需登录 ' + username[1] + ' 使用已有 Cookie 即可';
-    }
-    if (body.indexOf('M-Team') === -1) {
-      throw new Error('疑似遇到 5s 盾, 请手动获取 Cookie 并重试');
-    }
-    const { headers } = await util.requestPromise({
-      url: 'https://kp.m-team.cc/verify.php?returnto=%2F',
-      method: 'POST',
-      headers: {
-        cookie: options.cookie
-      },
-      formData: {
-        otp: options.otp
-      }
-    }, false);
-    if (headers.location === 'https://kp.m-team.cc/') {
-      return '登录成功';
-    } else {
-      throw new Error('登录失败, 请重试');
-    }
-  }
-
   async getTrackerFlowHistory () {
     const _timeGroup = await util.getRecords('select time from tracker_flow where time >= ? group by time', [moment().unix() - 24 * 3600]);
     const timeGroup = _timeGroup.map(i => i.time);

@@ -50,13 +50,14 @@ class Site {
     };
   }
 
-  async _getDocument (url, origin = false, expire = 300, retCookies = false) {
+  async _getDocument (url, origin = false, expire = 300, retCookies = false, headers) {
     const cache = await redis.get(`vertex:document:body:${url}`);
     if (!cache) {
       const res = (await util.requestPromise({
         url: url,
         headers: {
-          cookie: this.cookie
+          cookie: this.cookie,
+          ...headers
         }
       }));
       if (origin) return res.body;
