@@ -8,6 +8,13 @@ class Webhook {
   };
 
   async pushWebhook (event, payload) {
+    if (payload.client && typeof payload.client === 'object') {
+      payload.client = {
+        id: payload.client.id,
+        alias: payload.client.alias,
+        clientUrl: payload.client.clientUrl
+      };
+    }
     const option = {
       url: this.webhookurl,
       method: 'POST',

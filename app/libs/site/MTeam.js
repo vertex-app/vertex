@@ -1,7 +1,10 @@
+const logger = require('../logger');
 const util = require('../util');
 const moment = require('moment');
 
 const _api = async function (cookie, path, data, type = 'form') {
+  logger.debug('M-Team, Wait 2.5s.');
+  await util.sleep(2500);
   if (type === 'form') {
     const { body } = await util.requestPromise({
       url: `https://api.m-team.cc${path}`,
@@ -62,8 +65,9 @@ class Site {
     // 做种体积
     const seedinglist = [];
     let page = 1;
+    const pageSize = 100;
     while (true) {
-      const _seedinglist = await _api(this.cookie, '/api/member/getUserTorrentList', { userid: info.uid, type: 'SEEDING', pageNumber: page, pageSize: 100 }, 'json');
+      const _seedinglist = await _api(this.cookie, '/api/member/getUserTorrentList', { userid: info.uid, type: 'SEEDING', pageNumber: page, pageSize }, 'json');
       if (!_seedinglist) {
         throw new Error('疑似登录状态失效, 请检查 Api Key');
       }
@@ -71,7 +75,7 @@ class Site {
         seedinglist.push(seeding);
       }
       page += 1;
-      if (!_seedinglist.data.length) {
+      if (_seedinglist.data.length < pageSize) {
         break;
       }
     }
