@@ -293,7 +293,17 @@ module.exports = function (app, express, router) {
   app.use('/proxy/client/:client', clientProxy);
   app.use('/proxy/site/:site', siteProxy);
   app.use('/assets/styles/theme.less', (req, res) => {
-    return res.download(path.join(__dirname, '../static/assets/styles/' + (global.theme || 'follow') + '.less'));
+    const _path = path.join(__dirname, '../static/assets/styles/' + (global.theme || 'follow') + '.less');
+    if (!_path.startsWith(path.join(__dirname, '../static/'))) {
+      res.status(404);
+      return res.end('Not Found');
+    }
+    return res.download(_path, (err) => {
+      if (!err) return;
+      logger.error(err);
+      res.status(404);
+      return res.end('Not Found');
+    });
   });
   app.use('*', (req, res, next) => {
     const pathname = req._parsedOriginalUrl.pathname;
@@ -301,32 +311,18 @@ module.exports = function (app, express, router) {
       res.status(404);
       return res.end('Not Found');
     }
-    if (pathname.startsWith('/assets')) {
-      try {
-        return res.download(path.join(__dirname, '../static', pathname));
-      } catch (err) {
-        logger.error(err);
+    if (pathname.startsWith('/assets') || pathname.startsWith('/workbox') || pathname.startsWith('/service-worker.js')) {
+      const _path = path.join(__dirname, '../static', pathname);
+      if (!_path.startsWith(path.join(__dirname, '../static/'))) {
         res.status(404);
         return res.end('Not Found');
       }
-    }
-    if (pathname.startsWith('/workbox')) {
-      try {
-        return res.download(path.join(__dirname, '../static', pathname));
-      } catch (err) {
+      return res.download(_path, (err) => {
+        if (!err) return;
         logger.error(err);
         res.status(404);
         return res.end('Not Found');
-      }
-    }
-    if (pathname.startsWith('/service-worker.js')) {
-      try {
-        return res.download(path.join(__dirname, '../static', pathname));
-      } catch (err) {
-        logger.error(err);
-        res.status(404);
-        return res.end('Not Found');
-      }
+      });
     }
     try {
       let indexHTML = fs.readFileSync(path.join(__dirname, '../static/index.html'), 'utf-8');
