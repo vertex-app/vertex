@@ -21,7 +21,8 @@ const _getRssContent = async function (rssUrl, suffix = true) {
     body = cache;
   } else {
     let url = rssUrl;
-    if (suffix) {
+    const isPig = rssUrl.includes('https://piggo.me/');
+    if (suffix && !isPig) {
       url += (rssUrl.indexOf('?') === -1 ? '?' : '&') + '____=' + Math.random();
     }
     let res;
