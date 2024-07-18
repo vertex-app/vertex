@@ -33,16 +33,6 @@ const _getRssContent = async function (rssUrl, suffix = true) {
           cookie: global.runningSite.SoulVoice.cookie
         }
       }, true);
-    } else if (isPig && global.runningSite.PIGGO) {
-      res = await util.requestPromise(
-        {
-          url,
-          headers: {
-            cookie: global.runningSite.PIGGO.cookie
-          }
-        },
-        true
-      );
     } else {
       res = await util.requestPromise(url, true);
     }
