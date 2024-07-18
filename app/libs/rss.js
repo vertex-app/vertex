@@ -21,7 +21,8 @@ const _getRssContent = async function (rssUrl, suffix = true) {
     body = cache;
   } else {
     let url = rssUrl;
-    if (suffix) {
+    let isPig = rssUrl.includes("https://piggo.me/");
+    if (suffix && !isPig) {
       url += (rssUrl.indexOf('?') === -1 ? '?' : '&') + '____=' + Math.random();
     }
     let res;
@@ -32,6 +33,16 @@ const _getRssContent = async function (rssUrl, suffix = true) {
           cookie: global.runningSite.SoulVoice.cookie
         }
       }, true);
+    } else if (isPig && global.runningSite.PIGGO) {
+      res = await util.requestPromise(
+        {
+          url,
+          headers: {
+            cookie: global.runningSite.PIGGO.cookie,
+          },
+        },
+        true
+      );
     } else {
       res = await util.requestPromise(url, true);
     }
