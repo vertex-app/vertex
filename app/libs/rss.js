@@ -21,7 +21,7 @@ const _getRssContent = async function (rssUrl, suffix = true) {
     body = cache;
   } else {
     let url = rssUrl;
-    let isPig = rssUrl.includes("https://piggo.me/");
+    const isPig = rssUrl.includes('https://piggo.me/');
     if (suffix && !isPig) {
       url += (rssUrl.indexOf('?') === -1 ? '?' : '&') + '____=' + Math.random();
     }
@@ -38,8 +38,8 @@ const _getRssContent = async function (rssUrl, suffix = true) {
         {
           url,
           headers: {
-            cookie: global.runningSite.PIGGO.cookie,
-          },
+            cookie: global.runningSite.PIGGO.cookie
+          }
         },
         true
       );
