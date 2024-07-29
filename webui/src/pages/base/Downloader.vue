@@ -90,11 +90,12 @@
         <a-form-item
           label="下载器类型"
           name="type"
-          extra="下载器类型, 目前仅支持 qBittorrent 与 Transmission"
+          extra="下载器类型, 目前完整支持 qBittorrent, Deluge 和 Transmission 不完全支持"
           :rules="[{ required: true, message: '${label}不可为空! ' }]">
           <a-select size="small" v-model:value="downloader.type"  >
             <a-select-option value="qBittorrent">qBittorrent</a-select-option>
             <a-select-option value="Transmission">Transmission</a-select-option>
+            <a-select-option value="deluge">Deluge</a-select-option>
           </a-select>
         </a-form-item>
         <a-form-item

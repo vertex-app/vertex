@@ -26,6 +26,8 @@
         </template>
         <template v-if="column.title === '操作'">
           <span>
+            <a @click="cloneClick(record)">克隆</a>
+            <a-divider type="vertical" />
             <a @click="modifyClick(record)">编辑</a>
             <a-divider type="vertical" />
             <a-popover title="删除?" trigger="click" :overlayStyle="{ width: '84px', overflow: 'hidden' }">
@@ -279,6 +281,9 @@ export default {
     },
     modifyClick (row) {
       this.rssRule = { ...row };
+    },
+    cloneClick (row) {
+      this.rssRule = { ...row, id: undefined };
     },
     async deleteRssRule (row) {
       if (row.used) {
