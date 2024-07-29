@@ -1,4 +1,5 @@
 const util = require('../util');
+const fs = require('fs');
 
 exports.login = async function (username, clientUrl, password) {
   const message = {
@@ -38,6 +39,65 @@ exports.addTorrent = async function (clientUrl, cookie, torrentUrl, isSkipChecki
   };
   let res = await util.requestPromise(message);
   const torrentPath = res.body.result;
+  message = {
+    method: 'POST',
+    url: clientUrl + '/json',
+    json: true,
+    gzip: true,
+    body: {
+      id: 0,
+      method: 'web.add_torrents',
+      params: [
+        [
+          {
+            path: torrentPath,
+            options: {
+              file_priorities: [
+                1
+              ],
+              add_paused: false,
+              sequential_download: false,
+              pre_allocate_storage: false,
+              move_completed: false,
+              max_connections: -1,
+              max_download_speed: downloadLimit,
+              max_upload_slots: -1,
+              max_upload_speed: uploadLimit,
+              prioritize_first_last_pieces: false,
+              seed_mode: isSkipChecking,
+              super_seeding: false
+            }
+          }
+        ]
+      ]
+    },
+    headers: {
+      cookie
+    }
+  };
+  if (savePath) {
+    message.body.params[0][0].options.download_location = savePath;
+  }
+  if (label) {
+    message.body.params[0][0].options.label = label;
+  }
+  res = await util.requestPromise(message);
+  return res;
+};
+
+exports.addTorrentByTorrentFile = async function (clientUrl, cookie, filepath, isSkipChecking, uploadLimit, downloadLimit, savePath, label) {
+  let message = {
+    url: clientUrl + '/upload',
+    method: 'POST',
+    headers: {
+      cookie
+    },
+    formData: {
+      file: fs.createReadStream(filepath),
+    }
+  };
+  let res = await util.requestPromise(message);
+  const torrentPath = JSON.parse(res.body).files[0];
   message = {
     method: 'POST',
     url: clientUrl + '/json',
@@ -148,6 +208,7 @@ exports.getMaindata = async function (clientUrl, cookie) {
     }
     torrent.progress = torrent.progress / 100;
     if (+torrent.progress === -1) torrent.progress = 0;
+    torrent.originProp = { ...res.torrents[k] };
     torrent.completedTime = Math.max(Date.now() / 1000 - torrent.seedingTime, torrent.addedTime);
     maindata.torrents.push(torrent);
   }

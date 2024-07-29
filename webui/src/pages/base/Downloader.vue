@@ -95,6 +95,7 @@
           <a-select size="small" v-model:value="downloader.type"  >
             <a-select-option value="qBittorrent">qBittorrent</a-select-option>
             <a-select-option value="Transmission">Transmission</a-select-option>
+            <a-select-option value="deluge">Deluge</a-select-option>
           </a-select>
         </a-form-item>
         <a-form-item
