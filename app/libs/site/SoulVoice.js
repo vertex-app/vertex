@@ -26,14 +26,9 @@ class Site {
     // 下载
     info.leeching = +document.querySelector('img[class=arrowdown]').nextSibling.nodeValue.trim();
     // 做种体积
-    const seedingDocument = await this._getDocument(`${this.index}getusertorrentlistajax.php?userid=${info.uid}&type=seeding`);
-    const seedingTorrent = [...seedingDocument.querySelectorAll('tr')];
-    seedingTorrent.shift();
-    info.seedingSize = 0;
-    for (const torrent of seedingTorrent) {
-      const siteStr = torrent.childNodes[3].innerHTML.replace('<br>', ' ').replace(/([KMGTP])B/, '$1iB');
-      info.seedingSize += util.calSize(...siteStr.split(' '));
-    }
+    const seedingDocument = await this._getDocument(`${this.index}getusertorrentlistajax.php?userid=${info.uid}&type=seeding`, true);
+    const seedingSize = (seedingDocument.match(/总大小\uff1a(\d+\.\d+ [KMGTP]B)/) || [0, '0 B'])[1].replace(/([KMGTP])B/, '$1iB');
+    info.seedingSize = util.calSize(...seedingSize.split(' '));
     return info;
   };
 
