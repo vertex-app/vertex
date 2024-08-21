@@ -4,6 +4,7 @@ class Site {
   constructor () {
     this.name = 'ZHUQUE';
     this.url = 'https://zhuque.in/';
+    this.downloadLink = this.url + 'api/torrent/download/{ID}';
     this.id = 23;
   };
 

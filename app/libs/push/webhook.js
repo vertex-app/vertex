@@ -15,6 +15,7 @@ class Webhook {
         clientUrl: payload.client.clientUrl
       };
     }
+    payload.event = event;
     const option = {
       url: this.webhookurl,
       method: 'POST',

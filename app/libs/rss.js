@@ -822,6 +822,7 @@ const _getTorrentsWrapper = {
   'rss.torrentleech.org': _getTorrentsTorrentLeech,
   'rss24h.torrentleech.org': _getTorrentsTorrentLeech,
   'fsm.name': _getTorrentsFSM,
+  'api.fsm.name': _getTorrentsFSM,
   'www.happyfappy.org': _getTorrentsHappyFappy,
   'fearnopeer.com': _getTorrentsUnit3D2,
   'jpopsuki.eu': _getTorrentsGazelle,
