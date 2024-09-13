@@ -31,14 +31,9 @@ class Site {
     // 下载
     info.leeching = +document.querySelector('img[class=arrowdown]').nextSibling.nodeValue.trim();
     // 做种体积
-    const seedingDocument = await this._getDocument(`${this.index}getusertorrentlist.php?do_ajax=1&userid=${info.uid}&type=seeding`);
-    const seedingTorrent = [...seedingDocument.querySelectorAll('tr')];
-    seedingTorrent.shift();
-    info.seedingSize = 0;
-    for (const torrent of seedingTorrent) {
-      const siteStr = torrent.childNodes[5].innerHTML.replace('<br>', ' ').replace(/([KMGTP])B/, '$1iB');
-      info.seedingSize += util.calSize(...siteStr.split(' '));
-    }
+    const seedingDocument = await this._getDocument(`${this.index}userdetails.php?id=${info.uid}`, true);
+    const seedingSize = (seedingDocument.match(/做种大小.+[^\d](\d+\.\d+ [KMGTP]B)/) || [0, '2 B'])[1].replace(/([KMGTP])B/, '$1iB');
+    info.seedingSize = util.calSize(...seedingSize.split(' '));
     return info;
   };
 
