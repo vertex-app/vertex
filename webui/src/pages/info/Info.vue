@@ -70,7 +70,7 @@ export default {
       window.open('https://t.me/group_vertex');
     },
     async gotoWiki () {
-      window.open('https://Wiki.vertex.icu');
+      window.open('https://wiki.vertex-app.top');
     },
     async gotoVersion () {
       window.open('https://lswl.in/2022/01/14/vertex-changelog');

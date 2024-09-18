@@ -94,10 +94,10 @@ export default {
       }
     },
     openRegulation () {
-      window.open('https://wiki.vertex.icu/zh/misc/regulations');
+      window.open('https://wiki.vertex-app.top/zh/misc/regulations');
     },
     openWiki () {
-      window.open('https://wiki.vertex.icu/zh/misc/faq');
+      window.open('https://wiki.vertex-app.top/zh/misc/faq');
     }
   }
 };

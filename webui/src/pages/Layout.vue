@@ -137,7 +137,7 @@ export default {
       }, 100);
     },
     async gotoWiki () {
-      window.open('https://Wiki.vertex.icu');
+      window.open('https://wiki.vertex-app.top');
     }
   },
   async mounted () {
