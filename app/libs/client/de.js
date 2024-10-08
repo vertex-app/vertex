@@ -55,7 +55,7 @@ exports.addTorrent = async function (clientUrl, cookie, torrentUrl, isSkipChecki
   if (savePath) {
     message.body.params[1].download_location = savePath;
   }
-  res = await util.requestPromise(message);
+  let res = await util.requestPromise(message);
   if (label) {
     message = {
       method: 'POST',
@@ -73,7 +73,7 @@ exports.addTorrent = async function (clientUrl, cookie, torrentUrl, isSkipChecki
     };
     res = await util.requestPromise(message);
     if (res.body.error && (res.body.error.message.indexOf('Unknown Label') !== -1)) {
-      add_label_message = {
+      const addLabelMessage = {
         method: 'POST',
         url: clientUrl + '/json',
         json: true,
@@ -87,7 +87,7 @@ exports.addTorrent = async function (clientUrl, cookie, torrentUrl, isSkipChecki
           cookie
         }
       };
-      res = await util.requestPromise(add_label_message);
+      res = await util.requestPromise(addLabelMessage);
       res = await util.requestPromise(message);
     }
   }
@@ -118,7 +118,7 @@ exports.addTorrentByTorrentFile = async function (clientUrl, cookie, filepath, i
           seed_mode: isSkipChecking,
           super_seeding: false
         }
-        ]
+      ]
     },
     headers: {
       cookie
@@ -130,7 +130,7 @@ exports.addTorrentByTorrentFile = async function (clientUrl, cookie, filepath, i
   if (savePath) {
     message.body.params[2].download_location = savePath;
   }
-  res = await util.requestPromise(message);
+  let res = await util.requestPromise(message);
   if (label) {
     message = {
       method: 'POST',
@@ -148,7 +148,7 @@ exports.addTorrentByTorrentFile = async function (clientUrl, cookie, filepath, i
     };
     res = await util.requestPromise(message);
     if (res.body.error && (res.body.error.message.indexOf('Unknown Label') !== -1)) {
-      add_label_message = {
+      const addLableMessage = {
         method: 'POST',
         url: clientUrl + '/json',
         json: true,
@@ -162,7 +162,7 @@ exports.addTorrentByTorrentFile = async function (clientUrl, cookie, filepath, i
           cookie
         }
       };
-      res = await util.requestPromise(add_label_message);
+      res = await util.requestPromise(addLableMessage);
       res = await util.requestPromise(message);
     }
   }
