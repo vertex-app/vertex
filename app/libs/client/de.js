@@ -283,7 +283,7 @@ exports.pauseTorrent = async function (clientUrl, cookie, hash) {
 };
 
 exports.deleteTorrent = async function (clientUrl, cookie, hash, isDeleteFiles) {
-  // 玄学，Deluge删除种子不先暂停有可能会丢最后一次汇报的流量
+  // Deluge删除种子不先暂停有可能会丢最后一次汇报的流量
   await exports.pauseTorrent(clientUrl, cookie, hash);
   const message = {
     method: 'POST',

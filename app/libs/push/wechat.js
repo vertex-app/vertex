@@ -173,6 +173,7 @@ class Wechat {
     const text = '抓取失败 ' + moment().format('YYYY-MM-DD HH:mm:ss');
     const desp = `Rss 任务: ${rss.alias}\n` +
       `种子名称: ${torrent.name}\n` +
+      `种子 hash: ${torrent.hash}\n` +
       '请确认 Rss 站点是否支持抓取免费或抓取 HR, 若确认无问题, 请前往 Vertex 日志页面查看详细原因';
     await this.pushWeChat(text, desp);
   }
@@ -182,7 +183,8 @@ class Wechat {
     const desp = `Rss 任务: ${rss.alias}\n` +
       `下载器名: ${client.alias}\n` +
       `种子名称: ${torrent.name}\n` +
-      `种子大小: ${util.formatSize(torrent.size)}`;
+      `种子大小: ${util.formatSize(torrent.size)}\n` +
+      `种子 hash: ${torrent.hash}`;
     await this.pushWeChat(text, desp);
   };
 
@@ -305,6 +307,7 @@ class Wechat {
       `下载器名: ${client.alias}\n` +
       `种子名称: ${torrent.name}\n` +
       `种子大小: ${util.formatSize(torrent.size)}\n` +
+      `种子 hash: ${torrent.hash}\n` +
       '详细原因请前往 Vertex 日志页面查看';
     await this.pushWeChat(text, desp);
   };
@@ -315,6 +318,7 @@ class Wechat {
       `下载器名: ${client.alias || '未定义'}\n` +
       `种子名称: ${torrent.name}\n` +
       `种子大小: ${util.formatSize(torrent.size)}\n` +
+      `种子 hash: ${torrent.hash}\n` +
       note;
     await this.pushWeChat(text, desp);
   };
@@ -324,6 +328,7 @@ class Wechat {
     const desp = `下载器名: ${client.alias}\n` +
       `种子名称: ${torrent.name}\n` +
       `种子大小: ${util.formatSize(torrent.size)}\n` +
+      `种子 hash: ${torrent.hash}\n` +
       `已完成量: ${util.formatSize(torrent.completed)}\n` +
       `种子状态: ${torrent.state}\n` +
       `添加时间: ${moment(torrent.addedTime * 1000).format('YYYY-MM-DD HH:mm:ss')}\n` +
@@ -344,6 +349,7 @@ class Wechat {
     const desp = `下载器名: ${client.alias}\n` +
       `种子名称: ${torrent.name}\n` +
       `种子大小: ${util.formatSize(torrent.size)}\n` +
+      `种子 hash: ${torrent.hash}\n` +
       `已完成量: ${util.formatSize(torrent.completed)}\n` +
       `种子状态: ${torrent.completed.state}\n` +
       `所属分类: ${torrent.category}\n` +
@@ -358,14 +364,16 @@ class Wechat {
   async reannounceTorrent (client, torrent) {
     const text = '重新汇报种子 ' + moment().format('YYYY-MM-DD HH:mm:ss');
     const desp = `下载器名: ${client.alias}\n` +
-      `种子名称: ${torrent.name}`;
+      `种子名称: ${torrent.name}\n` +
+      `种子 hash: ${torrent.hash}`;
     await this.pushWeChat(text, desp);
   };
 
   async reannounceTorrentError (client, torrent) {
     const text = '重新汇报种子失败 ' + moment().format('YYYY-MM-DD HH:mm:ss');
     const desp = `下载器名: ${client.alias}\n` +
-      `种子名称: ${torrent.name}`;
+      `种子名称: ${torrent.name}\n` +
+      `种子 hash: ${torrent.hash}`;
     await this.pushWeChat(text, desp);
   };
 
