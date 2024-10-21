@@ -101,6 +101,7 @@ exports.addTorrentTag = async function (clientUrl, cookie, hash, tag) {
 };
 
 exports.deleteTorrent = async function (clientUrl, cookie, hash, isDeleteFiles) {
+  await exports.pauseTorrent(clientUrl, cookie, hash);
   const message = {
     url: clientUrl + '/api/v2/torrents/delete',
     method: 'POST',
