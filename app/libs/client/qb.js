@@ -313,6 +313,22 @@ exports.setFilePriority = async (clientUrl, cookie, hash, id, priority) => {
   return res;
 };
 
+exports.setTorrentCategory = async function (clientUrl, cookie, hash, category) {
+  const message = {
+    url: clientUrl + '/api/v2/torrents/setCategory',
+    method: 'POST',
+    headers: {
+      cookie
+    },
+    formData: {
+      hashes: hash,
+      category: category
+    }
+  };
+  const res = await util.requestPromise(message);
+  return res;
+};
+
 exports.getMaindata = async function (clientUrl, cookie) {
   const option = {
     url: clientUrl + '/api/v2/sync/maindata',
