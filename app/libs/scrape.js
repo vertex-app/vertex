@@ -26,7 +26,7 @@ const _free = async function (url, cookie) {
   if (d.body.innerHTML.indexOf('userdetails') === -1) {
     throw new Error('疑似登录状态失效, 请检查 Cookie');
   }
-  const state = d.querySelector('#top font[class]');
+  const state = d.querySelector('#top font[class], #top span[class]');
   return state && ['free', 'twoupfree'].indexOf(state.className) !== -1;
 };
 

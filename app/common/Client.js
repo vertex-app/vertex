@@ -595,6 +595,12 @@ class Client {
     }
   }
 
+  async setTorrentCategory (hash, category) {
+    if (this._client.type === 'qBittorrent') {
+      await this.client.setTorrentCategory(this.clientUrl, this.cookie, hash, category);
+    }
+  }
+
   async resumeTorrent (hash) {
     if (this._client.type === 'qBittorrent') {
       await this.client.resumeTorrent(this.clientUrl, this.cookie, hash);

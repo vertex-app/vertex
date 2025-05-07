@@ -190,8 +190,8 @@ class Rss {
 
   reloadRssRule () {
     logger.info('重新载入 Rss 规则', this.alias);
-    this.acceptRules = util.listRssRule().filter(item => (this._acceptRules.indexOf(item.id) !== -1));
-    this.rejectRules = util.listRssRule().filter(item => (this._rejectRules.indexOf(item.id) !== -1));
+    this.acceptRules = util.listRssRule().filter(item => (this._acceptRules.indexOf(item.id) !== -1)).sort((a, b) => +b.priority - +a.priority);
+    this.rejectRules = util.listRssRule().filter(item => (this._rejectRules.indexOf(item.id) !== -1)).sort((a, b) => +b.priority - +a.priority);
   }
 
   reloadPush () {
@@ -394,25 +394,25 @@ class Rss {
     } else {
       torrents = (await Promise.all(this.urls.map(url => rss.getTorrents(url)))).flat();
     }
-    const availableClients = this.clientArr
-      .map(item => global.runningClient[item])
-      .filter(item => {
-        return !!item && !!item.status && !!item.maindata &&
-          (!this.maxClientUploadSpeed || this.maxClientUploadSpeed > item.avgUploadSpeed) &&
-          (!this.maxClientDownloadSpeed || this.maxClientDownloadSpeed > item.avgDownloadSpeed) &&
-          (!this.maxClientDownloadCount || this.maxClientDownloadCount > item.maindata.leechingCount);
-      });
-    const firstClient = availableClients
-      .filter(item => {
-        return (!item.maxDownloadSpeed || item.maxDownloadSpeed > item.avgDownloadSpeed) &&
-          (!item.maxUploadSpeed || item.maxUploadSpeed > item.avgUploadSpeed) &&
-          (!item.maxLeechNum || item.maxLeechNum > item.maindata.leechingCount) &&
-          (!item.minFreeSpace || item.minFreeSpace < item.maindata.freeSpaceOnDisk);
-      })
-      .sort((a, b) => (this.clientSortBy === 'freeSpaceOnDisk' ? -1 : 1) *
-        (a.maindata[this.clientSortBy] - b.maindata[this.clientSortBy])
-      )[0] || availableClients[0];
     for (const torrent of torrents) {
+      const availableClients = this.clientArr
+        .map(item => global.runningClient[item])
+        .filter(item => {
+          return !!item && !!item.status && !!item.maindata &&
+            (!this.maxClientUploadSpeed || this.maxClientUploadSpeed > item.avgUploadSpeed) &&
+            (!this.maxClientDownloadSpeed || this.maxClientDownloadSpeed > item.avgDownloadSpeed) &&
+            (!this.maxClientDownloadCount || this.maxClientDownloadCount > item.maindata.leechingCount);
+        });
+      const firstClient = availableClients
+        .filter(item => {
+          return (!item.maxDownloadSpeed || item.maxDownloadSpeed > item.avgDownloadSpeed) &&
+            (!item.maxUploadSpeed || item.maxUploadSpeed > item.avgUploadSpeed) &&
+            (!item.maxLeechNum || item.maxLeechNum > item.maindata.leechingCount) &&
+            (!item.minFreeSpace || item.minFreeSpace < item.maindata.freeSpaceOnDisk);
+        })
+        .sort((a, b) => (this.clientSortBy === 'freeSpaceOnDisk' ? -1 : 1) *
+          (a.maindata[this.clientSortBy] - b.maindata[this.clientSortBy])
+        )[0] || availableClients[0];
       const sqlRes = await util.getRecord('SELECT * FROM torrents WHERE hash = ? AND rss_id = ?', [torrent.hash, this.id]);
       if (sqlRes && sqlRes.id) continue;
       if (torrent.name.indexOf('[FROZEN]') !== -1) continue;

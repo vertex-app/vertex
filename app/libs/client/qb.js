@@ -14,6 +14,11 @@ exports.login = async function (username, clientUrl, password) {
   };
   const res = await util.requestPromise(message);
   if (res.body.indexOf('Ok') !== -1) {
+    Object.keys(apiVersionCache).forEach(key => {
+      if (key.startsWith(clientUrl)) {
+        delete apiVersionCache[key];
+      }
+    });
     return res.headers['set-cookie'][0].substring(0, res.headers['set-cookie'][0].indexOf(';'));
   }
   if (res.body.indexOf('Fails') !== -1) {
@@ -22,6 +27,48 @@ exports.login = async function (username, clientUrl, password) {
   if (res.statusCode !== 200) {
     throw new Error('StatusCode is ' + res.statusCode);
   }
+};
+
+exports.getApiVersion = async function (clientUrl, cookie) {
+  const message = {
+    url: clientUrl + '/api/v2/app/webapiVersion',
+    method: 'GET',
+    headers: {
+      cookie
+    }
+  };
+  const res = await util.requestPromise(message);
+  logger.debug(clientUrl, 'WebAPI version:', res.body);
+  return res.body;
+};
+
+const apiVersionCache = {};
+
+exports.getCachedApiVersion = async function (clientUrl, cookie) {
+  const cacheKey = `${clientUrl}:${cookie}`;
+  if (apiVersionCache[cacheKey]) {
+    return apiVersionCache[cacheKey];
+  }
+  try {
+    const version = await exports.getApiVersion(clientUrl, cookie);
+    apiVersionCache[cacheKey] = version;
+    return version;
+  } catch (error) {
+    logger.error('获取API版本失败:', error.message);
+    return null;
+  }
+};
+
+exports.isVersionGreaterThan = function (version, compareVersion) {
+  const v1 = version.split('.').map(Number);
+  const v2 = compareVersion.split('.').map(Number);
+  for (let i = 0; i < Math.max(v1.length, v2.length); i++) {
+    const num1 = i < v1.length ? v1[i] : 0;
+    const num2 = i < v2.length ? v2[i] : 0;
+    if (num1 > num2) return true;
+    if (num1 < num2) return false;
+  }
+  return false;
 };
 
 exports.addTorrent = async function (clientUrl, cookie, torrentUrl, isSkipChecking, uploadLimit, downloadLimit, savePath, category, autoTMM, firstLastPiecePrio, paused) {
@@ -134,8 +181,13 @@ exports.reannounceTorrent = async (clientUrl, cookie, hash) => {
 };
 
 exports.resumeTorrent = async (clientUrl, cookie, hash) => {
+  let endpoint = '/api/v2/torrents/resume';
+  const apiVersion = await exports.getCachedApiVersion(clientUrl, cookie);
+  if (apiVersion && exports.isVersionGreaterThan(apiVersion, '2.9.3')) {
+    endpoint = '/api/v2/torrents/start';
+  }
   const message = {
-    url: clientUrl + '/api/v2/torrents/resume',
+    url: clientUrl + endpoint,
     method: 'POST',
     headers: {
       cookie
@@ -149,8 +201,13 @@ exports.resumeTorrent = async (clientUrl, cookie, hash) => {
 };
 
 exports.pauseTorrent = async (clientUrl, cookie, hash) => {
+  let endpoint = '/api/v2/torrents/pause';
+  const apiVersion = await exports.getCachedApiVersion(clientUrl, cookie);
+  if (apiVersion && exports.isVersionGreaterThan(apiVersion, '2.9.3')) {
+    endpoint = '/api/v2/torrents/stop';
+  }
   const message = {
-    url: clientUrl + '/api/v2/torrents/pause',
+    url: clientUrl + endpoint,
     method: 'POST',
     headers: {
       cookie
@@ -250,6 +307,22 @@ exports.setFilePriority = async (clientUrl, cookie, hash, id, priority) => {
       hash: hash,
       id: id,
       priority: priority
+    }
+  };
+  const res = await util.requestPromise(message);
+  return res;
+};
+
+exports.setTorrentCategory = async function (clientUrl, cookie, hash, category) {
+  const message = {
+    url: clientUrl + '/api/v2/torrents/setCategory',
+    method: 'POST',
+    headers: {
+      cookie
+    },
+    formData: {
+      hashes: hash,
+      category: category
     }
   };
   const res = await util.requestPromise(message);
