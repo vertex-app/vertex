@@ -508,8 +508,8 @@ const _getTorrentsHDCity = async function (rssUrl) {
     torrent.size = items[i].enclosure[0].$.length;
     torrent.name = items[i].title[0];
     const link = items[i].link[0];
-    torrent.id = link.substring(link.indexOf('?t=') + 3);
-    torrent.link = 'https://hdcity.leniter.org/t-' + torrent.id;
+    torrent.id = new URLSearchParams(link).get('t');
+    torrent.link = `https://${new URL(rssUrl).host}/t-` + torrent.id;
     torrent.url = items[i].enclosure[0].$.url;
     torrent.hash = 'fakehash' + torrent.id + 'fakehash';
     torrents.push(torrent);
@@ -839,6 +839,7 @@ const _getTorrentsWrapper = {
   'pt.sjtu.edu.cn': _getTorrentsPuTao,
   'hd-torrents.org': _getTorrentsHDTorrents,
   'hdcity.leniter.org': _getTorrentsHDCity,
+  'hdcity.city': _getTorrentsHDCity,
   'iptorrents.com': _getTorrentsIPTorrents,
   'mikanani.me': _getTorrentsMikanProject,
   'learnflakes.net': _getTorrentsLearnFlakes,
