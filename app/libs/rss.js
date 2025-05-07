@@ -825,6 +825,7 @@ const _getTorrentsWrapper = {
   'filelist.io': _getTorrentsFileList,
   'blutopia.cc': _getTorrentsUnit3D2,
   'jptv.club': _getTorrentsUnit3D,
+  'anime-no-index.com': _getTorrentsUnit3D2,
   'monikadesign.uk': _getTorrentsUnit3D2,
   'kimoji.club': _getTorrentsKimoji,
   'torrentdb.net': _getTorrentsTorrentDB,
