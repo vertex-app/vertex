@@ -72,6 +72,9 @@ exports.isVersionGreaterThan = function (version, compareVersion) {
 };
 
 exports.addTorrent = async function (clientUrl, cookie, torrentUrl, isSkipChecking, uploadLimit, downloadLimit, savePath, category, autoTMM, firstLastPiecePrio, paused) {
+  const apiVersion = await exports.getCachedApiVersion(clientUrl, cookie);
+  const pausedParam = apiVersion && exports.isVersionGreaterThan(apiVersion, '2.9.3') ? 'stopped' : 'paused';
+  
   const message = {
     url: clientUrl + '/api/v2/torrents/add',
     method: 'POST',
@@ -84,7 +87,7 @@ exports.addTorrent = async function (clientUrl, cookie, torrentUrl, isSkipChecki
       upLimit: uploadLimit,
       dlLimit: downloadLimit,
       firstLastPiecePrio: firstLastPiecePrio + '',
-      paused: paused ? 'true' : 'false'
+      [pausedParam]: paused ? 'true' : 'false'
     }
   };
   if (savePath) {
@@ -102,6 +105,9 @@ exports.addTorrent = async function (clientUrl, cookie, torrentUrl, isSkipChecki
 };
 
 exports.addTorrentByTorrentFile = async function (clientUrl, cookie, filepath, isSkipChecking, uploadLimit, downloadLimit, savePath, category, autoTMM, firstLastPiecePrio, paused) {
+  const apiVersion = await exports.getCachedApiVersion(clientUrl, cookie);
+  const pausedParam = apiVersion && exports.isVersionGreaterThan(apiVersion, '2.9.3') ? 'stopped' : 'paused';
+  
   const message = {
     url: clientUrl + '/api/v2/torrents/add',
     method: 'POST',
@@ -114,7 +120,7 @@ exports.addTorrentByTorrentFile = async function (clientUrl, cookie, filepath, i
       upLimit: uploadLimit,
       dlLimit: downloadLimit,
       firstLastPiecePrio: firstLastPiecePrio + '',
-      paused: paused ? 'true' : 'false'
+      [pausedParam]: paused ? 'true' : 'false'
     }
   };
   if (savePath) {
