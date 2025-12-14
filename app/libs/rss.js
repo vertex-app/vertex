@@ -23,15 +23,13 @@ const _getRssContent = async function (rssUrl, suffix = true) {
     let url = rssUrl;
     const isPig = rssUrl.includes('https://piggo.me/');
     const isKamept = rssUrl.includes('https://kamept.com/');
-    let placeholder;
-    if (isKamept) {
-      placeholder = 'placeholder';
-    } else {
-      placeholder = '____';
-    }
-
     if (suffix && !isPig) {
-      url += (rssUrl.indexOf('?') === -1 ? '?' : '&') + `${placeholder}=` + Math.random();
+      if (isKamept) {
+        const randomNum = Math.floor(Math.random() * 100000000);
+        url += '&' + randomNum;
+      } else {
+        url += (rssUrl.indexOf('?') === -1 ? '?' : '&') + '____=' + Math.random();
+      }
     }
     let res;
     if (rssUrl.includes('https://pt.soulvoice.club/') && global.runningSite.SoulVoice) {
