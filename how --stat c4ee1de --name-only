@@ -1,0 +1,30 @@
+[33mcommit c4ee1de4beef9c4bbfdf8fccbb5bd7303f2f230b[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mstable[m[33m, [m[1;31morigin/stable[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Author: fc0012 <167517992+fc0012@users.noreply.github.com>
+Date:   Thu Jan 8 21:30:55 2026 +0800
+
+    feat: add VERTEX one-click install script and external script runner
+
+ .kiro/specs/vertex-install-script/design.md        | 334 [32m++++++++++++[m
+ .kiro/specs/vertex-install-script/requirements.md  | 132 [32m+++++[m
+ .kiro/specs/vertex-install-script/tasks.md         | 296 [32m+++++++++++[m
+ app/common/ExternalScript.js                       | 289 [32m+++++++++++[m
+ app/common/Script.js                               | 182 [32m++++++[m[31m-[m
+ app/controller/Script.js                           |  28 [32m+[m[31m-[m
+ app/model/ScriptMod.js                             | 369 [32m++++++++++++[m[31m-[m
+ app/routes/router.js                               |   1 [32m+[m
+ install.sh                                         | 571 [32m+++++++++++++++++++++[m
+ jest.config.js                                     |  12 [32m+[m
+ package.json                                       |   8 [32m+[m[31m-[m
+ tests/external-script/env-vars.property.test.js    | 225 [32m++++++++[m
+ tests/external-script/interpreter.property.test.js | 241 [32m+++++++++[m
+ .../output-capture.property.test.js                | 250 [32m+++++++++[m
+ tests/external-script/timeout.property.test.js     | 240 [32m+++++++++[m
+ tests/install-script/cleanup.property.test.js      | 243 [32m+++++++++[m
+ .../script-mod/config-persistence.property.test.js | 366 [32m+++++++++++++[m
+ tests/script-mod/execution-result.property.test.js | 343 [32m+++++++++++++[m
+ tests/script-mod/path-validation.property.test.js  | 219 [32m++++++++[m
+ tests/script/cron-schedule.property.test.js        | 319 [32m++++++++++++[m
+ tests/script/disabled-script.property.test.js      | 355 [32m+++++++++++++[m
+ webui/src/api/script.js                            |   4 [32m+[m
+ webui/src/pages/task/Script.vue                    | 391 [32m+++++++++++++[m[31m-[m
+ 23 files changed, 5390 insertions(+), 28 deletions(-)
