@@ -16,5 +16,9 @@ export default {
   run: async (script) => {
     const url = '/api/script/run';
     return await post(url, script);
+  },
+  getLogs: async (id) => {
+    const url = '/api/script/logs';
+    return await get(url, { id });
   }
 };

@@ -74,10 +74,34 @@ class Script {
   async run (req, res) {
     const options = req.body;
     try {
-      const r = scriptMod.run(options);
+      const r = await scriptMod.run(options);
+      res.send({
+        success: r.success,
+        message: r.success ? '执行成功' : (r.error || '执行失败'),
+        data: r
+      });
+    } catch (e) {
+      logger.error(e);
+      res.send({
+        success: false,
+        message: e.message
+      });
+    }
+  };
+
+  async getLogs (req, res) {
+    const { id } = req.query;
+    try {
+      if (!id) {
+        return res.send({
+          success: false,
+          message: 'Script ID is required'
+        });
+      }
+      const logs = scriptMod.getExecutionLogs(id);
       res.send({
         success: true,
-        message: r
+        data: logs
       });
     } catch (e) {
       logger.error(e);

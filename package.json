@@ -5,7 +5,9 @@
   "main": "app/app.js",
   "scripts": {
     "app": "export HTTPS_PORT=4443 && export HTTPS_ENABLE=true && export DISPLAY=:99 && export PORT=4000 && nodemon app/app.js",
-    "eslint": "eslint app"
+    "eslint": "eslint app",
+    "test": "jest",
+    "test:property": "jest --testPathPattern=property"
   },
   "author": "",
   "license": "MIT",
@@ -46,6 +48,8 @@
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^4.3.1",
-    "eslint-plugin-standard": "^5.0.0"
+    "eslint-plugin-standard": "^5.0.0",
+    "fast-check": "^3.14.0",
+    "jest": "^29.7.0"
   }
 }
