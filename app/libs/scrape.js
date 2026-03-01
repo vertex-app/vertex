@@ -145,8 +145,8 @@ const _freeHHanClub = async function (url, cookie) {
   if (d.body.innerHTML.indexOf('userdetails') === -1) {
     throw new Error('疑似登录状态失效, 请检查 Cookie');
   }
-  const state = d.querySelector('.promotion-tag');
-  return state && (state.className || '').includes('free');
+  const state = d.querySelector('font.free');
+  return state;
 };
 
 const _freeHUDBT = async function (url, cookie) {
