@@ -273,12 +273,21 @@ const _hrTheGlory = async function (url, cookie) {
   return hr;
 };
 
+const _hrHHanClub = async function (url, cookie) {
+  const d = await getDocument(url, cookie);
+  if (d.body.innerHTML.indexOf('userdetails') === -1) {
+    throw new Error('疑似登录状态失效, 请检查 Cookie');
+  }
+  const hr = d.querySelector('span[class*="bg-[#4966D9]"]');
+  return hr;
+};
+
 const hrWrapper = {
   'www.hddolby.com': _hr,
   'hdhome.org': _hr,
   'ourbits.club': _hr,
   'piggo.me': _hr,
-  'hhanclub.net': _hr,
+  'hhanclub.net': _hrHHanClub,
   'sharkpt.net': _hr,
   'totheglory.im': _hrTheGlory,
   'chdbits.co': _hrCHDBits,
