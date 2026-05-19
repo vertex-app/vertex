@@ -13,7 +13,10 @@ exports.login = async function (username, clientUrl, password) {
     }
   };
   const res = await util.requestPromise(message);
-  if (res.body.indexOf('Ok') !== -1) {
+  // qBittorrent 5.2.0+ returns 204 No Content with empty body on successful login;
+  // older versions return 200 with body "Ok." / "Fails.".
+  const loginOk = res.statusCode === 204 || (res.body && res.body.indexOf('Ok') !== -1);
+  if (loginOk && res.headers['set-cookie'] && res.headers['set-cookie'][0]) {
     Object.keys(apiVersionCache).forEach(key => {
       if (key.startsWith(clientUrl)) {
         delete apiVersionCache[key];
@@ -21,7 +24,7 @@ exports.login = async function (username, clientUrl, password) {
     });
     return res.headers['set-cookie'][0].substring(0, res.headers['set-cookie'][0].indexOf(';'));
   }
-  if (res.body.indexOf('Fails') !== -1) {
+  if (res.body && res.body.indexOf('Fails') !== -1) {
     throw new Error('password is wrong!');
   }
   if (res.statusCode !== 200) {
