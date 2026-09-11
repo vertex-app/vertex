@@ -4,6 +4,7 @@ const proxy = require('express-http-proxy');
 const redis = require('redis');
 const path = require('path');
 const fs = require('fs');
+const crypto = require('crypto');
 
 const config = require('../libs/config');
 const logger = require('../libs/logger');
@@ -128,7 +129,7 @@ module.exports = function (app, express, router) {
     rolling: true,
     saveUninitialized: false,
     store: new RedisStore(redisConfig),
-    secret: 'sses:xetrev',
+    secret: crypto.randomBytes(64).toString('hex'),
     cookie: {
       maxAge: 1000 * 60 * 60 * 24 * 30,
       sameSite: 'lax'
