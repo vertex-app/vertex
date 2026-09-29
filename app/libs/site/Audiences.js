@@ -16,43 +16,59 @@ class Site {
     info.username = document.querySelector('a[href*=userdetails] b').innerHTML;
     // uid
     info.uid = +document.querySelector('a[href*=userdetails]').href.match(/id=(\d+)/)[1];
+    // 站点改版后统计信息挂在 data-uploader-stats 上 (JSON, 按 tone 区分), 不再有 color_uploaded/arrowup 元素
+    const stats = JSON.parse(document.querySelector('[data-uploader-stats]').getAttribute('data-uploader-stats'))
+      .reduce((_stats, item) => { _stats[item.tone] = item.value.trim(); return _stats; }, {});
     // 上传
-    info.upload = document.querySelector('[class=color_uploaded]').nextSibling.nodeValue.trim().replace(/(\w)B/, '$1iB');
-    info.upload = util.calSize(...info.upload.split(' '));
+    info.upload = util.calSize(...stats.uploaded.replace(/(\w)B/, '$1iB').split(' '));
     // 下载
-    info.download = document.querySelector('[class=color_downloaded]').nextSibling.nodeValue.trim().replace(/(\w)B/, '$1iB');
-    info.download = util.calSize(...info.download.split(' '));
-    // 做种
-    info.seeding = +document.querySelector('img[class=arrowup]').nextSibling.nodeValue.trim();
-    // 下载
-    info.leeching = +document.querySelector('img[class=arrowdown]').nextSibling.nodeValue.trim();
-    // 做种体积
-    const seedingDocument = await this._getDocument(`${this.index}getusertorrentlistajax.php?userid=${info.uid}&type=seeding`, true, 300, false, { referer: `https://audiences.me/userdetails.php?id=${info.uid}` });
-    const seedingSize = (seedingDocument.match(/Total: (\d+\.\d+ [KMGTP]B)/) || [0, '0 B'])[1].replace(/([KMGTP])B/, '$1iB');
-    info.seedingSize = util.calSize(...seedingSize.split(' '));
+    info.download = util.calSize(...stats.downloaded.replace(/(\w)B/, '$1iB').split(' '));
+    // 做种/下载, 形如 "↑ 105 / ↓ 0"
+    info.seeding = +stats.active.replace(/[^\d/]/g, '').split('/')[0];
+    info.leeching = +stats.active.replace(/[^\d/]/g, '').split('/')[1];
+    // 做种体积, 站点已移除 getusertorrentlistajax.php 的内容, 改为累加做种列表里的 data-size-bytes
+    info.seedingSize = await this._getSeedingSize();
     return info;
+  };
+
+  async _getSeedingSize () {
+    const torrentIds = new Set();
+    let seedingSize = 0;
+    for (let page = 0; page < 50; page++) {
+      const document = await this._getDocument(`${this.index}torrents.php?inclbookmarked=0&mytorrent=seeding&incldead=0&spstate=0&page=${page}`, false, 300);
+      const torrents = document.querySelectorAll('#torrenttable tr[data-torrent-id]');
+      // 翻页越界时站点会重复返回最后一页, 靠已在集合中的 id 判断到底
+      const newTorrents = [...torrents].filter(torrent => !torrentIds.has(torrent.getAttribute('data-torrent-id')));
+      if (!newTorrents.length) break;
+      for (const torrent of newTorrents) {
+        torrentIds.add(torrent.getAttribute('data-torrent-id'));
+        seedingSize += +(torrent.getAttribute('data-size-bytes') || 0);
+      }
+      if (torrents.length < 100) break;
+    }
+    return seedingSize;
   };
 
   async searchTorrent (keyword) {
     const torrentList = [];
     const document = await this._getDocument(`${this.index}torrents.php?notnewword=1&incldead=0&spstate=0&inclbookmarked=0&search=${encodeURIComponent(keyword)}&search_area=${keyword.match(/tt\d+/) ? 4 : 0}&search_mode=0&tag=`);
-    const torrents = document.querySelectorAll('.torrents tbody tr:not(:first-child)');
+    const torrents = document.querySelectorAll('#torrenttable tr[data-torrent-id]');
     for (const _torrent of torrents) {
       const torrent = {};
       torrent.site = this.site;
-      torrent.title = _torrent.querySelector('td[class="embedded"] > a[href*="details"]').title.trim();
-      torrent.subtitle = _torrent.querySelector('.torrentname > tbody > tr .embedded').lastChild.innerHTML.trim();
+      torrent.title = _torrent.getAttribute('data-title').trim();
+      torrent.subtitle = _torrent.querySelector('.torrent-subtitle-text').textContent.trim();
       torrent.category = _torrent.querySelector('td a[href*=cat] img').title.trim();
-      torrent.link = this.index + _torrent.querySelector('a[href*=details]').href.trim();
-      torrent.id = +torrent.link.match(/id=(\d*)/)[1];
-      torrent.seeders = +(_torrent.querySelector('a[href*=seeders] font') || _torrent.querySelector('a[href*=seeders]') || _torrent.querySelector('span[class=red]')).innerHTML.trim().replace(',', '');
-      torrent.leechers = +(_torrent.querySelector('a[href*=leechers]') || _torrent.childNodes[9]).innerHTML.trim().replace(',', '');
-      torrent.snatches = +(_torrent.querySelector('a[href*=snatches] b') || _torrent.childNodes[11]).innerHTML.trim().replace(',', '');
-      torrent.size = _torrent.childNodes[6].innerHTML.trim().replace('<br>', ' ').replace(/([KMGPT])B/, '$1iB');
-      torrent.time = moment(_torrent.childNodes[5].querySelector('span') ? _torrent.childNodes[5].querySelector('span').title : _torrent.childNodes[5].innerHTML.replace(/<br>/, ' ')).unix();
-      torrent.size = util.calSize(...torrent.size.split(' '));
+      torrent.link = this.index + _torrent.querySelector('.torrent-title-cell a[href*="details"]').getAttribute('href').trim();
+      torrent.id = +_torrent.getAttribute('data-torrent-id');
+      torrent.seeders = +_torrent.getAttribute('data-seeders');
+      torrent.leechers = +_torrent.getAttribute('data-leechers');
+      torrent.snatches = +_torrent.getAttribute('data-times-completed');
+      torrent.size = +_torrent.getAttribute('data-size-bytes');
+      torrent.time = moment(+_torrent.getAttribute('data-added-ts')).unix();
       torrent.tags = [];
-      const tagsDom = _torrent.querySelectorAll('span[class*=tags]');
+      // 不能用 [class*=tags], 会命中外层的 torrent-subtitle-tags
+      const tagsDom = _torrent.querySelectorAll('span.tags');
       for (const tag of tagsDom) {
         torrent.tags.push(tag.innerHTML.trim());
       }
