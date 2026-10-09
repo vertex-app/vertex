@@ -1,6 +1,26 @@
 const util = require('../util');
 const moment = require('moment');
 
+// 注意: getInfo / searchTorrent 在 app/common/Site.js 里是以运行时 Site 实例为 this 调用的,
+// 因此不能用 this.xxx 调用本文件的私有方法 (会得到 undefined), 这里写成模块内函数再用 call(this)
+const _getSeedingSize = async function () {
+  const torrentIds = new Set();
+  let seedingSize = 0;
+  for (let page = 0; page < 50; page++) {
+    const document = await this._getDocument(`${this.index}torrents.php?inclbookmarked=0&mytorrent=seeding&incldead=0&spstate=0&page=${page}`, false, 300);
+    const torrents = document.querySelectorAll('#torrenttable tr[data-torrent-id]');
+    // 翻页越界时站点会重复返回最后一页, 靠已在集合中的 id 判断到底
+    const newTorrents = [...torrents].filter(torrent => !torrentIds.has(torrent.getAttribute('data-torrent-id')));
+    if (!newTorrents.length) break;
+    for (const torrent of newTorrents) {
+      torrentIds.add(torrent.getAttribute('data-torrent-id'));
+      seedingSize += +(torrent.getAttribute('data-size-bytes') || 0);
+    }
+    if (torrents.length < 100) break;
+  }
+  return seedingSize;
+};
+
 class Site {
   constructor () {
     this.name = 'Audiences';
@@ -27,26 +47,8 @@ class Site {
     info.seeding = +stats.active.replace(/[^\d/]/g, '').split('/')[0];
     info.leeching = +stats.active.replace(/[^\d/]/g, '').split('/')[1];
     // 做种体积, 站点已移除 getusertorrentlistajax.php 的内容, 改为累加做种列表里的 data-size-bytes
-    info.seedingSize = await this._getSeedingSize();
+    info.seedingSize = await _getSeedingSize.call(this);
     return info;
-  };
-
-  async _getSeedingSize () {
-    const torrentIds = new Set();
-    let seedingSize = 0;
-    for (let page = 0; page < 50; page++) {
-      const document = await this._getDocument(`${this.index}torrents.php?inclbookmarked=0&mytorrent=seeding&incldead=0&spstate=0&page=${page}`, false, 300);
-      const torrents = document.querySelectorAll('#torrenttable tr[data-torrent-id]');
-      // 翻页越界时站点会重复返回最后一页, 靠已在集合中的 id 判断到底
-      const newTorrents = [...torrents].filter(torrent => !torrentIds.has(torrent.getAttribute('data-torrent-id')));
-      if (!newTorrents.length) break;
-      for (const torrent of newTorrents) {
-        torrentIds.add(torrent.getAttribute('data-torrent-id'));
-        seedingSize += +(torrent.getAttribute('data-size-bytes') || 0);
-      }
-      if (torrents.length < 100) break;
-    }
-    return seedingSize;
   };
 
   async searchTorrent (keyword) {
