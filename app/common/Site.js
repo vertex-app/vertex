@@ -132,7 +132,8 @@ class Site {
       this.retryCount = 0;
     } catch (e) {
       logger.error(e);
-      throw new Error(this.site + ' 站点数据抓取失败 (疑似是 Cookie 失效, 或绕过 CloudFlare 5s 盾失效)');
+      // 附上真实报错, 避免所有异常都被误判成 Cookie/CloudFlare 问题
+      throw new Error(this.site + ' 站点数据抓取失败 (疑似是 Cookie 失效, 或绕过 CloudFlare 5s 盾失效): ' + e.message);
     }
   };
 
