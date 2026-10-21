@@ -3,32 +3,47 @@ const util = require('../util');
 const moment = require('moment');
 
 const _api = async function (cookie, path, data, type = 'form') {
-  logger.debug('M-Team, Wait 2.5s.');
-  await util.sleep(2500);
-  if (type === 'form') {
-    const { body } = await util.requestPromise({
-      url: `https://api.m-team.cc${path}`,
-      method: 'POST',
-      headers: {
-        'x-api-key': cookie
-      },
-      formData: data,
-      json: true
-    });
-    return body.data;
+  // M-Team API 存在最小请求间隔限制(约 3s)，原版 2.5s 间隔在刷新做种列表时会触发 code=4「請求過於頻繁」
+  const maxAttempt = 8;
+  for (let attempt = 1; attempt <= maxAttempt; attempt++) {
+    await util.sleep(4000);
+    try {
+      let body;
+      if (type === 'form') {
+        ({ body } = await util.requestPromise({
+          url: `https://api.m-team.cc${path}`,
+          method: 'POST',
+          headers: {
+            'x-api-key': cookie
+          },
+          formData: data,
+          json: true
+        }));
+      }
+      if (type === 'json') {
+        ({ body } = await util.requestPromise({
+          url: `https://api.m-team.cc${path}`,
+          method: 'POST',
+          headers: {
+            'x-api-key': cookie
+          },
+          body: data,
+          json: true
+        }));
+      }
+      if (body && String(body.code) === '4') {
+        const wait = 10000 * attempt;
+        logger.info(`M-Team 触发限流(${path})，${wait / 1000}s 后重试 [${attempt}/${maxAttempt}]`);
+        await util.sleep(wait);
+        continue;
+      }
+      return body && body.data;
+    } catch (e) {
+      logger.error(`M-Team 请求异常(${path}):`, e.message);
+      await util.sleep(5000);
+    }
   }
-  if (type === 'json') {
-    const { body } = await util.requestPromise({
-      url: `https://api.m-team.cc${path}`,
-      method: 'POST',
-      headers: {
-        'x-api-key': cookie
-      },
-      body: data,
-      json: true
-    });
-    return body.data;
-  }
+  logger.error(`M-Team 请求失败，已达最大重试次数: ${path}`);
 };
 
 class Site {
