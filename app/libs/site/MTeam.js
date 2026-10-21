@@ -31,13 +31,27 @@ const _api = async function (cookie, path, data, type = 'form') {
           json: true
         }));
       }
-      if (body && String(body.code) === '4') {
+      // 部分网络环境下接口返回的是未解析的 JSON 字符串(Content-Type 非 application/json)
+      let parsed = body;
+      if (typeof body === 'string') {
+        try {
+          parsed = JSON.parse(body);
+        } catch {
+          parsed = null;
+        }
+      }
+      if (parsed && String(parsed.code) === '4') {
         const wait = 10000 * attempt;
         logger.info(`M-Team 触发限流(${path})，${wait / 1000}s 后重试 [${attempt}/${maxAttempt}]`);
         await util.sleep(wait);
         continue;
       }
-      return body && body.data;
+      if (!parsed) {
+        logger.info(`M-Team 返回非 JSON(${path})，5s 后重试 [${attempt}/${maxAttempt}]`);
+        await util.sleep(5000);
+        continue;
+      }
+      return parsed.data;
     } catch (e) {
       logger.error(`M-Team 请求异常(${path}):`, e.message);
       await util.sleep(5000);
