@@ -15,7 +15,8 @@ class Rss {
     this._rss = rss;
     this.id = rss.id;
     this.maxSleepTime = rss.maxSleepTime;
-    this.lastRssTime = 0;
+    // 若初始化为 0，重启后首轮会因 now - 0 > maxSleepTime 把所有种子判为「最长休眠时间」拒绝
+    this.lastRssTime = moment().unix();
     this.alias = rss.alias;
     this.urls = rss.rssUrls;
     this.clientArr = rss.clientArr || [rss.client];
