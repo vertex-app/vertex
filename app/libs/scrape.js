@@ -33,7 +33,8 @@ const _free = async function (url, cookie) {
 // cookie = apikey
 const _freeMTeam = async function (url, cookie) {
   const tid = url.match(/\/(\d+)/)[1];
-  // M-Team API 约 3s/次限流，逐种查询必须留出间隔，否则会触发 code=4「請求過於頻繁」
+  // M-Team API 约 3s/次限流; 部分网络环境下接口返回未解析的 JSON 字符串, 这里统一做解析
+  let lastBody = '';
   for (let attempt = 1; attempt <= 5; attempt++) {
     await util.sleep(3000);
     const { body } = await util.requestPromise({
@@ -47,17 +48,26 @@ const _freeMTeam = async function (url, cookie) {
       },
       json: true
     });
-    if (body && String(body.code) === '4') {
+    lastBody = typeof body === 'string' ? body : JSON.stringify(body);
+    let data = body;
+    if (typeof body === 'string') {
+      try {
+        data = JSON.parse(body);
+      } catch {
+        data = null;
+      }
+    }
+    if (data && String(data.code) === '4') {
       logger.info(`M-Team 抓取免费状态触发限流，重试 [${attempt}/5]`);
       continue;
     }
-    if (!body || !body.data) {
-      logger.error(body);
+    if (!data || !data.data) {
+      logger.error('M-Team 抓取免费状态异常返回:', lastBody.slice(0, 300));
       throw new Error('疑似登录状态失效, 请检查 Api Key');
     }
-    return body.data.status?.discount.indexOf('FREE') !== -1;
+    return (data.data.status?.discount || '').indexOf('FREE') !== -1;
   }
-  throw new Error('M-Team 抓取免费状态失败，已达最大重试次数');
+  throw new Error(`M-Team 抓取免费状态失败(限流)，已重试 5 次: ${lastBody.slice(0, 120)}`);
 };
 
 const _freeOpencd = async function (url, cookie) {
