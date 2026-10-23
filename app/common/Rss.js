@@ -84,32 +84,42 @@ class Rss {
     if (_hash && fs.existsSync(path.join(__dirname, '../../torrents', _hash + '.torrent'))) {
       return { hash: _hash, filepath: path.join(__dirname, '../../torrents', _hash + '.torrent') };
     }
-    const res = await util.requestPromise({
-      url: url,
-      method: 'GET',
-      encoding: null,
-      headers: {
-        cookie: this.cookie
+    let lastError;
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      try {
+        const res = await util.requestPromise({
+          url: url,
+          method: 'GET',
+          encoding: null,
+          headers: {
+            cookie: this.cookie
+          }
+        });
+        const buffer = Buffer.from(res.body, 'utf-8');
+        const torrent = bencode.decode(buffer);
+        const size = torrent.info.length || torrent.info.files.map(i => i.length).reduce(this._getSum, 0);
+        const fsHash = crypto.createHash('sha1');
+        fsHash.update(bencode.encode(torrent.info));
+        const md5 = fsHash.digest('md5');
+        let hash = '';
+        for (const v of md5) {
+          hash += v < 16 ? '0' + v.toString(16) : v.toString(16);
+        };
+        const filepath = path.join(__dirname, '../../torrents', hash + '.torrent');
+        fs.writeFileSync(filepath, buffer);
+        return {
+          filepath,
+          hash,
+          size,
+          name: torrent.info.name.toString()
+        };
+      } catch (e) {
+        lastError = e;
+        logger.error(`下载种子文件失败(${attempt}/3): ${url} ${e.message}`);
+        if (attempt < 3) await util.sleep(2000);
       }
-    });
-    const buffer = Buffer.from(res.body, 'utf-8');
-    const torrent = bencode.decode(buffer);
-    const size = torrent.info.length || torrent.info.files.map(i => i.length).reduce(this._getSum, 0);
-    const fsHash = crypto.createHash('sha1');
-    fsHash.update(bencode.encode(torrent.info));
-    const md5 = fsHash.digest('md5');
-    let hash = '';
-    for (const v of md5) {
-      hash += v < 16 ? '0' + v.toString(16) : v.toString(16);
-    };
-    const filepath = path.join(__dirname, '../../torrents', hash + '.torrent');
-    fs.writeFileSync(filepath, buffer);
-    return {
-      filepath,
-      hash,
-      size,
-      name: torrent.info.name.toString()
-    };
+    }
+    throw lastError;
   };
 
   _fitConditions (_torrent, conditions) {

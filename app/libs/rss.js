@@ -862,18 +862,24 @@ const _getTorrentsWrapper = {
 
 exports.getTorrents = async function (rssUrl) {
   const host = new URL(rssUrl).host;
-  try {
-    if (host.indexOf('m-team') !== -1) {
-      return await _getTorrentsMTeam(rssUrl);
+  let lastError;
+  // 代理/网关偶发截断响应，解析失败时重试一次，避免整轮 RSS 被浪费
+  for (let attempt = 1; attempt <= 2; attempt++) {
+    try {
+      if (host.indexOf('m-team') !== -1) {
+        return await _getTorrentsMTeam(rssUrl);
+      }
+      if (_getTorrentsWrapper[host]) {
+        return await _getTorrentsWrapper[host](rssUrl);
+      }
+      return await _getTorrents(rssUrl);
+    } catch (e) {
+      lastError = e;
+      if (attempt === 1) await util.sleep(5000);
     }
-    if (_getTorrentsWrapper[host]) {
-      return await _getTorrentsWrapper[host](rssUrl);
-    }
-    return await _getTorrents(rssUrl);
-  } catch (e) {
-    logger.error(host, '获取 Rss 报错', e);
-    return [];
   }
+  logger.error(host, '获取 Rss 报错', lastError);
+  return [];
 };
 
 exports.getTorrentName = async function (url) {
