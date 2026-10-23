@@ -50,12 +50,19 @@ const _freeMTeam = async function (url, cookie) {
     });
     lastBody = typeof body === 'string' ? body : JSON.stringify(body);
     let data = body;
+    let parseError = false;
     if (typeof body === 'string') {
       try {
         data = JSON.parse(body);
       } catch {
         data = null;
+        parseError = true;
       }
+    }
+    if (parseError) {
+      // 代理/网关偶尔会截断响应，内容可能不是完整 JSON，重试而不是直接判为鉴权失败
+      logger.info(`M-Team 抓取免费状态返回内容不完整，重试 [${attempt}/5]`);
+      continue;
     }
     if (data && String(data.code) === '4') {
       logger.info(`M-Team 抓取免费状态触发限流，重试 [${attempt}/5]`);
