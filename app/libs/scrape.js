@@ -33,23 +33,48 @@ const _free = async function (url, cookie) {
 // cookie = apikey
 const _freeMTeam = async function (url, cookie) {
   const tid = url.match(/\/(\d+)/)[1];
-  // const host = new URL(url).host;
-  const { body } = await util.requestPromise({
-    url: 'https://api.m-team.cc/api/torrent/detail',
-    method: 'POST',
-    headers: {
-      'x-api-key': cookie
-    },
-    formData: {
-      id: tid
-    },
-    json: true
-  });
-  if (!body.data) {
-    logger.error(body);
-    throw new Error('疑似登录状态失效, 请检查 Api Key');
+  // M-Team API 约 3s/次限流; 部分网络环境下接口返回未解析的 JSON 字符串, 这里统一做解析
+  let lastBody = '';
+  for (let attempt = 1; attempt <= 5; attempt++) {
+    await util.sleep(3000);
+    const { body } = await util.requestPromise({
+      url: 'https://api.m-team.cc/api/torrent/detail',
+      method: 'POST',
+      headers: {
+        'x-api-key': cookie
+      },
+      formData: {
+        id: tid
+      },
+      json: true
+    });
+    lastBody = typeof body === 'string' ? body : JSON.stringify(body);
+    let data = body;
+    let parseError = false;
+    if (typeof body === 'string') {
+      try {
+        data = JSON.parse(body);
+      } catch {
+        data = null;
+        parseError = true;
+      }
+    }
+    if (parseError) {
+      // 代理/网关偶尔会截断响应，内容可能不是完整 JSON，重试而不是直接判为鉴权失败
+      logger.info(`M-Team 抓取免费状态返回内容不完整，重试 [${attempt}/5]`);
+      continue;
+    }
+    if (data && String(data.code) === '4') {
+      logger.info(`M-Team 抓取免费状态触发限流，重试 [${attempt}/5]`);
+      continue;
+    }
+    if (!data || !data.data) {
+      logger.error('M-Team 抓取免费状态异常返回:', lastBody.slice(0, 300));
+      throw new Error('疑似登录状态失效, 请检查 Api Key');
+    }
+    return (data.data.status?.discount || '').indexOf('FREE') !== -1;
   }
-  return body.data.status?.discount.indexOf('FREE') !== -1;
+  throw new Error(`M-Team 抓取免费状态失败(限流)，已重试 5 次: ${lastBody.slice(0, 120)}`);
 };
 
 const _freeOpencd = async function (url, cookie) {
