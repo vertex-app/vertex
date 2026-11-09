@@ -1,3 +1,5 @@
+const apiTarget = process.env.VUE_APP_API_TARGET || 'http://127.0.0.1:4000';
+
 module.exports = {
   publicPath: '/',
   outputDir: '../app/static',
@@ -9,14 +11,14 @@ module.exports = {
     open: false,
     proxy: {
       '/api/': {
-        target: 'http://172.20.99.3:4000',
+        target: apiTarget,
         changeOrigin: true,
         ws: true,
         pathRewrite: { '^/api': '/api' },
         secure: false
       },
       '/proxy/': {
-        target: 'http://172.20.99.3:4000',
+        target: apiTarget,
         changeOrigin: true,
         ws: true,
         pathRewrite: { '^/proxy': '/proxy' },
@@ -41,7 +43,12 @@ module.exports = {
       }
     };
     config.plugin('define').tap((args) => {
-      args[0]['process.env'].version = JSON.stringify({
+      args[0]['process.env'].version = JSON.stringify(process.env.VERTEX_BUILD_VERSION ? JSON.parse(process.env.VERTEX_BUILD_VERSION) : process.env.NODE_ENV === 'development' ? {
+        updateTime: moment().utcOffset(8).format('YYYY-MM-DD HH:mm:ss'),
+        head: 'development',
+        commitInfo: '本地开发环境',
+        version: require('./package.json').version
+      } : {
         updateTime: moment(execSync('git log --pretty=format:%at -1').toString().trim() * 1000).utcOffset(8).format('YYYY-MM-DD HH:mm:ss'),
         head: execSync('git rev-parse HEAD').toString().trim().substring(0, 12),
         commitInfo: execSync('git log --pretty=format:%s -1').toString().trim(),

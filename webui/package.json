@@ -5,6 +5,7 @@
   "author": "",
   "scripts": {
     "serve": "vue-cli-service serve",
+    "prepare:themes": "node prepare-themes.js",
     "build": "vue-cli-service build",
     "eslint": "eslint src"
   },

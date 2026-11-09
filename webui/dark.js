@@ -21,8 +21,9 @@ const paths = [
       // customColorRegexArray: [/^color\(.*\)$/]
     }).then(res => {
       console.log('配置主题成功');
-    }).catch(res => {
-      console.log('配置主题失败');
     });
   }
-})();
+})().catch(err => {
+  console.error('配置主题失败', err);
+  process.exitCode = 1;
+});

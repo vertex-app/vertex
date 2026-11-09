@@ -1,0 +1,17 @@
+**
+!package.json
+!package-lock.json
+!app/
+!app/**
+app/data/
+app/db/
+app/config/config.yaml
+**/node_modules/
+**/.git/
+**/.env
+**/.env.*
+**/.aws/
+**/.codex/
+**/.agents/
+!docker/
+!docker/start.sh

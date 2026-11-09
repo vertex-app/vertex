@@ -2,87 +2,127 @@ name: Build Docker Image
 
 on:
   push:
-    branches:
-    - dev
-    - stable
-    - release
+    branches: [dev, stable, release]
+    tags: ['v*']
+  pull_request:
+    branches: [dev, stable, release]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  IMAGE_NAME: lswl/vertex
 
 jobs:
-  build_docker_image:
-    runs-on: ubuntu-latest
+  check:
+    name: Lint and build frontend
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
     steps:
-    - uses: actions/checkout@v3
-    - run: git fetch --prune --unshallow
-    - name: Use Node.js 14.x
-      uses: actions/setup-node@v3
-      with:
-        node-version: 14.x
-        cache: 'npm'
-    - name: Prepare ENV
-      run: |
-        CI_COMMIT_BRANCH=$GITHUB_REF_NAME
-        CI_COMMIT_TIMESTAMP="${{ github.event.head_commit.timestamp }}"
-        TIMEVERSION=$(TZ=Asia/Shanghai date -d $CI_COMMIT_TIMESTAMP "+%Y.%m.%d")
-        echo "CI_COMMIT_BRANCH=$CI_COMMIT_BRANCH" >> $GITHUB_ENV
-        echo "CI_COMMIT_SHA=${{ github.event.head_commit.id }}" >> $GITHUB_ENV
-        echo "IMAGE_TAG_LATEST=lswl/vertex:latest" >> $GITHUB_ENV
-        echo "DOCKER_BUILDKIT=1" >> $GITHUB_ENV
-        echo "IMAGE_TAG_BRANCH=lswl/vertex:$CI_COMMIT_BRANCH" >> $GITHUB_ENV
-        echo "IMAGE_TAG_TIMEVERSION=lswl/vertex:$TIMEVERSION" >> $GITHUB_ENV
-    - name: Install Dependencies
-      run: |
-        npm i --save-dev
-        cd webui
-        npm i --legacy-peer-deps --save-dev
-    - name: Eslint
-      run: |
-        npm run eslint
-        cd webui
-        npm run eslint
-    - name: Prepare Theme Files
-      working-directory: ./webui
-      run: |
-        mkdir ./public/assets/styles
-        node dark
-        node light
-        node cyber
-        echo '@import url(/api/setting/getBackground.less);' >> ./public/assets/styles/cyber.less
-        echo '.body-bg {' >> ./public/assets/styles/cyber.less
-        echo '  background:@vt-bg-image;' >> ./public/assets/styles/cyber.less
-        echo '  background-position-x:center;' >> ./public/assets/styles/cyber.less
-        echo '  background-position-y:center;' >> ./public/assets/styles/cyber.less
-        echo '  background-size:cover;' >> ./public/assets/styles/cyber.less
-        echo '}' >> ./public/assets/styles/cyber.less
-        echo '' >> ./public/assets/styles/cyber.less
-        echo '.login-layout {' >> ./public/assets/styles/cyber.less
-        echo '  background:@body-background;' >> ./public/assets/styles/cyber.less
-        echo '}' >> ./public/assets/styles/cyber.less
-        echo '' > ./public/assets/styles/follow.less
-    - name: Build Static Files
-      working-directory: ./webui
-      run: |
-        npm run build
-    - name: Prepare Docker Env
-      run: |
-        docker info
-        docker run --privileged --rm tonistiigi/binfmt --install all
-        mkdir -p ~/.docker/cli-plugins
-        wget "https://github.com/docker/buildx/releases/download/v0.7.1/buildx-v0.7.1.linux-arm64" -qO ~/.docker/cli-plugins/docker-buildx
-        chmod +x ~/.docker/cli-plugins/docker-buildx
-        docker context create context_name
-        docker buildx create --name buildx_name --use context_name
-        docker buildx inspect --bootstrap
-        docker login -u "${{ secrets.DOCKER_USERNAME }}" -p "${{ secrets.DOCKER_PASSWORD }}"
-        mkdir docker/src
-        mv app/static docker/src
-        cd docker
-        sed -i 's/COMMIT_ID/'$CI_COMMIT_SHA'/' Dockerfile
-        ls src/static
-        docker pull --platform linux/arm64 lswl/vertex:latest || echo 'fail'
-        docker pull --platform linux/amd64 lswl/vertex:latest || echo 'fail'
-    - name: Build Docker Images
-      working-directory: ./docker
-      run: |
-        docker buildx build --platform linux/amd64,linux/arm64 --cache-from lswl/vertex --tag $IMAGE_TAG_LATEST --build-arg BUILDKIT_INLINE_CACHE=1 . --push
-        docker buildx build --platform linux/amd64,linux/arm64 --cache-from lswl/vertex --tag $IMAGE_TAG_BRANCH --build-arg BUILDKIT_INLINE_CACHE=1 . --push
-        docker buildx build --platform linux/amd64,linux/arm64 --cache-from lswl/vertex --tag $IMAGE_TAG_TIMEVERSION --build-arg BUILDKIT_INLINE_CACHE=1 . --push
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            webui/package-lock.json
+
+      # Static checks do not need SQLite bindings or a Chromium download.
+      - name: Install dependencies
+        run: |
+          npm ci --ignore-scripts --no-audit --no-fund
+          npm ci --prefix webui --legacy-peer-deps --ignore-scripts --no-audit --no-fund
+
+      - name: Lint
+        run: |
+          npm run eslint
+          npm run eslint --prefix webui
+          npx --no-install eslint --no-ignore .github/scripts/build-version.cjs webui/prepare-themes.js webui/dark.js webui/light.js webui/cyber.js
+
+      - name: Prepare build metadata
+        run: node .github/scripts/build-version.cjs
+
+      - name: Prepare themes
+        run: npm run prepare:themes --prefix webui
+
+      - name: Build frontend
+        run: npm run build --prefix webui
+
+      - name: Upload frontend
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-artifact@v7
+        with:
+          name: frontend-${{ github.sha }}
+          path: app/static/
+          if-no-files-found: error
+          retention-days: 3
+
+  publish:
+    name: Publish multi-platform image
+    needs: check
+    if: >-
+      github.event_name != 'pull_request' &&
+      (github.ref == 'refs/heads/dev' ||
+       github.ref == 'refs/heads/stable' ||
+       github.ref == 'refs/heads/release' ||
+       startsWith(github.ref, 'refs/tags/v'))
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - uses: actions/download-artifact@v8
+        with:
+          name: frontend-${{ github.sha }}
+          path: app/static/
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v4
+        with:
+          platforms: arm64
+
+      - name: Set up Buildx
+        uses: docker/setup-buildx-action@v4
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v4
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Image metadata
+        id: meta
+        uses: docker/metadata-action@v6
+        env:
+          DOCKER_METADATA_SHORT_SHA_LENGTH: 12
+        with:
+          images: ${{ env.IMAGE_NAME }}
+          flavor: latest=false
+          tags: |
+            type=ref,event=branch
+            type=ref,event=tag
+            type=sha
+            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/stable' }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: docker/Dockerfile
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha,scope=vertex-${{ github.ref_name }}
+          cache-to: type=gha,mode=max,scope=vertex-${{ github.ref_name }}
