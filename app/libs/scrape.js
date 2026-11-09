@@ -87,7 +87,7 @@ const _freeOpencd = async function (url, cookie) {
 };
 
 // eslint-disable-next-line no-unused-vars
-const _freeHDChina = async function (url, cookie) {
+const _freeHDWinG = async function (url, cookie) {
   const d = await getDocument(url, cookie);
   if (d.body.innerHTML.indexOf('userdetails') === -1) {
     throw new Error('疑似登录状态失效, 请检查 Cookie');
@@ -95,7 +95,7 @@ const _freeHDChina = async function (url, cookie) {
   const tid = url.match(/id=(\d*)/)[1];
   const csrf = d.querySelector('meta[name=x-csrf]').content;
   const promotion = await util.requestPromise({
-    url: 'https://hdchina.org/ajax_promotion.php',
+    url: 'https://hdwing.org/ajax_promotion.php',
     method: 'POST',
     headers: {
       cookie

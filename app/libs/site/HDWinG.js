@@ -4,9 +4,9 @@ const { JSDOM } = require('jsdom');
 
 class Site {
   constructor () {
-    this.name = 'HDChina';
-    this.downloadLink = 'https://hdchina.org/download.php?id={ID}';
-    this.url = 'https://hdchina.org/';
+    this.name = 'HDWinG';
+    this.downloadLink = 'https://hdwing.org/download.php?id={ID}';
+    this.url = 'https://hdwing.org/';
     this.id = 13;
   };
 
