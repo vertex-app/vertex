@@ -2,7 +2,10 @@ FROM lswl/vertex-base:latest AS dependencies
 WORKDIR /app/vertex
 
 COPY package.json package-lock.json ./
+# npm 8 supports lockfile v3 while remaining compatible with Node.js 14.
 RUN apk add --no-cache gcc g++ python3 cmake make npm libc-dev && \
+  npm install --global npm@8.19.4 --no-audit --no-fund && \
+  node --version && npm --version && \
   PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true npm ci --omit=dev --no-audit --no-fund
 
 FROM lswl/vertex-base:latest
