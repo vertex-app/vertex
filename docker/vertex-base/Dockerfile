@@ -4,7 +4,8 @@
 FROM alpine:3.24
 LABEL maintainer="lswl.in"
 
-# 验证运行时确为 Node.js 26，避免基础镜像标签与实际版本不符。
+# Alpine 3.24 的 nodejs 包为 24.x，26.x 使用 community 的 nodejs-current。
+# 约束在 26.x，避免仓库后续更新后静默安装其他主版本。
 # ttf-freefont 在新版 Alpine 中使用实际包名 font-freefont。
 RUN apk add --no-cache \
       xvfb \
@@ -17,16 +18,16 @@ RUN apk add --no-cache \
       font-noto-emoji \
       shadow \
       bash \
-      nodejs \
+      'nodejs-current~26' \
       npm \
       tzdata \
       ca-certificates \
       fontconfig && \
       rm -rf /var/cache/* && \
       mkdir /var/cache/apk && \
-    node -e 'if (process.versions.node.split(".")[0] !== "26") process.exit(1)' && \
     node --version && \
-    npm --version
+    npm --version && \
+    node -e "require('node:assert/strict').equal(process.versions.node.split('.')[0], '26', 'Expected Node.js 26')"
 
 # 沿用旧基础镜像项目中的字体配置，构建上下文需包含原 src/local.conf。
 COPY src/local.conf /etc/fonts/local.conf
