@@ -6,12 +6,5 @@ const logger = yaml.load(fs.readFileSync(path.join(__dirname, '../config/logger.
 module.exports = {
   getLoggerConfig () {
     return logger;
-  },
-
-  getRedisConfig () {
-    return {
-      host: '127.0.0.1',
-      port: process.env.REDISPORT
-    };
   }
 };

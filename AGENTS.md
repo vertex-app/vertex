@@ -2,28 +2,33 @@
 
 ## 项目概述
 Vertex 是适用于 PT 玩家的追剧、刷流综合管理工具。README 说明项目目前仅做问题修复，不新增功能。
-后端代码位于 `app/`，入口为 `app/app.js`；前端代码位于 `webui/`。
+后端入口为 `app/app.js`，前端位于 `webui/`；前后端当前项目版本均为 `0.0.14.0`。
 
 ## 开发环境
-后端使用 Node.js、Express，依赖 SQLite（better-sqlite3）和 Redis；前端使用 Vue 3、Ant Design Vue 和 Vue CLI。
-根目录与 `webui/` 分别维护 `package.json`，当前版本均为 `0.0.14.0`。
-后端静态检查脚本为 `npm run eslint`；前端静态检查在 `webui/` 中执行 `npm run eslint`。两者均未配置 `test` 脚本。
-2026-11-09 本机开发环境已启动：前端 `http://localhost:8081/`（8080 被其他服务占用，Vue CLI 自动选择 8081），后端 HTTP 4000，Redis 仅监听 `127.0.0.1:6379`。Redis PING、前端首页和登录页、API 代理均已验证；未登录访问 `/api/user/get` 返回预期的 401。
-兼容运行时为 `/tmp/vertex-dev-runtime/node_modules/node/bin/node`（Node.js 16.20.2），用于项目锁定的 better-sqlite3 7.5.3；该模块已安装对应预编译二进制。前后端依赖通过 `npm ci --ignore-scripts` 安装，未下载 Chromium。
-Redis 7.2.6 源码及本地编译产物位于 `/tmp/vertex-dev-redis/redis-7.2.6/`；开发实例使用 `--bind 127.0.0.1 --port 6379 --save '' --appendonly no`，不持久化缓存。未使用管理员权限或 Docker。
-服务日志和 PID 记录位于 `/tmp/vertex-dev-services/`，分别为 `redis`、`backend`、`frontend` 的 `.log` 和 `.pid` 文件。日志可能包含业务数据，不应直接公开。停止服务前必须用 `netstat -lntp` 核实 PID。
-重新启动后端：在根目录使用兼容 Node 执行 `app/app.js`，环境变量为 `PORT=4000 REDISPORT=6379 HTTPS_ENABLE=false NODE_ENV=development`。重新启动前端：在 `webui/` 使用兼容 Node 执行 `node_modules/@vue/cli-service/bin/vue-cli-service.js serve --port 8081`。先启动 Redis，再启动后端及前端，并将兼容运行时目录加入 PATH。以上 `/tmp` 文件在系统清理后需要重建。
-前端开发代理默认连接 `http://127.0.0.1:4000`，可通过 `VUE_APP_API_TARGET` 覆盖；开发模式版本信息使用 package.json 和开发标记，不执行 Git 命令。
+使用 Node.js 26.13.0、npm 11.20.0，版本文件为 `.nvmrc`，前后端 package.json 均声明运行版本。后端使用 Express 和 SQLite（better-sqlite3 13.0.3），前端使用 Vue 3、Vue CLI 5.0.9、Ant Design Vue。
+2026-11-09 已将本机开发服务切换为 Node 26：前端 `http://localhost:8081/`，后端 HTTP 4000。原项目 Redis 实例已停止，6379 无监听，后端无需 Redis。
+本次使用的隔离运行时位于 `/tmp/vertex-node26/node_modules/node/bin/node`。后端启动参数为 `PORT=4000 HTTPS_ENABLE=false NODE_ENV=development`，前端在 webui 下执行 Vue CLI serve 并指定 8081；PATH 需优先包含 Node 26 目录。
+本机浏览器使用 `/usr/bin/google-chrome`，开发后端设置 `PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome PUPPETEER_HEADLESS=true`。容器默认使用 `/usr/bin/chromium` 和 Xvfb 有头模式，按需设置 `PUPPETEER_HEADLESS=true` 可切换无头模式。
+服务 PID 文件在 `/tmp/vertex-dev-services/`，当前日志为 `backend-node26.log`、`frontend-node26.log`。日志可能包含业务数据，不直接公开。停止进程前必须通过 netstat 核实 PID。
+重启前数据库备份为 `/tmp/vertex-node26-data-backup-ov1uh4at/sql.db`，父目录权限 700、文件权限 600；该文件含业务数据，不应公开。
+后端和测试静态检查使用 `npm run eslint`，测试使用 `npm test`，前端检查为 `npm run eslint --prefix webui`。构建产物 app/static 由 .eslintignore 排除。主题准备为 `npm run prepare:themes --prefix webui`。
+根 package.json 的 allowScripts 允许 ssh2 安装脚本；禁用 utf-8-validate 和 cpu-features 的原生构建脚本，前者使用官方 JavaScript 回退，后者为 SSH 可选加速模块。SQLite 使用包内预编译模块，Puppeteer 使用系统浏览器，node-cron 的赞助脚本不执行。隔离生产依赖安装已通过，包含 linuxmusl-x64/arm64 预编译文件；Alpine 实际加载由应用 Dockerfile 的运行阶段校验。
 
 ## 测试账号
-待补充
+不保存真实测试凭据。会话集成测试使用临时 HTTP 服务与进程内账号，不修改应用账号配置。
 
 ## 常见问题
-Docker 基础镜像的旧 npm 无法读取项目 lockfileVersion 3，会在 `npm ci` 阶段报 `Cannot read property 'bencode' of undefined`。依赖构建阶段需先固定安装 npm 8.19.4，该版本兼容 Node.js 14。2026-11-09 已使用隔离的 Node.js 14.20.1 + npm 6.14.17 复现错误，替换为 npm 8.19.4 后 379 个生产依赖安装通过；验证命令带 `--ignore-scripts`，未覆盖原生模块编译。测试工具和依赖位于 `/tmp/vertex-npm-compat/`。
+2026-11-10 后端曾因 SSH 终端请求退出：ServerMod.shell 直接读取不存在的 runningServer 项，控制器未等待并捕获异步异常。现已对未启用/不存在的服务器返回明确提示，捕获控制器拒绝、SSH/流错误与 WebSocket 关闭竞争，并隐藏禁用服务器的终端入口。新增 5 项回归测试，完整 24 项测试及相关 ESLint 通过；后端已恢复，4000 与前端代理返回预期 401，登录页返回 200。恢复后原会话失效，需重新登录。未修改服务器启用状态或连接凭据。
+内存状态仅适用于单 Node.js 主进程，不支持 cluster、多 worker 或多副本共享状态。重启会清空会话、缓存和临时交互，需要重新登录；SQLite 和配置文件继续持久化。
+内存默认总计账额度 64 MiB，可重建缓存 32 MiB、会话 16 MiB、业务状态 8 MiB、交互 4 MiB。通过 `VERTEX_MEMORY_TOTAL_MB`、`VERTEX_MEMORY_CACHE_MB`、`VERTEX_MEMORY_SESSIONS_MB`、`VERTEX_MEMORY_STATE_MB`、`VERTEX_MEMORY_INTERACTION_MB` 覆盖，取值为 1 到 4096 的整数。额度是模块估算，不是进程 RSS 硬上限。
+会话和业务状态不会被普通缓存 LRU 淘汰；容量不足时明确失败或等待下轮重试。最近五条错误使用独立有界队列。
+Vue CLI 的 IPC 传递依赖已固定到 @achrinza/node-ipc 9.2.10，其 engines 仍仅列到 Node 25，npm 会产生 EBADENGINE 告警；当前 Node 26 下的生产构建和开发服务已验证通过。旧构建工具另有 fs.Stats 弃用和包体积/预缓存告警，尚未迁移至 Vite。
+主题生成器只能将源主题变量作为输入，不能扫描生成目录；准备脚本还会检测生成器内部捕获但未返回失败码的 Less 编译错误。
+历史 npm 6 无法读取 v3 锁文件的临时 npm 8 处理已移除，当前使用 Node 26/npm 11。
 
 ## 其他备忘
-GitHub Actions 工作流为 `.github/workflows/build-docker-image.yml`：PR 目标分支及推送分支为 dev、stable、release，另支持 v* 标签与手动触发。检查任务使用 Node.js 22，执行前后端 ESLint、主题准备及前端构建；只做静态检查所需的依赖安装会跳过安装脚本。发布任务不在 PR 中运行，手动触发时也仅允许上述分支或 v* 标签发布。
-Docker Hub 镜像为 `lswl/vertex`，继续使用仓库 Secrets `DOCKER_USERNAME`、`DOCKER_PASSWORD`。分支保留同名标签，版本标签保留原名，另生成 `sha-` 加 12 位提交号的标签；仅 stable 分支更新 latest，不再生成日期标签。同一 ref 的推送发布串行执行，PR 可取消过时运行。
-Docker 使用当前检出源码和同次流水线上传的前端 artifact；构建上下文改为仓库根目录，Dockerfile 为 `docker/Dockerfile`。多阶段构建将依赖安装与源码复制分离，构建缓存使用 GitHub Actions cache。`.dockerignore` 采用白名单，排除本地运行数据、数据库和配置，包含前端 `app/static/` 及默认配置模板。
-主题准备统一执行 `npm run prepare:themes --prefix webui`；生成失败或产物缺失会使任务失败。CI 版本信息由 `.github/scripts/build-version.cjs` 写入 `VERTEX_BUILD_VERSION`，避免浅克隆及缺少标签影响前端构建。
-2026-11-09 工作流优化已通过前后端及辅助脚本 ESLint、actionlint、构建元数据与主题失败处理验证，以及 Docker 官方匹配器的上下文过滤检查。未执行本地生产构建、Docker 构建或远程流水线；镜像构建仍沿用 `lswl/vertex-base:latest`，其 amd64/arm64 平台已通过公开 manifest 确认，原生依赖安装和实际发布需在后续 CI 运行中验证。
+2026-11-10 已升级后端运行依赖并刷新锁文件，详见 docs/backend-dependency-upgrade.md。request 改为 @cypress/request，connect-multiparty 改为仅用于已认证备份恢复路由的 multer；上传备份使用权限 700 的独立临时目录并自动清理。UUID 使用 Node.js crypto.randomUUID。bencode 4 通过动态 import 加载，名称字节串需先转 Buffer；node-cron 4 删除任务必须 destroy，不能仅 stop。32 项测试、ESLint、干净生产安装、SQLite、IRC 初始化和系统 Chrome 验证通过。生产审计由 38 项降至 4 项低危，剩余来自 Puppeteer 插件的 deepmerge，尚无上游修复版本。Express 保留最新 4.x；ESLint 主版本迁移、crypto-js 停更后的替代及 Alpine 容器验证仍待处理。
+两套方案及实施状态见 `docs/plans/node26-upgrade.md`、`docs/plans/remove-redis.md`。应用 Dockerfile 的两个阶段使用维护者已发布的 `lswl/vertex-base:26`，构建时校验 Node 主版本和原生 SQLite 实际加载，并移除旧基础镜像中可能存在的 Redis 包。
+独立基础镜像 Dockerfile 为 `docker/vertex-base/Dockerfile`，保留维护者的 Alpine 3.24 + apk nodejs/npm 方式，已删除 Redis。字体配置 COPY 仍沿用原 src/local.conf；维护者已自行找回该文件，当前仓库未包含该字体文件，不重新生成其内容。后续重建基础镜像可进一步去除旧镜像层中的 Redis 文件。
+GitHub Actions 检查任务从 .nvmrc 读取版本，执行前后端及辅助脚本 ESLint、内存/会话/原生模块测试、主题生成和前端构建。PR 不发布镜像；仅 stable 更新 latest，另有分支、版本和提交 SHA 标签。newnode 分支推送会触发检查并发布 lswl/vertex:newnode 及提交 SHA 标签，用于 Node 26 与内存状态实现的预发布验证。Docker Hub Secrets 继续使用 DOCKER_USERNAME、DOCKER_PASSWORD。
+2026-11-09 已通过 19 项自动测试、真实路由登录/退出、原数据库模板完整性检查、本地 SSH 握手与命令通道、Node 26 下的主题及生产构建、系统 Chrome + 新版 Puppeteer/stealth 隔离上下文验证，以及无 Redis 的开发服务启动；真实浏览器登录页渲染正常且无页面脚本异常。本次未执行 Docker 构建、Git 提交或推送；amd64/arm64 Alpine 容器集成仍待 CI 验证。

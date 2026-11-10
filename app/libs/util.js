@@ -1,19 +1,19 @@
 const util = require('util');
 const fs = require('fs');
 const path = require('path');
-const uuid = require('uuid');
+const { randomUUID } = require('crypto');
 const tar = require('tar');
 const md5 = require('md5-node');
 const CryptoJS = require('crypto-js');
 const cron = require('node-cron');
-const request = require('request');
+const request = require('@cypress/request');
 const Database = require('better-sqlite3');
 const puppeteer = require('puppeteer-extra');
 const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 const url = require('url');
 const { JSDOM } = require('jsdom');
 const moment = require('moment');
-const redlock = require('./redlock');
+const BrowserManager = require('./memory/browser');
 
 const logger = require('./logger');
 const scrape = require('./scrape');
@@ -21,15 +21,18 @@ const scrape = require('./scrape');
 const db = new Database(path.join(__dirname, '../db/sql.db'));
 puppeteer.use(StealthPlugin());
 
-let browser;
-
-const ttl = 15000;
+const browserManager = new BrowserManager(() => puppeteer.launch({
+  executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || '/usr/bin/chromium',
+  args: ['--no-sandbox'],
+  headless: process.env.PUPPETEER_HEADLESS === 'true',
+  timeout: 30000
+}));
 
 for (const k of Object.keys(util)) {
   exports[k] = util[k];
 }
 
-exports.redlock = redlock;
+exports.closeBrowser = () => browserManager.close();
 
 exports.getRecords = async function (sql, options = []) {
   let _sql = sql;
@@ -107,67 +110,41 @@ exports.requestPromise = async function (_options, usePuppeteer = true) {
 };
 
 exports.requestUsePuppeteer = async function (options) {
-  const lock = await exports.redlock.lock('vertex:puppeteer', ttl);
-  logger.debug('locked');
-  try {
-    if (!browser || browser.process().exitCode === 0) {
-      browser = await puppeteer.launch({
-        executablePath: '/usr/bin/chromium',
-        args: [
-          '--no-sandbox'
-        ],
-        headless: false
-      });
-    }
-    lock.unlock();
-    logger.debug('unlocked');
-  } catch (e) {
-    logger.error(e);
-    lock.unlock();
-    logger.debug('unlocked');
-  }
-  const page = await browser.newPage();
-  try {
+  return browserManager.run(async (page, context) => {
     await page.setViewport({ width: 800, height: 600 });
     await page.setUserAgent(options.headers['User-Agent']);
     if (options.headers.cookie) {
-      const cookieList = options.headers.cookie.split(';').map(i => i.trim())
-        .filter(i => i !== '')
-        .map(i => {
-          return {
-            name: i.split('=')[0],
-            value: i.split('=')[1],
-            domain: new url.URL(options.url).hostname
-          };
-        });
-      if (cookieList.length !== 0) await page.setCookie(...cookieList);
+      const cookies = options.headers.cookie.split(';').map(item => item.trim()).filter(Boolean).map(item => {
+        const separator = item.indexOf('=');
+        if (separator < 1) return null;
+        return {
+          name: item.slice(0, separator),
+          value: item.slice(separator + 1),
+          domain: new url.URL(options.url).hostname,
+          path: '/'
+        };
+      }).filter(Boolean);
+      if (cookies.length) await context.setCookie(...cookies);
     }
-    await page.goto(options.url, {});
-    await page.waitForTimeout(30000);
-    const body = await page.content();
-    await page.close();
-    if ((await browser.pages()).length === 1) {
-      logger.info('关闭 Puppeteer....');
-      await browser.close();
-    }
+    const response = await page.goto(options.url, { timeout: 60000, waitUntil: 'domcontentloaded' });
+    await exports.sleep(30000);
+    const cookies = await context.cookies();
     return {
-      body
+      body: await page.content(),
+      statusCode: response ? response.status() : 200,
+      headers: {
+        'set-cookie': cookies.filter(cookie => {
+          const domain = cookie.domain.replace(/^\./, '');
+          const host = new url.URL(options.url).hostname;
+          return host === domain || host.endsWith('.' + domain);
+        }).map(cookie => `${cookie.name}=${cookie.value}; Path=${cookie.path}`)
+      }
     };
-  } catch (e) {
-    logger.error('Puppeteer 报错:\n', e);
-    await page.close();
-    if ((await browser.pages()).length === 1) {
-      logger.info('关闭 Puppeteer....');
-      await browser.close();
-    }
-    return {
-      body: ''
-    };
-  }
+  });
 };
 
 exports.exec = util.promisify(require('child_process').exec);
-exports.uuid = uuid;
+exports.uuid = { v4: randomUUID };
 exports.md5 = md5;
 exports.tar = tar;
 
@@ -610,7 +587,7 @@ exports.syncCookieCloud = async (cc) => {
 exports.initCookieCloud = function () {
   const setting = JSON.parse(fs.readFileSync(path.join(__dirname, '../data/setting.json')));
   if (global.cookiecloud) {
-    global.cookiecloud.stop();
+    global.cookiecloud.destroy();
     delete global.cookiecloud;
   }
   if (!setting.cookiecloud?.enable) {

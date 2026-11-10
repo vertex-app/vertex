@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const moment = require('moment');
 const util = require('../libs/util');
-const redis = require('../libs/redis');
+const errorsBuffer = require('../libs/memory/error-buffer');
 const Push = require('../common/Push');
 const otp = require('../libs/otp');
 
@@ -146,8 +146,8 @@ class SettingMod {
     for (const tracker of Object.keys(perTrackerTodaySet)) {
       perTrackerToday.push({ tracker, ...perTrackerTodaySet[tracker] });
     }
-    const errors = global.ignoreError ? [] : JSON.parse(await redis.get('vertex:error:list') || '[]');
-    await redis.set('vertex:error:list', '[]');
+    const pendingErrors = errorsBuffer.drain();
+    const errors = global.ignoreError ? [] : pendingErrors;
     return {
       dashboardContent: global.dashboardContent,
       uploaded: uploaded || 0,

@@ -24,7 +24,8 @@
         </template>
         <template v-if="column.title === '操作'">
           <span>
-            <a @click="goto(record)">shell</a>
+            <a v-if="record.enable" @click="goto(record)">终端</a>
+            <span v-else>未启用</span>
             <a-divider type="vertical" />
             <a-dropdown>
               <a class="ant-dropdown-link" @click.prevent>
@@ -235,6 +236,10 @@ export default {
       }
     },
     goto (record) {
+      if (!record.enable) {
+        this.$message().warning('请先启用服务器');
+        return;
+      }
       window.open('/tool/shell/' + record.id);
     }
   },

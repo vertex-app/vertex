@@ -5,40 +5,34 @@
   "main": "app/app.js",
   "scripts": {
     "app": "export HTTPS_PORT=4443 && export HTTPS_ENABLE=true && export DISPLAY=:99 && export PORT=4000 && nodemon app/app.js",
-    "eslint": "eslint app"
+    "eslint": "eslint app test",
+    "test": "node --test test/*.test.js"
   },
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "bencode": "^2.0.1",
-    "better-sqlite3": "~7.5.3",
-    "connect-multiparty": "^2.2.0",
-    "connect-redis": "^6.0.0",
+    "@cypress/request": "^4.0.1",
+    "bencode": "^4.0.1",
+    "better-sqlite3": "13.0.3",
     "crypto-js": "^4.2.0",
-    "express": "^4.17.1",
-    "express-http-proxy": "^1.6.3",
-    "express-session": "^1.17.2",
+    "express": "^4.22.3",
+    "express-http-proxy": "^2.1.2",
+    "express-session": "^1.19.0",
     "express-ws": "^5.0.2",
-    "form-data": "^4.0.0",
-    "got": "^11.8.2",
-    "js-yaml": "^4.0.0",
-    "jsdom": "^20.0.0",
-    "log4js": "^6.3.0",
-    "matrix-org-irc": "^1.2.1",
+    "js-yaml": "^5.5.0",
+    "jsdom": "^31.0.0",
+    "log4js": "^6.9.1",
+    "matrix-org-irc": "^3.1.0",
     "md5-node": "^1.0.1",
-    "moment": "^2.29.1",
-    "node-cron": "~2.0.3",
-    "puppeteer": "^13.4.0",
-    "puppeteer-extra": "^3.2.3",
-    "puppeteer-extra-plugin-stealth": "^2.9.0",
-    "redis": "^3.1.2",
-    "redlock": "^4.2.0",
-    "request": "^2.88.2",
-    "ssh2": "~1.6.0",
-    "tar": "^6.1.11",
-    "uuid": "^8.3.2",
-    "webdav": "^4.11.0",
-    "xml2js": "^0.4.23"
+    "moment": "^2.31.0",
+    "multer": "^2.5.0",
+    "node-cron": "^4.6.0",
+    "puppeteer": "25.16.0",
+    "puppeteer-extra": "3.3.6",
+    "puppeteer-extra-plugin-stealth": "2.11.2",
+    "ssh2": "^1.17.0",
+    "tar": "^7.5.22",
+    "xml2js": "^0.6.2"
   },
   "devDependencies": {
     "eslint": "^7.22.0",
@@ -46,6 +40,20 @@
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^4.3.1",
-    "eslint-plugin-standard": "^5.0.0"
+    "eslint-plugin-standard": "^5.0.0",
+    "nodemon": "^3.1.10"
+  },
+  "engines": {
+    "node": ">=26 <27",
+    "npm": ">=11 <12"
+  },
+  "packageManager": "npm@11.20.0",
+  "allowScripts": {
+    "better-sqlite3": false,
+    "node-cron": false,
+    "puppeteer": false,
+    "ssh2": true,
+    "utf-8-validate": false,
+    "cpu-features": false
   }
 }

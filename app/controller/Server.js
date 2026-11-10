@@ -170,7 +170,20 @@ class Server {
   };
 
   async shell (ws, req) {
-    serverMod.shell(ws, req);
+    try {
+      await serverMod.shell(ws, req);
+    } catch (err) {
+      logger.error('终端连接失败', err);
+      if (ws.readyState === 1) {
+        const message = err.code === 'SERVER_NOT_AVAILABLE' ? err.message : '终端连接失败，请检查服务器配置';
+        try {
+          ws.send(`\r\n*** ${message} ***\r\n`, () => {});
+          ws.close(1011, '终端连接失败');
+        } catch (closeError) {
+          logger.debug('终端连接已关闭');
+        }
+      }
+    }
   };
 }
 module.exports = Server;

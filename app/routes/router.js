@@ -1,28 +1,16 @@
-const Multipart = require('connect-multiparty');
+const upload = require('../libs/upload');
 const session = require('express-session');
 const proxy = require('express-http-proxy');
-const redis = require('redis');
+const MemorySessionStore = require('../libs/memory/session-store');
 const path = require('path');
 const fs = require('fs');
 const crypto = require('crypto');
 
-const config = require('../libs/config');
 const logger = require('../libs/logger');
 const ctrl = require('../controller');
 const util = require('../libs/util');
 
-const client = redis.createClient(config.getRedisConfig());
-const RedisStore = require('connect-redis')(session);
-
-const multipartMiddleware = new Multipart();
-
-client.on('error', (err) => {
-  logger.error('Redis:', err);
-});
-
-const redisConfig = config.getRedisConfig();
-redisConfig.client = client;
-redisConfig.prefix = 'vertex:sess:';
+const sessionStore = new MemorySessionStore();
 
 const checkAuth = async function (req, res, next) {
   const pathname = req._parsedOriginalUrl.pathname;
@@ -123,12 +111,13 @@ const siteProxy = function (req, res, next) {
 };
 
 module.exports = function (app, express, router) {
+  app.use(sessionStore.trackRequest.bind(sessionStore));
   app.use(session({
     genid: () => util.uuid.v4().replace(/-/g, ''),
     resave: false,
     rolling: true,
     saveUninitialized: false,
-    store: new RedisStore(redisConfig),
+    store: sessionStore,
     secret: crypto.randomBytes(64).toString('hex'),
     cookie: {
       maxAge: 1000 * 60 * 60 * 24 * 30,
@@ -138,7 +127,6 @@ module.exports = function (app, express, router) {
   app.use('/api', express.text({ type: 'text/xml' }));
   app.use('/api', express.json({ limit: '50mb' }));
   app.use('/api', express.urlencoded({ extended: false }));
-  app.use('/api', multipartMiddleware);
   app.use(setIp);
   app.use(checkAuth);
   router.post('/user/login', ctrl.User.login);
@@ -271,7 +259,7 @@ module.exports = function (app, express, router) {
   router.post('/setting/modifyTorrentPushSetting', ctrl.Setting.modifyTorrentPushSetting);
   router.post('/setting/modifySitePushSetting', ctrl.Setting.modifySitePushSetting);
   router.get('/setting/backupVertex', ctrl.Setting.backupVertex);
-  router.post('/setting/restoreVertex', ctrl.Setting.restoreVertex);
+  router.post('/setting/restoreVertex', upload, ctrl.Setting.restoreVertex);
   router.get('/setting/getCss.css', ctrl.Setting.getCss);
   router.post('/setting/loginMTeam', ctrl.Setting.loginMTeam);
   router.post('/setting/networkTest', ctrl.Setting.networkTest);

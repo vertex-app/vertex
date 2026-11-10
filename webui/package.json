@@ -14,8 +14,8 @@
     "@fortawesome/free-brands-svg-icons": "^6.1.1",
     "@fortawesome/free-solid-svg-icons": "^6.1.1",
     "@fortawesome/vue-fontawesome": "^3.0.0-5",
-    "@vue/cli-plugin-babel": "^5.0.6",
-    "@vue/cli-service": "^5.0.6",
+    "@vue/cli-plugin-babel": "5.0.9",
+    "@vue/cli-service": "5.0.9",
     "ant-design-vue": "^3.2.9",
     "antd-theme-generator": "^1.2.11",
     "axios": "^0.27.2",
@@ -39,7 +39,7 @@
   "devDependencies": {
     "@babel/eslint-parser": "^7.18.2",
     "@babel/eslint-plugin": "^7.17.7",
-    "@vue/cli-plugin-pwa": "^5.0.8",
+    "@vue/cli-plugin-pwa": "5.0.9",
     "eslint": "^7.30.0",
     "eslint-plugin-vue": "^7.13.0"
   },
@@ -48,5 +48,13 @@
     "ios_saf > 10",
     "chrome > 76"
   ],
-  "license": "ISC"
+  "license": "ISC",
+  "engines": {
+    "node": ">=26 <27",
+    "npm": ">=11 <12"
+  },
+  "packageManager": "npm@11.20.0",
+  "overrides": {
+    "@achrinza/node-ipc": "9.2.10"
+  }
 }

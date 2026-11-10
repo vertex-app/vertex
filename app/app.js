@@ -24,7 +24,23 @@ const logger = require('./libs/logger');
 const util = require('./libs/util');
 const config = require('./libs/config');
 const { execSync } = require('child_process');
+const memoryManager = require('./libs/memory/manager');
+const servers = new Set();
 logger.use(app);
+
+let stopping = false;
+const shutdown = async () => {
+  if (stopping) return;
+  stopping = true;
+  const deadline = setTimeout(() => process.exit(1), 10000);
+  deadline.unref();
+  for (const server of servers) server.close();
+  try { await util.closeBrowser(); } catch (err) { logger.error(err); }
+  memoryManager.close();
+  require('log4js').shutdown(() => process.exit(0));
+};
+process.once('SIGTERM', shutdown);
+process.once('SIGINT', shutdown);
 
 const initPush = function () {
   const webhookPush = util.listPush().filter(item => item.id === global.webhookPushTo)[0];
@@ -161,6 +177,7 @@ const init = function () {
   }
   try {
     const server = http.createServer(app).listen(process.env.PORT);
+    servers.add(server);
     ws(app, server);
     logger.info('HTTP 服务器启动, 监听端口: ', process.env.PORT);
   } catch (e) {
@@ -174,6 +191,7 @@ const init = function () {
         cert: fs.readFileSync(path.join(__dirname, './data/ssl/https.crt'))
       };
       const server = https.createServer(options, app).listen(process.env.HTTPS_PORT);
+      servers.add(server);
       ws(app, server);
       logger.info('HTTPS 服务器启动, 监听端口: ', process.env.HTTPS_PORT);
     } catch (e) {

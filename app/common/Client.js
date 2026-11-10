@@ -2,7 +2,7 @@ const qb = require('../libs/client/qb');
 const util = require('../libs/util');
 const de = require('../libs/client/de');
 const tr = require('../libs/client/tr');
-const redis = require('../libs/redis');
+const memory = require('../libs/memory/cache');
 const moment = require('moment');
 const logger = require('../libs/logger');
 const cron = require('node-cron');
@@ -172,31 +172,31 @@ class Client {
 
   destroy () {
     logger.info('销毁下载器实例', this.alias);
-    this.maindataJob.stop();
+    this.maindataJob.destroy();
     delete this.maindataJob;
     if (this.trackerSyncJob) {
-      this.trackerSyncJob.stop();
+      this.trackerSyncJob.destroy();
       delete this.trackerSyncJob;
     }
     if (this.reannounceJob) {
-      this.reannounceJob.stop();
+      this.reannounceJob.destroy();
       delete this.reannounceJob;
     }
     if (this.autoDeleteJob) {
-      this.autoDeleteJob.stop();
+      this.autoDeleteJob.destroy();
       delete this.autoDeleteJob;
     }
     if (this.spaceAlarmJob) {
-      this.spaceAlarmJob.stop();
+      this.spaceAlarmJob.destroy();
       delete this.spaceAlarmJob;
     }
     for (const rule of this.deleteRules) {
       if (rule.fitTimeJob) {
-        rule.fitTimeJob.stop();
+        rule.fitTimeJob.destroy();
         delete rule.fitTimeJob;
       }
     }
-    this.recordJob.stop();
+    this.recordJob.destroy();
     delete this.recordJob;
     delete global.runningClient[this.id];
   };
@@ -205,7 +205,7 @@ class Client {
     logger.info('重新加载删种规则', this.alias);
     for (const rule of this.deleteRules) {
       if (rule.fitTimeJob) {
-        rule.fitTimeJob.stop();
+        rule.fitTimeJob.destroy();
         delete rule.fitTimeJob;
       }
     }
@@ -477,11 +477,11 @@ class Client {
     });
     const trackerSet = {};
     for (const torrent of this.maindata.torrents) {
-      const cache = await redis.get('vertex:torrent:' + torrent.hash);
+      const cache = await memory.get('vertex:torrent:' + torrent.hash);
       // 0 无记录  1 种子存在  2 种子不存在
       if (!cache) {
         const sqlRes = await util.getRecord('SELECT * FROM torrents WHERE hash = ? and record_type = 1', [torrent.hash]);
-        await redis.set('vertex:torrent:' + torrent.hash, sqlRes ? 1 : 2);
+        await memory.set('vertex:torrent:' + torrent.hash, sqlRes ? 1 : 2);
         if (!sqlRes) continue;
       }
       if (+cache === 2) continue;
@@ -526,10 +526,10 @@ class Client {
     const torrents = this.maindata.torrents;
     for (const torrent of torrents) {
       try {
-        if (await redis.get(`vertex:torrent_tracker:${torrent.hash}`)) continue;
+        if (await memory.get(`vertex:torrent_tracker:${torrent.hash}`)) continue;
         const sqlRes = await util.getRecord('SELECT * FROM torrents WHERE hash = ?', [torrent.hash]);
         if (!sqlRes || !!sqlRes.delete_time) {
-          await redis.set(`vertex:torrent_tracker:${torrent.hash}`, 1);
+          await memory.set(`vertex:torrent_tracker:${torrent.hash}`, 1);
           continue;
         };
         const { statusCode, body } = await this.client.getTrackerList(this.clientUrl, this.cookie, torrent.hash);

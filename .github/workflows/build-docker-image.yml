@@ -2,10 +2,10 @@ name: Build Docker Image
 
 on:
   push:
-    branches: [dev, stable, release]
+    branches: [dev, stable, release, newnode]
     tags: ['v*']
   pull_request:
-    branches: [dev, stable, release]
+    branches: [dev, stable, release, newnode]
   workflow_dispatch:
 
 permissions:
@@ -30,7 +30,7 @@ jobs:
 
       - uses: actions/setup-node@v7
         with:
-          node-version: '22'
+          node-version-file: .nvmrc
           cache: npm
           cache-dependency-path: |
             package-lock.json
@@ -47,6 +47,9 @@ jobs:
           npm run eslint
           npm run eslint --prefix webui
           npx --no-install eslint --no-ignore .github/scripts/build-version.cjs webui/prepare-themes.js webui/dark.js webui/light.js webui/cyber.js
+
+      - name: Runtime and memory tests
+        run: npm test
 
       - name: Prepare build metadata
         run: node .github/scripts/build-version.cjs
@@ -74,6 +77,7 @@ jobs:
       (github.ref == 'refs/heads/dev' ||
        github.ref == 'refs/heads/stable' ||
        github.ref == 'refs/heads/release' ||
+       github.ref == 'refs/heads/newnode' ||
        startsWith(github.ref, 'refs/tags/v'))
     runs-on: ubuntu-24.04
     timeout-minutes: 60

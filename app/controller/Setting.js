@@ -214,7 +214,7 @@ class Setting {
 
   async restoreVertex (req, res) {
     try {
-      const r = await settingMod.restoreVertex(req.files);
+      const r = await settingMod.restoreVertex({ file: req.file });
       res.send({
         success: true,
         message: r

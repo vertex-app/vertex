@@ -141,39 +141,81 @@ class ServerMod {
 
   async shell (ws, req) {
     const serverId = req.params.serverId;
-    const server = global.runningServer[serverId].server;
+    const running = global.runningServer;
+    const instance = running && Object.prototype.hasOwnProperty.call(running, serverId) ? running[serverId] : null;
+    if (!instance || !instance.server || instance.server.enable === false) {
+      const error = new Error('服务器未启用或不存在，请先启用后重试');
+      error.code = 'SERVER_NOT_AVAILABLE';
+      throw error;
+    }
+    if (ws.readyState !== 1) return;
+    const server = instance.server;
     const ssh = new Client();
-    ssh.on('ready', () => {
-      logger.info(`[${serverId}]`, server.alias, 'shell 已开始连接');
-      ssh.shell({ term: 'xterm-256color' }, function (err, stream) {
-        if (err) {
-          return ws.send('\r\n*** SSH SHELL ERROR: ' + err.message + ' ***\r\n');
+    let stream;
+    let ended = false;
+    const send = message => {
+      if (!message || ws.readyState !== 1) return;
+      try {
+        ws.send(message, err => { if (err) finish(null, 1011); });
+      } catch (err) {
+        finish(null, 1011);
+      }
+    };
+    const finish = (message, code = 1000) => {
+      if (ended) return;
+      ended = true;
+      send(message);
+      try { if (stream) stream.end(); } catch (err) { logger.debug('终端流已关闭'); }
+      try { ssh.end(); } catch (err) { logger.debug('SSH 连接已关闭'); }
+      if (ws.readyState === 1) {
+        try { ws.close(code, 'SSH 终端已关闭'); } catch (err) { logger.debug('终端连接已关闭'); }
+      }
+    };
+    const fail = err => {
+      if (ended) return;
+      logger.error(server.alias, 'SSH 终端连接失败', err);
+      finish('\r\n*** SSH 终端连接失败，请检查连接配置或稍后重试 ***\r\n', 1011);
+    };
+    ws.on('close', () => finish());
+    ws.on('error', fail);
+    ws.on('message', (data, isBinary) => {
+      if (ended || !stream) return;
+      try {
+        const text = typeof data === 'string' ? data : Buffer.isBuffer(data) && !isBinary ? data.toString('utf8') : null;
+        if (text && text.startsWith('setWindow:')) {
+          const [rows, cols] = text.slice('setWindow:'.length).split(':').map(Number);
+          if ([rows, cols].every(value => Number.isInteger(value) && value > 0 && value <= 1000)) stream.setWindow(rows, cols);
+          return;
         }
-        ws.on('message', function (data) {
-          data = data || '';
-          if (typeof data === 'string' && data.startsWith('setWindow')) {
-            stream.setWindow(data.split(':')[1], data.split(':')[2]);
+        stream.write(text === null ? data : text);
+      } catch (err) {
+        fail(err);
+      }
+    });
+    ssh.on('ready', () => {
+      if (ended || ws.readyState !== 1) {
+        finish();
+        return;
+      }
+      try {
+        ssh.shell({ term: 'xterm-256color' }, (err, channel) => {
+          if (err) return fail(err);
+          if (ended || ws.readyState !== 1) {
+            channel.end();
             return;
           }
-          stream.write(data);
+          stream = channel;
+          stream.on('data', data => send(data.toString()));
+          stream.on('error', fail);
+          stream.on('close', () => finish('\r\n*** SSH 终端已断开 ***\r\n'));
         });
-        stream.on('close', () => {
-          ws.send('\r\n*** SSH SHELL DISCONNECTED ***\r\n');
-        }).on('data', (data) => {
-          ws.send(data.toString());
-        });
-      });
-    }).on('error', (e) => {
-      logger.error(e);
-      ws.send('\r\n*** SSH SHELL ERROR: ' + e.message + ' ***\r\n');
-    }).connect(server);
-    ws.on('close', () => {
-      logger.info(`[${serverId}]`, server.alias, 'shell 已断开连接');
-      ssh.end();
-    }).on('error', (e) => {
-      logger.error(server.alias, e);
-      ssh.end();
+      } catch (err) {
+        fail(err);
+      }
     });
+    ssh.on('error', fail);
+    ssh.on('close', () => finish('\r\n*** SSH 终端已断开 ***\r\n'));
+    try { ssh.connect(server); } catch (err) { fail(err); }
   }
 }
 

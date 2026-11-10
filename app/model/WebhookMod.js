@@ -1,6 +1,6 @@
 const crypto = require('crypto');
 const util = require('../libs/util');
-const redis = require('../libs/redis');
+const memory = require('../libs/memory/cache');
 const logger = require('../libs/logger');
 const parser = require('xml2js').parseString;
 
@@ -590,6 +590,10 @@ class WebhookMod {
     if (query.echostr) return content;
     content = await parseXml(content);
     logger.debug(content);
+    const sender = content.xml.FromUserName?.[0];
+    const recipient = content.xml.ToUserName?.[0];
+    if (!sender || !recipient) return '无法识别交互用户';
+    const interactionKey = type => memory.key('vertex:select', recipient, sender, type);
     if (content.xml.EventKey) {
       switch (content.xml.EventKey[0]) {
       case 'refreshDouban':
@@ -604,7 +608,7 @@ class WebhookMod {
         let note = '';
         const doubans = Object.keys(global.runningDouban);
         if (doubans.length === 1) {
-          await redis.setWithExpire('vertex:select:douban', doubans[0], 300);
+          await memory.setWithExpire(interactionKey('douban'), doubans[0], 300);
           const _note = '豆瓣账户: ' + global.runningDouban[doubans[0]].alias + '\n' +
             '请输入希望搜索的影视剧名称, 5 分钟内输入有效';
           await global.doubanPush.selectWish(_note);
@@ -625,26 +629,25 @@ class WebhookMod {
         ];
         await global.doubanPush.pushWeChat('Vertex', '企业微信请进行选择\n普通微信请回复序号:\n' + note);
         await global.doubanPush.pushWeChatSelector('选择账号', '', selectors, 'selectAccount');
-        await redis.setWithExpire('vertex:select:doubans', JSON.stringify(doubans), 300);
+        await memory.setWithExpire(interactionKey('doubans'), JSON.stringify(doubans), 300);
         return;
       case 'selectAccount': {
         const text = content.xml.SelectedItems[0].SelectedItem[0].OptionIds[0].OptionId[0];
-        const doubanCache = await redis.get('vertex:select:doubans');
+        const doubanCache = await memory.take(interactionKey('doubans'));
         const doubans = JSON.parse(doubanCache);
-        const douban = doubans[text];
-        await redis.del('vertex:select:doubans');
+        const douban = doubans && doubans[text];
         if (+text + '' !== text || !douban) {
           await global.doubanPush.selectWish('输入非法, 本次任务已取消');
           return '';
         }
-        await redis.setWithExpire('vertex:select:douban', douban, 300);
+        await memory.setWithExpire(interactionKey('douban'), douban, 300);
         const _note = '已选择豆瓣账户: ' + global.runningDouban[douban].alias + '\n' +
           '请输入希望搜索的影视剧名称, 5 分钟内输入有效';
         await global.doubanPush.selectWish(_note);
         return '';
       }
       case 'selectMedia': {
-        const moviesCache = await redis.get('vertex:select:movies');
+        const moviesCache = await memory.take(interactionKey('movies'));
         const movies = JSON.parse(moviesCache);
         if (!movies) {
           await global.doubanPush.selectWish('任务已超时, 退出');
@@ -652,7 +655,6 @@ class WebhookMod {
         }
         const num = content.xml.SelectedItems[0].SelectedItem[0].OptionIds[0].OptionId[0];
         const movie = movies[num];
-        await redis.del('vertex:select:movies');
         if (+num + '' !== num || !movie) {
           await global.doubanPush.selectWish('输入非法, 本次任务已取消');
           return '';
@@ -694,12 +696,11 @@ class WebhookMod {
       }
     }
     const text = content.xml.Content[0].trim();
-    const moviesCache = await redis.get('vertex:select:movies');
+    const moviesCache = await memory.take(interactionKey('movies'));
     if (moviesCache) {
       const movies = JSON.parse(moviesCache);
       const num = text.split('/')[0];
       const movie = movies[num];
-      await redis.del('vertex:select:movies');
       if (+num + '' !== num || !movie) {
         await global.doubanPush.selectWish('输入非法, 本次任务已取消');
         return '';
@@ -715,16 +716,14 @@ class WebhookMod {
       global.runningDouban[movie.doubanId].refreshWishList(true);
       return '';
     }
-    const doubanCache = await redis.get('vertex:select:douban');
+    const doubanCache = await memory.take(interactionKey('douban'));
     if (doubanCache) {
       const douban = doubanCache;
       const result = await global.runningDouban[douban].search(text);
       if (result.length === 0) {
         await global.doubanPush.selectWish('无搜索结果');
-        await redis.del('vertex:select:douban');
         return '';
       }
-      await redis.del('vertex:select:douban');
       const keys = [];
       for (const [index, value] of result.entries()) {
         await global.doubanPush.pushWeChat(`${index}: ${value.title} - ${value.year}`, value.subtitle || '', value.poster);
@@ -744,19 +743,18 @@ class WebhookMod {
       ];
       await global.doubanPush.pushWeChat('Vertex', '企业微信请进行选择\n普通微信请回复\n序号/标签');
       await global.doubanPush.pushWeChatSelector('选择想看', '选择以下项目添加想看项目', selectors, 'selectMedia');
-      await redis.setWithExpire('vertex:select:movies', JSON.stringify(result), 300);
+      await memory.setWithExpire(interactionKey('movies'), JSON.stringify(result), 300);
       return '';
     }
-    const doubansCache = await redis.get('vertex:select:doubans');
+    const doubansCache = await memory.take(interactionKey('doubans'));
     if (doubansCache) {
       const doubans = JSON.parse(doubansCache);
-      const douban = doubans[text];
-      await redis.del('vertex:select:doubans');
+      const douban = doubans && doubans[text];
       if (+text + '' !== text || !douban) {
         await global.doubanPush.selectWish('输入非法, 本次任务已取消');
         return '';
       }
-      await redis.setWithExpire('vertex:select:douban', douban, 300);
+      await memory.setWithExpire(interactionKey('douban'), douban, 300);
       const note = '已选择豆瓣账户: ' + global.runningDouban[douban].alias + '\n' +
         '请输入希望搜索的影视剧名称, 5 分钟内输入有效';
       await global.doubanPush.selectWish(note);
@@ -799,7 +797,7 @@ class WebhookMod {
       }
       note += '输入豆瓣账户前的序号, 5 分钟内输入有效';
       await global.doubanPush.selectWish(note);
-      await redis.setWithExpire('vertex:select:doubans', JSON.stringify(doubans), 300);
+      await memory.setWithExpire(interactionKey('doubans'), JSON.stringify(doubans), 300);
     }
     return content;
   }

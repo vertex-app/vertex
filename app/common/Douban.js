@@ -2,7 +2,7 @@ const util = require('../libs/util');
 const moment = require('moment');
 const logger = require('../libs/logger');
 const cron = require('node-cron');
-const redis = require('../libs/redis');
+const memory = require('../libs/memory/cache');
 const { JSDOM } = require('jsdom');
 const Push = require('./Push');
 const path = require('path');
@@ -53,55 +53,26 @@ class Douban {
   };
 
   async _getDocument (url, expire = 300) {
-    const cache = await redis.get(`vertex:document:body:${url + util.md5(this.cookie)}`);
-    if (!cache) {
-      const html = (await util.requestPromise({
-        url: url,
-        headers: {
-          cookie: this.cookie
-        }
-      })).body;
-      await redis.setWithExpire(`vertex:document:body:${url + util.md5(this.cookie)}`, html, expire);
-      const dom = new JSDOM(html);
-      return dom.window.document;
-    } else {
-      const dom = new JSDOM(cache);
-      return dom.window.document;
-    }
+    const key = memory.key('vertex:document:body', url, this.cookie);
+    const html = await memory.getOrLoad(key, async () => (await util.requestPromise({
+      url, headers: { cookie: this.cookie }
+    })).body, expire);
+    return new JSDOM(html).window.document;
   };
 
   async _getJson (url) {
-    const cache = await redis.get(`vertex:douban:json:${url}`);
-    if (!cache) {
-      const body = (await util.requestPromise({
-        url: url,
-        headers: {
-          cookie: this.cookie
-        }
-      })).body;
-      await redis.setWithExpire(`vertex:douban:json:${url}`, body, 30);
-      return JSON.parse(body);
-    } else {
-      return JSON.parse(cache);
-    }
+    const key = memory.key('vertex:douban:json', url, this.cookie);
+    const body = await memory.getOrLoad(key, async () => (await util.requestPromise({
+      url, headers: { cookie: this.cookie }
+    })).body, 30);
+    return JSON.parse(body);
   };
 
   async _post (url, form) {
-    const cache = await redis.get(`vertex:douban:post:${url}`);
-    if (!cache) {
-      const body = (await util.requestPromise({
-        url: url,
-        method: 'post',
-        headers: {
-          cookie: this.cookie
-        },
-        form
-      })).body;
-      await redis.setWithExpire(`vertex:douban:post:${url}`, body, 30);
-      return body;
-    } else {
-      return cache;
-    }
+    const key = memory.key('vertex:douban:post', url, this.cookie, form);
+    return memory.getOrLoad(key, async () => (await util.requestPromise({
+      url, method: 'post', headers: { cookie: this.cookie }, form
+    })).body, 30);
   };
 
   async _getDoubanInfo (url) {
@@ -183,23 +154,23 @@ class Douban {
     logger.binge('销毁豆瓣实例', this.alias);
     for (const key of Object.keys(this.refreshWishJobs)) {
       if (this.refreshWishJobs[key]) {
-        this.refreshWishJobs[key].stop();
+        this.refreshWishJobs[key].destroy();
         delete this.refreshWishJobs[key];
       }
     }
     for (const key of Object.keys(this.searchRemoteTorrentJobs)) {
       if (this.searchRemoteTorrentJobs[key]) {
-        this.searchRemoteTorrentJobs[key].stop();
+        this.searchRemoteTorrentJobs[key].destroy();
         delete this.searchRemoteTorrentJobs[key];
       }
     }
     delete this.refreshWishJobs;
     delete this.searchRemoteTorrentJobs;
-    this.refreshWishJob.stop();
+    this.refreshWishJob.destroy();
     delete this.refreshWishJob;
-    this.checkFinishJob.stop();
+    this.checkFinishJob.destroy();
     delete this.checkFinishJob;
-    this.clearSelectFailedJob.stop();
+    this.clearSelectFailedJob.destroy();
     delete this.clearSelectFailedJob;
     delete global.runningDouban[this.id];
   };
@@ -208,11 +179,11 @@ class Douban {
     const wishLength = this.wishes.length;
     this.wishes = this.wishes.filter(item => item.id !== id);
     if (this.refreshWishJobs[id]) {
-      this.refreshWishJobs[id].stop();
+      this.refreshWishJobs[id].destroy();
       delete this.refreshWishJobs[id];
     }
     if (this.searchRemoteTorrentJobs[id]) {
-      this.searchRemoteTorrentJobs[id].stop();
+      this.searchRemoteTorrentJobs[id].destroy();
       delete this.searchRemoteTorrentJobs[id];
     }
     this._saveSet();
@@ -250,11 +221,11 @@ class Douban {
     for (const [index, value] of this.wishes.entries()) {
       if (wish.id === value.id) {
         if (this.refreshWishJobs[wish.id]) {
-          this.refreshWishJobs[wish.id].stop();
+          this.refreshWishJobs[wish.id].destroy();
           delete this.refreshWishJobs[wish.id];
         }
         if (this.searchRemoteTorrentJobs[wish.id]) {
-          this.searchRemoteTorrentJobs[wish.id].stop();
+          this.searchRemoteTorrentJobs[wish.id].destroy();
           delete this.searchRemoteTorrentJobs[wish.id];
         }
         if (!wish.downloaded) {
@@ -301,18 +272,18 @@ class Douban {
     if (wish.downloaded || (+wish.episodes === +wish.episodeNow)) {
       this.ntf.startRefreshWish(`${this.alias} / ${wish.name} 已完成, 退出任务`);
       if (this.refreshWishJobs[id]) {
-        this.refreshWishJobs[id].stop();
+        this.refreshWishJobs[id].destroy();
         delete this.refreshWishJobs[id];
       }
       if (this.searchRemoteTorrentJobs[id]) {
-        this.searchRemoteTorrentJobs[id].stop();
+        this.searchRemoteTorrentJobs[id].destroy();
         delete this.searchRemoteTorrentJobs[id];
       }
       wish.downloaded = wish.downloaded || (+wish.episodeNow === +wish.episodes);
       this._saveSet();
       return;
     }
-    if (!remote && !manual && await redis.get(`vertex:douban:refresh_cache:${id}`)) {
+    if (!remote && !manual && await memory.get(`vertex:douban:refresh_cache:${id}`)) {
       logger.binge('豆瓣账号', this.alias, '/', wish.name, '近 23 小时有自动搜索记录, 退出任务');
       this.ntf.startRefreshWish(`${this.alias} / ${wish.name} 近 23 小时有自动搜索记录, 退出任务`);
       return;
@@ -322,22 +293,25 @@ class Douban {
       return;
     }
     this.refreshStat[id] = 1;
-    if (!remote) this.ntf.startRefreshWish(`${this.alias} / ${wish.name}`);
-    wish.downloaded = await this.selectTorrent(wish, false, remote);
-    if (!remote && !wish.downloaded) {
-      wish.downloaded = await this.selectTorrent(wish, true);
-      await redis.setWithExpire(`vertex:douban:refresh_cache:${id}`, '1', 2400 * 23);
-    }
-    if (!wish.downloaded) {
-      logbinge(this.alias, '未匹配种子', wish.name);
-      if (!this.selectTorrentToday[wish.id] && !remote) {
-        this.ntf.selectTorrentError(this.alias, wish);
-        this.selectTorrentToday[wish.id] = 1;
+    try {
+      if (!remote) this.ntf.startRefreshWish(`${this.alias} / ${wish.name}`);
+      wish.downloaded = await this.selectTorrent(wish, false, remote);
+      if (!remote && !wish.downloaded) {
+        wish.downloaded = await this.selectTorrent(wish, true);
+        await memory.setWithExpire(`vertex:douban:refresh_cache:${id}`, '1', 2400 * 23);
       }
+      if (!wish.downloaded) {
+        logbinge(this.alias, '未匹配种子', wish.name);
+        if (!this.selectTorrentToday[wish.id] && !remote) {
+          this.ntf.selectTorrentError(this.alias, wish);
+          this.selectTorrentToday[wish.id] = 1;
+        }
+      }
+      wish.downloaded = wish.downloaded && (+wish.episodeNow === +wish.episodes || !wish.episodes);
+      this._saveSet();
+    } finally {
+      delete this.refreshStat[id];
     }
-    wish.downloaded = wish.downloaded && (+wish.episodeNow === +wish.episodes || !wish.episodes);
-    this._saveSet();
-    delete this.refreshStat[id];
   }
 
   async refreshWishList (manual = false) {

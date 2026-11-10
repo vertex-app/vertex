@@ -2,9 +2,9 @@ const logger = require('../libs/logger');
 const util = require('../libs/util');
 const cron = require('node-cron');
 const moment = require('moment');
-const redis = require('../libs/redis');
+const memory = require('../libs/memory/cache');
 const { JSDOM } = require('jsdom');
-const bencode = require('bencode');
+const getBencode = require('../libs/bencode');
 const crypto = require('crypto');
 const fs = require('fs');
 const path = require('path');
@@ -51,46 +51,25 @@ class Site {
   }
 
   async _getDocument (url, origin = false, expire = 300, retCookies = false, headers) {
-    const cache = await redis.get(`vertex:document:body:${url}`);
-    if (!cache) {
-      const res = (await util.requestPromise({
-        url: url,
-        headers: {
-          cookie: this.cookie,
-          ...headers
-        }
-      }));
+    const requestHeaders = { cookie: this.cookie, ...headers };
+    const load = () => util.requestPromise({ url, headers: requestHeaders });
+    // Cookie refresh requests must receive the current response, never cached headers.
+    if (origin || retCookies) {
+      const res = await load();
       if (origin) return res.body;
-      if (url.indexOf('getusertorrentlistajax') !== -1) {
-        res.body = res.body
-          .replace(/ *href=".*?"/g, '')
-          .replace(/ *title=".*?"/g, '')
-          .replace(/ *class=".*?"/g, '')
-          .replace(/ *align=".*?"/g, '')
-          .replace(/ *id=".*?"/g, '')
-          .replace(/ *src=".*?"/g, '')
-          .replace(/ *alt=".*?"/g, '')
-          .replace(/ *color=".*?"/g, '')
-          .replace(/ *type=".*?"/g, '')
-          .replace(/ *onclick=".*?"/g, '')
-          .replace(/ *width=".*?"/g, '')
-          .replace(/ *<b>.*?<\/b>/g, '')
-          .replace(/ *style=".*?"/g, '');
-      }
-      await redis.setWithExpire(`vertex:document:body:${url}`, res.body, expire);
-      const dom = new JSDOM(res.body);
-      if (retCookies) {
-        return {
-          dom: dom.window.document,
-          cookie: res.headers['set-cookie']
-        };
-      }
-      return dom.window.document;
-    } else {
-      if (origin) return cache;
-      const dom = new JSDOM(cache);
-      return dom.window.document;
+      return { dom: new JSDOM(res.body).window.document, cookie: res.headers?.['set-cookie'] };
     }
+    const key = memory.key('vertex:document:body', url, requestHeaders);
+    const body = await memory.getOrLoad(key, async () => {
+      const res = await load();
+      if (url.includes('getusertorrentlistajax')) {
+        return res.body
+          .replace(/ *(?:href|title|class|align|id|src|alt|color|type|onclick|width|style)=".*?"/g, '')
+          .replace(/ *<b>.*?<\/b>/g, '');
+      }
+      return res.body;
+    }, expire);
+    return new JSDOM(body).window.document;
   };
 
   async _downloadTorrent (url) {
@@ -103,6 +82,7 @@ class Site {
       }
     });
     const buffer = Buffer.from(res.body, 'utf-8');
+    const bencode = await getBencode();
     const torrent = bencode.decode(buffer);
     const size = torrent.info.length || torrent.info.files.map(i => i.length).reduce(this._getSum, 0);
     const fsHash = crypto.createHash('sha1');
@@ -118,7 +98,7 @@ class Site {
       filepath,
       hash,
       size,
-      name: torrent.info.name.toString()
+      name: Buffer.from(torrent.info.name).toString('utf8')
     };
   };
 
@@ -207,7 +187,7 @@ class Site {
 
   async destroy () {
     logger.info('销毁站点实例', this.site);
-    this.refreshJob.stop();
+    this.refreshJob.destroy();
     delete this.refreshJob;
     delete global.runningSite[this.site];
   };

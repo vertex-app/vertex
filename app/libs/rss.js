@@ -3,9 +3,9 @@ const crypto = require('crypto');
 const moment = require('moment');
 const path = require('path');
 const fs = require('fs');
-const bencode = require('bencode');
+const getBencode = require('./bencode');
 const util = require('./util');
-const redis = require('./redis');
+const memory = require('./memory/cache');
 const logger = require('./logger');
 
 const parseXml = util.promisify(parser);
@@ -15,46 +15,24 @@ const _getSum = function (a, b) {
 };
 
 const _getRssContent = async function (rssUrl, suffix = true) {
-  let body;
-  const cache = await redis.get(`vertex:rss:${rssUrl}`);
-  if (cache) {
-    body = cache;
-  } else {
+  const cookie = rssUrl.includes('https://pt.soulvoice.club/') && global.runningSite?.SoulVoice
+    ? global.runningSite.SoulVoice.cookie
+    : undefined;
+  const key = memory.key('vertex:rss', rssUrl, cookie);
+  const host = new URL(rssUrl).host;
+  const cacheTime = host.includes('sharkpt') ? 310 : ['lemon', 'hhanclub'].some(item => host.includes(item)) ? 150 : 40;
+  let isHTML = false;
+  return memory.getOrLoad(key, async () => {
     let url = rssUrl;
-    const isPig = rssUrl.includes('https://piggo.me/');
-    const isKamept = rssUrl.includes('https://kamept.com/');
-    if (suffix && !isPig) {
-      if (isKamept) {
-        const randomNum = Math.floor(Math.random() * 100000000);
-        url += '&' + randomNum;
-      } else {
-        url += (rssUrl.indexOf('?') === -1 ? '?' : '&') + '____=' + Math.random();
-      }
+    if (suffix && !rssUrl.includes('https://piggo.me/')) {
+      url += rssUrl.includes('https://kamept.com/')
+        ? '&' + Math.floor(Math.random() * 100000000)
+        : (rssUrl.includes('?') ? '&' : '?') + '____=' + Math.random();
     }
-    let res;
-    if (rssUrl.includes('https://pt.soulvoice.club/') && global.runningSite.SoulVoice) {
-      res = await util.requestPromise({
-        url,
-        headers: {
-          cookie: global.runningSite.SoulVoice.cookie
-        }
-      }, true);
-    } else {
-      res = await util.requestPromise(url, true);
-    }
-    body = res.body;
-    const isHTML = body.indexOf('xml-viewer-style') !== -1;
-    if (isHTML) {
-      body = '<?xml version="1.0" encoding="utf-8"?>\n' + res.body.match(/<rss[\s\S]*<\/rss>/)[0];
-    }
-    const host = new URL(rssUrl).host;
-    let cacheTime = ['lemon', 'hhanclub'].some(item => host.indexOf(item) !== -1) ? 150 : 40;
-    if (host.indexOf('sharkpt') !== -1) {
-      cacheTime = 310;
-    }
-    await redis.setWithExpire(`vertex:rss:${rssUrl}`, body, isHTML ? 310 : cacheTime);
-  }
-  return body;
+    const res = await util.requestPromise({ url, headers: cookie ? { cookie } : {} }, true);
+    isHTML = res.body.includes('xml-viewer-style');
+    return isHTML ? '<?xml version="1.0" encoding="utf-8"?>\n' + res.body.match(/<rss[\s\S]*<\/rss>/)[0] : res.body;
+  }, () => isHTML ? 310 : cacheTime);
 };
 
 const _getTorrents = async function (rssUrl) {
@@ -356,7 +334,7 @@ const _getTorrentsGazelle = async function (rssUrl) {
     torrent.link = link;
     torrent.url = items[i].link[0];
     torrent.id = +torrent.url.match(/id=(\d+)/)[1];
-    const cache = await redis.get(`vertex:hash:${torrent.url}`);
+    const cache = await memory.get(`vertex:hash:${torrent.url}`);
     if (cache) {
       const _torrent = JSON.parse(cache);
       torrent.hash = _torrent.hash;
@@ -369,9 +347,9 @@ const _getTorrentsGazelle = async function (rssUrl) {
         }
         torrent.hash = hash;
         torrent.size = size;
-        await redis.set(`vertex:hash:${torrent.url}`, JSON.stringify(torrent));
+        await memory.set(`vertex:hash:${torrent.url}`, JSON.stringify(torrent));
       } catch (e) {
-        await redis.set(`vertex:hash:${torrent.url}`, JSON.stringify({ hash: 'gzl' + moment().unix() + 'gzl', size: 0 }));
+        await memory.setWithExpire(`vertex:hash:${torrent.url}`, JSON.stringify({ hash: 'gzl' + moment().unix() + 'gzl', size: 0 }), 60);
         throw e;
       }
     }
@@ -405,16 +383,16 @@ const _getTorrentsSkyeySnow = async function (rssUrl) {
     torrent.id = link.substring(link.indexOf('?id=') + 4);
     torrent.url = items[i].enclosure[0].$.url;
     if (torrent.url.indexOf('skyey') !== -1) {
-      const cache = await redis.get(`vertex:hash:${torrent.url}`);
+      const cache = await memory.get(`vertex:hash:${torrent.url}`);
       if (cache) {
         torrent.hash = cache;
       } else {
         try {
           const { hash } = await exports.getTorrentNameByBencode(torrent.url);
           torrent.hash = hash;
-          await redis.set(`vertex:hash:${torrent.url}`, hash);
+          await memory.set(`vertex:hash:${torrent.url}`, hash);
         } catch (e) {
-          await redis.set(`vertex:hash:${torrent.url}`, 'skyey' + moment().unix() + 'skyey');
+          await memory.setWithExpire(`vertex:hash:${torrent.url}`, 'skyey' + moment().unix() + 'skyey', 60);
           throw e;
         }
       }
@@ -444,7 +422,7 @@ const _getTorrentsHDBits = async function (rssUrl) {
     torrent.url = url;
     torrent.link = `https://hdbits.org/details.php?id=${torrent.id}&source=browse`;
     if (torrent.url.indexOf('hdbits') !== -1) {
-      const cache = await redis.get(`vertex:hash:${torrent.url}`);
+      const cache = await memory.get(`vertex:hash:${torrent.url}`);
       if (cache) {
         torrent.hash = cache;
       } else {
@@ -452,9 +430,9 @@ const _getTorrentsHDBits = async function (rssUrl) {
           const { hash, size } = await exports.getTorrentNameByBencode(torrent.url);
           torrent.hash = hash;
           torrent.size = size;
-          await redis.set(`vertex:hash:${torrent.url}`, JSON.stringify(torrent));
+          await memory.set(`vertex:hash:${torrent.url}`, JSON.stringify(torrent));
         } catch (e) {
-          await redis.set(`vertex:hash:${torrent.url}`, JSON.stringify({ hash: 'hdbits' + moment().unix() + 'hdbits', size: 0 }));
+          await memory.setWithExpire(`vertex:hash:${torrent.url}`, JSON.stringify({ hash: 'hdbits' + moment().unix() + 'hdbits', size: 0 }), 60);
           throw e;
         }
       }
@@ -653,7 +631,7 @@ const _getTorrentsTorrentLeech = async function (rssUrl) {
     torrent.link = guid;
     torrent.id = guid.substring(torrent.hash.indexOf('torrent/') + 8);
     torrent.pubTime = moment(items[i].pubDate[0]).unix();
-    const cache = await redis.get(`vertex:hash:${torrent.url}`);
+    const cache = await memory.get(`vertex:hash:${torrent.url}`);
     if (cache) {
       const _torrent = JSON.parse(cache);
       torrent.hash = _torrent.hash;
@@ -666,9 +644,9 @@ const _getTorrentsTorrentLeech = async function (rssUrl) {
         }
         torrent.hash = hash;
         torrent.size = size;
-        await redis.set(`vertex:hash:${torrent.url}`, JSON.stringify(torrent));
+        await memory.set(`vertex:hash:${torrent.url}`, JSON.stringify(torrent));
       } catch (e) {
-        await redis.set(`vertex:hash:${torrent.url}`, JSON.stringify({ hash: 'tl' + moment().unix() + 'tl', size: 0 }));
+        await memory.setWithExpire(`vertex:hash:${torrent.url}`, JSON.stringify({ hash: 'tl' + moment().unix() + 'tl', size: 0 }), 60);
         throw e;
       }
     }
@@ -902,6 +880,7 @@ exports.getTorrentNameByBencode = async function (url) {
   const contentType = res.headers['content-type'];
   if (contentType.includes('application/x-bittorrent')) {
     const buffer = Buffer.from(res.body, 'utf-8');
+    const bencode = await getBencode();
     const torrent = bencode.decode(buffer);
     const size = torrent.info.length || torrent.info.files.map(i => i.length).reduce(_getSum, 0);
     const fsHash = crypto.createHash('sha1');
@@ -917,7 +896,7 @@ exports.getTorrentNameByBencode = async function (url) {
       exists: true,
       hash,
       size,
-      name: torrent.info.name.toString()
+      name: Buffer.from(torrent.info.name).toString('utf8')
     };
   } else {
     return {

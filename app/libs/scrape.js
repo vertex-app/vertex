@@ -1,24 +1,14 @@
 const util = require('./util');
-const redis = require('./redis');
+const memory = require('./memory/cache');
 const logger = require('./logger');
 const { JSDOM } = require('jsdom');
 
 const getDocument = async function (url, cookie) {
-  let body;
-  const cache = await redis.get(`vertex:scrape:${url}`);
-  if (cache) {
-    body = cache;
-  } else {
-    body = (await util.requestPromise({
-      url,
-      headers: {
-        cookie
-      }
-    }, true)).body;
-    await redis.setWithExpire(`vertex:scrape:${url}`, body, 40);
-  }
-  const dom = new JSDOM(body);
-  return dom.window.document;
+  const key = memory.key('vertex:scrape', url, cookie);
+  const body = await memory.getOrLoad(key, async () => (await util.requestPromise({
+    url, headers: { cookie }
+  }, true)).body, 40);
+  return new JSDOM(body).window.document;
 };
 
 const _free = async function (url, cookie) {

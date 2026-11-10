@@ -1,9 +1,9 @@
 const rss = require('../libs/rss');
 const util = require('../libs/util');
 const logger = require('../libs/logger');
-const redis = require('../libs/redis');
+const memory = require('../libs/memory/cache');
 const cron = require('node-cron');
-const bencode = require('bencode');
+const getBencode = require('../libs/bencode');
 const crypto = require('crypto');
 const fs = require('fs');
 const path = require('path');
@@ -95,6 +95,7 @@ class Rss {
           }
         });
         const buffer = Buffer.from(res.body, 'utf-8');
+        const bencode = await getBencode();
         const torrent = bencode.decode(buffer);
         const size = torrent.info.length || torrent.info.files.map(i => i.length).reduce(this._getSum, 0);
         const fsHash = crypto.createHash('sha1');
@@ -110,7 +111,7 @@ class Rss {
           filepath,
           hash,
           size,
-          name: torrent.info.name.toString()
+          name: Buffer.from(torrent.info.name).toString('utf8')
         };
       } catch (e) {
         lastError = e;
@@ -191,9 +192,9 @@ class Rss {
 
   destroy () {
     logger.info('销毁 Rss 实例:', this.alias);
-    this.rssJob.stop();
+    this.rssJob.destroy();
     delete this.rssJob;
-    this.clearCount.stop();
+    this.clearCount.destroy();
     delete this.clearCount;
     delete global.runningRss[this.id];
   }
@@ -289,10 +290,10 @@ class Rss {
       if (this.scrapeFree) {
         try {
           if (!await util.scrapeFree(torrent.link, this.cookie)) {
-            const isScraped = await redis.get(`vertex:scrape:free:${torrent.hash}`);
+            const isScraped = await memory.get(`vertex:scrape:free:${torrent.hash}`);
             if (this.sleepTime && (moment().unix() - +this.sleepTime) < torrent.pubTime && !isScraped) {
               logger.info(this.alias, '已设置等待时间', this.sleepTime, ', ', torrent.name, '发布时间为', moment(torrent.pubTime * 1000).format('YYYY-MM-DD HH:mm:ss'), ', 跳过');
-              await redis.setWithExpire(`vertex:scrape:free:${torrent.hash}`, '7777', 3600 * 4);
+              await memory.setWithExpire(`vertex:scrape:free:${torrent.hash}`, '7777', 3600 * 4);
             } else {
               await util.runRecord('INSERT INTO torrents (hash, name, size, rss_id, link, record_time, record_type, record_note) values (?, ?, ?, ?, ?, ?, ?, ?)',
                 [torrent.hash, torrent.name, torrent.size, this.id, torrent.link, moment().unix(), 2, '拒绝原因: 非免费种']);
@@ -301,6 +302,10 @@ class Rss {
             return;
           }
         } catch (e) {
+          if (e.code === 'MEMORY_CAPACITY') {
+            logger.warn(this.alias, '内存状态容量已满，等待下一轮重试');
+            return;
+          }
           logger.error(this.alias, '抓取免费种子失败: ', e.message);
           await util.runRecord('INSERT INTO torrents (hash, name, size, rss_id, link, record_time, record_type, record_note) values (?, ?, ?, ?, ?, ?, ?, ?)',
             [torrent.hash, torrent.name, torrent.size, this.id, torrent.link, moment().unix(), 2, `拒绝原因: 抓取免费种子失败 ${e.message}`]);

@@ -12,7 +12,7 @@ class Script {
   };
 
   destroy () {
-    this.job.stop();
+    this.job.destroy();
     delete this.job;
     if (global.runningScript[this.id]) {
       delete global.runningScript[this.id];

@@ -9,9 +9,14 @@ class User {
     try {
       const r = userMod.login(options);
       req.session.user = r;
-      logger.info('登录成功, IP:', req.userIp);
-      res.send({
-        success: true
+      req.session.save((err) => {
+        if (err) {
+          req.session = null;
+          res.status(503).send({ success: false, message: '会话保存失败，请稍后重试' });
+          return;
+        }
+        logger.info('登录成功, IP:', req.userIp);
+        res.send({ success: true });
       });
     } catch (e) {
       logger.error(e);
@@ -24,9 +29,10 @@ class User {
   };
 
   logout (req, res) {
-    req.session.destroy();
-    res.send({
-      success: true
+    req.session.destroy((err) => {
+      if (err) return res.status(503).send({ success: false, message: '退出失败，请稍后重试' });
+      res.clearCookie('connect.sid');
+      res.send({ success: true });
     });
   };
 

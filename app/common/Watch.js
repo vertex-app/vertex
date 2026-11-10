@@ -333,7 +333,7 @@ class Watch {
   };
 
   destroy () {
-    this.job.stop();
+    this.job.destroy();
     delete this.job;
     if (global.runningWatch[this.id]) {
       delete global.runningWatch[this.id];
